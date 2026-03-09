@@ -108,7 +108,7 @@
             <div>{{lastActionDate}}</div>
 
             <div class="campaign-row__actions">
-              <button type="button" class="campaign-row__action-group">
+              <button type="button" class="campaign-row__action-group js-action-menu-toggle" aria-expanded="false">
                 <span class="campaign-row__action-half campaign-row__action-half--edit" aria-label="Редактировать">
                   <svg viewBox="0 0 24 24" class="campaign-row__action-icon campaign-row__action-icon--edit">
                     <path d="M4 19.25V16.5L14.6 5.9a1.5 1.5 0 0 1 2.12 0l1.38 1.38a1.5 1.5 0 0 1 0 2.12L7.5 20H4.75A.75.75 0 0 1 4 19.25Zm2.06-.75h1.13l9.85-9.85-1.13-1.13L6.06 17.37v1.13ZM4 6.75A2.75 2.75 0 0 1 6.75 4H10a.75.75 0 0 1 0 1.5H6.75c-.69 0-1.25.56-1.25 1.25V17a.75.75 0 0 1-1.5 0V6.75ZM14 20a.75.75 0 0 1 0-1.5h3.25c.69 0 1.25-.56 1.25-1.25V14a.75.75 0 0 1 1.5 0v3.25A2.75 2.75 0 0 1 17.25 20H14Z"/>
@@ -117,12 +117,45 @@
 
                 <span class="campaign-row__action-divider"></span>
 
-                <span class="campaign-row__action-half campaign-row__action-half--delete" aria-label="Удалить">
+                <span class="campaign-row__action-half campaign-row__action-half--delete js-delete-action-trigger" aria-label="Удалить">
                   <svg viewBox="0 0 24 24" class="campaign-row__action-icon campaign-row__action-icon--delete">
                     <path d="M9 3.75A1.75 1.75 0 0 1 10.75 2h2.5A1.75 1.75 0 0 1 15 3.75V4h3.25a.75.75 0 0 1 0 1.5h-.77l-.63 12.03A2 2 0 0 1 14.85 19.5H9.15a2 2 0 0 1-2-1.97L6.52 5.5h-.77a.75.75 0 0 1 0-1.5H9v-.25Zm1.5.25h3v-.25a.25.25 0 0 0-.25-.25h-2.5a.25.25 0 0 0-.25.25V4Zm-1.85 14h6.7a.5.5 0 0 0 .5-.48L16.47 5.5H7.53l.62 12.02a.5.5 0 0 0 .5.48ZM10 8.75a.75.75 0 0 1 1.5 0v5.5a.75.75 0 0 1-1.5 0v-5.5Zm2.5 0a.75.75 0 0 1 1.5 0v5.5a.75.75 0 0 1-1.5 0v-5.5Z"/>
                   </svg>
                 </span>
               </button>
+
+              <div class="campaign-row__menu" hidden>
+                <button type="button" class="campaign-row__menu-item">
+                  <svg viewBox="0 0 24 24" class="campaign-row__menu-icon campaign-row__menu-icon--blue">
+                    <path d="M4 4h16v16H4V4Zm3 12h2V9H7v7Zm4 0h2V12h-2v4Zm4 0h2V7h-2v9Z"/>
+                  </svg>
+                  <span>Статистика</span>
+                </button>
+                <button type="button" class="campaign-row__menu-item">
+                  <svg viewBox="0 0 24 24" class="campaign-row__menu-icon campaign-row__menu-icon--blue">
+                    <path d="M12 4V1L8 5l4 4V6a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8Zm-1 4v5l4 2 .9-1.8-2.9-1.4V8H11Z"/>
+                  </svg>
+                  <span>История действий</span>
+                </button>
+                <button type="button" class="campaign-row__menu-item">
+                  <svg viewBox="0 0 24 24" class="campaign-row__menu-icon campaign-row__menu-icon--blue">
+                    <path d="m3 17.25 9.9-9.9 3.75 3.75-9.9 9.9H3v-3.75Zm14.7-10.2 1.8-1.8a1 1 0 0 0 0-1.4L18.15 2.5a1 1 0 0 0-1.4 0l-1.8 1.8 2.75 2.75Z"/>
+                  </svg>
+                  <span>Редактировать</span>
+                </button>
+                <button type="button" class="campaign-row__menu-item">
+                  <svg viewBox="0 0 24 24" class="campaign-row__menu-icon campaign-row__menu-icon--blue">
+                    <path d="m12 2 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 16.9 6.4 19.2l1.1-6.2L3 8.6l6.2-.9L12 2Z"/>
+                  </svg>
+                  <span>В избранное</span>
+                </button>
+                <button type="button" class="campaign-row__menu-item campaign-row__menu-item--danger js-delete-menu-item">
+                  <svg viewBox="0 0 24 24" class="campaign-row__menu-icon campaign-row__menu-icon--red">
+                    <path d="M9 3.75A1.75 1.75 0 0 1 10.75 2h2.5A1.75 1.75 0 0 1 15 3.75V4h3.25a.75.75 0 0 1 0 1.5h-.77l-.63 12.03A2 2 0 0 1 14.85 19.5H9.15a2 2 0 0 1-2-1.97L6.52 5.5h-.77a.75.75 0 0 1 0-1.5H9v-.25Zm1.5.25h3v-.25a.25.25 0 0 0-.25-.25h-2.5a.25.25 0 0 0-.25.25V4Zm-1.85 14h6.7a.5.5 0 0 0 .5-.48L16.47 5.5H7.53l.62 12.02a.5.5 0 0 0 .5.48ZM10 8.75a.75.75 0 0 1 1.5 0v5.5a.75.75 0 0 1-1.5 0v-5.5Zm2.5 0a.75.75 0 0 1 1.5 0v5.5a.75.75 0 0 1-1.5 0v-5.5Z"/>
+                  </svg>
+                  <span>Удалить</span>
+                </button>
+              </div>
             </div>
 
             <div>
@@ -155,5 +188,22 @@
         <button class="campaigns-empty__create-button" type="button">Создать кампанию</button>
       </div>
     {{/if}}
+  </div>
+
+  <div class="campaigns-delete-modal" id="campaigns-delete-modal" hidden>
+    <div class="campaigns-delete-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="campaigns-delete-modal-title">
+      <h3 class="campaigns-delete-modal__title" id="campaigns-delete-modal-title">
+        Вы уверены, что хотите удалить это?
+      </h3>
+      <img class="campaigns-delete-modal__image" src="./assets/images/trash.png" alt="" />
+      <div class="campaigns-delete-modal__actions">
+        <button type="button" class="campaigns-delete-modal__button campaigns-delete-modal__button--yes" id="campaigns-delete-confirm">
+          Да
+        </button>
+        <button type="button" class="campaigns-delete-modal__button campaigns-delete-modal__button--no" id="campaigns-delete-cancel">
+          Нет
+        </button>
+      </div>
+    </div>
   </div>
 </section>

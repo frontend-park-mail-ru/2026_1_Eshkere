@@ -366,6 +366,118 @@ function initDatePicker() {
   });
 }
 
+function initCampaignActionMenus() {
+  const toggles = Array.from(document.querySelectorAll(".js-action-menu-toggle"));
+
+  if (!toggles.length) {
+    return;
+  }
+
+  const closeAll = () => {
+    toggles.forEach((toggle) => {
+      const container = toggle.closest(".campaign-row__actions");
+      const menu = container?.querySelector(".campaign-row__menu");
+
+      if (!menu) {
+        return;
+      }
+
+      menu.hidden = true;
+      toggle.setAttribute("aria-expanded", "false");
+    });
+  };
+
+  toggles.forEach((toggle) => {
+    toggle.addEventListener("click", (event) => {
+      const deleteAction = event.target.closest(".js-delete-action-trigger");
+
+      if (deleteAction) {
+        event.preventDefault();
+        event.stopPropagation();
+        closeAll();
+        const openDeleteModalEvent = new CustomEvent("campaigns:open-delete-modal");
+        document.dispatchEvent(openDeleteModalEvent);
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      const container = toggle.closest(".campaign-row__actions");
+      const menu = container?.querySelector(".campaign-row__menu");
+
+      if (!menu) {
+        return;
+      }
+
+      const willOpen = menu.hidden;
+      closeAll();
+      menu.hidden = !willOpen;
+      toggle.setAttribute("aria-expanded", willOpen ? "true" : "false");
+    });
+  });
+
+  document.querySelectorAll(".campaign-row__menu-item").forEach((item) => {
+    item.addEventListener("click", () => {
+      closeAll();
+
+      if (item.classList.contains("js-delete-menu-item")) {
+        const openDeleteModalEvent = new CustomEvent("campaigns:open-delete-modal");
+        document.dispatchEvent(openDeleteModalEvent);
+      }
+    });
+  });
+
+  document.addEventListener("click", (event) => {
+    if (event.target.closest(".campaign-row__actions")) {
+      return;
+    }
+
+    closeAll();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeAll();
+    }
+  });
+}
+
+function initCampaignDeleteModal() {
+  const modal = document.getElementById("campaigns-delete-modal");
+  const confirmButton = document.getElementById("campaigns-delete-confirm");
+  const cancelButton = document.getElementById("campaigns-delete-cancel");
+
+  if (!modal || !confirmButton || !cancelButton) {
+    return;
+  }
+
+  const close = () => {
+    modal.hidden = true;
+  };
+
+  const open = () => {
+    modal.hidden = false;
+  };
+
+  cancelButton.addEventListener("click", close);
+  confirmButton.addEventListener("click", close);
+
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      close();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !modal.hidden) {
+      close();
+    }
+  });
+
+  document.addEventListener("campaigns:open-delete-modal", open);
+}
+
 export async function renderAdsPage() {
   const result = await getAds();
 
@@ -392,4 +504,6 @@ export function initAdsPage() {
   }
 
   initDatePicker();
+  initCampaignActionMenus();
+  initCampaignDeleteModal();
 }
