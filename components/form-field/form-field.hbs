@@ -1,0 +1,18 @@
+<div class="ui-field">
+  <label class="ui-field__label" for="{{id}}">
+    {{label}}{{#if required}}<span></span>{{/if}}
+  </label>
+
+  <input
+    class="ui-input {{className}}"
+    id="{{id}}"
+    name="{{name}}"
+    type="{{type}}"
+    placeholder="{{placeholder}}"
+    value="{{value}}"
+    {{#if required}}required{{/if}}
+    {{#if disabled}}disabled{{/if}}
+  />
+
+  <p class="ui-field__error" data-error-for="{{name}}"></p>
+</div>
