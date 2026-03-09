@@ -1,0 +1,74 @@
+@import url("../../layouts/public/public-layout.css");
+@import url("../../layouts/dashboard/dashboard-layout.css");
+
+@import url("../../components/navbar/navbar.css");
+@import url("../../components/button/button.css");
+@import url("../../components/input/input.css");
+@import url("../../components/form-field/form-field.css");
+@import url("../../components/sidebar/sidebar.css");
+@import url("../../components/dashboard-topbar/dashboard-topbar.css");
+@import url("../../components/modal/modal.css");
+
+@import url("../../pages/home/home.css");
+@import url("../../pages/login/login.css");
+@import url("../../pages/register/register.css");
+@import url("../../pages/ads/ads.css");
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg-main: #eef0ff;
+  --text-main: #1f2430;
+  --text-muted: #7a8094;
+  --border: #d9ddee;
+  --primary: #5a54ff;
+  --white: #ffffff;
+  --shadow: 0 12px 30px rgba(68, 74, 140, 0.12);
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  background: var(--bg-main);
+  color: var(--text-main);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  border: none;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.navbar__title,
+.hero__title,
+.feature-card__title,
+.auth-card__title,
+.campaign-row__name {
+  font-family: "Inter", sans-serif;
+}

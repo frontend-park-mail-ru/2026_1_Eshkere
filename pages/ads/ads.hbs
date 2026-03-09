@@ -1,0 +1,65 @@
+<section class="campaigns-page">
+  <div class="campaigns-page__toolbar">
+    <button class="campaigns-page__create-button" type="button">
+      Создать кампанию
+    </button>
+
+    <div class="campaigns-page__filters">
+      <div class="campaigns-page__filter">1-2 мар 2026</div>
+      <div class="campaigns-page__filter">Фильтры</div>
+      <div class="campaigns-page__search">Поиск кампаний</div>
+    </div>
+  </div>
+
+  <div class="campaigns-table">
+    <div class="campaigns-table__header">
+      <div>Название</div>
+      <div>Бюджет</div>
+      <div>Целевое действие</div>
+      <div>Дата последнего действия</div>
+      <div>Действие</div>
+      <div>Статус</div>
+      <div>Вкл/выкл</div>
+    </div>
+
+    <div class="campaigns-table__body">
+      {{#each campaigns}}
+        <div class="campaign-row">
+          <div class="campaign-row__name">{{title}}</div>
+          <div>{{budget}}</div>
+          <div>{{goal}}</div>
+          <div>{{lastActionDate}}</div>
+
+          <div class="campaign-row__actions">
+            <button type="button" class="campaign-row__action">✎</button>
+            <button type="button" class="campaign-row__action">🗑</button>
+          </div>
+
+          <div>
+            <span class="status-badge status-badge--{{statusType}}">
+              {{status}}
+            </span>
+          </div>
+
+          <div>
+            <label class="toggle">
+              <input
+                type="checkbox"
+                {{#if enabled}}checked{{/if}}
+                disabled
+              />
+              <span class="toggle__slider"></span>
+            </label>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  </div>
+
+  <div class="campaigns-page__pagination">
+    <span></span>
+    <span class="campaigns-page__pagination-line"></span>
+    <span class="campaigns-page__pagination-line"></span>
+    <span class="campaigns-page__pagination-line"></span>
+  </div>
+</section>
