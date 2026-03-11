@@ -1,6 +1,9 @@
 import { renderTemplate } from "../../assets/js/utils/render.js";
 import { renderPublicLayout } from "../../layouts/public/public-layout.js";
-import { renderFormField } from "../../components/form-field/form-field.js";
+import {
+  renderFormField,
+  initPasswordVisibilityToggles
+} from "../../components/form-field/form-field.js";
 import { renderButton } from "../../components/button/button.js";
 import {
   validateEmailOrPhone,
@@ -23,8 +26,8 @@ export async function renderLoginPage() {
     id: "login-email",
     name: "email",
     type: "text",
-    label: "Электронная почта или телефон",
-    placeholder: "name@example.com или +7 999 123 45 67",
+    label: "Почта или телефон",
+    placeholder: "Ваша почта или телефон",
     required: true
   });
 
@@ -33,7 +36,7 @@ export async function renderLoginPage() {
     name: "password",
     type: "password",
     label: "Пароль",
-    placeholder: "Например, Qwerty123!",
+    placeholder: "Введите ваш пароль",
     required: true
   });
 
@@ -70,6 +73,8 @@ export function initLoginPage() {
   if (!form) {
     return;
   }
+
+  initPasswordVisibilityToggles(form);
 
   function validateLoginField() {
     const error = validateEmailOrPhone(form.elements.email.value);

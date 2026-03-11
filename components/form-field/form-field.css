@@ -48,6 +48,10 @@
   padding-left: 52px;
 }
 
+.ui-input--with-toggle {
+  padding-right: 52px;
+}
+
 .ui-input:focus {
   border-color: #7a74ff;
   box-shadow: 0 0 0 3px rgba(122, 116, 255, 0.12);
@@ -61,4 +65,56 @@
 .ui-input--success {
   border-color: #34c759;
   box-shadow: 0 0 0 3px rgba(52, 199, 89, 0.12);
+}
+
+.ui-field__password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  transform: translateY(-50%);
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  color: #7a8094;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.ui-field__password-toggle:hover {
+  background: rgba(122, 128, 148, 0.1);
+  color: #5c647c;
+}
+
+.ui-field__password-toggle:focus-visible {
+  outline: 2px solid #7a74ff;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.ui-field__icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 18px;
+  height: 18px;
+  transform: translate(-50%, -50%);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ui-field__icon--hide {
+  display: none;
+}
+
+.ui-field__password-toggle.is-visible .ui-field__icon--show {
+  display: none;
+}
+
+.ui-field__password-toggle.is-visible .ui-field__icon--hide {
+  display: block;
 }

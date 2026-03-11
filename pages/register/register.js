@@ -1,6 +1,9 @@
 import { renderTemplate } from "../../assets/js/utils/render.js";
 import { renderPublicLayout } from "../../layouts/public/public-layout.js";
-import { renderFormField } from "../../components/form-field/form-field.js";
+import {
+  renderFormField,
+  initPasswordVisibilityToggles
+} from "../../components/form-field/form-field.js";
 import { renderButton } from "../../components/button/button.js";
 import {
   validateEmail,
@@ -61,7 +64,7 @@ export async function renderRegisterPage() {
     name: "email",
     type: "email",
     label: "Электронная почта",
-    placeholder: "name@example.com",
+    placeholder: "Ваша почта",
     required: true
   });
 
@@ -80,7 +83,7 @@ export async function renderRegisterPage() {
     name: "password",
     type: "password",
     label: "Пароль",
-    placeholder: "Например, Qwerty123!",
+    placeholder: "Введите ваш пароль",
     required: true
   });
 
@@ -89,7 +92,7 @@ export async function renderRegisterPage() {
     name: "repeatPassword",
     type: "password",
     label: "Повторите пароль",
-    placeholder: "Повторите Qwerty123!",
+    placeholder: "Повторите ваш пароль",
     required: true
   });
 
@@ -128,6 +131,8 @@ export function initRegisterPage() {
   if (!form) {
     return;
   }
+
+  initPasswordVisibilityToggles(form);
 
   const submitButton = form.querySelector('button[type="submit"]');
   const SUBMIT_DEBOUNCE_MS = 400;
