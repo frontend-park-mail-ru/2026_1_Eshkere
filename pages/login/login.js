@@ -27,7 +27,7 @@ export async function renderLoginPage() {
     name: "email",
     type: "text",
     label: "Почта или телефон",
-    placeholder: "Ваша почта или телефон",
+    placeholder: "Ваша почта или тел",
     required: true
   });
 

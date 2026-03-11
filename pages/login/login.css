@@ -78,11 +78,36 @@
 }
 
 .social-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   height: 46px;
+  padding: 0 14px;
   border: 1px solid var(--border);
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.7);
   cursor: pointer;
+}
+
+.social-button__label {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.social-button__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+}
+
+.social-button__icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .social-button:disabled,
