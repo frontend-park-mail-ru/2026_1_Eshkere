@@ -5,7 +5,7 @@ import { request } from "../utils/request.js";
  * @property {string|number} [id]
  * @property {string} [title]
  * @property {number} [price]
- * @property {string} [description]
+ * @property {string} [target_action]
  * @property {string} [created_at]
  */
 

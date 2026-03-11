@@ -56,7 +56,7 @@ function mapAdsToCampaigns(ads = []) {
     id: ad.id,
     title: ad.title || "Без названия",
     budget: typeof ad.price === "number" ? formatPrice(ad.price) : "—",
-    goal: ad.description || "Без описания",
+    goal: ad.target_action || "Без target action",
     lastActionDate: formatDate(ad.created_at),
     status: "Активно",
     statusType: "working",

@@ -127,5 +127,6 @@ export function initNavbar() {
     logoutConfirmButton.disabled = true;
     await logoutUser();
     location.hash = "#/login";
+    closeLogoutModal();
   });
 }
