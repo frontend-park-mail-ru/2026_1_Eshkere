@@ -1,0 +1,50 @@
+<div class="ui-field">
+  <label class="ui-field__label" for="{{id}}">
+    {{label}}{{#if required}}<span></span>{{/if}}
+  </label>
+
+  <div class="ui-field__control{{#if hasPrefix}} ui-field__control--with-prefix{{/if}}{{#if isPassword}} ui-field__control--with-toggle{{/if}}">
+    {{#if hasPrefix}}
+      <span class="ui-field__prefix">{{prefix}}</span>
+    {{/if}}
+
+    <input
+      class="ui-input {{className}}{{#if hasPrefix}} ui-input--with-prefix{{/if}}{{#if isPassword}} ui-input--with-toggle{{/if}}"
+      id="{{id}}"
+      name="{{name}}"
+      type="{{type}}"
+      placeholder="{{placeholder}}"
+      value="{{value}}"
+      {{#if required}}required{{/if}}
+      {{#if disabled}}disabled{{/if}}
+    />
+
+    {{#if isPassword}}
+      <button
+        class="ui-field__password-toggle"
+        type="button"
+        data-password-toggle
+        aria-label="Показать пароль"
+        aria-pressed="false"
+        title="Показать пароль"
+      >
+        <svg class="ui-field__icon ui-field__icon--show" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M2 12C3.7 8.5 7.3 6 12 6s8.3 2.5 10 6c-1.7 3.5-5.3 6-10 6s-8.3-2.5-10-6z"
+          />
+          <circle cx="12" cy="12" r="2.8" />
+        </svg>
+        <svg class="ui-field__icon ui-field__icon--hide" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M2 12C3.7 8.5 7.3 6 12 6s8.3 2.5 10 6c-1.7 3.5-5.3 6-10 6s-8.3-2.5-10-6z"
+          />
+          <path
+            d="M8 12.5c1.1-1 2.5-1.5 4-1.5s2.9.5 4 1.5"
+          />
+        </svg>
+      </button>
+    {{/if}}
+  </div>
+
+  <p class="ui-field__error" data-error-for="{{name}}"></p>
+</div>

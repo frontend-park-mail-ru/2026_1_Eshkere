@@ -1,0 +1,133 @@
+.auth-page {
+  display: flex;
+  justify-content: center;
+  padding: 60px 16px 24px;
+}
+
+.auth-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 470px;
+  padding: 34px 30px 28px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(8px);
+}
+
+.auth-card::before {
+  content: "";
+  position: absolute;
+  inset: -14px;
+  z-index: -1;
+  border-radius: 30px;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(122, 114, 255, 0.22) 0%,
+    rgba(122, 114, 255, 0.1) 45%,
+    rgba(122, 114, 255, 0) 80%
+  );
+  filter: blur(12px);
+  pointer-events: none;
+}
+
+.auth-card__title {
+  margin-bottom: 30px;
+  text-align: center;
+  font-size: 42px;
+}
+
+.auth-form {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.auth-form-not-input{
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.auth-divider {
+  position: relative;
+  margin: 4px 0;
+  text-align: center;
+  font-size: 13px;
+  color: #a2a7b8;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: calc(50% - 22px);
+  height: 1px;
+  background: var(--border);
+}
+
+.auth-divider::before {
+  left: 0;
+}
+
+.auth-divider::after {
+  right: 0;
+}
+
+.social-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+}
+
+.social-button__label {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.social-button__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+}
+
+.social-button__icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.social-button:disabled,
+.social-button[aria-disabled="true"] {
+  color: #9aa0b3;
+  background: rgba(255, 255, 255, 0.42);
+  border-color: #d9dceb;
+  cursor: not-allowed;
+  opacity: 0.72;
+  filter: grayscale(0.15);
+}
+
+@media (max-width: 900px) {
+  .auth-card__title {
+    font-size: 34px;
+  }
+}
+
+@media (max-width: 600px) {
+  .auth-card {
+    padding: 24px 18px;
+  }
+}
