@@ -8,10 +8,10 @@
  4. [Евтович Марко](https://github.com/SSKPss4567)
 
 ### Внешние ссылки - TODO
- - [Figma]()
- - [Backend]()
- - [Deploy]()
- - [Jira]()
+ - [Figma](https://www.figma.com/design/rbnwxrv896e0UNpOAswobu/Esketit-Ad-web-design?node-id=0-1&p=f&t=HQEMbsCg4WYOV4FC-0)
+ - [Backend](https://github.com/go-park-mail-ru/2026_1_Eshkere)
+ - [Deploy](http://212.233.96.112:8080/)
+ - [Jira](https://a4-code.yougile.com/team/e78120020d9d/Eshkere-Ads?lang=ru)
 
 ### Правила оформления Pull Requests
   1. Ветка создается с названием `ADS-###`, где ### - номер задачи в jira.
