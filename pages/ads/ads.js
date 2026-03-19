@@ -3,6 +3,7 @@ import {
   renderDashboardLayout,
 } from '../../layouts/dashboard/dashboard-layout.js';
 import {getAds} from '../../assets/js/services/ads.service.js';
+import adsPageTemplate from './ads.hbs';
 
 let adsPageLifecycleController = null;
 
@@ -77,7 +78,7 @@ function mapAdsToCampaigns(ads = []) {
     id: ad.id,
     title: ad.title || 'Без названия',
     budget: typeof ad.price === 'number' ? formatPrice(ad.price) : '—',
-    goal: ad.target_action || 'Без target action',
+    goal: ad.target_action || 'Без целевого действия',
     lastActionDate: formatDate(ad.created_at),
     status: 'Активно',
     statusType: 'working',
@@ -216,7 +217,7 @@ function isBetween(date, from, to) {
  *
  * @param {Date} from Начальная дата.
  * @param {Date} to Конечная дата.
- * @return {string} Строка для UI.
+ * @return {string} Строка для интерфейса.
  */
 function formatRangeLabel(from, to) {
   if (
@@ -675,7 +676,7 @@ export async function renderAdsPage() {
   const result = await getAds();
   const campaigns = mapAdsToCampaigns(result.ads);
 
-  const content = await renderTemplate('./pages/ads/ads.hbs', {
+  const content = await renderTemplate(adsPageTemplate, {
     campaigns,
     hasCampaigns: campaigns.length > 0,
     loadError: result.ok ? '' : result.message,

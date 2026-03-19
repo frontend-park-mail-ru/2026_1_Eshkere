@@ -11,6 +11,7 @@ import {
   setFieldState,
 } from '../../assets/js/utils/validators.js';
 import {loginUser} from '../../assets/js/services/auth.service.js';
+import loginPageTemplate from './login.hbs';
 
 /**
  * Удаляет пробелы из пароля при вводе.
@@ -78,7 +79,7 @@ export async function renderLoginPage() {
     variant: 'secondary',
   });
 
-  const content = await renderTemplate('./pages/login/login.hbs', {
+  const content = await renderTemplate(loginPageTemplate, {
     loginField,
     passwordField,
     submitButton,

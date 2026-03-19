@@ -1,5 +1,6 @@
 import {renderTemplate} from '../../assets/js/utils/render.js';
 import {renderNavbar} from '../../components/navbar/navbar.js';
+import publicLayoutTemplate from './public-layout.hbs';
 
 /**
  * Рендерит публичный layout-контейнер с navbar.
@@ -11,7 +12,7 @@ import {renderNavbar} from '../../components/navbar/navbar.js';
 export async function renderPublicLayout(content, pathname = '/') {
   const navbar = await renderNavbar(pathname);
 
-  return await renderTemplate('./layouts/public/public-layout.hbs', {
+  return await renderTemplate(publicLayoutTemplate, {
     navbar,
     content,
   });

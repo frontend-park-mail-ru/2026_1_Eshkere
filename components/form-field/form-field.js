@@ -1,4 +1,5 @@
 import {renderTemplate} from '../../assets/js/utils/render.js';
+import formFieldTemplate from './form-field.hbs';
 
 /**
  * Рендерит переиспользуемый компонент поля формы.
@@ -19,7 +20,7 @@ import {renderTemplate} from '../../assets/js/utils/render.js';
 export async function renderFormField(options = {}) {
   const isPassword = (options.type || 'text') === 'password';
 
-  return await renderTemplate('./components/form-field/form-field.hbs', {
+  return await renderTemplate(formFieldTemplate, {
     label: options.label || '',
     id: options.id || '',
     name: options.name || '',

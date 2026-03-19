@@ -10,6 +10,7 @@ module.exports = [
     ignores: [
       'node_modules/**',
       'server/node_modules/**',
+      'dist/**',
     ],
   },
   ...compat.extends('google'),

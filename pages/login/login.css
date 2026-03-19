@@ -9,7 +9,7 @@
   z-index: 1;
   width: 100%;
   max-width: 470px;
-  padding: 34px 30px 28px;
+  padding: 28px 26px 22px;
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.9);
   box-shadow: var(--shadow);
@@ -33,22 +33,41 @@
 }
 
 .auth-card__title {
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   text-align: center;
   font-size: 42px;
 }
 
 .auth-form {
-  margin-top: 10px;
+  margin-top: 4px;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
+.auth-form__password-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -14px;
+  margin-bottom: 2px;
+}
+
+.auth-form__forgot-link {
+  font-size: 12px;
+  line-height: 1;
+  color: #a2a7b8;
+  transition: color 0.2s ease;
+}
+
+.auth-form__forgot-link:hover,
+.auth-form__forgot-link:focus-visible {
+  color: #7a74ff;
+}
+
 .auth-form-not-input{
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 12px;
 }
 
 .auth-divider {
@@ -110,6 +129,13 @@
   height: 100%;
 }
 
+.social-button__icon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 .social-button:disabled,
 .social-button[aria-disabled="true"] {
   color: #9aa0b3;
@@ -128,6 +154,10 @@
 
 @media (max-width: 600px) {
   .auth-card {
-    padding: 24px 18px;
+    padding: 20px 16px;
+  }
+
+  .auth-form__password-actions {
+    margin-top: -12px;
   }
 }

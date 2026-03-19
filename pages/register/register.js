@@ -14,6 +14,7 @@ import {
   setFieldState,
 } from '../../assets/js/utils/validators.js';
 import {registerUser} from '../../assets/js/services/auth.service.js';
+import registerPageTemplate from './register.hbs';
 
 /**
  * Оставляет только 10 цифр локального номера телефона.
@@ -139,7 +140,7 @@ export async function renderRegisterPage() {
     variant: 'secondary',
   });
 
-  const content = await renderTemplate('./pages/register/register.hbs', {
+  const content = await renderTemplate(registerPageTemplate, {
     emailField,
     phoneField,
     passwordField,

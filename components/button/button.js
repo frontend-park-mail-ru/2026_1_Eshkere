@@ -1,4 +1,5 @@
 import {renderTemplate} from '../../assets/js/utils/render.js';
+import buttonTemplate from './button.hbs';
 
 /**
  * Рендерит переиспользуемый компонент кнопки.
@@ -12,7 +13,7 @@ import {renderTemplate} from '../../assets/js/utils/render.js';
  * @return {Promise<string>} Сгенерированная строка HTML.
  */
 export async function renderButton(options = {}) {
-  return await renderTemplate('./components/button/button.hbs', {
+  return await renderTemplate(buttonTemplate, {
     text: options.text || 'Кнопка',
     type: options.type || 'button',
     href: options.href || '',

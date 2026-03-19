@@ -1,11 +1,74 @@
-/**
+﻿/**
  * Проверяет, соответствует ли значение формату электронной почты.
  *
  * @param {string} value Проверяемое значение.
  * @return {boolean} Является ли значение корректной почтой.
  */
 export function isEmail(value) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  const normalized = String(value || '').trim();
+
+  if (normalized.length < 6 || normalized.length > 254) {
+    return false;
+  }
+
+  const atMatches = normalized.match(/@/g) || [];
+  if (atMatches.length !== 1) {
+    return false;
+  }
+
+  const [localPart, domainPart] = normalized.split('@');
+  if (!localPart || !domainPart) {
+    return false;
+  }
+
+  if (localPart.length > 64) {
+    return false;
+  }
+
+  if (
+    localPart.startsWith('.') ||
+    localPart.endsWith('.') ||
+    domainPart.startsWith('.') ||
+    domainPart.endsWith('.')
+  ) {
+    return false;
+  }
+
+  if (normalized.includes('..')) {
+    return false;
+  }
+
+  if (!/^[A-Za-z0-9._%+-]+$/.test(localPart)) {
+    return false;
+  }
+
+  if (!/^[A-Za-z0-9.-]+$/.test(domainPart)) {
+    return false;
+  }
+
+  const domainLabels = domainPart.split('.');
+  if (domainLabels.length < 2) {
+    return false;
+  }
+
+  if (
+    domainLabels.some((label) => (
+      !label ||
+      label.length > 63 ||
+      label.startsWith('-') ||
+      label.endsWith('-') ||
+      !/^[A-Za-z0-9-]+$/.test(label)
+    ))
+  ) {
+    return false;
+  }
+
+  const topLevelDomain = domainLabels[domainLabels.length - 1];
+  if (!/^[A-Za-z]{2,63}$/.test(topLevelDomain)) {
+    return false;
+  }
+
+  return true;
 }
 
 const PASSWORD_ALLOWED_CHARS =
@@ -75,11 +138,13 @@ export function validateEmailOrPhone(value) {
   const normalized = value.trim();
 
   if (!normalized) {
-    return 'Введите электронную почту или телефон';
+    return 'Введите email в формате name@example.com\n' +
+      'или телефон в формате +7 999 123 45 67';
   }
 
   if (!isEmail(normalized) && !isPhone(normalized)) {
-    return 'Введите корректную электронную почту или телефон';
+    return 'Неверный формат: email должен быть вида ' +
+      'name@example.com,\nтелефон — +7 999 123 45 67';
   }
 
   return '';
@@ -95,11 +160,11 @@ export function validateEmail(value) {
   const normalized = value.trim();
 
   if (!normalized) {
-    return 'Введите электронную почту';
+    return 'Введите email в формате name@example.com';
   }
 
   if (!isEmail(normalized)) {
-    return 'Введите корректную электронную почту';
+    return 'Неверный формат email, пример: name@example.com';
   }
 
   return '';
@@ -126,7 +191,7 @@ export function validatePhone(value) {
 }
 
 /**
- * Валидирует поле пароля.
+ * Р’Р°Р»РёРґРёСЂСѓРµС‚ РїРѕР»Рµ РїР°СЂРѕР»СЏ.
  *
  * @param {string} value Значение пароля.
  * @return {string} Пустая строка при успехе, иначе сообщение ошибки.
@@ -178,7 +243,7 @@ export function validateRepeatPassword(password, repeatPassword) {
 }
 
 /**
- * Применяет UI-состояние ошибки или успеха к полю формы.
+ * Применяет состояние ошибки или успеха к полю формы.
  *
  * @param {HTMLFormElement} form Целевой элемент формы.
  * @param {string} fieldName Имя поля.

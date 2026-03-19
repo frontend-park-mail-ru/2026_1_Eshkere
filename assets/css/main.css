@@ -3,14 +3,13 @@
 
 @import url("../../components/navbar/navbar.css");
 @import url("../../components/button/button.css");
-@import url("../../components/input/input.css");
 @import url("../../components/form-field/form-field.css");
 @import url("../../components/sidebar/sidebar.css");
-@import url("../../components/dashboard-topbar/dashboard-topbar.css");
 @import url("../../components/modal/modal.css");
 
 @import url("../../pages/home/home.css");
 @import url("../../pages/login/login.css");
+@import url("../../pages/forgot-password/forgot-password.css");
 @import url("../../pages/register/register.css");
 @import url("../../pages/ads/ads.css");
 
@@ -65,6 +64,8 @@ button {
 
 #app {
   min-height: 100vh;
+  position: relative;
+  z-index: 1;
 }
 
 h1,
