@@ -1,6 +1,10 @@
 import {renderHomePage} from '../../pages/home/home.js';
 import {renderLoginPage, initLoginPage} from '../../pages/login/login.js';
 import {
+  renderForgotPasswordPage,
+  initForgotPasswordPage,
+} from '../../pages/forgot-password/forgot-password.js';
+import {
   renderRegisterPage,
   initRegisterPage,
 } from '../../pages/register/register.js';
@@ -24,6 +28,11 @@ const routes = {
   '/login': {
     render: renderLoginPage,
     init: initLoginPage,
+    guestOnly: true,
+  },
+  '/forgot-password': {
+    render: renderForgotPasswordPage,
+    init: initForgotPasswordPage,
     guestOnly: true,
   },
   '/register': {

@@ -1,8 +1,9 @@
+import '../css/main.css';
 import {renderRoute} from './router.js';
 import {initializeAuthState} from './services/auth.service.js';
 
 /**
- * Инициализирует auth-состояние и первый рендер приложения.
+ * Инициализирует состояние авторизации и первый рендер приложения.
  *
  * @return {Promise<void>} Завершение стартовой инициализации.
  */

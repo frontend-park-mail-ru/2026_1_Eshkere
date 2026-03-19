@@ -1,4 +1,5 @@
 import {renderTemplate} from '../../assets/js/utils/render.js';
+import sidebarTemplate from './sidebar.hbs';
 
 /**
  * Рендерит сайдбар дашборда.
@@ -6,5 +7,5 @@ import {renderTemplate} from '../../assets/js/utils/render.js';
  * @return {Promise<string>} Сгенерированная строка HTML.
  */
 export async function renderSidebar() {
-  return await renderTemplate('./components/sidebar/sidebar.hbs');
+  return await renderTemplate(sidebarTemplate);
 }

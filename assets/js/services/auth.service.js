@@ -5,7 +5,7 @@ const AUTH_KEY = 'ads_auth';
 let confirmedSession = false;
 
 /**
- * Нормализует текст ошибки авторизации для UI.
+ * Нормализует текст ошибки авторизации для интерфейса.
  *
  * @param {string} message Исходное сообщение об ошибке.
  * @return {string} Нормализованный текст ошибки.
@@ -14,7 +14,7 @@ function normalizeAuthErrorMessage(message) {
   const normalized = String(message || '').trim().toLowerCase();
 
   if (!normalized) {
-    return 'Не удалось выполнить запрос. Попробуйте еще раз.';
+    return 'Не удалось выполнить запрос, попробуйте еще раз';
   }
 
   if (
@@ -22,7 +22,7 @@ function normalizeAuthErrorMessage(message) {
     normalized.includes('networkerror') ||
     normalized.includes('load failed')
   ) {
-    return 'Не удалось подключиться к серверу. Попробуйте еще раз.';
+    return 'Не удалось подключиться к серверу, попробуйте еще раз';
   }
 
   if (
@@ -32,7 +32,7 @@ function normalizeAuthErrorMessage(message) {
     normalized.includes('неверно') ||
     normalized.includes('invalid password')
   ) {
-    return 'Такого пользователя не существует или пароль неверный.';
+    return 'Такого пользователя не существует или пароль неверный';
   }
 
   if (
@@ -40,39 +40,39 @@ function normalizeAuthErrorMessage(message) {
     normalized.includes('уже существует') ||
     normalized.includes('already registered')
   ) {
-    return 'Пользователь с такими данными уже зарегистрирован.';
+    return 'Пользователь с такими данными уже зарегистрирован';
   }
 
   if (
     normalized.includes('invalid request') ||
     normalized.includes('bad request')
   ) {
-    return 'Проверьте корректность введённых данных.';
+    return 'Проверьте корректность введённых данных';
   }
 
   if (
     normalized.includes('session not found') ||
     normalized.includes('сесс') && normalized.includes('не найден')
   ) {
-    return 'Сессия истекла. Войдите снова.';
+    return 'Сессия истекла, войдите снова';
   }
 
   if (normalized.includes('email')) {
-    return 'Проверьте электронную почту.';
+    return 'Проверьте электронную почту';
   }
 
   if (
     normalized.includes('phone') ||
     normalized.includes('телефон')
   ) {
-    return 'Проверьте номер телефона.';
+    return 'Проверьте номер телефона';
   }
 
   if (
     normalized.includes('password') ||
     normalized.includes('пароль')
   ) {
-    return 'Проверьте пароль.';
+    return 'Проверьте пароль';
   }
 
   return message;
@@ -127,16 +127,16 @@ function writeStoredUser(user) {
 /**
  * Проверяет наличие локально сохраненного пользователя.
  *
- * @return {boolean} Есть ли кэш auth-данных.
+ * @return {boolean} Есть ли кэш данных авторизации.
  */
 function hasStoredAuth() {
   return Boolean(readStoredUser());
 }
 
 /**
- * Читает текущего пользователя из localStorage.
+ * Читает текущего пользователя из локального хранилища.
  *
- * @return {User|null} Пользователь из localStorage или null.
+ * @return {User|null} Пользователь из локального хранилища или null.
  */
 export function getCurrentUser() {
   return readStoredUser();
@@ -145,14 +145,14 @@ export function getCurrentUser() {
 /**
  * Показывает, подтверждена ли авторизация сервером.
  *
- * @return {boolean} Подтверждено ли auth-состояние сервером.
+ * @return {boolean} Подтверждено ли состояние авторизации сервером.
  */
 export function isAuthenticated() {
   return confirmedSession;
 }
 
 /**
- * Очищает локальное auth-состояние.
+ * Очищает локальное состояние авторизации.
  *
  * @return {void}
  */

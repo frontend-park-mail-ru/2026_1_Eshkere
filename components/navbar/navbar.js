@@ -2,6 +2,7 @@ import {renderTemplate} from '../../assets/js/utils/render.js';
 import {isAuthenticated} from '../../assets/js/services/auth.service.js';
 import {getCurrentUser} from '../../assets/js/services/auth.service.js';
 import {logoutUser} from '../../assets/js/services/auth.service.js';
+import navbarTemplate from './navbar.hbs';
 
 let navbarLifecycleController = null;
 
@@ -21,7 +22,7 @@ export async function renderNavbar(pathname = '/') {
     avatar: currentUser.avatar || '../../assets/images/avatar-placeholder.png',
   };
 
-  return await renderTemplate('./components/navbar/navbar.hbs', {
+  return await renderTemplate(navbarTemplate, {
     isLogin: pathname === '/login',
     isRegister: pathname === '/register',
     isAuthenticated: isAuth,

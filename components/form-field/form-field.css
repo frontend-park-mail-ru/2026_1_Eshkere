@@ -14,9 +14,11 @@
 }
 
 .ui-field__error {
-  min-height: 16px;
+  min-height: 32px;
   font-size: 12px;
+  line-height: 1.35;
   color: #ff5f56;
+  white-space: pre-line;
 }
 
 .ui-field__control {

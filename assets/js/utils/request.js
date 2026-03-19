@@ -1,7 +1,7 @@
 import {API_BASE_URL} from '../config/api.js';
 
 /**
- * Выполняет HTTP-запрос к backend API с JSON-настройками по умолчанию.
+ * Выполняет HTTP-запрос к API сервера с JSON-настройками по умолчанию.
  *
  * @template T
  * @param {string} path - Относительный путь API, начинающийся с `/`.
