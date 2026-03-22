@@ -1,0 +1,89 @@
+@use "./tokens" as t;
+
+@mixin media-max($width) {
+  @media (max-width: $width) {
+    @content;
+  }
+}
+
+@mixin flex-center($display: flex, $justify: center, $align: center) {
+  display: $display;
+  justify-content: $justify;
+  align-items: $align;
+}
+
+@mixin glass-card(
+  $background: t.$surface-glass,
+  $radius: t.$radius-lg,
+  $shadow: t.$shadow-soft,
+  $blur: 8px
+) {
+  border-radius: $radius;
+  background: $background;
+  box-shadow: $shadow;
+  backdrop-filter: blur($blur);
+}
+
+@mixin interactive-lift($distance: -1px, $shadow: null, $filter: null) {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease,
+    opacity 0.2s ease;
+
+  &:hover {
+    transform: translateY($distance);
+
+    @if $shadow != null {
+      box-shadow: $shadow;
+    }
+
+    @if $filter != null {
+      filter: $filter;
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+@mixin focus-ring($color: rgba(90, 84, 255, 0.2), $offset: 2px, $width: 3px) {
+  &:focus-visible {
+    outline: $width solid $color;
+    outline-offset: $offset;
+  }
+}
+
+@mixin page-background($image-path) {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background-color: t.$color-bg-main;
+  background-image: url($image-path);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+@mixin pill-button($height, $padding: 0 18px, $radius: t.$radius-pill) {
+  height: $height;
+  padding: $padding;
+  border-radius: $radius;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin modal-overlay($z-index: 100, $background: rgba(16, 19, 39, 0.56)) {
+  position: fixed;
+  inset: 0;
+  z-index: $z-index;
+  background: $background;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}

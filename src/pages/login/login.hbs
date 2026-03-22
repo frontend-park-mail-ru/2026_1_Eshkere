@@ -1,0 +1,36 @@
+﻿<section class="auth-page">
+  <div class="auth-card">
+    <h1 class="auth-card__title">Вход</h1>
+
+    <form class="auth-form" id="login-form">
+      {{{loginField}}}
+      {{{passwordField}}}
+      <div class="auth-form__password-actions">
+        <a class="auth-form__forgot-link" href="#/forgot-password">Забыли пароль?</a>
+      </div>
+
+      <div class="auth-form-not-input">
+        {{{submitButton}}}
+        {{{registerLinkButton}}}
+
+        <div class="auth-divider">
+          <span>или</span>
+        </div>
+
+        <button type="button" class="social-button social-button--vk" disabled aria-disabled="true" title="Скоро будет доступно">
+          <span class="social-button__icon" aria-hidden="true">
+            <img src="/icons/VK_logo_Blue_40x40.svg" alt="" />
+          </span>
+          <span class="social-button__label">VK ID</span>
+        </button>
+
+        <button type="button" class="social-button social-button--yandex" disabled aria-disabled="true" title="Скоро будет доступно">
+          <span class="social-button__icon" aria-hidden="true">
+            <img src="/icons/yandex-id.svg" alt="" />
+          </span>
+          <span class="social-button__label">Яндекс ID</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</section>

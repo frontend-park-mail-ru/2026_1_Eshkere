@@ -7,7 +7,7 @@ module.exports = (env, argv = {}) => {
 
   return {
     mode: isProduction ? 'production' : 'development',
-    entry: path.resolve(__dirname, 'assets/js/main.js'),
+    entry: path.resolve(__dirname, 'src/app/index.js'),
     output: {
       path: path.resolve(__dirname, 'dist'),
       filename: isProduction ? 'js/[name].[contenthash:8].js' : 'js/[name].js',
@@ -24,8 +24,19 @@ module.exports = (env, argv = {}) => {
           use: 'babel-loader',
         },
         {
-          test: /\.css$/i,
-          use: ['style-loader', 'css-loader'],
+          test: /\.(sa|sc|c)ss$/i,
+          use: [
+            'style-loader',
+            {
+              loader: 'css-loader',
+              options: {
+                url: {
+                  filter: (url) => !url.startsWith('/img/') && !url.startsWith('/fonts/'),
+                },
+              },
+            },
+            'sass-loader',
+          ],
         },
         {
           test: /\.hbs$/i,
@@ -35,27 +46,34 @@ module.exports = (env, argv = {}) => {
           test: /\.(png|jpe?g|gif|svg|webp)$/i,
           type: 'asset/resource',
           generator: {
-            filename: 'assets/images/[name][ext]',
+            filename: 'assets/[name][ext]',
           },
         },
       ],
     },
     plugins: [
       new HtmlWebpackPlugin({
-        template: path.resolve(__dirname, 'index.html'),
+        template: path.resolve(__dirname, 'public/index.html'),
       }),
       new CopyWebpackPlugin({
         patterns: [
           {
-            from: path.resolve(__dirname, 'assets/images'),
-            to: path.resolve(__dirname, 'dist/assets/images'),
+            from: path.resolve(__dirname, 'public'),
+            to: path.resolve(__dirname, 'dist'),
             noErrorOnMissing: true,
+            globOptions: {
+              ignore: ['**/index.html'],
+            },
           },
         ],
       }),
     ],
     resolve: {
-      extensions: ['.js'],
+      roots: [
+        path.resolve(__dirname, 'public'),
+        path.resolve(__dirname),
+      ],
+      extensions: ['.js', '.scss', '.css'],
     },
   };
 };

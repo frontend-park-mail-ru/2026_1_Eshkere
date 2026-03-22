@@ -1,0 +1,23 @@
+@use "../../../app/styles/abstracts/tokens" as t;
+@use "../../../app/styles/abstracts/mixins";
+
+.ui-button {
+  width: 100%;
+  @include mixins.flex-center;
+  height: 48px;
+  border-radius: t.$radius-sm;
+  font-weight: 600;
+  @include mixins.interactive-lift;
+
+  &--primary {
+    color: var(--white);
+    background: t.$primary-gradient;
+    cursor: pointer;
+  }
+
+  &--secondary {
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.65);
+    color: #2d3345;
+  }
+}
