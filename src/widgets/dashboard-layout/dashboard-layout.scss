@@ -1,5 +1,5 @@
-@use "../../app/styles/abstracts/tokens" as t;
-@use "../../app/styles/abstracts/mixins";
+@use "../../shared/abstracts/tokens" as t;
+@use "../../shared/abstracts/mixins";
 
 .dashboard-layout {
   @include mixins.page-background("/img/back.png");

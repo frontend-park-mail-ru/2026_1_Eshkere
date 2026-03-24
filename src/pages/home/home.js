@@ -1,3 +1,4 @@
+import './home.scss';
 import {renderTemplate} from '../../shared/lib/render.js';
 import {renderPublicLayout} from '../../widgets/public-layout/public-layout.js';
 import {isAuthenticated} from '../../shared/api/auth.js';

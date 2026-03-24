@@ -1,3 +1,4 @@
+import './forgot-password.scss';
 import {renderTemplate} from '../../shared/lib/render.js';
 import {renderPublicLayout} from '../../widgets/public-layout/public-layout.js';
 import {renderFormField} from '../../shared/ui/form-field/form-field.js';

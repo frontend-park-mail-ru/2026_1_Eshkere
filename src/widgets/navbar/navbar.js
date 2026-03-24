@@ -1,3 +1,4 @@
+import './navbar.scss';
 import {renderTemplate} from '../../shared/lib/render.js';
 import {isAuthenticated} from '../../shared/api/auth.js';
 import {getCurrentUser} from '../../shared/api/auth.js';

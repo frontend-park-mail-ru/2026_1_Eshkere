@@ -1,3 +1,4 @@
+import './dashboard-layout.scss';
 import {renderTemplate} from '../../shared/lib/render.js';
 import {renderSidebar} from '../sidebar/sidebar.js';
 import {renderNavbar} from '../navbar/navbar.js';

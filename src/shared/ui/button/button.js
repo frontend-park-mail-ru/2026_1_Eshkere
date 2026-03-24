@@ -1,3 +1,4 @@
+import './button.scss';
 import {renderTemplate} from '../../lib/render.js';
 import buttonTemplate from './button.hbs';
 

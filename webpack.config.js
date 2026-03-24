@@ -7,7 +7,7 @@ module.exports = (env, argv = {}) => {
 
   return {
     mode: isProduction ? 'production' : 'development',
-    entry: path.resolve(__dirname, 'src/app/index.js'),
+    entry: path.resolve(__dirname, 'src/index.js'),
     output: {
       path: path.resolve(__dirname, 'dist'),
       filename: isProduction ? 'js/[name].[contenthash:8].js' : 'js/[name].js',

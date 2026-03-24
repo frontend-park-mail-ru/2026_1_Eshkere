@@ -1,5 +1,5 @@
-@use "../../../app/styles/abstracts/tokens" as t;
-@use "../../../app/styles/abstracts/mixins";
+@use "../../abstracts/tokens" as t;
+@use "../../abstracts/mixins";
 
 .ui-field {
   display: flex;

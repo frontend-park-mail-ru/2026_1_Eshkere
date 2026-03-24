@@ -1,3 +1,4 @@
+import './form-field.scss';
 import {renderTemplate} from '../../lib/render.js';
 import formFieldTemplate from './form-field.hbs';
 

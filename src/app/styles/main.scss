@@ -1,20 +1,5 @@
-@use "./abstracts/tokens";
+@use "../../shared/abstracts/tokens";
 @use "./fonts";
-
-@use "../../widgets/public-layout/public-layout";
-@use "../../widgets/dashboard-layout/dashboard-layout";
-
-@use "../../widgets/navbar/navbar";
-@use "../../widgets/sidebar/sidebar";
-@use "../../shared/ui/button/button";
-@use "../../shared/ui/form-field/form-field";
-@use "../../shared/ui/modal/modal";
-
-@use "../../pages/home/home";
-@use "../../pages/login/login";
-@use "../../pages/forgot-password/forgot-password";
-@use "../../pages/register/register";
-@use "../../pages/ads/ads";
 
 * {
   box-sizing: border-box;

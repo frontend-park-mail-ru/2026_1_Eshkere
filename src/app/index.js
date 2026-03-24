@@ -1,4 +1,3 @@
-import './styles/main.scss';
 import {renderRoute} from './router.js';
 import {initializeAuthState} from '../shared/api/auth.js';
 
@@ -7,14 +6,10 @@ import {initializeAuthState} from '../shared/api/auth.js';
  *
  * @return {Promise<void>} Завершение стартовой инициализации.
  */
-async function bootstrapApp() {
+export async function initApp() {
   await initializeAuthState();
   await renderRoute();
 }
-
-window.addEventListener('DOMContentLoaded', () => {
-  bootstrapApp();
-});
 
 window.addEventListener('hashchange', () => {
   renderRoute();

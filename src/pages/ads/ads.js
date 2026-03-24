@@ -1,3 +1,4 @@
+import './ads.scss';
 import {renderTemplate} from '../../shared/lib/render.js';
 import {
   renderDashboardLayout,

@@ -1,3 +1,4 @@
+import './public-layout.scss';
 import {renderTemplate} from '../../shared/lib/render.js';
 import {renderNavbar} from '../navbar/navbar.js';
 import publicLayoutTemplate from './public-layout.hbs';
