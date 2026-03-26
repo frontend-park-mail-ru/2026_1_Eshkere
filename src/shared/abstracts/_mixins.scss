@@ -1,4 +1,4 @@
-@use "./tokens" as t;
+@use './tokens' as t;
 
 @mixin media-max($width) {
   @media (max-width: $width) {

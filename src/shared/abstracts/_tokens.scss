@@ -1,5 +1,5 @@
-$font-family-body: "Roboto", sans-serif;
-$font-family-heading: "Inter", sans-serif;
+$font-family-body: 'Roboto', sans-serif;
+$font-family-heading: 'Inter', sans-serif;
 
 $color-bg-main: #eef0ff;
 $color-text-main: #1f2430;
@@ -18,7 +18,11 @@ $surface-card: rgba(255, 255, 255, 0.9);
 $surface-input: rgba(255, 255, 255, 0.78);
 $surface-muted: rgba(255, 255, 255, 0.7);
 
-$primary-gradient: linear-gradient(135deg, $color-primary-start, $color-primary-end);
+$primary-gradient: linear-gradient(
+  135deg,
+  $color-primary-start,
+  $color-primary-end
+);
 $avatar-gradient: linear-gradient(135deg, #ffb199, #ff5e62);
 $danger-gradient: linear-gradient(180deg, #ffdede 0%, #f8caca 100%);
 $confirm-gradient: linear-gradient(180deg, #ffd7d7 0%, #f3c7c7 100%);

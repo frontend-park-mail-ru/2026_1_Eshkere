@@ -1,4 +1,5 @@
 const {FlatCompat} = require('@eslint/eslintrc');
+const eslintConfigPrettier = require('eslint-config-prettier/flat');
 const globals = require('globals');
 
 const compat = new FlatCompat({
@@ -35,4 +36,5 @@ module.exports = [
       globals: globals.node,
     },
   },
+  eslintConfigPrettier,
 ];

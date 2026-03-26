@@ -1,4 +1,4 @@
-import {API_BASE_URL} from '../config/api.js';
+import { API_BASE_URL } from '../config/api.js';
 
 /**
  * Выполняет HTTP-запрос к API сервера с JSON-настройками по умолчанию.

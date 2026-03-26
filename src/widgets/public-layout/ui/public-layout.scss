@@ -1,0 +1,38 @@
+@use '../../../shared/abstracts/tokens' as t;
+@use '../../../shared/abstracts/mixins';
+
+.public-layout {
+  @include mixins.page-background('/img/back.png');
+
+  &__container {
+    position: relative;
+    z-index: 2;
+    width: min(1280px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 96px 0 40px;
+  }
+
+  &__content {
+    position: relative;
+    z-index: 2;
+  }
+
+  &__bg-main {
+    display: none;
+  }
+
+  @include mixins.media-max(t.$bp-md) {
+    &__container {
+      width: min(100% - 24px, 1280px);
+      padding-top: 128px;
+    }
+  }
+
+  @include mixins.media-max(t.$bp-sm) {
+    &__container {
+      width: min(100% - 20px, 1280px);
+      padding-top: 144px;
+      padding-bottom: 28px;
+    }
+  }
+}

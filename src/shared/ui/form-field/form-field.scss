@@ -1,5 +1,5 @@
-@use "../../abstracts/tokens" as t;
-@use "../../abstracts/mixins";
+@use '../../abstracts/tokens' as t;
+@use '../../abstracts/mixins';
 
 .ui-field {
   display: flex;
@@ -49,7 +49,9 @@
     background: transparent;
     cursor: pointer;
     color: t.$color-text-muted;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
     @include mixins.focus-ring(rgba(122, 116, 255, 0.35), 2px, 2px);
 
     &:hover {

@@ -1,9 +1,9 @@
-import {request} from '../../../shared/lib/request.js';
-import {normalizeAuthErrorMessage} from '../lib/normalize-auth-error.js';
-import {setSessionConfirmed} from '../model/session-flag.js';
-import {writeStoredUser} from '../model/storage.js';
+import { request } from '../../../shared/lib/request.js';
+import { normalizeAuthErrorMessage } from '../lib/normalize-auth-error.js';
+import { markAuthenticated } from '../model/state.js';
+import { writeStoredUser } from '../model/storage.js';
 
-export async function registerUser({email, phone, password}) {
+export async function registerUser({ email, phone, password }) {
   try {
     const normalizedEmail = email.trim().toLowerCase();
     const normalizedPhone = phone.trim();
@@ -19,9 +19,9 @@ export async function registerUser({email, phone, password}) {
     });
 
     writeStoredUser(registerResponse.data);
-    setSessionConfirmed(true);
+    markAuthenticated();
 
-    return {ok: true, user: registerResponse.data};
+    return { ok: true, user: registerResponse.data };
   } catch (error) {
     return {
       ok: false,

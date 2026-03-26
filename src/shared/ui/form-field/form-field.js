@@ -1,5 +1,5 @@
 import './form-field.scss';
-import {renderTemplate} from '../../lib/render.js';
+import { renderTemplate } from '../../lib/render.js';
 import formFieldTemplate from './form-field.hbs';
 
 /**
@@ -69,9 +69,7 @@ export function initPasswordVisibilityToggles(root = document) {
 
       button.classList.toggle('is-visible', shouldShowPassword);
 
-      const label = shouldShowPassword ?
-        'Скрыть пароль' :
-        'Показать пароль';
+      const label = shouldShowPassword ? 'Скрыть пароль' : 'Показать пароль';
       button.setAttribute('aria-label', label);
       button.setAttribute('title', label);
       button.setAttribute('aria-pressed', String(shouldShowPassword));

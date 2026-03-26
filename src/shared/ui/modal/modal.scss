@@ -1,5 +1,5 @@
-@use "../../abstracts/tokens" as t;
-@use "../../abstracts/mixins";
+@use '../../abstracts/tokens' as t;
+@use '../../abstracts/mixins';
 
 .modal {
   position: fixed;
@@ -9,7 +9,9 @@
   padding: 16px;
   visibility: hidden;
   opacity: 0;
-  transition: opacity 0.2s ease, visibility 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease;
 
   &--open {
     visibility: visible;

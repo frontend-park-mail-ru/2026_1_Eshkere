@@ -1,5 +1,5 @@
-@use "../../shared/abstracts/tokens";
-@use "./fonts";
+@use '../../shared/abstracts/tokens';
+@use './fonts';
 
 * {
   box-sizing: border-box;
@@ -9,7 +9,7 @@
 
 :root {
   --bg-main: #{tokens.$color-bg-main};
-  --bg-main-image: url("/img/back.png");
+  --bg-main-image: url('/img/back.png');
   --text-main: #{tokens.$color-text-main};
   --text-muted: #{tokens.$color-text-muted};
   --border: #{tokens.$color-border};

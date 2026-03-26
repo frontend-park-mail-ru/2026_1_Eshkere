@@ -1,0 +1,61 @@
+@use '../../../shared/abstracts/tokens' as t;
+@use '../../../shared/abstracts/mixins';
+
+.sidebar {
+  min-height: 620px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 18px;
+  @include mixins.glass-card;
+
+  &__section,
+  &__footer {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__footer {
+    margin-top: 48px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  &__link {
+    min-height: 44px;
+    padding: 0 14px;
+    border-radius: t.$radius-md;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: #2d3345;
+    transition: 0.2s ease;
+
+    &:hover {
+      background: rgba(90, 84, 255, 0.08);
+    }
+
+    &--active {
+      color: #fff;
+      background: t.$primary-gradient;
+      pointer-events: none;
+    }
+
+    &--muted {
+      background: rgba(90, 84, 255, 0.25);
+    }
+  }
+
+  &__button {
+    width: 100%;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  @include mixins.media-max(t.$bp-xl) {
+    min-height: auto;
+  }
+}

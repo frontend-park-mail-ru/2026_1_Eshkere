@@ -1,20 +1,23 @@
-import {renderHomePage} from '../pages/home/home.js';
-import {renderLoginPage, initLoginPage} from '../pages/login/login.js';
+import { renderHomePage } from '../pages/home';
+import { renderLoginPage, initLoginPage } from '../pages/login';
 import {
   renderForgotPasswordPage,
   initForgotPasswordPage,
-} from '../pages/forgot-password/forgot-password.js';
-import {
-  renderRegisterPage,
-  initRegisterPage,
-} from '../pages/register/register.js';
-import {renderAdsPage, initAdsPage} from '../pages/ads/ads.js';
-import {isAuthenticated, hasActiveSession} from '../shared/api/auth.js';
-import {initNavbar} from '../widgets/navbar/navbar.js';
+} from '../pages/forgot-password';
+import { renderRegisterPage, initRegisterPage } from '../pages/register';
+import { renderAdsPage, initAdsPage } from '../pages/ads';
+import { hasActiveSession, isAuthenticated } from '../features/auth';
+import { initNavbar } from '../widgets/navbar';
+import { renderWithLayout } from './render-with-layout.js';
+
+/**
+ * @typedef {import('./render-with-layout.js').LayoutKind} LayoutKind
+ */
 
 /**
  * @typedef {Object} RouteDefinition
- * @property {() => Promise<string>} render
+ * @property {() => Promise<string>} render HTML только контента страницы.
+ * @property {LayoutKind} layout
  * @property {() => (void|(() => void))} [init]
  * @property {boolean} [guestOnly]
  * @property {boolean} [protected]
@@ -24,24 +27,29 @@ import {initNavbar} from '../widgets/navbar/navbar.js';
 const routes = {
   '/': {
     render: renderHomePage,
+    layout: 'public',
   },
   '/login': {
     render: renderLoginPage,
+    layout: 'public',
     init: initLoginPage,
     guestOnly: true,
   },
   '/forgot-password': {
     render: renderForgotPasswordPage,
+    layout: 'public',
     init: initForgotPasswordPage,
     guestOnly: true,
   },
   '/register': {
     render: renderRegisterPage,
+    layout: 'public',
     init: initRegisterPage,
     guestOnly: true,
   },
   '/ads': {
     render: renderAdsPage,
+    layout: 'dashboard',
     init: initAdsPage,
     protected: true,
   },
@@ -88,7 +96,8 @@ export async function renderRoute() {
   }
 
   try {
-    const html = await route.render();
+    const content = await route.render();
+    const html = await renderWithLayout(route.layout, content, path);
 
     if (currentRequestId !== renderRequestId) {
       return;
