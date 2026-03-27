@@ -2,7 +2,7 @@ import './login.scss';
 import { renderTemplate } from 'shared/lib/render.js';
 import {
   renderFormField,
-  initPasswordVisibilityToggles,
+  PasswordVisibilityToggles,
 } from 'shared/ui/form-field/form-field.js';
 import { renderButton } from 'shared/ui/button/button.js';
 import {
@@ -92,14 +92,14 @@ export async function renderLoginPage() {
  *
  * @return {void}
  */
-export function initLoginPage() {
+export function Login() {
   const form = document.getElementById('login-form');
 
   if (!form) {
     return;
   }
 
-  initPasswordVisibilityToggles(form);
+  PasswordVisibilityToggles(form);
 
   /**
    * Валидирует поле email или телефона.

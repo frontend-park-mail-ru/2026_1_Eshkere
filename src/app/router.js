@@ -1,13 +1,13 @@
 import { renderHomePage } from 'pages/home';
-import { renderLoginPage, initLoginPage } from 'pages/login';
+import { renderLoginPage, Login } from 'pages/login';
 import {
   renderForgotPasswordPage,
-  initForgotPasswordPage,
+  ForgotPassword,
 } from 'pages/forgot-password';
-import { renderRegisterPage, initRegisterPage } from 'pages/register';
-import { renderAdsPage, initAdsPage } from 'pages/ads';
-import { hasActiveSession, isAuthenticated } from 'features/auth';
-import { initNavbar } from 'widgets/navbar';
+import { renderRegisterPage, Register } from 'pages/register';
+import { renderAdsPage, Ads } from 'pages/ads';
+import { authState } from 'features/auth';
+import { Navbar } from 'widgets/navbar';
 import {
   renderLayoutShell,
   updatePublicNavbarSlot,
@@ -35,25 +35,25 @@ const routes = {
   '/login': {
     render: renderLoginPage,
     layout: 'public',
-    init: initLoginPage,
+    init: Login,
     guestOnly: true,
   },
   '/forgot-password': {
     render: renderForgotPasswordPage,
     layout: 'public',
-    init: initForgotPasswordPage,
+    init: ForgotPassword,
     guestOnly: true,
   },
   '/register': {
     render: renderRegisterPage,
     layout: 'public',
-    init: initRegisterPage,
+    init: Register,
     guestOnly: true,
   },
   '/ads': {
     render: renderAdsPage,
     layout: 'dashboard',
-    init: initAdsPage,
+    init: Ads,
     protected: true,
   },
 };
@@ -87,7 +87,7 @@ export async function renderRoute() {
   }
 
   if (route.protected) {
-    const sessionIsActive = await hasActiveSession();
+    const sessionIsActive = await authState.hasActiveSession();
 
     if (!sessionIsActive) {
       location.hash = '#/login';
@@ -95,7 +95,7 @@ export async function renderRoute() {
     }
   }
 
-  if (route.guestOnly && isAuthenticated()) {
+  if (route.guestOnly && authState.isAuthenticated()) {
     location.hash = '#/ads';
     return;
   }
@@ -135,7 +135,7 @@ export async function renderRoute() {
       }
     }
 
-    const navbarCleanup = initNavbar();
+    const navbarCleanup = Navbar();
     if (typeof navbarCleanup === 'function') {
       cleanups.push(navbarCleanup);
     }

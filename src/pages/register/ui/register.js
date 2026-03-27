@@ -2,7 +2,7 @@ import './register.scss';
 import { renderTemplate } from 'shared/lib/render.js';
 import {
   renderFormField,
-  initPasswordVisibilityToggles,
+  PasswordVisibilityToggles,
 } from 'shared/ui/form-field/form-field.js';
 import { renderButton } from 'shared/ui/button/button.js';
 import {
@@ -164,14 +164,14 @@ export async function renderRegisterPage() {
  *
  * @return {void}
  */
-export function initRegisterPage() {
+export function Register() {
   const form = document.getElementById('register-form');
 
   if (!form) {
     return;
   }
 
-  initPasswordVisibilityToggles(form);
+  PasswordVisibilityToggles(form);
 
   const submitButton = form.querySelector('button[type="submit"]');
   const submitDebounceMs = 400;

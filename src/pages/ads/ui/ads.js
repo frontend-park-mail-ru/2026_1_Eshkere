@@ -98,7 +98,7 @@ function renderMonthGrid(gridNode, labelNode, monthDate, from, to) {
  * @param {AbortSignal} signal Сигнал жизненного цикла страницы.
  * @return {void}
  */
-function initDatePicker(signal) {
+function DatePicker(signal) {
   const toggle = document.getElementById('date-filter-toggle');
   const picker = document.getElementById('campaigns-date-picker');
   const filterLabel = document.getElementById('date-filter-label');
@@ -352,7 +352,7 @@ function initDatePicker(signal) {
  * @param {AbortSignal} signal Сигнал жизненного цикла страницы.
  * @return {void}
  */
-function initCampaignActionMenus(signal) {
+function CampaignActionMenus(signal) {
   const toggles = Array.from(
     document.querySelectorAll('.js-action-menu-toggle'),
   );
@@ -455,7 +455,7 @@ function initCampaignActionMenus(signal) {
  * @param {AbortSignal} signal Сигнал жизненного цикла страницы.
  * @return {void}
  */
-function initCampaignDeleteModal(signal) {
+function CampaignDeleteModal(signal) {
   const modal = document.getElementById('campaigns-delete-modal');
   const confirmButton = document.getElementById('campaigns-delete-confirm');
   const cancelButton = document.getElementById('campaigns-delete-cancel');
@@ -519,7 +519,7 @@ export async function renderAdsPage() {
  *
  * @return {(function(): void)|undefined} Функция очистки обработчиков.
  */
-export function initAdsPage() {
+export function Ads() {
   if (adsPageLifecycleController) {
     adsPageLifecycleController.abort();
   }
@@ -541,9 +541,9 @@ export function initAdsPage() {
     );
   }
 
-  initDatePicker(signal);
-  initCampaignActionMenus(signal);
-  initCampaignDeleteModal(signal);
+  DatePicker(signal);
+  CampaignActionMenus(signal);
+  CampaignDeleteModal(signal);
 
   return () => {
     if (adsPageLifecycleController === controller) {

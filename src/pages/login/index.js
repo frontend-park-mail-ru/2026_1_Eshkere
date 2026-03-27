@@ -1,1 +1,1 @@
-export { renderLoginPage, initLoginPage } from './ui/login.js';
+export { renderLoginPage, Login } from './ui/login.js';

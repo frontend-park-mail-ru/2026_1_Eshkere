@@ -1,1 +1,1 @@
-export { renderRegisterPage, initRegisterPage } from './ui/register.js';
+export { renderRegisterPage, Register } from './ui/register.js';

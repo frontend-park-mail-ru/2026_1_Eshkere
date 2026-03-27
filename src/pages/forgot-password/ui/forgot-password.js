@@ -53,7 +53,7 @@ export async function renderForgotPasswordPage() {
  *
  * @return {void}
  */
-export function initForgotPasswordPage() {
+export function ForgotPassword() {
   const form = document.getElementById('forgot-password-form');
 
   if (!form) {

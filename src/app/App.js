@@ -1,5 +1,5 @@
 import { renderRoute } from './router.js';
-import { initializeAuthState } from 'features/auth';
+import { authState } from 'features/auth';
 import './styles/main.scss';
 
 /**
@@ -8,7 +8,7 @@ import './styles/main.scss';
  * @return {Promise<void>} Завершение стартовой инициализации.
  */
 export async function initApp() {
-  await initializeAuthState();
+  await authState.hasActiveSession();
   await renderRoute();
 }
 

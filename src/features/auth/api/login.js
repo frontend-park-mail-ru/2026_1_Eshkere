@@ -1,8 +1,7 @@
 import { request } from 'shared/lib/request.js';
 import { normalizePhone } from 'shared/validators';
 import { normalizeAuthErrorMessage } from '../lib/normalize-auth-error.js';
-import { markAuthenticated } from '../model/state.js';
-import { writeStoredUser } from '../model/storage.js';
+import { authState } from '../model/storage.js';
 
 export async function loginUser({ identifier, password }) {
   try {
@@ -17,8 +16,7 @@ export async function loginUser({ identifier, password }) {
       },
     });
 
-    writeStoredUser(response.data);
-    markAuthenticated();
+    authState.setAuthenticatedUser(response.data);
 
     return { user: response.data };
   } catch (error) {

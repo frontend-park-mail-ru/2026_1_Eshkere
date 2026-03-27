@@ -1,6 +1,6 @@
 import { request } from 'shared/lib/request.js';
 import { normalizeAuthErrorMessage } from '../lib/normalize-auth-error.js';
-import { clearAuthState } from '../model/state.js';
+import { authState } from '../model/storage.js';
 
 export async function logoutUser() {
   try {
@@ -12,6 +12,6 @@ export async function logoutUser() {
       message: normalizeAuthErrorMessage(error.message),
     };
   } finally {
-    clearAuthState();
+    authState.clearAuthState();
   }
 }

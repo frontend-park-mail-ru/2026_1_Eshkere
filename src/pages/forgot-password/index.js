@@ -1,4 +1,4 @@
 export {
   renderForgotPasswordPage,
-  initForgotPasswordPage,
+  ForgotPassword,
 } from './ui/forgot-password.js';

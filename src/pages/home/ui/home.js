@@ -1,6 +1,6 @@
 import './home.scss';
 import { renderTemplate } from 'shared/lib/render.js';
-import { isAuthenticated } from 'features/auth';
+import { authState } from 'features/auth';
 import homePageTemplate from './home.hbs';
 
 /**
@@ -9,7 +9,7 @@ import homePageTemplate from './home.hbs';
  * @return {Promise<string>} Сгенерированная строка HTML.
  */
 export async function renderHomePage() {
-  const authed = isAuthenticated();
+  const authed = authState.isAuthenticated();
 
   return renderTemplate(homePageTemplate, {
     ctaHref: authed ? '#/ads' : '#/register',

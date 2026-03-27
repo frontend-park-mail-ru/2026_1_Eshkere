@@ -1,1 +1,1 @@
-export { renderNavbar, initNavbar } from './ui/navbar.js';
+export { renderNavbar, Navbar } from './ui/navbar.js';

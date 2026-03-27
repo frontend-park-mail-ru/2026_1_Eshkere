@@ -1,1 +1,1 @@
-export { renderAdsPage, initAdsPage } from './ui/ads.js';
+export { renderAdsPage, Ads } from './ui/ads.js';

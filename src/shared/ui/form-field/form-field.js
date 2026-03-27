@@ -46,7 +46,7 @@ export async function renderFormField(options = {}) {
  * @param {(Document|Element)} [root=document] Корневой узел поиска.
  * @return {void}
  */
-export function initPasswordVisibilityToggles(root = document) {
+export function PasswordVisibilityToggles(root = document) {
   const scope =
     root && typeof root.querySelectorAll === 'function' ? root : document;
   const toggleButtons = scope.querySelectorAll('[data-password-toggle]');

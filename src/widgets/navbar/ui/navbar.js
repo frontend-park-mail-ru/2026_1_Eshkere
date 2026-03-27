@@ -1,6 +1,6 @@
 import './navbar.scss';
 import { renderTemplate } from 'shared/lib/render.js';
-import { getCurrentUser, isAuthenticated, logoutUser } from 'features/auth';
+import { authState, logoutUser } from 'features/auth';
 import navbarTemplate from './navbar.hbs';
 
 let navbarLifecycleController = null;
@@ -12,8 +12,8 @@ let navbarLifecycleController = null;
  * @return {Promise<string>} Сгенерированная строка HTML.
  */
 export async function renderNavbar(pathname = '/') {
-  const isAuth = isAuthenticated();
-  const currentUser = getCurrentUser() || {};
+  const isAuth = authState.isAuthenticated();
+  const currentUser = authState.getCurrentUser() || {};
   const user = {
     ...currentUser,
     name: currentUser.email || currentUser.name || 'Профиль',
@@ -34,7 +34,7 @@ export async function renderNavbar(pathname = '/') {
  *
  * @return {void}
  */
-export function initNavbar() {
+export function Navbar() {
   if (navbarLifecycleController) {
     navbarLifecycleController.abort();
   }
