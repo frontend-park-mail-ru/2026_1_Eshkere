@@ -2,6 +2,7 @@ import { API_BASE_URL } from '../config/api.js';
 
 /**
  * Выполняет HTTP-запрос к API сервера с JSON-настройками по умолчанию.
+ * Если передан `body`, он сериализуется через JSON.stringify.
  *
  * @template T
  * @param {string} path - Относительный путь API, начинающийся с `/`.
@@ -10,13 +11,16 @@ import { API_BASE_URL } from '../config/api.js';
  * @throws {Error} Если статус ответа неуспешный.
  */
 export async function request(path, options = {}) {
+  const { body, ...rest } = options;
+
   const response = await fetch(`${API_BASE_URL}${path}`, {
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
       ...(options.headers || {}),
     },
-    ...options,
+    ...rest,
+    body: body !== undefined ? JSON.stringify(body) : undefined,
   });
 
   const data = await response.json().catch(() => null);

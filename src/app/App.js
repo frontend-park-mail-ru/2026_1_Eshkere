@@ -1,5 +1,6 @@
 import { renderRoute } from './router.js';
-import { initializeAuthState } from '../features/auth/index.js';
+import { initializeAuthState } from 'features/auth';
+import './styles/main.scss';
 
 /**
  * Инициализирует состояние авторизации и первый рендер приложения.

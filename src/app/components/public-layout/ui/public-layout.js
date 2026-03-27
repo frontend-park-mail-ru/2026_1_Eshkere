@@ -1,6 +1,6 @@
 import './public-layout.scss';
-import { renderTemplate } from '../../../shared/lib/render.js';
-import { renderNavbar } from '../../navbar';
+import { renderTemplate } from 'shared/lib/render.js';
+import { renderNavbar } from 'widgets/navbar';
 import publicLayoutTemplate from './public-layout.hbs';
 
 /**
@@ -17,4 +17,18 @@ export async function renderPublicLayout(content, pathname = '/') {
     navbar,
     content,
   });
+}
+
+/**
+ * Обновляет только разметку навбара в уже смонтированном публичном лейауте.
+ *
+ * @param {string} [pathname="/"] Текущий путь маршрута.
+ * @return {Promise<void>}
+ */
+export async function updatePublicNavbarSlot(pathname = '/') {
+  const slot = document.getElementById('app-navbar-slot');
+  if (!slot) {
+    return;
+  }
+  slot.innerHTML = await renderNavbar(pathname);
 }

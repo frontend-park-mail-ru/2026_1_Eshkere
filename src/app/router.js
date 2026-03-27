@@ -1,14 +1,17 @@
-import { renderHomePage } from '../pages/home';
-import { renderLoginPage, initLoginPage } from '../pages/login';
+import { renderHomePage } from 'pages/home';
+import { renderLoginPage, initLoginPage } from 'pages/login';
 import {
   renderForgotPasswordPage,
   initForgotPasswordPage,
-} from '../pages/forgot-password';
-import { renderRegisterPage, initRegisterPage } from '../pages/register';
-import { renderAdsPage, initAdsPage } from '../pages/ads';
-import { hasActiveSession, isAuthenticated } from '../features/auth';
-import { initNavbar } from '../widgets/navbar';
-import { renderWithLayout } from './render-with-layout.js';
+} from 'pages/forgot-password';
+import { renderRegisterPage, initRegisterPage } from 'pages/register';
+import { renderAdsPage, initAdsPage } from 'pages/ads';
+import { hasActiveSession, isAuthenticated } from 'features/auth';
+import { initNavbar } from 'widgets/navbar';
+import {
+  renderLayoutShell,
+  updatePublicNavbarSlot,
+} from './render-with-layout.js';
 
 /**
  * @typedef {import('./render-with-layout.js').LayoutKind} LayoutKind
@@ -57,6 +60,7 @@ const routes = {
 
 let activeCleanup = null;
 let renderRequestId = 0;
+let currentLayoutKind = null;
 
 /**
  * Определяет текущий hash-маршрут и рендерит нужную страницу.
@@ -78,6 +82,7 @@ export async function renderRoute() {
 
   if (!route) {
     app.innerHTML = '<h1>404</h1><p>Страница не найдена</p>';
+    currentLayoutKind = null;
     return;
   }
 
@@ -97,13 +102,29 @@ export async function renderRoute() {
 
   try {
     const content = await route.render();
-    const html = await renderWithLayout(route.layout, content, path);
+
+    const needsShell =
+      currentLayoutKind !== route.layout ||
+      !document.getElementById('app-layout-outlet');
+
+    if (needsShell) {
+      app.innerHTML = await renderLayoutShell(route.layout, path);
+      currentLayoutKind = route.layout;
+    } else if (route.layout === 'public') {
+      await updatePublicNavbarSlot(path);
+    }
 
     if (currentRequestId !== renderRequestId) {
       return;
     }
 
-    app.innerHTML = html;
+    const outlet = document.getElementById('app-layout-outlet');
+
+    if (!outlet) {
+      throw new Error('app-layout-outlet not found');
+    }
+
+    outlet.innerHTML = content;
 
     const cleanups = [];
 
@@ -126,6 +147,7 @@ export async function renderRoute() {
     }
   } catch (error) {
     console.error(error);
+    currentLayoutKind = null;
     app.innerHTML = '<h1>Ошибка</h1><p>Не удалось загрузить страницу</p>';
   }
 }

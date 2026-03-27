@@ -1,22 +1,22 @@
-import { renderPublicLayout } from '../widgets/public-layout';
-import { renderDashboardLayout } from '../widgets/dashboard-layout';
-
+import {
+  renderPublicLayout,
+  updatePublicNavbarSlot,
+} from 'app/components/public-layout';
+import { renderDashboardLayout } from 'app/components/dashboard-layout';
 /**
  * @typedef {'public' | 'dashboard'} LayoutKind
  */
-
 /**
- * Оборачивает HTML контента страницы в выбранный лейаут (слой app).
+ * Полная разметка лейаута без контента страницы (только оболочка).
  *
  * @param {LayoutKind} layout Вариант оболочки.
- * @param {string} content HTML фрагмента страницы.
  * @param {string} [pathname='/'] Путь для navbar (только public).
- * @return {Promise<string>} Полная разметка для #app.
+ * @return {Promise<string>} HTML для #app.
  */
-export async function renderWithLayout(layout, content, pathname = '/') {
+export async function renderLayoutShell(layout, pathname = '/') {
   if (layout === 'dashboard') {
-    return renderDashboardLayout(content);
+    return renderDashboardLayout('');
   }
-
-  return renderPublicLayout(content, pathname);
+  return renderPublicLayout('', pathname);
 }
+export { updatePublicNavbarSlot };

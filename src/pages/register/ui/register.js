@@ -1,10 +1,10 @@
 import './register.scss';
-import { renderTemplate } from '../../../shared/lib/render.js';
+import { renderTemplate } from 'shared/lib/render.js';
 import {
   renderFormField,
   initPasswordVisibilityToggles,
-} from '../../../shared/ui/form-field/form-field.js';
-import { renderButton } from '../../../shared/ui/button/button.js';
+} from 'shared/ui/form-field/form-field.js';
+import { renderButton } from 'shared/ui/button/button.js';
 import {
   normalizePhone,
   validateEmail,
@@ -12,8 +12,8 @@ import {
   validatePassword,
   validateRepeatPassword,
   setFieldState,
-} from '../../../shared/validators';
-import { registerUser } from '../../../features/auth';
+} from 'shared/validators';
+import { registerUser } from 'features/auth';
 import registerPageTemplate from './register.hbs';
 
 /**
@@ -282,7 +282,7 @@ export function initRegisterPage() {
         password: form.elements.password.value,
       });
 
-      if (!result.ok) {
+      if (result.error) {
         applyRegisterServerError(form, result.message);
         return;
       }

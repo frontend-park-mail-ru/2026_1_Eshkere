@@ -1,5 +1,5 @@
-import { request } from '../../../shared/lib/request.js';
-import { normalizePhone } from '../../../shared/validators';
+import { request } from 'shared/lib/request.js';
+import { normalizePhone } from 'shared/validators';
 import { normalizeAuthErrorMessage } from '../lib/normalize-auth-error.js';
 import { markAuthenticated } from '../model/state.js';
 import { writeStoredUser } from '../model/storage.js';
@@ -11,19 +11,19 @@ export async function loginUser({ identifier, password }) {
 
     const response = await request('/advertiser/login', {
       method: 'POST',
-      body: JSON.stringify({
+      body: {
         identifier: normalizedIdentifier,
         password: password.trim(),
-      }),
+      },
     });
 
     writeStoredUser(response.data);
     markAuthenticated();
 
-    return { ok: true, user: response.data };
+    return { user: response.data };
   } catch (error) {
     return {
-      ok: false,
+      error: true,
       message: normalizeAuthErrorMessage(error.message),
     };
   }

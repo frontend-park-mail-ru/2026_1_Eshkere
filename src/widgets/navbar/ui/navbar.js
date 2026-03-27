@@ -1,10 +1,6 @@
 import './navbar.scss';
-import { renderTemplate } from '../../../shared/lib/render.js';
-import {
-  getCurrentUser,
-  isAuthenticated,
-  logoutUser,
-} from '../../../features/auth';
+import { renderTemplate } from 'shared/lib/render.js';
+import { getCurrentUser, isAuthenticated, logoutUser } from 'features/auth';
 import navbarTemplate from './navbar.hbs';
 
 let navbarLifecycleController = null;

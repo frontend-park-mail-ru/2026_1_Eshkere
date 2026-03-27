@@ -1,5 +1,5 @@
 import './button.scss';
-import { renderTemplate } from '../../lib/render.js';
+import { renderTemplate } from 'shared/lib/render.js';
 import buttonTemplate from './button.hbs';
 
 /**

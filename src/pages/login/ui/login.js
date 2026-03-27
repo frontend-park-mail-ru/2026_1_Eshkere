@@ -1,16 +1,16 @@
 import './login.scss';
-import { renderTemplate } from '../../../shared/lib/render.js';
+import { renderTemplate } from 'shared/lib/render.js';
 import {
   renderFormField,
   initPasswordVisibilityToggles,
-} from '../../../shared/ui/form-field/form-field.js';
-import { renderButton } from '../../../shared/ui/button/button.js';
+} from 'shared/ui/form-field/form-field.js';
+import { renderButton } from 'shared/ui/button/button.js';
 import {
   validateEmailOrPhone,
   validatePassword,
   setFieldState,
-} from '../../../shared/validators';
-import { loginUser } from '../../../features/auth';
+} from 'shared/validators';
+import { loginUser } from 'features/auth';
 import loginPageTemplate from './login.hbs';
 
 /**
@@ -146,7 +146,7 @@ export function initLoginPage() {
       password: form.elements.password.value,
     });
 
-    if (!result.ok) {
+    if (result.error) {
       setFieldErrorHighlight(form, 'email');
       setFieldState(form, 'password', result.message);
       return;

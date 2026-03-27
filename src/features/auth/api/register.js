@@ -1,4 +1,4 @@
-import { request } from '../../../shared/lib/request.js';
+import { request } from 'shared/lib/request.js';
 import { normalizeAuthErrorMessage } from '../lib/normalize-auth-error.js';
 import { markAuthenticated } from '../model/state.js';
 import { writeStoredUser } from '../model/storage.js';
@@ -11,20 +11,20 @@ export async function registerUser({ email, phone, password }) {
 
     const registerResponse = await request('/advertiser/register', {
       method: 'POST',
-      body: JSON.stringify({
+      body: {
         email: normalizedEmail,
         phone: normalizedPhone,
         password: normalizedPassword,
-      }),
+      },
     });
 
     writeStoredUser(registerResponse.data);
     markAuthenticated();
 
-    return { ok: true, user: registerResponse.data };
+    return { user: registerResponse.data };
   } catch (error) {
     return {
-      ok: false,
+      error: true,
       message: normalizeAuthErrorMessage(error.message),
     };
   }

@@ -1,4 +1,4 @@
-import { request } from '../../../shared/lib/request.js';
+import { request } from 'shared/lib/request.js';
 import { normalizeAdsErrorMessage } from '../lib/normalize-ads-error.js';
 
 /**
@@ -13,8 +13,9 @@ import { normalizeAdsErrorMessage } from '../lib/normalize-ads-error.js';
 /**
  * Загружает список объявлений с сервера.
  *
- * @return {Promise<{ok: boolean, ads: !Array<AdItem>,
- *   message: (string|undefined)}>} Результат загрузки объявлений.
+ * @return {Promise<{ads: !Array<AdItem>,
+ *   error?: boolean,
+ *   message?: string}>} Результат загрузки объявлений.
  */
 export async function getAds() {
   try {
@@ -23,12 +24,11 @@ export async function getAds() {
     });
 
     return {
-      ok: true,
       ads: response.data.ads || [],
     };
   } catch (error) {
     return {
-      ok: false,
+      error: true,
       message: normalizeAdsErrorMessage(error.message),
       ads: [],
     };

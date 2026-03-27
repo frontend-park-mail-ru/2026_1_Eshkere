@@ -71,7 +71,11 @@ module.exports = (env, argv = {}) => {
     resolve: {
       roots: [
         path.resolve(__dirname, 'public'),
+        path.resolve(__dirname, 'src'),
         path.resolve(__dirname),
+      ],
+      modules: [
+        path.resolve(__dirname, 'src'),
       ],
       extensions: ['.js', '.scss', '.css'],
     },

@@ -1,40 +1,26 @@
 import './ads.scss';
-import { renderTemplate } from '../../../shared/lib/render.js';
-import { getAds } from '../../../features/ads';
+import { renderTemplate } from 'shared/lib/render.js';
+import {
+  addDays,
+  addMonths,
+  endOfMonth,
+  endOfWeek,
+  endOfYear,
+  formatRangeDate,
+  formatRangeLabel,
+  isBetween,
+  isSameDay,
+  startOfDay,
+  startOfMonth,
+  startOfWeek,
+  startOfYear,
+} from 'shared/lib/date.js';
+import { formatDate, formatPrice } from 'shared/lib/format.js';
+import { MONTHS_RU_FULL } from 'shared/lib/constants/ru-months.js';
+import { getAds } from 'features/ads';
 import adsPageTemplate from './ads.hbs';
-import { MONTHS_RU_FULL, MONTHS_RU_SHORT } from '../constants/dates.js';
 
 let adsPageLifecycleController = null;
-
-/**
- * Форматирует число как цену в рублях.
- *
- * @param {number} value Значение цены.
- * @return {string} Отформатированная цена.
- */
-function formatPrice(value) {
-  return `${new Intl.NumberFormat('ru-RU').format(value)} ₽`;
-}
-
-/**
- * Форматирует дату для отображения.
- *
- * @param {string} value Исходная строка даты.
- * @return {string} Отформатированная дата или прочерк.
- */
-function formatDate(value) {
-  if (!value) {
-    return '—';
-  }
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return '—';
-  }
-
-  return date.toLocaleDateString('ru-RU');
-}
 
 /**
  * Преобразует объявления в данные для таблицы кампаний.
@@ -53,168 +39,6 @@ function mapAdsToCampaigns(ads = []) {
     statusType: 'working',
     enabled: true,
   }));
-}
-
-/**
- * Возвращает начало дня.
- *
- * @param {Date} date Исходная дата.
- * @return {Date} Дата без времени.
- */
-function startOfDay(date) {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-}
-
-/**
- * Сдвигает дату на заданное число дней.
- *
- * @param {Date} date Исходная дата.
- * @param {number} days Число дней для сдвига.
- * @return {Date} Новая дата.
- */
-function addDays(date, days) {
-  const next = new Date(date);
-  next.setDate(next.getDate() + days);
-  return startOfDay(next);
-}
-
-/**
- * Сдвигает дату на заданное число месяцев.
- *
- * @param {Date} date Исходная дата.
- * @param {number} months Число месяцев для сдвига.
- * @return {Date} Новая дата.
- */
-function addMonths(date, months) {
-  return new Date(date.getFullYear(), date.getMonth() + months, date.getDate());
-}
-
-/**
- * Возвращает начало месяца.
- *
- * @param {Date} date Исходная дата.
- * @return {Date} Первый день месяца.
- */
-function startOfMonth(date) {
-  return new Date(date.getFullYear(), date.getMonth(), 1);
-}
-
-/**
- * Возвращает конец месяца.
- *
- * @param {Date} date Исходная дата.
- * @return {Date} Последний день месяца.
- */
-function endOfMonth(date) {
-  return new Date(date.getFullYear(), date.getMonth() + 1, 0);
-}
-
-/**
- * Возвращает начало года.
- *
- * @param {Date} date Исходная дата.
- * @return {Date} Первый день года.
- */
-function startOfYear(date) {
-  return new Date(date.getFullYear(), 0, 1);
-}
-
-/**
- * Возвращает конец года.
- *
- * @param {Date} date Исходная дата.
- * @return {Date} Последний день года.
- */
-function endOfYear(date) {
-  return new Date(date.getFullYear(), 11, 31);
-}
-
-/**
- * Возвращает начало недели.
- *
- * @param {Date} date Исходная дата.
- * @return {Date} Понедельник соответствующей недели.
- */
-function startOfWeek(date) {
-  const day = date.getDay();
-  const mondayOffset = day === 0 ? -6 : 1 - day;
-  return addDays(date, mondayOffset);
-}
-
-/**
- * Возвращает конец недели.
- *
- * @param {Date} date Исходная дата.
- * @return {Date} Воскресенье соответствующей недели.
- */
-function endOfWeek(date) {
-  return addDays(startOfWeek(date), 6);
-}
-
-/**
- * Проверяет, совпадают ли даты по дню.
- *
- * @param {Date} first Первая дата.
- * @param {Date} second Вторая дата.
- * @return {boolean} Совпадают ли даты по календарному дню.
- */
-function isSameDay(first, second) {
-  return (
-    first.getFullYear() === second.getFullYear() &&
-    first.getMonth() === second.getMonth() &&
-    first.getDate() === second.getDate()
-  );
-}
-
-/**
- * Проверяет, попадает ли дата в диапазон включительно.
- *
- * @param {Date} date Проверяемая дата.
- * @param {Date} from Начало диапазона.
- * @param {Date} to Конец диапазона.
- * @return {boolean} Попадает ли дата в диапазон.
- */
-function isBetween(date, from, to) {
-  return date.getTime() >= from.getTime() && date.getTime() <= to.getTime();
-}
-
-/**
- * Форматирует подпись диапазона дат.
- *
- * @param {Date} from Начальная дата.
- * @param {Date} to Конечная дата.
- * @return {string} Строка для интерфейса.
- */
-function formatRangeLabel(from, to) {
-  if (
-    from.getFullYear() === to.getFullYear() &&
-    from.getMonth() === to.getMonth() &&
-    from.getDate() === to.getDate()
-  ) {
-    return (
-      `${from.getDate()} ${MONTHS_RU_SHORT[from.getMonth()]} ` +
-      `${from.getFullYear()}`
-    );
-  }
-
-  const fromLabel = `${from.getDate()} ${MONTHS_RU_SHORT[from.getMonth()]}`;
-  const toLabel =
-    `${to.getDate()} ${MONTHS_RU_SHORT[to.getMonth()]} ` +
-    `${to.getFullYear()}`;
-
-  return `${fromLabel} - ${toLabel}`;
-}
-
-/**
- * Форматирует дату для поля диапазона.
- *
- * @param {Date} date Исходная дата.
- * @return {string} Дата в формате DD.MM.YYYY.
- */
-function formatRangeDate(date) {
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  return `${day}.${month}.${date.getFullYear()}`;
 }
 
 /**
@@ -686,7 +510,7 @@ export async function renderAdsPage() {
   return renderTemplate(adsPageTemplate, {
     campaigns,
     hasCampaigns: campaigns.length > 0,
-    loadError: result.ok ? '' : result.message,
+    loadError: result.error ? (result.message ?? '') : '',
   });
 }
 

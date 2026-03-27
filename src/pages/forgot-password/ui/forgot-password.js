@@ -1,11 +1,8 @@
 import './forgot-password.scss';
-import { renderTemplate } from '../../../shared/lib/render.js';
-import { renderFormField } from '../../../shared/ui/form-field/form-field.js';
-import { renderButton } from '../../../shared/ui/button/button.js';
-import {
-  setFieldState,
-  validateEmailOrPhone,
-} from '../../../shared/validators';
+import { renderTemplate } from 'shared/lib/render.js';
+import { renderFormField } from 'shared/ui/form-field/form-field.js';
+import { renderButton } from 'shared/ui/button/button.js';
+import { setFieldState, validateEmailOrPhone } from 'shared/validators';
 import forgotPasswordPageTemplate from './forgot-password.hbs';
 
 /**

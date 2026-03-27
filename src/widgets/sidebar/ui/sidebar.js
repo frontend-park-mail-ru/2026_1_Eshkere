@@ -1,5 +1,5 @@
 import './sidebar.scss';
-import { renderTemplate } from '../../../shared/lib/render.js';
+import { renderTemplate } from 'shared/lib/render.js';
 import sidebarTemplate from './sidebar.hbs';
 
 /**

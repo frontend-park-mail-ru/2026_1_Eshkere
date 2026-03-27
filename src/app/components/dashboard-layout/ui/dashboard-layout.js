@@ -1,7 +1,7 @@
 import './dashboard-layout.scss';
-import { renderTemplate } from '../../../shared/lib/render.js';
-import { renderSidebar } from '../../sidebar';
-import { renderNavbar } from '../../navbar';
+import { renderTemplate } from 'shared/lib/render.js';
+import { renderSidebar } from 'widgets/sidebar';
+import { renderNavbar } from 'widgets/navbar';
 import dashboardLayoutTemplate from './dashboard-layout.hbs';
 
 /**

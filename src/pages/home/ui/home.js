@@ -1,6 +1,6 @@
 import './home.scss';
-import { renderTemplate } from '../../../shared/lib/render.js';
-import { isAuthenticated } from '../../../features/auth';
+import { renderTemplate } from 'shared/lib/render.js';
+import { isAuthenticated } from 'features/auth';
 import homePageTemplate from './home.hbs';
 
 /**

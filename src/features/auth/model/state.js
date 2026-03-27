@@ -1,4 +1,4 @@
-import { request } from '../../../shared/lib/request.js';
+import { request } from 'shared/lib/request.js';
 import { clearStoredAuth, hasStoredAuth, readStoredUser } from './storage.js';
 
 let confirmedSession = false;
