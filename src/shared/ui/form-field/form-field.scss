@@ -1,0 +1,126 @@
+@use '../../styles/tokens' as t;
+@use '../../styles/mixins';
+
+.ui-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  &__label {
+    font-size: 14px;
+    color: #2d3345;
+
+    span {
+      color: t.$color-danger;
+    }
+  }
+
+  &__error {
+    min-height: 32px;
+    font-size: 12px;
+    line-height: 1.35;
+    color: t.$color-danger;
+    white-space: pre-line;
+  }
+
+  &__control {
+    position: relative;
+  }
+
+  &__prefix {
+    position: absolute;
+    top: 50%;
+    left: 14px;
+    transform: translateY(-50%);
+    color: #2d3345;
+    font-weight: 600;
+    pointer-events: none;
+  }
+
+  &__password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    transform: translateY(-50%);
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    cursor: pointer;
+    color: t.$color-text-muted;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+    @include mixins.focus-ring(rgba(122, 116, 255, 0.35), 2px, 2px);
+
+    &:hover {
+      background: rgba(122, 128, 148, 0.1);
+      color: #5c647c;
+    }
+
+    &.is-visible {
+      .ui-field__icon {
+        &--show {
+          display: none;
+        }
+
+        &--hide {
+          display: block;
+        }
+      }
+    }
+  }
+
+  &__icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 18px;
+    height: 18px;
+    transform: translate(-50%, -50%);
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    &--hide {
+      display: none;
+    }
+  }
+}
+
+.ui-input {
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: t.$radius-sm;
+  background: t.$surface-input;
+  outline: none;
+  transition: 0.2s ease;
+
+  &--with-prefix {
+    padding-left: 52px;
+  }
+
+  &--with-toggle {
+    padding-right: 52px;
+  }
+
+  &:focus {
+    border-color: #7a74ff;
+    box-shadow: 0 0 0 3px rgba(122, 116, 255, 0.12);
+  }
+
+  &--error {
+    border-color: t.$color-danger;
+    box-shadow: 0 0 0 3px rgba(255, 95, 86, 0.12);
+  }
+
+  &--success {
+    border-color: t.$color-success;
+    box-shadow: 0 0 0 3px rgba(52, 199, 89, 0.12);
+  }
+}

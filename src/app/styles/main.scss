@@ -1,0 +1,71 @@
+@use '../../shared/styles/tokens';
+@use './fonts';
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg-main: #{tokens.$color-bg-main};
+  --bg-main-image: url('/img/back.png');
+  --text-main: #{tokens.$color-text-main};
+  --text-muted: #{tokens.$color-text-muted};
+  --border: #{tokens.$color-border};
+  --primary: #{tokens.$color-primary};
+  --white: #{tokens.$color-white};
+  --shadow: #{tokens.$shadow-soft};
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: tokens.$font-family-body;
+  background-color: var(--bg-main);
+  background-image: var(--bg-main-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: var(--text-main);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  border: none;
+}
+
+#app {
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.navbar__title,
+.hero__title,
+.feature-card__title,
+.auth-card__title,
+.campaign-row__name {
+  font-family: tokens.$font-family-heading;
+}

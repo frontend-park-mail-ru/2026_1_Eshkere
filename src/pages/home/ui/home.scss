@@ -1,0 +1,154 @@
+@use '../../../shared/styles/tokens' as t;
+@use '../../../shared/styles/mixins';
+
+.hero {
+  padding-top: 12px;
+
+  &__content {
+    max-width: 780px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  &__title {
+    margin-bottom: 20px;
+    font-size: 62px;
+    line-height: 1.05;
+    font-weight: 800;
+
+    span {
+      display: block;
+      background: linear-gradient(90deg, #5855ff, #b44bff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+
+  &__description {
+    max-width: 520px;
+    margin: 0 auto 28px;
+    font-size: 24px;
+    line-height: 1.5;
+    color: #7f8599;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 52px;
+  }
+
+  &__button {
+    min-width: 240px;
+    @include mixins.pill-button(56px, 0 18px);
+    background: t.$primary-gradient;
+    color: var(--white);
+    font-weight: 600;
+    box-shadow: 0 12px 28px rgba(90, 84, 255, 0.25);
+    @include mixins.interactive-lift(-2px, 0 16px 32px rgba(90, 84, 255, 0.32));
+    @include mixins.focus-ring;
+  }
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.feature-card {
+  position: relative;
+  min-height: 395px;
+  padding: 18px 18px 0;
+  border-radius: t.$radius-lg;
+  overflow: hidden;
+  background: #ffff;
+  box-shadow: var(--shadow);
+
+  &__title {
+    position: relative;
+    z-index: 2;
+    max-width: 300px;
+    font-size: 23px;
+    line-height: 1.22;
+    font-weight: 700;
+  }
+
+  &__media {
+    position: absolute;
+    inset: 92px 0 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  &__img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+    object-position: center bottom;
+  }
+
+  &--phone {
+    .feature-card__media {
+      top: 108px;
+      left: -8px;
+      right: -8px;
+    }
+
+    .feature-card__img {
+      transform: scale(1.08) translate(-2%, 4%);
+      transform-origin: center bottom;
+    }
+  }
+
+  &--target {
+    .feature-card__media {
+      top: 78px;
+      left: -6px;
+      right: -6px;
+    }
+
+    .feature-card__img {
+      transform: scale(1.1) translate(1%, 3%);
+      transform-origin: center bottom;
+    }
+  }
+
+  &--gift {
+    .feature-card__media {
+      top: 86px;
+      left: -2px;
+      right: -2px;
+    }
+
+    .feature-card__img {
+      transform: scale(1.06) translate(1%, 3%);
+      transform-origin: center bottom;
+    }
+  }
+}
+
+@include mixins.media-max(t.$bp-xl) {
+  .features {
+    grid-template-columns: 1fr;
+    max-width: 640px;
+  }
+
+  .feature-card {
+    min-height: 420px;
+  }
+}
+
+@include mixins.media-max(t.$bp-sm) {
+  .feature-card {
+    min-height: 360px;
+
+    &__title {
+      font-size: 18px;
+    }
+  }
+}

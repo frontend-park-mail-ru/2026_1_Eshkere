@@ -1,0 +1,74 @@
+import { request } from 'shared/lib/request.js';
+
+class AuthState {
+  constructor() {
+    this.AUTH_KEY = 'ads_auth';
+    this.confirmedSession = false;
+  }
+
+  // public API
+  getCurrentUser() {
+    return this.#readStoredUser();
+  }
+  isAuthenticated() {
+    return this.confirmedSession;
+  }
+  setAuthenticatedUser(user) {
+    this.#writeStoredUser(user);
+    this.confirmedSession = true;
+  }
+  clearAuthState() {
+    this.#clearStoredAuth();
+    this.confirmedSession = false;
+  }
+
+  async hasActiveSession() {
+    if (!this.#hasStoredAuth()) {
+      this.confirmedSession = false;
+      return false;
+    }
+
+    try {
+      await request('/ads', { method: 'GET' });
+      this.confirmedSession = true;
+      return true;
+    } catch (error) {
+      const message = String(error?.message || '').toLowerCase();
+
+      if (message.includes('unauthorized') || message.includes('не авториз')) {
+        this.clearAuthState();
+        return false;
+      }
+
+      this.confirmedSession = this.#hasStoredAuth();
+      return this.confirmedSession;
+    }
+  }
+
+  // private
+  #readStoredUser() {
+    const raw = localStorage.getItem(this.AUTH_KEY);
+    if (!raw) {
+      return null;
+    }
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return null;
+    }
+  }
+
+  #writeStoredUser(user) {
+    localStorage.setItem(this.AUTH_KEY, JSON.stringify(user));
+  }
+
+  #hasStoredAuth() {
+    return Boolean(this.#readStoredUser());
+  }
+
+  #clearStoredAuth() {
+    localStorage.removeItem(this.AUTH_KEY);
+  }
+}
+
+export const authState = new AuthState();

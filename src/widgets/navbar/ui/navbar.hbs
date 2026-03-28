@@ -1,0 +1,98 @@
+<header class="navbar">
+  <div class="navbar__left">
+    <a href="#/" class="navbar__brand">
+      <img
+        src="/img/logo.png"
+        alt="Логотип ЭшкеРеклама"
+        class="navbar__logo"
+      />
+
+      <div class="navbar__brand-text">
+        <span class="navbar__title">ЭшкеРеклама</span>
+        <span class="navbar__subtitle">by Эшкере.</span>
+      </div>
+    </a>
+
+    <nav class="navbar__nav">
+      <a href="#/" class="navbar__link">Акции</a>
+      <a href="#/" class="navbar__link">Возможности</a>
+      <a href="#/" class="navbar__link">Услуги</a>
+      <a href="#/" class="navbar__link">Тарифы</a>
+    </nav>
+  </div>
+
+  <div class="navbar__actions">
+    {{#if isAuthenticated}}
+      <div class="navbar__actions-user">
+        <div class="navbar__balance">{{user.balance}} ₽</div>
+        <button class="navbar__actions-user-icon" type="button">
+          <img src="/icons/wallet.svg" alt="" />
+        </button>
+        <button class="navbar__actions-user-icon navbar__actions-user-icon--notification" type="button">
+          <img src="/icons/notification.svg" alt="" />
+        </button>
+        <img class="navbar__avatar" src="{{user.avatar}}" alt="{{user.name}}" />
+        <button
+          class="navbar__profile-toggle"
+          type="button"
+          id="navbar-profile-toggle"
+          aria-expanded="false"
+          aria-controls="navbar-profile-menu"
+        >
+          <img src="/icons/chevron-down.svg" alt="" />
+        </button>
+
+        <div class="navbar__profile-menu" id="navbar-profile-menu" hidden>
+          <button class="navbar__profile-menu-head" type="button">
+            <img class="navbar__profile-menu-avatar" src="{{user.avatar}}" alt="{{user.name}}" />
+            <span class="navbar__profile-menu-name">{{user.name}}</span>
+            <span class="navbar__profile-menu-arrow">›</span>
+          </button>
+          <button class="navbar__profile-menu-logout" type="button" id="navbar-logout-button">
+            Выйти
+          </button>
+        </div>
+
+        <div class="navbar__logout-modal" id="navbar-logout-modal" hidden>
+          <div class="navbar__logout-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="navbar-logout-modal-title">
+            <h3 class="navbar__logout-modal-title" id="navbar-logout-modal-title">
+              Вы уверены, что вы хотите выйти?
+            </h3>
+            <img
+              class="navbar__logout-modal-image"
+              src="/img/Bored.png"
+              alt=""
+            />
+            <div class="navbar__logout-modal-actions">
+              <button type="button" class="navbar__logout-modal-button navbar__logout-modal-button--yes" id="navbar-logout-confirm">
+                Да
+              </button>
+              <button type="button" class="navbar__logout-modal-button navbar__logout-modal-button--no" id="navbar-logout-cancel">
+                Нет
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {{!-- <div class="navbar__avata">
+          <img src="{{user.avatar}}" alt="{{user.name}}" />
+        </div> --}}
+      </div>
+
+    {{else}}
+      <a
+        href="#/login"
+        class="navbar__button navbar__button--ghost {{#if isLogin}}is-active{{/if}}"
+      >
+        Вход
+      </a>
+
+      <a
+        href="#/register"
+        class="navbar__button navbar__button--primary {{#if isRegister}}is-active{{/if}}"
+      >
+        Регистрация
+      </a>
+    {{/if}}
+  </div>
+</header>
