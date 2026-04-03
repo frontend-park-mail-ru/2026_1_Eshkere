@@ -7,7 +7,7 @@ module.exports = (env, argv = {}) => {
 
   return {
     mode: isProduction ? 'production' : 'development',
-    entry: path.resolve(__dirname, 'src/index.js'),
+    entry: path.resolve(__dirname, 'src/index.ts'),
     output: {
       path: path.resolve(__dirname, 'dist'),
       filename: isProduction ? 'js/[name].[contenthash:8].js' : 'js/[name].js',
@@ -19,7 +19,7 @@ module.exports = (env, argv = {}) => {
     module: {
       rules: [
         {
-          test: /\.js$/i,
+          test: /\.(js|ts)$/i,
           exclude: /node_modules/,
           use: 'babel-loader',
         },
@@ -77,7 +77,7 @@ module.exports = (env, argv = {}) => {
       modules: [
         path.resolve(__dirname, 'src'),
       ],
-      extensions: ['.js', '.scss', '.css'],
+      extensions: ['.ts','.js', '.scss', '.css'],
     },
   };
 };

@@ -1,6 +1,8 @@
 const {FlatCompat} = require('@eslint/eslintrc');
 const eslintConfigPrettier = require('eslint-config-prettier/flat');
 const globals = require('globals');
+const tsPlugin = require('@typescript-eslint/eslint-plugin');
+const tsParser = require('@typescript-eslint/parser');
 
 const compat = new FlatCompat({
   baseDirectory: __dirname,
@@ -14,18 +16,25 @@ module.exports = [
       'dist/**',
     ],
   },
-  ...compat.extends('google'),
+  ...compat.extends('google').map((config) => ({
+    ...config,
+    files: config.files ?? ['**/*.js'],
+  })),
   {
-    files: [
-      'assets/js/**/*.js',
-      'components/**/*.js',
-      'layouts/**/*.js',
-      'pages/**/*.js',
-    ],
+    files: ['src/**/*.ts'],
     languageOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'module',
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+      },
       globals: globals.browser,
+    },
+    plugins: {
+      '@typescript-eslint': tsPlugin,
+    },
+    rules: {
+      ...tsPlugin.configs.recommended.rules,
     },
   },
   {
