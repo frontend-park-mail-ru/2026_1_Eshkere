@@ -16,7 +16,7 @@ export type RequestOptions = Omit<RequestInit, 'body'> & { body?: unknown };
 export async function request<T = unknown>(
   path: string,
   options: RequestOptions = {},
-): Promise<T> {
+): Promise<{ data: T }> {
   const { body, ...rest } = options;
 
   const response = await fetch(`${API_BASE_URL}${path}`, {
@@ -35,5 +35,5 @@ export async function request<T = unknown>(
     throw new Error(data?.error || data?.message || 'Ошибка запроса');
   }
 
-  return data;
+  return data as { data: T };
 }

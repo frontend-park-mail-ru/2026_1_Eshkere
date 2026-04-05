@@ -14,7 +14,7 @@ export async function registerUser({ email, phone, password }: RegisterUserParam
     const normalizedPhone = phone.trim();
     const normalizedPassword = password.trim();
 
-    const registerResponse = await request<{ data: AuthUser }>(
+    const registerResponse = await request<AuthUser>(
       '/advertiser/register',
       {
         method: 'POST',
