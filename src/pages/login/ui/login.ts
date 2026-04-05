@@ -11,6 +11,7 @@ import {
   setFieldState,
 } from 'shared/validators';
 import { loginUser } from 'features/auth';
+import { navigateTo } from 'app/navigation';
 import loginPageTemplate from './login.hbs';
 
 /**
@@ -87,7 +88,7 @@ export async function renderLoginPage(): Promise<string> {
 
   const registerLinkButton = await renderButton({
     text: 'Зарегистрироваться',
-    href: '#/register',
+    href: '/register',
     variant: 'secondary',
   });
 
@@ -164,6 +165,6 @@ export function Login(): void | VoidFunction {
       return;
     }
 
-    location.hash = '#/ads';
+    navigateTo('/ads', { replace: true });
   });
 }

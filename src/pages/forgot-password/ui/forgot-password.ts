@@ -1,4 +1,5 @@
 import './forgot-password.scss';
+import 'shared/ui/modal/modal';
 import { renderTemplate } from 'shared/lib/render';
 import { renderFormField } from 'shared/ui/form-field/form-field';
 import { renderButton } from 'shared/ui/button/button';
@@ -42,7 +43,7 @@ export async function renderForgotPasswordPage(): Promise<string> {
 
   const backButton = await renderButton({
     text: 'Назад',
-    href: '#/login',
+    href: '/login',
     variant: 'secondary',
   });
 
