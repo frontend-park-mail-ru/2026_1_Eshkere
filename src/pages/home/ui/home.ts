@@ -12,7 +12,7 @@ export async function renderHomePage() {
   const authed = authState.isAuthenticated();
 
   return renderTemplate(homePageTemplate, {
-    ctaHref: authed ? '#/ads' : '#/register',
+    ctaHref: authed ? '/ads' : '/register',
     ctaText: authed ? 'Запустить рекламу' : 'Запустить рекламу',
   });
 }

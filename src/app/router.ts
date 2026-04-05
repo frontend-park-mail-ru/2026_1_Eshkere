@@ -8,6 +8,7 @@ import { renderRegisterPage, Register } from 'pages/register';
 import { renderAdsPage, Ads } from 'pages/ads';
 import { authState } from 'features/auth';
 import { Navbar } from 'widgets/navbar';
+import { getCurrentPath, navigateTo } from './navigation';
 import {
   renderLayoutShell,
   updatePublicNavbarSlot,
@@ -71,11 +72,11 @@ const routes: Record<string, RouteDefinition> = {
 };
 
 let activeCleanup: RouteCleanup | null = null;
-let renderRequestId: number = 0;
+let renderRequestId = 0;
 let currentLayoutKind: LayoutKind | null = null;
 
 /**
- * Определяет текущий hash-маршрут и рендерит нужную страницу.
+ * Определяет текущий pathname-маршрут и рендерит нужную страницу.
  *
  * @return {Promise<void>} Завершение рендера маршрута.
  */
@@ -92,7 +93,8 @@ export async function renderRoute(): Promise<void> {
   if (!app) {
     return;
   }
-  const path = location.hash.slice(1) || '/';
+
+  const path = getCurrentPath();
   const route = routes[path];
 
   if (!route) {
@@ -105,13 +107,13 @@ export async function renderRoute(): Promise<void> {
     const sessionIsActive = await authState.hasActiveSession();
 
     if (!sessionIsActive) {
-      location.hash = '#/login';
+      navigateTo('/login', { replace: true });
       return;
     }
   }
 
   if (route.guestOnly && authState.isAuthenticated()) {
-    location.hash = '#/ads';
+    navigateTo('/ads', { replace: true });
     return;
   }
 

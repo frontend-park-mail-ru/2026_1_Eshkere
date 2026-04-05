@@ -1,6 +1,7 @@
 import './navbar.scss';
 import { renderTemplate } from 'shared/lib/render';
 import { authState, logoutUser, type AuthUser } from 'features/auth';
+import { navigateTo } from 'app/navigation';
 import navbarTemplate from './navbar.hbs';
 
 let navbarLifecycleController: AbortController | null = null;
@@ -184,7 +185,7 @@ export function Navbar(): VoidFunction {
 
       try {
         await logoutUser();
-        location.hash = '#/login';
+        navigateTo('/login', { replace: true });
         closeLogoutModal();
       } finally {
         logoutConfirmButton.disabled = false;
