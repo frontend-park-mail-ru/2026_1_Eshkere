@@ -9,6 +9,7 @@
     "start": "npm run build && node server/server.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "typecheck": "tsc --noEmit",
     "format": "prettier --write \"src/**/*.{ts,js,scss,css,json}\"",
     "format:check": "prettier --check \"src/**/*.{ts,js,scss,css,json}\""
   },

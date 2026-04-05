@@ -1,6 +1,13 @@
 import { request } from 'shared/lib/request';
 
-export type AuthUser = Record<string, unknown>;
+export interface AuthUser {
+  id: number;
+  email: string;
+  phone: string;
+  name?: string;
+  balance?: number;
+  avatar?: string;
+}
 
 class AuthState {
   private readonly AUTH_KEY = 'ads_auth';
@@ -11,24 +18,26 @@ class AuthState {
     this.confirmedSession = false;
   }
 
-  // public API
-  getCurrentUser() {
-    return this.#readStoredUser();
+  public getCurrentUser(): AuthUser | null {
+    return this.readStoredUser();
   }
-  isAuthenticated() {
+
+  public isAuthenticated(): boolean {
     return this.confirmedSession;
   }
-  setAuthenticatedUser(user: AuthUser) {
-    this.#writeStoredUser(user);
+
+  public setAuthenticatedUser(user: AuthUser): void {
+    this.writeStoredUser(user);
     this.confirmedSession = true;
   }
-  clearAuthState() {
-    this.#clearStoredAuth();
+
+  public clearAuthState(): void {
+    this.clearStoredAuth();
     this.confirmedSession = false;
   }
 
-  async hasActiveSession() {
-    if (!this.#hasStoredAuth()) {
+  public async hasActiveSession(): Promise<boolean> {
+    if (!this.hasStoredAuth()) {
       this.confirmedSession = false;
       return false;
     }
@@ -45,13 +54,12 @@ class AuthState {
         return false;
       }
 
-      this.confirmedSession = this.#hasStoredAuth();
+      this.confirmedSession = this.hasStoredAuth();
       return this.confirmedSession;
     }
   }
 
-  // private
-  #readStoredUser() {
+  private readStoredUser(): AuthUser | null {
     const raw = localStorage.getItem(this.AUTH_KEY);
     if (!raw) {
       return null;
@@ -63,15 +71,15 @@ class AuthState {
     }
   }
 
-  #writeStoredUser(user: AuthUser) {
+  private writeStoredUser(user: AuthUser): void {
     localStorage.setItem(this.AUTH_KEY, JSON.stringify(user));
   }
 
-  #hasStoredAuth() {
-    return Boolean(this.#readStoredUser());
+  private hasStoredAuth(): boolean {
+    return Boolean(this.readStoredUser());
   }
 
-  #clearStoredAuth() {
+  private clearStoredAuth(): void {
     localStorage.removeItem(this.AUTH_KEY);
   }
 }

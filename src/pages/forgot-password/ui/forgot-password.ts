@@ -60,7 +60,7 @@ export async function renderForgotPasswordPage(): Promise<string> {
  *
  * @return {void}
  */
-export function ForgotPassword(): void | (() => void) {
+export function ForgotPassword(): void | VoidFunction {
   const el = document.getElementById('forgot-password-form');
   if (!(el instanceof HTMLFormElement)) {
     return;

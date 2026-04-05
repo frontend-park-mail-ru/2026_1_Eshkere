@@ -21,14 +21,14 @@ import {
  * @typedef {Object} RouteDefinition
  * @property {() => Promise<string>} render HTML только контента страницы.
  * @property {LayoutKind} layout
- * @property {() => (void|(() => void))} [init]
+ * @property {function(): (void|VoidFunction)} [init]
  * @property {boolean} [guestOnly]
  * @property {boolean} [protected]
  */
 
 /** @type {Record<string, RouteDefinition>} */
 
-type RouteCleanup = () => void;
+type RouteCleanup = VoidFunction;
 type RouteInit = () => void | RouteCleanup;
 
 interface RouteDefinition {

@@ -15,6 +15,7 @@
     "paths": {
       "app/*": ["./src/app/*"],
       "features/*": ["./src/features/*"],
+      "entities/*": ["./src/entities/*"],
       "pages/*": ["./src/pages/*"],
       "widgets/*": ["./src/widgets/*"],
       "shared/*": ["./src/shared/*"]

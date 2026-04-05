@@ -1,6 +1,6 @@
 import './navbar.scss';
 import { renderTemplate } from 'shared/lib/render';
-import { authState, logoutUser } from 'features/auth';
+import { authState, logoutUser, type AuthUser } from 'features/auth';
 import navbarTemplate from './navbar.hbs';
 
 let navbarLifecycleController: AbortController | null = null;
@@ -13,7 +13,12 @@ let navbarLifecycleController: AbortController | null = null;
  */
 export async function renderNavbar(pathname = '/'): Promise<string> {
   const isAuth = authState.isAuthenticated();
-  const currentUser = authState.getCurrentUser() || {};
+  const currentUser: AuthUser =
+  authState.getCurrentUser() ?? {
+    id: 0,
+    email: '',
+    phone: '',
+  };
   const user = {
     ...currentUser,
     name: currentUser.email || currentUser.name || 'Профиль',
@@ -34,7 +39,7 @@ export async function renderNavbar(pathname = '/'): Promise<string> {
  *
  * @return {void}
  */
-export function Navbar(): () => void {
+export function Navbar(): VoidFunction {
   if (navbarLifecycleController) {
     navbarLifecycleController.abort();
   }

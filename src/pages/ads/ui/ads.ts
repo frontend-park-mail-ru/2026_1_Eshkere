@@ -578,7 +578,7 @@ export async function renderAdsPage(): Promise<string> {
  *
  * @return {(function(): void)|undefined} Функция очистки обработчиков.
  */
-export function Ads(): void | (() => void) {
+export function Ads(): void | VoidFunction {
   if (adsPageLifecycleController) {
     adsPageLifecycleController.abort();
   }

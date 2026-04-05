@@ -104,7 +104,7 @@ export async function renderLoginPage(): Promise<string> {
  *
  * @return {void}
  */
-export function Login(): void | (() => void) {
+export function Login(): void | VoidFunction {
   const el = document.getElementById('login-form');
   if (!(el instanceof HTMLFormElement)) {
     return;

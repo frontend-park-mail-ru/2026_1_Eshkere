@@ -65,5 +65,5 @@ export function normalizeAuthErrorMessage(message: unknown): string {
     return 'Проверьте пароль';
   }
 
-  return typeof message === 'string' ? message : String(message);
+  return String(message);
 }

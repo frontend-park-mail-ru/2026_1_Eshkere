@@ -3,13 +3,14 @@ import { normalizePhone } from 'shared/validators';
 import { normalizeAuthErrorMessage } from '../lib/normalize-auth-error';
 import { authState, type AuthUser } from '../model/storage';
 
-export async function loginUser({
-  identifier,
-  password,
-}: {
+
+export interface LoginUserParams {
   identifier: string;
   password: string;
-}) {
+}
+
+
+export async function loginUser({ identifier, password }: LoginUserParams) {
   try {
     const normalizedIdentifier =
       normalizePhone(identifier) || identifier.trim();
