@@ -1,0 +1,671 @@
+<section class="balance-page">
+  <div class="balance-page__hero">
+    <div class="balance-page__hero-copy">
+      <h1 class="balance-page__title">Баланс и платежи</h1>
+      <p class="balance-page__subtitle">
+        Страница управления средствами аккаунта: быстрое пополнение, история транзакций,
+        автоплатеж и контроль расходов по рекламным кампаниям.
+      </p>
+    </div>
+
+    <button class="balance-page__hero-action" type="button" data-balance-open-topup>
+      Пополнить баланс
+    </button>
+
+    <div class="balance-page__stats">
+      <article class="balance-stat">
+        <span class="balance-stat__label">Текущий баланс</span>
+        <strong class="balance-stat__value" data-balance-stat="balance">48 200 ₽</strong>
+      </article>
+      <article class="balance-stat">
+        <span class="balance-stat__label">Резерв на модерацию</span>
+        <strong class="balance-stat__value" data-balance-stat="reserve">6 000 ₽</strong>
+      </article>
+      <article class="balance-stat">
+        <span class="balance-stat__label">Расход за месяц</span>
+        <strong class="balance-stat__value" data-balance-stat="monthlySpend">124 900 ₽</strong>
+      </article>
+      <article class="balance-stat">
+        <span class="balance-stat__label">Автоплатеж</span>
+        <strong class="balance-stat__value" data-balance-stat="autopay">Вкл</strong>
+      </article>
+    </div>
+  </div>
+
+  <div class="balance-page__grid">
+    <section class="balance-card balance-card--topup">
+      <div class="balance-card__head">
+        <h2 class="balance-card__title">Быстрое пополнение</h2>
+        <p class="balance-card__subtitle">Популярные суммы и настройки оплаты</p>
+      </div>
+
+      <div class="balance-page__amounts">
+        <button class="balance-amount" type="button" data-balance-amount="5000">
+          <span class="balance-amount__value">5 000 ₽</span>
+          <span class="balance-amount__label">Минимально</span>
+        </button>
+        <button class="balance-amount" type="button" data-balance-amount="10000">
+          <span class="balance-amount__value">10 000 ₽</span>
+          <span class="balance-amount__label">Оптимально</span>
+        </button>
+        <button class="balance-amount" type="button" data-balance-amount="25000">
+          <span class="balance-amount__value">25 000 ₽</span>
+          <span class="balance-amount__label">Для роста</span>
+        </button>
+        <button class="balance-amount balance-amount--custom" type="button" data-balance-open-topup-custom>
+          <span class="balance-amount__value">Своя сумма</span>
+          <span class="balance-amount__label">Ввести вручную</span>
+        </button>
+      </div>
+
+      <div class="balance-stack">
+        <button
+          class="balance-stack__item balance-stack__item--button"
+          type="button"
+          data-balance-open-payment
+        >
+          <div class="balance-stack__main">
+            <strong class="balance-stack__title">Основной способ оплаты</strong>
+            <p class="balance-stack__text" data-balance-payment-method>Банковская карта •••• 4481</p>
+          </div>
+          <span class="balance-pill balance-pill--info">Изменить</span>
+        </button>
+
+        <button
+          class="balance-stack__item balance-stack__item--button"
+          type="button"
+          data-balance-open-autopay
+        >
+          <div class="balance-stack__main">
+            <strong class="balance-stack__title">Автопополнение</strong>
+            <p class="balance-stack__text" data-balance-autopay-note>
+              Когда баланс опускается ниже 5 000 ₽
+            </p>
+          </div>
+          <span class="balance-pill balance-pill--warning" data-balance-autopay-status>Настроено</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="balance-card">
+      <div class="balance-card__head">
+        <h2 class="balance-card__title">Финансовая сводка</h2>
+        <p class="balance-card__subtitle">Ключевые параметры счета</p>
+      </div>
+
+      <div class="balance-summary">
+        <div class="balance-summary__row">
+          <span class="balance-summary__label">Средний дневной расход</span>
+          <strong class="balance-summary__value" data-balance-summary="dailySpend">4 160 ₽</strong>
+        </div>
+        <div class="balance-summary__row">
+          <span class="balance-summary__label">Хватит средств примерно на</span>
+          <strong class="balance-summary__value" data-balance-summary="daysLeft">11 дней</strong>
+        </div>
+        <div class="balance-summary__row">
+          <span class="balance-summary__label">Лимит автоплатежа</span>
+          <strong class="balance-summary__value" data-balance-summary="autopayLimit">30 000 ₽</strong>
+        </div>
+        <div class="balance-summary__row">
+          <span class="balance-summary__label">НДС и документы</span>
+          <strong class="balance-summary__value" data-balance-summary="vat">Включено</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="balance-card balance-card--history">
+      <div class="balance-card__head balance-card__head--with-action">
+        <div>
+          <h2 class="balance-card__title">История операций</h2>
+          <p class="balance-card__subtitle">Пополнения, списания и возвраты</p>
+        </div>
+
+        <button class="balance-card__action" type="button" data-balance-open-history>
+          Открыть полный лог
+        </button>
+      </div>
+
+      <div class="balance-table">
+        <div class="balance-table__head">
+          <span>Операция</span>
+          <span>Дата</span>
+          <span>Сумма</span>
+          <span>Статус</span>
+        </div>
+
+        <div class="balance-table__body" data-balance-operations-body></div>
+      </div>
+    </section>
+
+    <section class="balance-card">
+      <div class="balance-card__head">
+        <h2 class="balance-card__title">Рекомендации</h2>
+        <p class="balance-card__subtitle">Что стоит сделать сейчас</p>
+      </div>
+
+      <div class="balance-actions" data-balance-recommendations></div>
+    </section>
+  </div>
+
+  <div class="balance-toast" data-balance-toast hidden>
+    <div class="balance-toast__dot" aria-hidden="true"></div>
+    <div class="balance-toast__copy">
+      <strong class="balance-toast__title" data-balance-toast-title></strong>
+      <p class="balance-toast__text" data-balance-toast-text></p>
+    </div>
+    <button
+      class="balance-toast__close"
+      type="button"
+      aria-label="Закрыть уведомление"
+      data-balance-toast-close
+    >
+      ×
+    </button>
+  </div>
+
+  <div class="modal balance-modal" id="balance-topup-modal" aria-hidden="true">
+    <div class="modal__backdrop" data-modal-close></div>
+    <div
+      class="modal__content balance-modal__content"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="balance-topup-title"
+    >
+      <div class="modal__inner balance-modal__inner">
+        <div class="balance-modal__head">
+          <h2 class="balance-modal__title" id="balance-topup-title">Пополнение баланса</h2>
+          <p class="balance-modal__subtitle">
+            Выберите сумму, проверьте итоговый баланс и подтвердите пополнение основным способом оплаты.
+          </p>
+        </div>
+
+        <form class="balance-modal__form" id="balance-topup-form" novalidate>
+          <div class="balance-modal__current">
+            <div class="balance-modal__current-row">
+              <div>
+                <span class="balance-modal__current-label">Текущий баланс</span>
+                <strong class="balance-modal__current-value" data-balance-current-modal>48 200 ₽</strong>
+              </div>
+              <div class="balance-modal__current-meta">
+                <span class="balance-modal__current-label">Способ оплаты</span>
+                <p class="balance-modal__current-text" data-balance-payment-method>Банковская карта •••• 4481</p>
+              </div>
+            </div>
+
+            <div class="balance-modal__summary">
+              <div class="balance-modal__summary-item">
+                <span class="balance-modal__summary-label">Сумма пополнения</span>
+                <strong class="balance-modal__summary-value" data-balance-topup-amount>10 000 ₽</strong>
+              </div>
+              <div class="balance-modal__summary-item">
+                <span class="balance-modal__summary-label">После пополнения</span>
+                <strong class="balance-modal__summary-value" data-balance-next-balance>58 200 ₽</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="balance-modal__quick">
+            <button class="balance-modal__quick-button" type="button" data-balance-modal-amount="5000">
+              5 000 ₽
+            </button>
+            <button class="balance-modal__quick-button" type="button" data-balance-modal-amount="10000">
+              10 000 ₽
+            </button>
+            <button class="balance-modal__quick-button" type="button" data-balance-modal-amount="25000">
+              25 000 ₽
+            </button>
+            <button class="balance-modal__quick-button balance-modal__quick-button--custom" type="button" data-balance-modal-custom>
+              Своя сумма
+            </button>
+          </div>
+
+          <label class="balance-modal__field">
+            <span class="balance-modal__label">Сумма пополнения</span>
+            <div class="balance-modal__amount-input">
+              <input
+                class="balance-modal__input"
+                type="number"
+                min="1000"
+                step="1000"
+                name="amount"
+                value="10000"
+                placeholder="Введите сумму"
+              />
+              <span class="balance-modal__suffix">₽</span>
+            </div>
+            <span class="balance-modal__hint">Можно ввести свою сумму, если стандартные варианты не подходят.</span>
+            <span class="balance-modal__error" data-balance-topup-error></span>
+          </label>
+
+          <div class="balance-modal__actions">
+            <button
+              class="balance-modal__button balance-modal__button--secondary"
+              type="button"
+              data-modal-close
+            >
+              Отмена
+            </button>
+            <button class="balance-modal__button balance-modal__button--primary" type="submit">
+              Пополнить
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal balance-modal" id="balance-payment-modal" aria-hidden="true">
+    <div class="modal__backdrop" data-modal-close></div>
+    <div
+      class="modal__content balance-modal__content"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="balance-payment-title"
+    >
+      <div class="modal__inner balance-modal__inner">
+        <div class="balance-modal__head">
+          <div class="balance-modal__head-row">
+            <div>
+              <h2 class="balance-modal__title" id="balance-payment-title">Способ оплаты</h2>
+              <p class="balance-modal__subtitle">
+                Выберите основной способ списания для ручных пополнений и автоплатежа.
+              </p>
+            </div>
+
+            <button
+              class="balance-modal__inline-action"
+              type="button"
+              data-balance-open-payment-add
+            >
+              Добавить способ оплаты
+            </button>
+          </div>
+        </div>
+
+        <form class="balance-modal__form" id="balance-payment-form" novalidate>
+          <div class="balance-modal__methods" data-balance-payment-methods></div>
+
+          <span class="balance-modal__error" data-balance-payment-error></span>
+
+          <div class="balance-modal__actions">
+            <button
+              class="balance-modal__button balance-modal__button--secondary"
+              type="button"
+              data-modal-close
+            >
+              Отмена
+            </button>
+            <button class="balance-modal__button balance-modal__button--primary" type="submit">
+              Сохранить
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal balance-modal" id="balance-payment-add-modal" aria-hidden="true">
+    <div class="modal__backdrop" data-modal-close></div>
+    <div
+      class="modal__content balance-modal__content"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="balance-payment-add-title"
+    >
+      <div class="modal__inner balance-modal__inner">
+        <div class="balance-modal__head">
+          <h2 class="balance-modal__title" id="balance-payment-add-title">Добавить способ оплаты</h2>
+          <p class="balance-modal__subtitle">
+            Заполните данные в зависимости от типа оплаты: для личной карты нужны карточные реквизиты, для безналичного счета — реквизиты компании.
+          </p>
+        </div>
+
+        <form class="balance-modal__form" id="balance-payment-add-form" novalidate>
+          <label class="balance-modal__field">
+            <span class="balance-modal__label">Тип способа</span>
+            <div class="balance-modal__select" data-balance-select="kind">
+              <input type="hidden" name="kind" value="card" data-balance-select-input="kind" />
+              <button
+                class="balance-modal__select-trigger"
+                type="button"
+                data-balance-select-trigger
+                aria-expanded="false"
+              >
+                <span class="balance-modal__select-value" data-balance-select-value="kind">Личная банковская карта</span>
+                <span class="balance-modal__select-icon" aria-hidden="true"></span>
+              </button>
+              <div class="balance-modal__select-menu" data-balance-select-menu hidden>
+                <button
+                  class="balance-modal__select-option balance-modal__select-option--active"
+                  type="button"
+                  data-balance-select-option
+                  data-value="card"
+                  data-label="Личная банковская карта"
+                >
+                  <span class="balance-modal__select-option-label">Личная банковская карта</span>
+                  <span class="balance-modal__select-option-meta">Для физлица</span>
+                </button>
+                <button
+                  class="balance-modal__select-option"
+                  type="button"
+                  data-balance-select-option
+                  data-value="corporate"
+                  data-label="Корпоративная карта"
+                >
+                  <span class="balance-modal__select-option-label">Корпоративная карта</span>
+                  <span class="balance-modal__select-option-meta">Для команды</span>
+                </button>
+                <button
+                  class="balance-modal__select-option"
+                  type="button"
+                  data-balance-select-option
+                  data-value="invoice"
+                  data-label="Безналичный счет компании"
+                >
+                  <span class="balance-modal__select-option-label">Безналичный счет компании</span>
+                  <span class="balance-modal__select-option-meta">По реквизитам</span>
+                </button>
+              </div>
+            </div>
+          </label>
+
+          <div class="balance-modal__group" data-balance-payment-card-fields>
+            <label class="balance-modal__field">
+              <span class="balance-modal__label">Номер карты</span>
+              <input
+                class="balance-modal__input"
+                type="text"
+                name="cardNumber"
+                inputmode="numeric"
+                placeholder="0000 0000 0000 0000"
+              />
+            </label>
+
+            <div class="balance-modal__grid balance-modal__grid--tight">
+              <label class="balance-modal__field">
+                <span class="balance-modal__label">Действует до</span>
+                <input
+                  class="balance-modal__input"
+                  type="text"
+                  name="expiry"
+                  inputmode="numeric"
+                  maxlength="5"
+                  placeholder="MM/YY"
+                />
+              </label>
+
+              <label class="balance-modal__field">
+                <span class="balance-modal__label">CVC</span>
+                <input
+                  class="balance-modal__input"
+                  type="text"
+                  name="cvc"
+                  inputmode="numeric"
+                  maxlength="3"
+                  placeholder="123"
+                />
+              </label>
+            </div>
+
+            <label class="balance-modal__field" data-balance-payment-holder-field>
+              <span class="balance-modal__label">Имя держателя</span>
+              <input
+                class="balance-modal__input"
+                type="text"
+                name="holderName"
+                placeholder="IVAN IVANOV"
+              />
+            </label>
+
+            <span class="balance-modal__hint">
+              Для личной карты нужен полный набор карточных данных. Для корпоративной карты имя держателя можно не указывать.
+            </span>
+          </div>
+
+          <div class="balance-modal__group" data-balance-payment-invoice-fields hidden>
+            <label class="balance-modal__field">
+              <span class="balance-modal__label">Название организации</span>
+              <input
+                class="balance-modal__input"
+                type="text"
+                name="companyName"
+                placeholder="ООО «Эшкере»"
+              />
+            </label>
+
+            <div class="balance-modal__grid balance-modal__grid--tight">
+              <label class="balance-modal__field">
+                <span class="balance-modal__label">ИНН</span>
+                <input
+                  class="balance-modal__input"
+                  type="text"
+                  name="inn"
+                  inputmode="numeric"
+                  maxlength="12"
+                  placeholder="7701234567"
+                />
+              </label>
+
+              <label class="balance-modal__field">
+                <span class="balance-modal__label">БИК</span>
+                <input
+                  class="balance-modal__input"
+                  type="text"
+                  name="bik"
+                  inputmode="numeric"
+                  maxlength="9"
+                  placeholder="044525225"
+                />
+              </label>
+            </div>
+
+            <label class="balance-modal__field">
+              <span class="balance-modal__label">Банк</span>
+              <input
+                class="balance-modal__input"
+                type="text"
+                name="bankName"
+                placeholder="Например, Т-Банк"
+              />
+            </label>
+
+            <label class="balance-modal__field">
+              <span class="balance-modal__label">Расчетный счет</span>
+              <input
+                class="balance-modal__input"
+                type="text"
+                name="accountNumber"
+                inputmode="numeric"
+                maxlength="20"
+                placeholder="40702810..."
+              />
+            </label>
+
+            <span class="balance-modal__hint">
+              Для оплаты по счету нужны реквизиты компании. Номер карты, срок действия и CVC в этом режиме не запрашиваются.
+            </span>
+          </div>
+
+          <label class="balance-modal__field">
+            <span class="balance-modal__label">Подпись в кабинете</span>
+            <input
+              class="balance-modal__input"
+              type="text"
+              name="alias"
+              placeholder="Например, Основная карта маркетинга"
+            />
+          </label>
+
+          <span class="balance-modal__error" data-balance-payment-add-error></span>
+
+          <div class="balance-modal__actions">
+            <button
+              class="balance-modal__button balance-modal__button--secondary"
+              type="button"
+              data-modal-close
+            >
+              Отмена
+            </button>
+            <button class="balance-modal__button balance-modal__button--primary" type="submit">
+              Добавить
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal balance-modal" id="balance-history-modal" aria-hidden="true">
+    <div class="modal__backdrop" data-modal-close></div>
+    <div
+      class="modal__content balance-modal__content balance-modal__content--wide balance-modal__content--history"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="balance-history-title"
+    >
+      <div class="modal__inner balance-modal__inner balance-modal__inner--history">
+        <div class="balance-modal__head">
+          <h2 class="balance-modal__title" id="balance-history-title">Полный лог операций</h2>
+          <p class="balance-modal__subtitle">
+            Подробная история пополнений, списаний и возвратов по рекламному кабинету.
+          </p>
+        </div>
+
+        <div class="balance-log">
+          <div class="balance-log__summary">
+            <div class="balance-log__summary-item">
+              <span class="balance-log__summary-label">Всего операций</span>
+              <strong class="balance-log__summary-value" data-balance-history-count>0</strong>
+            </div>
+            <div class="balance-log__summary-item">
+              <span class="balance-log__summary-label">Последняя активность</span>
+              <strong class="balance-log__summary-value" data-balance-history-last-date>—</strong>
+            </div>
+          </div>
+
+          <div class="balance-log__controls">
+            <div class="balance-log__filters">
+              <button class="balance-log__filter is-active" type="button" data-balance-history-filter="all">
+                Все
+              </button>
+              <button class="balance-log__filter" type="button" data-balance-history-filter="topup">
+                Пополнения
+              </button>
+              <button class="balance-log__filter" type="button" data-balance-history-filter="charge">
+                Списания
+              </button>
+              <button class="balance-log__filter" type="button" data-balance-history-filter="refund">
+                Возвраты
+              </button>
+            </div>
+
+            <div class="balance-log__toolbar-actions">
+              <label class="balance-log__search">
+                <span class="balance-log__search-label">Поиск</span>
+                <input
+                  class="balance-log__search-input"
+                  type="search"
+                  placeholder="Операция, комментарий или статус"
+                  data-balance-history-search
+                />
+              </label>
+
+              <button class="balance-log__export" type="button" data-balance-history-export>
+                Экспорт CSV
+              </button>
+            </div>
+          </div>
+
+          <div class="balance-log__list" data-balance-history-body></div>
+        </div>
+
+        <div class="balance-modal__actions">
+          <button
+            class="balance-modal__button balance-modal__button--secondary"
+            type="button"
+            data-modal-close
+          >
+            Закрыть
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal balance-modal" id="balance-autopay-modal" aria-hidden="true">
+    <div class="modal__backdrop" data-modal-close></div>
+    <div
+      class="modal__content balance-modal__content"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="balance-autopay-title"
+    >
+      <div class="modal__inner balance-modal__inner">
+        <div class="balance-modal__head">
+          <h2 class="balance-modal__title" id="balance-autopay-title">Настройки автоплатежа</h2>
+          <p class="balance-modal__subtitle">
+            Управляйте порогом пополнения и максимальной суммой автоплатежа.
+          </p>
+        </div>
+
+        <form class="balance-modal__form" id="balance-autopay-form" novalidate>
+          <label class="balance-modal__toggle">
+            <input type="checkbox" name="enabled" checked />
+            <span class="balance-modal__toggle-ui"></span>
+            <span class="balance-modal__toggle-copy">
+              <strong>Включить автоплатеж</strong>
+              <span>Баланс пополнится автоматически, если опустится ниже порога.</span>
+            </span>
+          </label>
+
+          <div class="balance-modal__grid">
+            <label class="balance-modal__field">
+              <span class="balance-modal__label">Порог пополнения</span>
+              <div class="balance-modal__amount-input">
+                <input
+                  class="balance-modal__input"
+                  type="number"
+                  min="1000"
+                  step="1000"
+                  name="threshold"
+                  value="5000"
+                />
+                <span class="balance-modal__suffix">₽</span>
+              </div>
+            </label>
+
+            <label class="balance-modal__field">
+              <span class="balance-modal__label">Лимит автоплатежа</span>
+              <div class="balance-modal__amount-input">
+                <input
+                  class="balance-modal__input"
+                  type="number"
+                  min="1000"
+                  step="1000"
+                  name="limit"
+                  value="30000"
+                />
+                <span class="balance-modal__suffix">₽</span>
+              </div>
+            </label>
+          </div>
+
+          <span class="balance-modal__error" data-balance-autopay-error></span>
+
+          <div class="balance-modal__actions">
+            <button
+              class="balance-modal__button balance-modal__button--secondary"
+              type="button"
+              data-modal-close
+            >
+              Отмена
+            </button>
+            <button class="balance-modal__button balance-modal__button--primary" type="submit">
+              Сохранить
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>

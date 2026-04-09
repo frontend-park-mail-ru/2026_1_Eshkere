@@ -2,8 +2,10 @@
   <div class="dashboard-layout__container">
      <div id="app-navbar-slot">{{{navbar}}}</div>
 
-    <div class="dashboard-layout__body">
-      {{{sidebar}}}
+    <div class="dashboard-layout__body{{#unless showSidebar}} dashboard-layout__body--full{{/unless}}">
+      <div class="dashboard-layout__sidebar" id="app-sidebar-slot" {{#unless showSidebar}}hidden{{/unless}}>
+        {{{sidebar}}}
+      </div>
 
       <main class="dashboard-layout__content" id="app-layout-outlet">
         {{{content}}}

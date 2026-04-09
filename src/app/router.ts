@@ -6,11 +6,16 @@ import {
 } from 'pages/forgot-password';
 import { renderRegisterPage, Register } from 'pages/register';
 import { renderAdsPage, Ads } from 'pages/ads';
+import { renderBalancePage, Balance } from 'pages/balance';
+import { renderCampaignCreatePage, CampaignCreate } from 'pages/campaign-create';
+import { renderCampaignEditPage, CampaignEdit } from 'pages/campaign-edit';
+import { renderProfilePage, Profile } from 'pages/profile';
 import { authState } from 'features/auth';
 import { Navbar } from 'widgets/navbar';
 import { getCurrentPath, navigateTo } from './navigation';
 import {
   renderLayoutShell,
+  updateDashboardLayoutSlots,
   updatePublicNavbarSlot,
   type LayoutKind,
 } from './render-with-layout';
@@ -67,6 +72,30 @@ const routes: Record<string, RouteDefinition> = {
     render: renderAdsPage,
     layout: 'dashboard',
     init: Ads,
+    protected: true,
+  },
+  '/ads/create': {
+    render: renderCampaignCreatePage,
+    layout: 'dashboard',
+    init: CampaignCreate,
+    protected: true,
+  },
+  '/ads/edit': {
+    render: renderCampaignEditPage,
+    layout: 'dashboard',
+    init: CampaignEdit,
+    protected: true,
+  },
+  '/balance': {
+    render: renderBalancePage,
+    layout: 'dashboard',
+    init: Balance,
+    protected: true,
+  },
+  '/profile': {
+    render: renderProfilePage,
+    layout: 'dashboard',
+    init: Profile,
     protected: true,
   },
 };
@@ -129,6 +158,8 @@ export async function renderRoute(): Promise<void> {
       currentLayoutKind = route.layout;
     } else if (route.layout === 'public') {
       await updatePublicNavbarSlot(path);
+    } else if (route.layout === 'dashboard') {
+      await updateDashboardLayoutSlots(path);
     }
 
     if (currentRequestId !== renderRequestId) {

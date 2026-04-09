@@ -2,29 +2,29 @@
 @use '../../../shared/styles/mixins';
 
 .sidebar {
-  min-height: 620px;
+  min-height: calc(100vh - 112px);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 18px;
+  padding: 20px 16px;
   @include mixins.glass-card;
 
   &__section,
   &__footer {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
   }
 
   &__footer {
-    margin-top: 48px;
-    padding-top: 12px;
+    margin-top: 24px;
+    padding-top: 16px;
     border-top: 1px solid rgba(0, 0, 0, 0.08);
   }
 
   &__link {
-    min-height: 44px;
-    padding: 0 14px;
+    min-height: 40px;
+    padding: 0 12px;
     border-radius: t.$radius-md;
     display: flex;
     align-items: center;

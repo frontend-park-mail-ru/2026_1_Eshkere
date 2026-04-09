@@ -17,6 +17,7 @@ import {
 import { formatDate, formatPrice } from 'shared/lib/format';
 import { MONTHS_RU_FULL } from 'shared/lib/constants/ru-months';
 import { getAds } from 'features/ads';
+import { navigateTo } from 'app/navigation';
 import type { AdItem } from 'features/ads/api/get-ads';
 import adsPageTemplate from './ads.hbs';
 
@@ -33,6 +34,7 @@ interface CampaignTemplateRow {
   id: AdItem['id'];
   title: string;
   budget: string;
+  budgetValue: number;
   goal: string;
   lastActionDate: string;
   status: string;
@@ -45,6 +47,7 @@ function mapAdsToCampaigns(ads: AdItem[] = []): CampaignTemplateRow[] {
     id: ad.id,
     title: ad.title || 'Без названия',
     budget: typeof ad.price === 'number' ? formatPrice(ad.price) : '—',
+    budgetValue: typeof ad.price === 'number' ? ad.price : 0,
     goal: ad.target_action || 'Без целевого действия',
     lastActionDate: formatDate(ad.created_at || ''),
     status: 'Активно',
@@ -400,57 +403,115 @@ function DatePicker(signal: AbortSignal): void {
  * @return {void}
  */
 function CampaignActionMenus(signal: AbortSignal): void {
-  const toggles = Array.from(
-    document.querySelectorAll('.js-action-menu-toggle'),
+  const triggerButtons = Array.from(
+    document.querySelectorAll<HTMLElement>('.js-campaign-actions-trigger'),
+  );
+  const deleteButtons = Array.from(
+    document.querySelectorAll<HTMLElement>('.js-delete-action-trigger'),
   );
 
-  if (!toggles.length) {
+  if (!triggerButtons.length && !deleteButtons.length) {
     return;
   }
 
+  const ensureMenu = (trigger: HTMLElement): HTMLElement | null => {
+    const actions = trigger.closest<HTMLElement>('.campaign-row__actions');
+
+    if (!actions) {
+      return null;
+    }
+
+    const existing = actions.querySelector<HTMLElement>('.campaign-row__menu');
+    if (existing) {
+      return existing;
+    }
+
+    const menu = document.createElement('div');
+    menu.className = 'campaign-row__menu';
+    menu.hidden = true;
+    menu.innerHTML = `
+      <button type="button" class="campaign-row__menu-item">
+        <svg viewBox="0 0 24 24" class="campaign-row__menu-icon campaign-row__menu-icon--blue">
+          <path d="M4 4h16v16H4V4Zm3 12h2V9H7v7Zm4 0h2V12h-2v4Zm4 0h2V7h-2v9Z"/>
+        </svg>
+        <span>Статистика</span>
+      </button>
+      <button type="button" class="campaign-row__menu-item">
+        <svg viewBox="0 0 24 24" class="campaign-row__menu-icon campaign-row__menu-icon--blue">
+          <path d="m12 4V1L8 5l4 4V6a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8Zm-1 4v5l4 2 .9-1.8-2.9-1.4V8H11Z"/>
+        </svg>
+        <span>История действий</span>
+      </button>
+      <button type="button" class="campaign-row__menu-item js-edit-menu-item">
+        <svg viewBox="0 0 24 24" class="campaign-row__menu-icon campaign-row__menu-icon--blue">
+          <path d="m3 17.25 9.9-9.9 3.75 3.75-9.9 9.9H3v-3.75Zm14.7-10.2 1.8-1.8a1 1 0 0 0 0-1.4L18.15 2.5a1 1 0 0 0-1.4 0l-1.8 1.8 2.75 2.75Z"/>
+        </svg>
+        <span>Редактировать</span>
+      </button>
+      <button type="button" class="campaign-row__menu-item campaign-row__menu-item--danger js-delete-menu-item">
+        <svg viewBox="0 0 24 24" class="campaign-row__menu-icon campaign-row__menu-icon--red">
+          <path d="M9 3.75A1.75 1.75 0 0 1 10.75 2h2.5A1.75 1.75 0 0 1 15 3.75V4h3.25a.75.75 0 0 1 0 1.5h-.77l-.63 12.03A2 2 0 0 1 14.85 19.5H9.15a2 2 0 0 1-2-1.97L6.52 5.5h-.77a.75.75 0 0 1 0-1.5H9v-.25Zm1.5.25h3v-.25a.25.25 0 0 0-.25-.25h-2.5a.25.25 0 0 0-.25.25V4Zm-1.85 14h6.7a.5.5 0 0 0 .5-.48L16.47 5.5H7.53l.62 12.02a.5.5 0 0 0 .5.48ZM10 8.75a.75.75 0 0 1 1.5 0v5.5a.75.75 0 0 1-1.5 0v-5.5Zm2.5 0a.75.75 0 0 1 1.5 0v5.5a.75.75 0 0 1-1.5 0v-5.5Z"/>
+        </svg>
+        <span>Удалить</span>
+      </button>
+    `;
+    actions.appendChild(menu);
+    return menu;
+  };
+
   const closeAll = (): void => {
-    toggles.forEach((toggle) => {
-      const container = toggle.closest('.campaign-row__actions');
-      const menu = container?.querySelector<HTMLElement>('.campaign-row__menu');
-
-      if (!menu) {
-        return;
-      }
-
+    document.querySelectorAll<HTMLElement>('.campaign-row__menu').forEach((menu) => {
       menu.hidden = true;
-      toggle.setAttribute('aria-expanded', 'false');
+    });
+
+    triggerButtons.forEach((button) => {
+      button.setAttribute('aria-expanded', 'false');
     });
   };
 
-  toggles.forEach((toggle) => {
-    toggle.addEventListener(
+  const navigateToEdit = (target: Element): void => {
+    const row = target.closest<HTMLElement>('.campaign-row');
+
+    if (row) {
+      localStorage.setItem(
+        'campaign_edit_seed',
+        JSON.stringify({
+          id: row.dataset.campaignId || '',
+          title: row.dataset.campaignTitle || '',
+          budgetValue: Number(row.dataset.campaignBudgetValue || '0'),
+          goal: row.dataset.campaignGoal || '',
+        }),
+      );
+    }
+
+    navigateTo('/ads/edit');
+  };
+
+  triggerButtons.forEach((button) => {
+    if (!button.querySelector('.campaign-row__actions-trigger-glyph')) {
+      const labelNode = button.querySelector('.campaign-row__actions-trigger-label');
+
+      if (labelNode) {
+        const glyph = document.createElement('span');
+        glyph.className = 'campaign-row__actions-trigger-glyph';
+        glyph.setAttribute('aria-hidden', 'true');
+        glyph.innerHTML = `
+          <svg viewBox="0 0 24 24" class="campaign-row__actions-trigger-glyph-icon">
+            <path d="M4 17.25V20h2.75l8.1-8.1-2.75-2.75-8.1 8.1ZM18.71 7.04a1 1 0 0 0 0-1.42l-1.33-1.33a1 1 0 0 0-1.42 0l-1.56 1.56 2.75 2.75 1.56-1.56Z"/>
+          </svg>
+        `;
+        button.insertBefore(glyph, labelNode);
+      }
+    }
+
+    ensureMenu(button);
+    button.addEventListener(
       'click',
       (event) => {
-        const target = event.target;
-        if (!(target instanceof Element)) {
-          return;
-        }
-
-        const deleteAction = target.closest('.js-delete-action-trigger');
-
-        if (deleteAction) {
-          event.preventDefault();
-          event.stopPropagation();
-          closeAll();
-          document.dispatchEvent(
-            new CustomEvent('campaigns:open-delete-modal'),
-          );
-          return;
-        }
-
         event.preventDefault();
         event.stopPropagation();
 
-        const container = toggle.closest('.campaign-row__actions');
-        const menu = container?.querySelector<HTMLElement>(
-          '.campaign-row__menu',
-        );
-
+        const menu = ensureMenu(button);
         if (!menu) {
           return;
         }
@@ -458,27 +519,59 @@ function CampaignActionMenus(signal: AbortSignal): void {
         const willOpen = menu.hidden;
         closeAll();
         menu.hidden = !willOpen;
-        toggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        button.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
       },
       { signal },
     );
   });
 
-  document.querySelectorAll('.campaign-row__menu-item').forEach((item) => {
-    item.addEventListener(
+  deleteButtons.forEach((button) => {
+    button.querySelector('.campaign-row__action-button-label')?.remove();
+
+    button.addEventListener(
       'click',
-      () => {
+      (event) => {
+        event.preventDefault();
+        event.stopPropagation();
         closeAll();
-
-        if (item.classList.contains('js-delete-menu-item')) {
-          document.dispatchEvent(
-            new CustomEvent('campaigns:open-delete-modal'),
-          );
-        }
+        document.dispatchEvent(
+          new CustomEvent('campaigns:open-delete-modal'),
+        );
       },
       { signal },
     );
   });
+
+  document.addEventListener(
+    'click',
+    (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) {
+        return;
+      }
+
+      const menuItem = target.closest<HTMLElement>('.campaign-row__menu-item');
+      if (!menuItem) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+      closeAll();
+
+      if (menuItem.classList.contains('js-edit-menu-item')) {
+        navigateToEdit(menuItem);
+        return;
+      }
+
+      if (menuItem.classList.contains('js-delete-menu-item')) {
+        document.dispatchEvent(
+          new CustomEvent('campaigns:open-delete-modal'),
+        );
+      }
+    },
+    { signal },
+  );
 
   document.addEventListener(
     'click',
@@ -557,6 +650,149 @@ function CampaignDeleteModal(signal: AbortSignal): void {
   document.addEventListener('campaigns:open-delete-modal', open, { signal });
 }
 
+function CampaignPagination(signal: AbortSignal): void {
+  const table = document.querySelector<HTMLElement>('.campaigns-table');
+  const body = table?.querySelector<HTMLElement>('.campaigns-table__body');
+  const footer = table?.querySelector<HTMLElement>('[data-campaigns-pagination]');
+  const prevButton = footer?.querySelector<HTMLButtonElement>('[data-pagination-prev]');
+  const nextButton = footer?.querySelector<HTMLButtonElement>('[data-pagination-next]');
+  const pagesNode = footer?.querySelector<HTMLElement>('[data-pagination-pages]');
+
+  if (!table || !body || !footer || !prevButton || !nextButton || !pagesNode) {
+    return;
+  }
+
+  const rows = Array.from(body.querySelectorAll<HTMLElement>('.campaign-row'));
+  if (!rows.length) {
+    footer.hidden = true;
+    return;
+  }
+
+  const pageSize = 7;
+  const totalPages = Math.max(1, Math.ceil(rows.length / pageSize));
+  let currentPage = 1;
+
+  const buildPageItems = (): Array<number | string> => {
+    if (totalPages <= 7) {
+      return Array.from({ length: totalPages }, (_, index) => index + 1);
+    }
+
+    const visiblePages = new Set<number>([1, totalPages, currentPage]);
+
+    if (currentPage <= 3) {
+      visiblePages.add(2);
+      visiblePages.add(3);
+      visiblePages.add(4);
+    } else if (currentPage >= totalPages - 2) {
+      visiblePages.add(totalPages - 1);
+      visiblePages.add(totalPages - 2);
+      visiblePages.add(totalPages - 3);
+    } else {
+      visiblePages.add(currentPage - 1);
+      visiblePages.add(currentPage + 1);
+    }
+
+    const orderedPages = Array.from(visiblePages)
+      .filter((page) => page >= 1 && page <= totalPages)
+      .sort((left, right) => left - right);
+
+    const items: Array<number | string> = [];
+
+    orderedPages.forEach((page, index) => {
+      const previousPage = orderedPages[index - 1];
+      if (typeof previousPage === 'number' && page - previousPage > 1) {
+        items.push('ellipsis');
+      }
+      items.push(page);
+    });
+
+    return items;
+  };
+
+  const renderRows = (): void => {
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+
+    rows.forEach((row, index) => {
+      row.hidden = index < startIndex || index >= endIndex;
+    });
+  };
+
+  const renderPages = (): void => {
+    pagesNode.innerHTML = '';
+
+    buildPageItems().forEach((item) => {
+      if (item === 'ellipsis') {
+        const ellipsis = document.createElement('span');
+        ellipsis.className = 'campaigns-table__page-ellipsis';
+        ellipsis.textContent = '...';
+        pagesNode.appendChild(ellipsis);
+        return;
+      }
+
+      const pageButton = document.createElement('button');
+      pageButton.type = 'button';
+      pageButton.className = 'campaigns-table__page-button';
+      pageButton.textContent = String(item);
+
+      if (item === currentPage) {
+        pageButton.classList.add('is-active');
+        pageButton.setAttribute('aria-current', 'page');
+      }
+
+      pageButton.addEventListener(
+        'click',
+        () => {
+          if (item === currentPage) {
+            return;
+          }
+
+          currentPage = item;
+          sync();
+        },
+        { signal },
+      );
+
+      pagesNode.appendChild(pageButton);
+    });
+  };
+
+  const sync = (): void => {
+    renderRows();
+    renderPages();
+    prevButton.disabled = currentPage === 1;
+    nextButton.disabled = currentPage === totalPages;
+  };
+
+  prevButton.addEventListener(
+    'click',
+    () => {
+      if (currentPage === 1) {
+        return;
+      }
+
+      currentPage -= 1;
+      sync();
+    },
+    { signal },
+  );
+
+  nextButton.addEventListener(
+    'click',
+    () => {
+      if (currentPage === totalPages) {
+        return;
+      }
+
+      currentPage += 1;
+      sync();
+    },
+    { signal },
+  );
+
+  sync();
+}
+
 /**
  * Рендерит страницу списка объявлений.
  *
@@ -600,9 +836,21 @@ export function Ads(): void | VoidFunction {
     );
   }
 
+  document.querySelectorAll<HTMLElement>('.campaigns-page__create-button, .campaigns-empty__create-button').forEach((button) => {
+    button.addEventListener(
+      'click',
+      (event) => {
+        event.preventDefault();
+        navigateTo('/ads/create');
+      },
+      { signal },
+    );
+  });
+
   DatePicker(signal);
   CampaignActionMenus(signal);
   CampaignDeleteModal(signal);
+  CampaignPagination(signal);
 
   return () => {
     if (adsPageLifecycleController === controller) {

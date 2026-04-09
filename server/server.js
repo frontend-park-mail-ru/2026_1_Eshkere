@@ -22,7 +22,7 @@ if (isDevelopment) {
   app.use(express.static(distRoot));
 }
 
-app.get('/', (req, res) => {
+function sendIndexHtml(req, res) {
   if (isDevelopment && compiler) {
     const outputFileSystem = compiler.outputFileSystem;
     const indexPath = path.join(compiler.outputPath, 'index.html');
@@ -40,7 +40,10 @@ app.get('/', (req, res) => {
   }
 
   res.sendFile(path.join(distRoot, 'index.html'));
-});
+}
+
+app.get('/', sendIndexHtml);
+app.get(/^\/(?!api|fonts|icons|img|js|css|sw\.js).*/, sendIndexHtml);
 
 const PORT = 8080;
 

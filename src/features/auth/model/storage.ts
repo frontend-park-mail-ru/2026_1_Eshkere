@@ -7,6 +7,15 @@ export interface AuthUser {
   name?: string;
   balance?: number;
   avatar?: string;
+  company?: string;
+  city?: string;
+  inn?: string;
+  tariffKey?: 'basic' | 'pro' | 'business';
+  accountStatus?: 'pending' | 'verified';
+  contactHandle?: string;
+  cardMasked?: string;
+  lastTopUp?: string;
+  passwordStatus?: string;
 }
 
 class AuthState {

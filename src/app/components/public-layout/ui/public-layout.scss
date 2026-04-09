@@ -2,7 +2,7 @@
 @use '../../../../shared/styles/mixins';
 
 .public-layout {
-  @include mixins.page-background('/img/back.png');
+  @include mixins.page-background('/img/RightFon.png');
 
   &__container {
     position: relative;

@@ -9,7 +9,7 @@
 
 :root {
   --bg-main: #{tokens.$color-bg-main};
-  --bg-main-image: url('/img/back.png');
+  --bg-main-image: url('/img/RightFon.png');
   --text-main: #{tokens.$color-text-main};
   --text-muted: #{tokens.$color-text-muted};
   --border: #{tokens.$color-border};
@@ -28,11 +28,13 @@ body {
 body {
   font-family: tokens.$font-family-body;
   background-color: var(--bg-main);
-  background-image: var(--bg-main-image);
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+  background-image:
+    linear-gradient(180deg, rgba(240, 244, 255, 0.26) 0%, rgba(240, 244, 255, 0.34) 100%),
+    var(--bg-main-image);
+  background-size: cover, cover;
+  background-position: center top, right top;
+  background-repeat: no-repeat, no-repeat;
+  background-attachment: scroll, scroll;
   color: var(--text-main);
 }
 

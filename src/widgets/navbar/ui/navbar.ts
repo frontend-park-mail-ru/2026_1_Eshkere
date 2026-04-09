@@ -53,6 +53,7 @@ export function Navbar(): VoidFunction {
   const profileToggleButton = document.getElementById('navbar-profile-toggle');
   const profileMenu = document.getElementById('navbar-profile-menu');
   const logoutButton = document.getElementById('navbar-logout-button');
+  const sidebarLogoutButton = document.getElementById('logout-button');
   const logoutModal = document.getElementById('navbar-logout-modal');
   const logoutConfirmButton = document.getElementById(
     'navbar-logout-confirm',
@@ -152,6 +153,15 @@ export function Navbar(): VoidFunction {
   );
 
   logoutButton.addEventListener(
+    'click',
+    () => {
+      closeMenu();
+      openLogoutModal();
+    },
+    { signal },
+  );
+
+  sidebarLogoutButton?.addEventListener(
     'click',
     () => {
       closeMenu();

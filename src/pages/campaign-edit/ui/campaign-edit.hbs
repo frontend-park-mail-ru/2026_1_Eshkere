@@ -1,0 +1,247 @@
+<section class="campaign-edit" data-campaign-edit-page>
+  <div class="campaign-edit__toolbar">
+    <div class="campaign-edit__toolbar-group">
+      <button class="campaign-edit__toolbar-button" type="button" data-edit-back>
+        Вернуться к списку
+      </button>
+      <button class="campaign-edit__toolbar-button" type="button" data-edit-duplicate>
+        Сделать копию
+      </button>
+    </div>
+
+    <div class="campaign-edit__toolbar-group campaign-edit__toolbar-group--actions">
+      <button class="campaign-edit__toolbar-button campaign-edit__toolbar-button--danger" type="button" data-edit-delete-open>
+        Удалить объявление
+      </button>
+      <button class="campaign-edit__toolbar-button campaign-edit__toolbar-button--primary" type="button" data-edit-save>
+        Сохранить изменения
+      </button>
+    </div>
+  </div>
+
+  <section class="campaign-edit__hero">
+    <div class="campaign-edit__hero-copy">
+      <h1 class="campaign-edit__title">Редактирование объявления</h1>
+      <p class="campaign-edit__lead">
+        Экран для правок уже запущенного объявления: быстро обновить креатив, текст, бюджет,
+        таргетинг и посмотреть, что менялось по ходу кампании.
+      </p>
+    </div>
+
+    <div class="campaign-edit__hero-badge" data-edit-moderation-badge>
+      {{moderationBadge}}
+    </div>
+
+    <div class="campaign-edit__stats">
+      {{#each stats}}
+        <article class="campaign-edit__stat">
+          <span class="campaign-edit__stat-label">{{label}}</span>
+          <strong class="campaign-edit__stat-value" data-edit-stat="{{key}}">{{value}}</strong>
+        </article>
+      {{/each}}
+    </div>
+  </section>
+
+  <div class="campaign-edit__main-grid">
+    <section class="campaign-edit__card campaign-edit__form-card">
+      <div class="campaign-edit__card-head">
+        <div>
+          <h2 class="campaign-edit__card-title">Редактируемые параметры</h2>
+          <p class="campaign-edit__card-text">
+            Основные поля, которые можно быстро обновить без полной пересборки кампании.
+          </p>
+        </div>
+
+        <span class="campaign-edit__save-state" data-edit-save-state>
+          {{saveState}}
+        </span>
+      </div>
+
+      <div class="campaign-edit__form">
+        <label class="campaign-edit__field campaign-edit__field--full">
+          <span class="campaign-edit__field-label">Название объявления</span>
+          <input
+            class="campaign-edit__input"
+            type="text"
+            value="{{form.name}}"
+            data-edit-input="name"
+            maxlength="80"
+          />
+        </label>
+
+        <label class="campaign-edit__field campaign-edit__field--full">
+          <span class="campaign-edit__field-label">Заголовок</span>
+          <input
+            class="campaign-edit__input"
+            type="text"
+            value="{{form.headline}}"
+            data-edit-input="headline"
+            maxlength="80"
+          />
+        </label>
+
+        <div class="campaign-edit__field">
+          <span class="campaign-edit__field-label">Кнопка действия</span>
+          <div class="campaign-edit__select" data-edit-select="cta">
+            <button
+              class="campaign-edit__select-trigger"
+              type="button"
+              data-edit-select-trigger
+              aria-expanded="false"
+            >
+              <span data-edit-select-value>{{form.cta}}</span>
+              <span class="campaign-edit__select-arrow" aria-hidden="true"></span>
+            </button>
+            <div class="campaign-edit__select-menu" data-edit-select-menu hidden>
+              {{#each ctaOptions}}
+                <button
+                  class="campaign-edit__select-option{{#if selected}} is-selected{{/if}}"
+                  type="button"
+                  data-edit-cta-option="{{value}}"
+                >
+                  <span>{{label}}</span>
+                  {{#if selected}}
+                    <span class="campaign-edit__select-meta">Выбрано</span>
+                  {{/if}}
+                </button>
+              {{/each}}
+            </div>
+          </div>
+        </div>
+
+        <label class="campaign-edit__field campaign-edit__field--full">
+          <span class="campaign-edit__field-label">Описание</span>
+          <textarea
+            class="campaign-edit__textarea"
+            rows="4"
+            data-edit-input="description"
+            maxlength="220"
+          >{{form.description}}</textarea>
+        </label>
+
+        <label class="campaign-edit__field">
+          <span class="campaign-edit__field-label">Дневной бюджет</span>
+          <div class="campaign-edit__input-shell">
+            <input
+              class="campaign-edit__input"
+              type="number"
+              min="1000"
+              step="100"
+              value="{{form.dailyBudget}}"
+              data-edit-input="dailyBudget"
+            />
+            <span class="campaign-edit__input-suffix">₽</span>
+          </div>
+        </label>
+
+        <label class="campaign-edit__field">
+          <span class="campaign-edit__field-label">Период</span>
+          <input
+            class="campaign-edit__input"
+            type="text"
+            value="{{form.period}}"
+            data-edit-input="period"
+          />
+        </label>
+      </div>
+    </section>
+
+    <aside class="campaign-edit__card campaign-edit__preview-card">
+      <div class="campaign-edit__card-head">
+        <div>
+          <h2 class="campaign-edit__card-title">Актуальный preview</h2>
+          <p class="campaign-edit__card-text">
+            Как обновлённая версия объявления будет выглядеть после сохранения.
+          </p>
+        </div>
+      </div>
+
+      <div class="campaign-edit__preview-shell">
+        <div class="campaign-edit__preview-creative"></div>
+        <span class="campaign-edit__preview-badge">Реклама</span>
+        <h3 class="campaign-edit__preview-title" data-edit-preview="headline">{{preview.headline}}</h3>
+        <p class="campaign-edit__preview-text" data-edit-preview="description">{{preview.description}}</p>
+        <button class="campaign-edit__preview-cta" type="button" data-edit-preview="cta">
+          {{preview.cta}}
+        </button>
+      </div>
+    </aside>
+  </div>
+
+  <div class="campaign-edit__bottom-grid">
+    <section class="campaign-edit__card">
+      <div class="campaign-edit__card-head">
+        <div>
+          <h2 class="campaign-edit__card-title">История изменений</h2>
+          <p class="campaign-edit__card-text">
+            Что менялось в объявлении за последние дни.
+          </p>
+        </div>
+      </div>
+
+      <div class="campaign-edit__history" data-edit-history>
+        {{#each history}}
+          <article class="campaign-edit__history-item">
+            <span class="campaign-edit__history-time">{{time}}</span>
+            <div class="campaign-edit__history-copy">
+              <strong class="campaign-edit__history-title">{{title}}</strong>
+              <p class="campaign-edit__history-text">{{text}}</p>
+            </div>
+          </article>
+        {{/each}}
+      </div>
+    </section>
+
+    <section class="campaign-edit__card">
+      <div class="campaign-edit__card-head">
+        <div>
+          <h2 class="campaign-edit__card-title">Сводка по изменениям</h2>
+          <p class="campaign-edit__card-text">
+            Что повлияет на показ после обновления.
+          </p>
+        </div>
+      </div>
+
+      <div class="campaign-edit__summary" data-edit-summary>
+        {{#each summary}}
+          <div class="campaign-edit__summary-row">
+            <span class="campaign-edit__summary-key">{{label}}</span>
+            <strong class="campaign-edit__summary-value" data-edit-summary-value="{{key}}">
+              {{value}}
+            </strong>
+          </div>
+        {{/each}}
+      </div>
+    </section>
+  </div>
+
+  <div class="campaign-edit__toast" data-edit-toast hidden>
+    <div class="campaign-edit__toast-body">
+      <strong class="campaign-edit__toast-title" data-edit-toast-title></strong>
+      <p class="campaign-edit__toast-text" data-edit-toast-text></p>
+    </div>
+    <button class="campaign-edit__toast-close" type="button" data-edit-toast-close aria-label="Закрыть">
+      ×
+    </button>
+  </div>
+
+  <div class="campaign-edit__modal" data-edit-delete-modal hidden>
+    <div class="campaign-edit__modal-dialog" role="dialog" aria-modal="true" aria-labelledby="campaign-edit-delete-title">
+      <div class="campaign-edit__modal-head">
+        <h2 class="campaign-edit__modal-title" id="campaign-edit-delete-title">Удалить объявление</h2>
+        <p class="campaign-edit__modal-text">
+          Объявление исчезнет из списка и больше не будет доступно для редактирования.
+        </p>
+      </div>
+
+      <div class="campaign-edit__modal-actions">
+        <button class="campaign-edit__toolbar-button" type="button" data-edit-delete-cancel>
+          Отмена
+        </button>
+        <button class="campaign-edit__toolbar-button campaign-edit__toolbar-button--danger" type="button" data-edit-delete-confirm>
+          Удалить объявление
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

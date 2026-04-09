@@ -6,6 +6,7 @@
   display: flex;
   flex-direction: column;
   gap: 18px;
+  min-height: calc(100vh - 144px);
 
   &__toolbar {
     display: flex;
@@ -16,6 +17,13 @@
     border-radius: 18px;
     background: rgba(255, 255, 255, 0.86);
     box-shadow: var(--shadow);
+  }
+
+  &__toolbar-primary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
   }
 
   &__create-button {
@@ -324,9 +332,13 @@
 
 .campaigns-table {
   overflow: visible;
-  border-radius: 20px;
+  flex: 1 1 auto;
+  min-height: clamp(500px, calc(100vh - 236px), 720px);
+  border-radius: 24px;
   background: rgba(255, 255, 255, 0.92);
   box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
 
   &__header,
   .campaign-row {
@@ -340,16 +352,122 @@
     padding: 18px 20px;
     border-bottom: 1px solid #eceef6;
     background: rgba(247, 248, 253, 0.9);
+    border-radius: 24px 24px 0 0;
     font-size: 13px;
     font-weight: 700;
     color: #383d4f;
   }
 
+  &__header > :nth-child(5) {
+    justify-self: center;
+    text-align: center;
+  }
+
   &__body {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+
     .campaign-row {
       padding: 18px 20px;
       border-bottom: 1px solid #eceef6;
     }
+
+    .campaign-row:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  &__footer {
+    margin-top: auto;
+    padding: 18px 24px 22px;
+    border-top: 1px solid #eceef6;
+    border-radius: 0 0 24px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.94);
+  }
+
+  &__page-nav {
+    min-width: 120px;
+    height: 40px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #4a5064;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      color 0.18s ease,
+      opacity 0.18s ease,
+      background-color 0.18s ease;
+
+    &:hover:not(:disabled) {
+      background: rgba(101, 95, 255, 0.08);
+      color: #655fff;
+    }
+
+    &:disabled {
+      opacity: 0.42;
+      cursor: default;
+    }
+  }
+
+  &__page-list {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__page-button,
+  &__page-ellipsis {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 34px;
+  }
+
+  &__page-button {
+    border: 1px solid transparent;
+    border-radius: 12px;
+    background: transparent;
+    color: #2f3547;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      transform 0.18s ease,
+      color 0.18s ease,
+      background-color 0.18s ease,
+      box-shadow 0.18s ease;
+
+    &:hover {
+      color: #655fff;
+      background: rgba(101, 95, 255, 0.08);
+    }
+
+    &.is-active {
+      color: #fff;
+      background: #655fff;
+      box-shadow: 0 10px 20px rgba(101, 95, 255, 0.22);
+    }
+  }
+
+  &__page-ellipsis {
+    color: #8b90a4;
+    font-size: 15px;
+    font-weight: 700;
   }
 }
 
@@ -416,6 +534,10 @@
 }
 
 .campaign-row {
+  &[hidden] {
+    display: none !important;
+  }
+
   &__name {
     font-weight: 600;
     line-height: 1.35;
@@ -424,69 +546,109 @@
 
   &__actions {
     position: relative;
-    display: flex;
-    align-items: center;
-  }
-
-  &__action-group {
-    min-width: 100px;
-    height: 35px;
-    padding: 0;
-    border: 1px solid #d9ddee;
-    border-radius: t.$radius-pill;
-    background: rgba(255, 255, 255, 0.72);
-    display: inline-flex;
-    align-items: center;
-    overflow: hidden;
-    cursor: pointer;
-
-    &:hover {
-      box-shadow: 0 8px 20px rgba(68, 74, 140, 0.08);
-    }
-  }
-
-  &__action-half {
-    width: 50px;
-    height: 100%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
+    gap: 10px;
+    overflow: visible;
+    width: fit-content;
+    justify-self: center;
+  }
 
-    &--edit:hover {
-      background: rgba(111, 111, 117, 0.05);
+  &__actions-trigger {
+    width: 48px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid #d9ddee;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.86);
+    box-shadow: 0 8px 20px rgba(68, 74, 140, 0.06);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    color: #30374d;
+    cursor: pointer;
+    transition:
+      transform 0.18s ease,
+      box-shadow 0.18s ease,
+      border-color 0.18s ease,
+    background-color 0.18s ease;
+
+    &:hover {
+      border-color: #c7ccee;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 12px 24px rgba(68, 74, 140, 0.1);
+      transform: translateY(-1px);
     }
 
-    &--delete:hover {
-      background: rgba(240, 58, 43, 0.06);
+    &[aria-expanded='true'] {
+      border-color: rgba(101, 95, 255, 0.28);
+      background: rgba(242, 243, 255, 0.95);
+      box-shadow: 0 12px 26px rgba(90, 84, 255, 0.12);
     }
   }
 
-  &__action-divider {
-    width: 1px;
-    height: 100%;
-    background: #d9ddee;
-    flex-shrink: 0;
+  &__actions-trigger-glyph {
+    width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #6d7490;
+    flex: 0 0 18px;
   }
 
-  &__action-icon {
-    width: 24px;
-    height: 24px;
+  &__actions-trigger-glyph-icon {
+    width: 16px;
+    height: 16px;
     display: block;
+    fill: currentColor;
+  }
+
+  &__actions-trigger-label {
+    display: none;
+  }
+
+  &__actions-trigger-icon {
+    display: none;
+  }
+
+  &__action-button {
+    width: 48px;
+    min-height: 40px;
+    padding: 0;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 190, 190, 0.78);
+    background: rgba(255, 250, 250, 0.95);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #ea4f47;
+    cursor: pointer;
+    transition:
+      transform 0.18s ease,
+      border-color 0.18s ease,
+      box-shadow 0.18s ease,
+      background-color 0.18s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      border-color: rgba(234, 79, 71, 0.46);
+      background: rgba(255, 245, 245, 0.98);
+      box-shadow: 0 12px 24px rgba(234, 79, 71, 0.12);
+    }
 
     &--edit {
-      fill: #6f6f75;
-    }
-
-    &--delete {
-      fill: #f03a2b;
+      display: none;
     }
   }
 
   &__menu {
     position: absolute;
-    top: -8px;
-    right: calc(100% + 12px);
+    top: calc(100% + 10px);
+    right: 0;
     left: auto;
     width: 310px;
     border: 1px solid rgba(70, 77, 109, 0.2);
@@ -563,13 +725,31 @@
       color: #ff3a32;
     }
   }
+
+  &__action-icon {
+    width: 16px;
+    height: 16px;
+    display: block;
+    fill: currentColor;
+
+    &--delete {
+      color: inherit;
+    }
+  }
+
+  &__action-button-label {
+    display: none;
+  }
+
 }
 
 .status-badge {
   min-width: 100px;
-  padding: 8px 10px;
-  border-radius: 8px;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 12px;
   display: inline-flex;
+  align-items: center;
   justify-content: center;
   font-size: 12px;
   font-weight: 700;
@@ -630,23 +810,6 @@
   }
 }
 
-.campaigns-page {
-  &__pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 0 0;
-  }
-
-  &__pagination-line {
-    width: 18px;
-    height: 2px;
-    border-radius: t.$radius-pill;
-    background: #655fff;
-  }
-}
-
 .campaigns-delete-modal {
   @include mixins.modal-overlay(70);
 
@@ -655,77 +818,143 @@
   }
 
   &__dialog {
-    width: min(100%, 500px);
-    min-height: 500px;
-    padding: 24px 12px 18px;
-    border: 1px solid #171a27;
-    border-radius: 18px;
-    background: #f4f5f9;
-    box-shadow: 0 20px 34px rgba(12, 18, 40, 0.24);
+    width: min(460px, 100%);
+    padding: 24px;
+    border: 1px solid rgba(198, 204, 235, 0.8);
+    border-radius: 24px;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.98) 0%,
+      rgba(248, 249, 255, 0.98) 100%
+    );
+    box-shadow:
+      0 28px 70px rgba(20, 24, 48, 0.2),
+      0 0 0 1px rgba(255, 255, 255, 0.45) inset;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    gap: 18px;
   }
 
-  &__title {
-    max-width: 460px;
-    margin: 0;
-    color: #101327;
-    font-size: clamp(18px, 2.1vw, 28px);
-    line-height: 1.18;
-    text-align: center;
-  }
-
-  &__image {
-    width: min(100%, 360px);
-    height: auto;
-    display: block;
-    margin: 10px auto 0;
-    object-fit: contain;
-    object-position: center;
-  }
-
-  &__actions {
-    margin-top: auto;
-    padding-top: 16px;
+  &__head {
     display: flex;
+    flex-direction: column;
     gap: 8px;
   }
 
+  &__title {
+    margin: 0;
+    color: #101327;
+    font-size: 20px;
+    line-height: 1.15;
+    font-weight: 800;
+  }
+
+  &__text {
+    margin: 0;
+    max-width: 340px;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #8d94ab;
+  }
+
+  &__illustration {
+    height: 220px;
+    padding: 8px 0;
+    border-radius: 20px;
+    background: transparent;
+    display: grid;
+    place-items: center;
+  }
+
+  &__blob {
+    display: none;
+  }
+
+  &__image {
+    width: min(100%, 320px);
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    object-fit: contain;
+    object-position: center;
+    filter: none;
+  }
+
+  &__note {
+    padding: 16px 18px;
+    border-radius: 16px;
+    background: linear-gradient(
+      180deg,
+      rgba(237, 238, 255, 0.95) 0%,
+      rgba(229, 231, 252, 0.95) 100%
+    );
+    color: #606782;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 12px;
+  }
+
   &__button {
-    min-width: 140px;
-    height: 40px;
-    border-radius: 8px;
-    border: 1px solid #20232e;
-    background: #f4f5f9;
-    font-size: 24px;
+    flex: 1;
+    height: 52px;
+    border-radius: 14px;
+    border: 1px solid #d8dced;
+    background: #fff;
+    font-size: 17px;
     font-weight: 700;
-    line-height: 1;
+    color: #2f3546;
     cursor: pointer;
-    @include mixins.interactive-lift(-1px, null, brightness(1.02));
+    @include mixins.interactive-lift(
+      -1px,
+      0 10px 20px rgba(20, 24, 48, 0.08)
+    );
     @include mixins.focus-ring(rgba(90, 84, 255, 0.25));
 
-    &--yes {
-      color: #ff2b2b;
-      background: t.$confirm-gradient;
-      box-shadow: 0 8px 16px rgba(255, 55, 55, 0.2);
+    &--primary {
+      border-color: transparent;
+      background: t.$primary-gradient;
+      color: #fff;
+      box-shadow: t.$shadow-primary;
     }
 
-    &--no {
-      color: #5a4eff;
-      background: t.$cancel-gradient;
-      box-shadow: 0 8px 16px rgba(94, 69, 255, 0.18);
+    &--secondary {
+      background: #fff;
+      color: #2f3546;
     }
   }
 }
 
 @include mixins.media-max(t.$bp-lg) {
+  .campaigns-page {
+    min-height: 0;
+  }
+
   .campaigns-table {
     overflow-x: auto;
+    min-height: 0;
+    flex: initial;
 
     &__header,
     .campaign-row {
       min-width: 980px;
+    }
+
+    &__body {
+      flex: initial;
+    }
+
+    &__footer {
+      padding: 16px;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    &__page-nav {
+      min-width: auto;
     }
   }
 
@@ -768,7 +997,7 @@
 
   .campaign-row__menu {
     width: 270px;
-    right: calc(100% + 8px);
+    right: 0;
   }
 
   .campaign-row__menu-item {
@@ -782,15 +1011,13 @@
   }
 
   .campaigns-delete-modal__dialog {
-    width: min(100%, 440px);
-    min-height: 460px;
-    padding: 20px 10px 16px;
+    width: min(100%, 430px);
+    padding: 20px;
   }
 
   .campaigns-delete-modal__button {
-    min-width: 112px;
-    height: 36px;
-    font-size: 20px;
+    height: 48px;
+    font-size: 15px;
   }
 }
 
@@ -823,7 +1050,7 @@
 
   .campaign-row__menu {
     width: 240px;
-    right: calc(100% + 6px);
+    right: 0;
   }
 
   .campaign-row__menu-item {
@@ -858,23 +1085,22 @@
   }
 
   .campaigns-delete-modal__dialog {
-    border-radius: 14px;
-    min-height: 420px;
-    padding: 18px 10px 14px;
+    border-radius: 16px;
+    padding: 16px;
   }
 
-  .campaigns-delete-modal__title {
-    font-size: 18px;
+  .campaigns-delete-modal__illustration {
+    height: 188px;
   }
 
   .campaigns-delete-modal__actions {
     width: 100%;
+    flex-direction: column;
   }
 
   .campaigns-delete-modal__button {
-    min-width: 0;
     width: 100%;
-    height: 34px;
-    font-size: 18px;
+    height: 46px;
+    font-size: 15px;
   }
 }
