@@ -1,5 +1,10 @@
 ﻿import './campaign-create.scss';
 import { renderTemplate } from 'shared/lib/render';
+import {
+  LocalStorageKey,
+  createLocalStorageKey,
+  localStorageService,
+} from 'shared/lib/local-storage';
 import campaignCreateTemplate from './campaign-create.hbs';
 
 import { getCurrentPath } from 'app/navigation';
@@ -74,18 +79,17 @@ interface AudienceSummary {
   recommendationText?: string;
 }
 
-interface AudiencePresetSummary
-  extends Omit<
-    AudienceSummary,
-    | 'ageRange'
-    | 'profile'
-    | 'profileLabel'
-    | 'ctr'
-    | 'breadth'
-    | 'competition'
-    | 'recommendationTitle'
-    | 'recommendationText'
-  > {
+interface AudiencePresetSummary extends Omit<
+  AudienceSummary,
+  | 'ageRange'
+  | 'profile'
+  | 'profileLabel'
+  | 'ctr'
+  | 'breadth'
+  | 'competition'
+  | 'recommendationTitle'
+  | 'recommendationText'
+> {
   age: string;
 }
 
@@ -247,9 +251,9 @@ const DEFAULT_STATE: BuilderState = {
   strategy: 'even',
 };
 
-const CAMPAIGN_CREATE_STORAGE_KEY = 'campaign_builder_draft';
-const CAMPAIGN_EDIT_STORAGE_KEY = 'campaign_edit_builder_state';
-const CAMPAIGN_EDIT_SEED_KEY = 'campaign_edit_seed';
+const CAMPAIGN_CREATE_STORAGE_KEY = LocalStorageKey.CampaignBuilderDraft;
+const CAMPAIGN_EDIT_STORAGE_KEY = LocalStorageKey.CampaignEditBuilderState;
+const CAMPAIGN_EDIT_SEED_KEY = LocalStorageKey.CampaignEditSeed;
 
 const STEP_ORDER: StepKey[] = ['content', 'audience', 'budget', 'publication'];
 
@@ -314,7 +318,8 @@ function getBuilderModeConfig(mode: BuilderMode = getBuilderMode()) {
     primaryActionLabel: 'Отправить на модерацию',
     saveStateFallback: 'Черновик сохранён',
     reviewTitle: 'Финальная сверка перед отправкой',
-    reviewReadyText: 'Все обязательные блоки заполнены. Сверьте ключевые параметры ниже.',
+    reviewReadyText:
+      'Все обязательные блоки заполнены. Сверьте ключевые параметры ниже.',
     reviewPendingPrefix: 'Исправьте:',
     lockedTitle: 'Перейдите к проверке',
     lockedDescription: 'Финальная отправка доступна на шаге «Проверка».',
@@ -367,25 +372,77 @@ const PROFILE_TAG_RULES = {
 } as const;
 
 const PROFILE_TAG_OPTIONS = [
-  { value: 'Активная городская аудитория', description: 'Жители крупных городов с частыми онлайн-покупками.' },
-  { value: 'Средний доход', description: 'Аудитория с устойчивым средним чеком и понятной платёжеспособностью.' },
-  { value: 'Покупатели маркетплейсов', description: 'Пользователи, регулярно покупающие через маркетплейсы.' },
-  { value: 'Retail / e-com', description: 'Люди с привычкой сравнивать предложения и искать выгоду.' },
-  { value: 'Маркетологи', description: 'Специалисты по продвижению, трафику и аналитике.' },
-  { value: 'Владельцы SMB', description: 'Небольшой и средний бизнес, принимающий решения самостоятельно.' },
-  { value: 'Sales ops', description: 'Команды продаж, интересующиеся лидами и автоматизацией.' },
-  { value: 'Look-alike', description: 'Похожие на текущую клиентскую базу сегменты.' },
-  { value: 'Похожие на текущую клиентскую базу', description: 'Люди с поведением, близким к действующим клиентам.' },
-  { value: 'Молодая аудитория', description: 'Пользователи 18-30 с быстрым откликом на оффер.' },
-  { value: 'Digital / product', description: 'Продакт- и digital-специалисты с высокой чувствительностью к value proposition.' },
-  { value: 'Семейная аудитория', description: 'Домохозяйства и семейные покупатели с планированием бюджета.' },
-  { value: 'Предприниматели', description: 'Люди, которые ищут инструменты роста и упрощения процессов.' },
-  { value: 'Фрилансеры', description: 'Самозанятые и независимые специалисты с гибким спросом.' },
-  { value: 'Premium-сегмент', description: 'Аудитория с повышенными требованиями к качеству и сервису.' },
-  { value: 'B2B decision makers', description: 'Лица, принимающие решения по внедрению и закупкам.' },
+  {
+    value: 'Активная городская аудитория',
+    description: 'Жители крупных городов с частыми онлайн-покупками.',
+  },
+  {
+    value: 'Средний доход',
+    description:
+      'Аудитория с устойчивым средним чеком и понятной платёжеспособностью.',
+  },
+  {
+    value: 'Покупатели маркетплейсов',
+    description: 'Пользователи, регулярно покупающие через маркетплейсы.',
+  },
+  {
+    value: 'Retail / e-com',
+    description: 'Люди с привычкой сравнивать предложения и искать выгоду.',
+  },
+  {
+    value: 'Маркетологи',
+    description: 'Специалисты по продвижению, трафику и аналитике.',
+  },
+  {
+    value: 'Владельцы SMB',
+    description:
+      'Небольшой и средний бизнес, принимающий решения самостоятельно.',
+  },
+  {
+    value: 'Sales ops',
+    description: 'Команды продаж, интересующиеся лидами и автоматизацией.',
+  },
+  {
+    value: 'Look-alike',
+    description: 'Похожие на текущую клиентскую базу сегменты.',
+  },
+  {
+    value: 'Похожие на текущую клиентскую базу',
+    description: 'Люди с поведением, близким к действующим клиентам.',
+  },
+  {
+    value: 'Молодая аудитория',
+    description: 'Пользователи 18-30 с быстрым откликом на оффер.',
+  },
+  {
+    value: 'Digital / product',
+    description:
+      'Продакт- и digital-специалисты с высокой чувствительностью к value proposition.',
+  },
+  {
+    value: 'Семейная аудитория',
+    description: 'Домохозяйства и семейные покупатели с планированием бюджета.',
+  },
+  {
+    value: 'Предприниматели',
+    description: 'Люди, которые ищут инструменты роста и упрощения процессов.',
+  },
+  {
+    value: 'Фрилансеры',
+    description: 'Самозанятые и независимые специалисты с гибким спросом.',
+  },
+  {
+    value: 'Premium-сегмент',
+    description: 'Аудитория с повышенными требованиями к качеству и сервису.',
+  },
+  {
+    value: 'B2B decision makers',
+    description: 'Лица, принимающие решения по внедрению и закупкам.',
+  },
 ] as const;
 
-const SAVED_AUDIENCES_STORAGE_KEY = 'campaign_builder_saved_audiences';
+const SAVED_AUDIENCES_STORAGE_KEY =
+  LocalStorageKey.CampaignBuilderSavedAudiences;
 
 function cloneAudienceConfig(
   config: BuilderState['audienceConfig'],
@@ -400,46 +457,52 @@ function cloneAudienceConfig(
 }
 
 function getSavedAudiences(): SavedAudiencePreset[] {
-  try {
-    const raw = localStorage.getItem(SAVED_AUDIENCES_STORAGE_KEY);
+  const parsed = localStorageService.getJson<SavedAudiencePreset[]>(
+    SAVED_AUDIENCES_STORAGE_KEY,
+  );
 
-    if (!raw) {
-      return [];
-    }
-
-    const parsed = JSON.parse(raw) as SavedAudiencePreset[];
-
-    if (!Array.isArray(parsed)) {
-      return [];
-    }
-
-    return parsed
-      .filter((item) => item && typeof item.id === 'string' && typeof item.name === 'string')
-      .map((item) => ({
-        ...item,
-        config: cloneAudienceConfig({
-          ...DEFAULT_STATE.audienceConfig,
-          ...item.config,
-          cities: Array.isArray(item.config?.cities) ? item.config.cities : [],
-          profileTags: Array.isArray(item.config?.profileTags) ? item.config.profileTags : [],
-          exclusions: Array.isArray(item.config?.exclusions) ? item.config.exclusions : [],
-          interests: Array.isArray(item.config?.interests) ? item.config.interests : [],
-        }),
-      }));
-  } catch {
+  if (!Array.isArray(parsed)) {
     return [];
   }
+
+  return parsed
+    .filter(
+      (item) =>
+        item && typeof item.id === 'string' && typeof item.name === 'string',
+    )
+    .map((item) => ({
+      ...item,
+      config: cloneAudienceConfig({
+        ...DEFAULT_STATE.audienceConfig,
+        ...item.config,
+        cities: Array.isArray(item.config?.cities) ? item.config.cities : [],
+        profileTags: Array.isArray(item.config?.profileTags)
+          ? item.config.profileTags
+          : [],
+        exclusions: Array.isArray(item.config?.exclusions)
+          ? item.config.exclusions
+          : [],
+        interests: Array.isArray(item.config?.interests)
+          ? item.config.interests
+          : [],
+      }),
+    }));
 }
 
 function persistSavedAudiences(items: SavedAudiencePreset[]): void {
-  localStorage.setItem(SAVED_AUDIENCES_STORAGE_KEY, JSON.stringify(items));
+  localStorageService.setJson(SAVED_AUDIENCES_STORAGE_KEY, items);
 }
 
-function formatSavedAudienceSummary(config: BuilderState['audienceConfig']): string {
+function formatSavedAudienceSummary(
+  config: BuilderState['audienceConfig'],
+): string {
   return `${config.cities.length} регионов, ${config.ageRange}, ${config.profileTags.length} профильных тегов`;
 }
 
-function formatAudienceProfile(ageRange: string, profileTags: string[]): string {
+function formatAudienceProfile(
+  ageRange: string,
+  profileTags: string[],
+): string {
   const safeAgeRange = ageRange || DEFAULT_STATE.audienceConfig.ageRange;
   const safeTags = Array.isArray(profileTags) ? profileTags : [];
   const suffix = safeTags.length ? `, ${safeTags.join(', ')}` : '';
@@ -509,7 +572,8 @@ function getFieldErrors(state: BuilderState): FieldErrors {
   if (!state.description.trim()) {
     errors.description = 'Добавьте основной текст объявления.';
   } else if (state.description.trim().length > CONTENT_LIMITS.description) {
-    errors.description = 'Текст объявления должен быть не длиннее 180 символов.';
+    errors.description =
+      'Текст объявления должен быть не длиннее 180 символов.';
   }
 
   if (!state.cta.trim()) {
@@ -579,7 +643,10 @@ function getAudienceGaps(state: BuilderState): string[] {
   return gaps;
 }
 
-function validateStep(state: BuilderState, step: StepKey): {
+function validateStep(
+  state: BuilderState,
+  step: StepKey,
+): {
   ok: boolean;
   step?: StepKey;
   title?: string;
@@ -588,7 +655,13 @@ function validateStep(state: BuilderState, step: StepKey): {
   const errors = getFieldErrors(state);
 
   if (step === 'content') {
-    if (errors.name || errors.headline || errors.description || errors.cta || errors.link) {
+    if (
+      errors.name ||
+      errors.headline ||
+      errors.description ||
+      errors.cta ||
+      errors.link
+    ) {
       return {
         ok: false,
         step: 'content',
@@ -624,7 +697,12 @@ function validateStep(state: BuilderState, step: StepKey): {
   }
 
   if (step === 'budget') {
-    if (errors.dailyBudget || errors.totalBudget || errors.period || errors.strategy) {
+    if (
+      errors.dailyBudget ||
+      errors.totalBudget ||
+      errors.period ||
+      errors.strategy
+    ) {
       return {
         ok: false,
         step: 'budget',
@@ -713,7 +791,10 @@ function getAudienceStateSummary(state: BuilderState): AudienceSummary {
   );
   const ctrValue = Math.min(
     2.8,
-    Math.max(0.7, 0.85 + profileCount * 0.2 + interestsCount * 0.08 - citiesCount * 0.04),
+    Math.max(
+      0.7,
+      0.85 + profileCount * 0.2 + interestsCount * 0.08 - citiesCount * 0.04,
+    ),
   );
   const clicksValue = Math.round(reachValue * (ctrValue / 100));
   const breadth =
@@ -782,7 +863,9 @@ function getAudienceInsights(state: BuilderState): {
       : state.audienceConfig.matchingMode === 'any'
         ? 38000
         : 0;
-  const expansionFactor = state.audienceConfig.expansionEnabled ? 36000 : -18000;
+  const expansionFactor = state.audienceConfig.expansionEnabled
+    ? 36000
+    : -18000;
   const reachValue = Math.max(
     75000,
     Math.round(
@@ -813,7 +896,11 @@ function getAudienceInsights(state: BuilderState): {
   );
   const clicksValue = Math.round(reachValue * (ctrValue / 100));
   const breadth =
-    reachValue >= 340000 ? 'Широкий' : reachValue >= 200000 ? 'Сбалансированный' : 'Узкий';
+    reachValue >= 340000
+      ? 'Широкий'
+      : reachValue >= 200000
+        ? 'Сбалансированный'
+        : 'Узкий';
   const competition =
     profileCount >= 4 || interestsCount >= 4
       ? 'Выше средней'
@@ -846,7 +933,9 @@ function getAudienceInsights(state: BuilderState): {
     state.audienceConfig.interestsPriority === 'primary'
       ? 'Интересы используются как главный сигнал и сильнее влияют на масштаб.'
       : 'Интересы работают как дополнительная подсказка поверх профиля.';
-  const expansionState = state.audienceConfig.expansionEnabled ? 'Разрешено' : 'Выключено';
+  const expansionState = state.audienceConfig.expansionEnabled
+    ? 'Разрешено'
+    : 'Выключено';
   const expansionNote = state.audienceConfig.expansionEnabled
     ? 'Система сможет мягко расширять показ на похожие сегменты, если текущая аудитория быстро выгорает.'
     : 'Показы будут держаться ближе к выбранным фильтрам. Это лучше для точности, но хуже для масштаба.';
@@ -900,21 +989,24 @@ function getAudienceInsights(state: BuilderState): {
 }
 
 function renderSavedAudiencesList(state: BuilderState): void {
-  document.querySelectorAll<HTMLElement>('[data-builder-saved-audiences]').forEach((container) => {
-    const items = getSavedAudiences();
+  document
+    .querySelectorAll<HTMLElement>('[data-builder-saved-audiences]')
+    .forEach((container) => {
+      const items = getSavedAudiences();
 
-    if (!items.length) {
-      container.innerHTML =
-        '<p class="campaign-builder__saved-audience-empty">Здесь можно хранить готовые аудитории для повторного запуска похожих кампаний.</p>';
-      return;
-    }
+      if (!items.length) {
+        container.innerHTML =
+          '<p class="campaign-builder__saved-audience-empty">Здесь можно хранить готовые аудитории для повторного запуска похожих кампаний.</p>';
+        return;
+      }
 
-    container.innerHTML = items
-      .map((item) => {
-        const isActive =
-          JSON.stringify(item.config) === JSON.stringify(cloneAudienceConfig(state.audienceConfig));
+      container.innerHTML = items
+        .map((item) => {
+          const isActive =
+            JSON.stringify(item.config) ===
+            JSON.stringify(cloneAudienceConfig(state.audienceConfig));
 
-        return `
+          return `
           <article class="campaign-builder__saved-audience${isActive ? ' campaign-builder__saved-audience--active' : ''}" data-audience-preset-id="${item.id}">
             <div>
               <strong class="campaign-builder__saved-audience-title">${item.name}</strong>
@@ -926,24 +1018,34 @@ function renderSavedAudiencesList(state: BuilderState): void {
             </div>
           </article>
         `;
-      })
-      .join('');
-  });
+        })
+        .join('');
+    });
 }
 
 function ensureAudiencePanelScaffold(state: BuilderState): void {
-  const audiencePanel = document.querySelector<HTMLElement>('[data-step-panel="audience"]');
+  const audiencePanel = document.querySelector<HTMLElement>(
+    '[data-step-panel="audience"]',
+  );
 
   if (!audiencePanel) {
     return;
   }
 
-  const cards = audiencePanel.querySelectorAll<HTMLElement>('.campaign-builder__card');
+  const cards = audiencePanel.querySelectorAll<HTMLElement>(
+    '.campaign-builder__card',
+  );
   const settingsCard = cards[0];
   const summaryCard = cards[1];
-  const stack = settingsCard?.querySelector<HTMLElement>('.campaign-builder__stack');
+  const stack = settingsCard?.querySelector<HTMLElement>(
+    '.campaign-builder__stack',
+  );
 
-  if (settingsCard && stack && !settingsCard.querySelector('[data-builder-audience-controls]')) {
+  if (
+    settingsCard &&
+    stack &&
+    !settingsCard.querySelector('[data-builder-audience-controls]')
+  ) {
     stack.insertAdjacentHTML(
       'afterend',
       `
@@ -1059,18 +1161,28 @@ function ensureAudiencePanelScaffold(state: BuilderState): void {
 function ensureBudgetPanelScaffold(state: BuilderState): void {
   void state;
 
-  const budgetPanel = document.querySelector<HTMLElement>('[data-step-panel="budget"]');
+  const budgetPanel = document.querySelector<HTMLElement>(
+    '[data-step-panel="budget"]',
+  );
 
   if (!budgetPanel) {
     return;
   }
 
-  const cards = budgetPanel.querySelectorAll<HTMLElement>('.campaign-builder__card');
+  const cards = budgetPanel.querySelectorAll<HTMLElement>(
+    '.campaign-builder__card',
+  );
   const settingsCard = cards[0];
   const forecastCard = cards[1];
-  const form = settingsCard?.querySelector<HTMLElement>('.campaign-builder__form');
+  const form = settingsCard?.querySelector<HTMLElement>(
+    '.campaign-builder__form',
+  );
 
-  if (settingsCard && form && !settingsCard.querySelector('[data-builder-budget-controls]')) {
+  if (
+    settingsCard &&
+    form &&
+    !settingsCard.querySelector('[data-builder-budget-controls]')
+  ) {
     form.insertAdjacentHTML(
       'beforeend',
       `
@@ -1207,7 +1319,8 @@ function getAudienceModalConfig(key: AudienceDetailKey): AudienceModalConfig {
     case 'age':
       return {
         title: 'Возрастной диапазон',
-        description: 'Выберите возрастной диапазон, внутри которого система будет искать аудиторию.',
+        description:
+          'Выберите возрастной диапазон, внутри которого система будет искать аудиторию.',
         selectionType: 'single',
         options: PROFILE_AGE_OPTIONS.map((value) => ({
           value,
@@ -1217,7 +1330,8 @@ function getAudienceModalConfig(key: AudienceDetailKey): AudienceModalConfig {
     case 'profile':
       return {
         title: 'Возраст и профиль',
-        description: 'Соберите возрастной диапазон и профильные признаки, которые лучше всего подходят под оффер.',
+        description:
+          'Соберите возрастной диапазон и профильные признаки, которые лучше всего подходят под оффер.',
         selectionType: 'multiple',
         options: PROFILE_TAG_OPTIONS.map((option) => ({
           value: option.value,
@@ -1247,7 +1361,8 @@ function getAudienceModalConfig(key: AudienceDetailKey): AudienceModalConfig {
     default:
       return {
         title: 'Интересы',
-        description: 'Выберите интересы, которые лучше всего соответствуют предложению.',
+        description:
+          'Выберите интересы, которые лучше всего соответствуют предложению.',
         selectionType: 'multiple',
         options: [
           { value: 'Предпринимательство', label: 'Предпринимательство' },
@@ -1271,9 +1386,10 @@ function getAudienceModalConfig(key: AudienceDetailKey): AudienceModalConfig {
   }
 }
 
-function getCreativeSummary(
-  creative: CreativeKey,
-): { count: string; placements: string } {
+function getCreativeSummary(creative: CreativeKey): {
+  count: string;
+  placements: string;
+} {
   switch (creative) {
     case 'stories':
       return { count: '2', placements: 'Stories + mobile placements' };
@@ -1325,7 +1441,9 @@ function getCreativeSlots(
         title: 'Обложка видео',
         text: 'Статичный кадр, который увидят до запуска воспроизведения.',
         accept: 'image/*',
-        buttonLabel: assets.videoCover ? 'Заменить обложку' : 'Загрузить обложку',
+        buttonLabel: assets.videoCover
+          ? 'Заменить обложку'
+          : 'Загрузить обложку',
         status: assets.videoCover || 'Не загружено',
         meta: 'PNG или JPG, от 1200 px',
       },
@@ -1413,7 +1531,9 @@ function getStepProgress(state: BuilderState): {
   currentStepText: string;
 } {
   const currentIndex = STEP_ORDER.indexOf(state.step);
-  const progressValue = Math.round(((currentIndex + 1) / STEP_ORDER.length) * 100);
+  const progressValue = Math.round(
+    ((currentIndex + 1) / STEP_ORDER.length) * 100,
+  );
 
   return {
     progressValue,
@@ -1460,7 +1580,9 @@ function getBuilderHealth(state: BuilderState): BuilderHealth {
 
     return {
       badge: 'Нужно проверить',
-      title: validation.step ? healthTitleByStep[validation.step] : 'Проверьте кампанию',
+      title: validation.step
+        ? healthTitleByStep[validation.step]
+        : 'Проверьте кампанию',
       text:
         validation.description ||
         'Исправьте обязательные поля перед отправкой объявления.',
@@ -1510,7 +1632,9 @@ function getFinalReviewData(state: BuilderState): FinalReviewData {
 
   const creativeSlots = getCreativeSlots(state.creative, state.creativeAssets);
   const missingCreativeSlots = getMissingCreativeSlots(state);
-  const uploadedAssetsCount = creativeSlots.filter((slot) => Boolean(state.creativeAssets[slot.key])).length;
+  const uploadedAssetsCount = creativeSlots.filter((slot) =>
+    Boolean(state.creativeAssets[slot.key]),
+  ).length;
 
   const creativeCheck: FinalReviewCheck = {
     title: 'Креативы и площадки',
@@ -1534,9 +1658,12 @@ function getFinalReviewData(state: BuilderState): FinalReviewData {
     success: audienceGaps.length === 0,
   };
 
-  const budgetIssues = [errors.dailyBudget, errors.totalBudget, errors.period, errors.strategy].filter(
-    Boolean,
-  ) as string[];
+  const budgetIssues = [
+    errors.dailyBudget,
+    errors.totalBudget,
+    errors.period,
+    errors.strategy,
+  ].filter(Boolean) as string[];
 
   const budgetCheck: FinalReviewCheck = {
     title: 'Бюджет и период',
@@ -1617,7 +1744,11 @@ function getTemplateContext(state: BuilderState) {
       isActive: state.step === key,
       isComplete: index < currentIndex,
       stateLabel:
-        state.step === key ? 'Сейчас' : index < currentIndex ? 'Готово' : 'Далее',
+        state.step === key
+          ? 'Сейчас'
+          : index < currentIndex
+            ? 'Готово'
+            : 'Далее',
     })),
     content: {
       name: state.name,
@@ -1774,27 +1905,24 @@ function createBuilderBaseState(): BuilderState {
 }
 
 function getCampaignEditSeed(): CampaignEditSeed | null {
-  try {
-    const raw = localStorage.getItem(CAMPAIGN_EDIT_SEED_KEY);
+  const parsed = localStorageService.getJson<Partial<CampaignEditSeed>>(
+    CAMPAIGN_EDIT_SEED_KEY,
+  );
 
-    if (!raw) {
-      return null;
-    }
-
-    const parsed = JSON.parse(raw) as Partial<CampaignEditSeed>;
-
-    return {
-      id: typeof parsed.id === 'string' ? parsed.id : 'default',
-      title: typeof parsed.title === 'string' ? parsed.title : '',
-      budgetValue:
-        typeof parsed.budgetValue === 'number' && Number.isFinite(parsed.budgetValue)
-          ? parsed.budgetValue
-          : 0,
-      goal: typeof parsed.goal === 'string' ? parsed.goal : '',
-    };
-  } catch {
+  if (!parsed) {
     return null;
   }
+
+  return {
+    id: typeof parsed.id === 'string' ? parsed.id : 'default',
+    title: typeof parsed.title === 'string' ? parsed.title : '',
+    budgetValue:
+      typeof parsed.budgetValue === 'number' &&
+      Number.isFinite(parsed.budgetValue)
+        ? parsed.budgetValue
+        : 0,
+    goal: typeof parsed.goal === 'string' ? parsed.goal : '',
+  };
 }
 
 function mapSeedGoalToGoalKey(goal: string): GoalKey {
@@ -1826,7 +1954,10 @@ function getDefaultCtaByGoal(goal: GoalKey): string {
 function getBuilderStorageKey(mode: BuilderMode = getBuilderMode()): string {
   if (mode === 'edit') {
     const seed = getCampaignEditSeed();
-    return `${CAMPAIGN_EDIT_STORAGE_KEY}:${seed?.id || 'default'}`;
+    return createLocalStorageKey(
+      CAMPAIGN_EDIT_STORAGE_KEY,
+      seed?.id || 'default',
+    );
   }
 
   return CAMPAIGN_CREATE_STORAGE_KEY;
@@ -1859,98 +1990,99 @@ function persistEditSeedFromState(state: BuilderState): void {
 
   const seed = getCampaignEditSeed();
 
-  localStorage.setItem(
-    CAMPAIGN_EDIT_SEED_KEY,
-    JSON.stringify({
-      id: seed?.id || 'default',
-      title: state.name,
-      budgetValue: state.dailyBudget,
-      goal: GOAL_LABELS[state.goal],
-    }),
-  );
+  localStorageService.setJson(CAMPAIGN_EDIT_SEED_KEY, {
+    id: seed?.id || 'default',
+    title: state.name,
+    budgetValue: state.dailyBudget,
+    goal: GOAL_LABELS[state.goal],
+  });
 }
 
 function getBuilderState(): BuilderState {
   const mode = getBuilderMode();
 
-  try {
-    const raw = localStorage.getItem(getBuilderStorageKey(mode));
-
-    if (!raw) {
-      return mode === 'edit' ? createEditBuilderState() : createBuilderBaseState();
+  const parsed = localStorageService.getJson<
+    Partial<BuilderState> & {
+      audienceConfig?: Partial<BuilderState['audienceConfig']> & {
+        age?: string;
+      };
     }
+  >(getBuilderStorageKey(mode));
 
-    const parsed = JSON.parse(raw) as Partial<BuilderState> & {
-      audienceConfig?: Partial<BuilderState['audienceConfig']> & { age?: string };
-    };
-    const fallbackState = mode === 'edit' ? createEditBuilderState() : createBuilderBaseState();
-    const fallbackAudience =
-      AUDIENCE_PRESET_CONFIGS[parsed.audienceChip || fallbackState.audienceChip];
-    const storedAudience = parsed.audienceConfig || {};
-
-    return {
-      ...fallbackState,
-      ...parsed,
-      audienceConfig: {
-        cities: Array.isArray(storedAudience.cities)
-          ? storedAudience.cities
-          : [...fallbackAudience.cities],
-        ageRange:
-          typeof storedAudience.ageRange === 'string' && storedAudience.ageRange
-            ? storedAudience.ageRange
-            : typeof storedAudience.age === 'string' && storedAudience.age
-              ? storedAudience.age.split(',')[0]?.trim() || fallbackAudience.ageRange
-              : fallbackAudience.ageRange,
-        profileTags: Array.isArray(storedAudience.profileTags)
-          ? storedAudience.profileTags
-          : typeof storedAudience.age === 'string' && storedAudience.age.includes(',')
-            ? storedAudience.age
-                .split(',')
-                .slice(1)
-                .map((item) => item.trim())
-                .filter(Boolean)
-            : [...fallbackAudience.profileTags],
-        exclusions: Array.isArray(storedAudience.exclusions)
-          ? storedAudience.exclusions
-          : [...fallbackAudience.exclusions],
-        interests: Array.isArray(storedAudience.interests)
-          ? storedAudience.interests
-          : [...fallbackAudience.interests],
-        matchingMode:
-          storedAudience.matchingMode === 'any' ||
-          storedAudience.matchingMode === 'balanced' ||
-          storedAudience.matchingMode === 'strict'
-            ? storedAudience.matchingMode
-            : fallbackAudience.matchingMode,
-        expansionEnabled:
-          typeof storedAudience.expansionEnabled === 'boolean'
-            ? storedAudience.expansionEnabled
-            : fallbackAudience.expansionEnabled,
-        profilePriority:
-          storedAudience.profilePriority === 'primary' ||
-          storedAudience.profilePriority === 'secondary'
-            ? storedAudience.profilePriority
-            : fallbackAudience.profilePriority,
-        interestsPriority:
-          storedAudience.interestsPriority === 'primary' ||
-          storedAudience.interestsPriority === 'secondary'
-            ? storedAudience.interestsPriority
-            : fallbackAudience.interestsPriority,
-      },
-    };
-  } catch {
-    return mode === 'edit' ? createEditBuilderState() : createBuilderBaseState();
+  if (!parsed) {
+    return mode === 'edit'
+      ? createEditBuilderState()
+      : createBuilderBaseState();
   }
+
+  const fallbackState =
+    mode === 'edit' ? createEditBuilderState() : createBuilderBaseState();
+  const fallbackAudience =
+    AUDIENCE_PRESET_CONFIGS[parsed.audienceChip || fallbackState.audienceChip];
+  const storedAudience = parsed.audienceConfig || {};
+
+  return {
+    ...fallbackState,
+    ...parsed,
+    audienceConfig: {
+      cities: Array.isArray(storedAudience.cities)
+        ? storedAudience.cities
+        : [...fallbackAudience.cities],
+      ageRange:
+        typeof storedAudience.ageRange === 'string' && storedAudience.ageRange
+          ? storedAudience.ageRange
+          : typeof storedAudience.age === 'string' && storedAudience.age
+            ? storedAudience.age.split(',')[0]?.trim() ||
+              fallbackAudience.ageRange
+            : fallbackAudience.ageRange,
+      profileTags: Array.isArray(storedAudience.profileTags)
+        ? storedAudience.profileTags
+        : typeof storedAudience.age === 'string' &&
+            storedAudience.age.includes(',')
+          ? storedAudience.age
+              .split(',')
+              .slice(1)
+              .map((item) => item.trim())
+              .filter(Boolean)
+          : [...fallbackAudience.profileTags],
+      exclusions: Array.isArray(storedAudience.exclusions)
+        ? storedAudience.exclusions
+        : [...fallbackAudience.exclusions],
+      interests: Array.isArray(storedAudience.interests)
+        ? storedAudience.interests
+        : [...fallbackAudience.interests],
+      matchingMode:
+        storedAudience.matchingMode === 'any' ||
+        storedAudience.matchingMode === 'balanced' ||
+        storedAudience.matchingMode === 'strict'
+          ? storedAudience.matchingMode
+          : fallbackAudience.matchingMode,
+      expansionEnabled:
+        typeof storedAudience.expansionEnabled === 'boolean'
+          ? storedAudience.expansionEnabled
+          : fallbackAudience.expansionEnabled,
+      profilePriority:
+        storedAudience.profilePriority === 'primary' ||
+        storedAudience.profilePriority === 'secondary'
+          ? storedAudience.profilePriority
+          : fallbackAudience.profilePriority,
+      interestsPriority:
+        storedAudience.interestsPriority === 'primary' ||
+        storedAudience.interestsPriority === 'secondary'
+          ? storedAudience.interestsPriority
+          : fallbackAudience.interestsPriority,
+    },
+  };
 }
 
 function persistBuilderState(state: BuilderState): void {
-  localStorage.setItem(getBuilderStorageKey(), JSON.stringify(state));
+  localStorageService.setJson(getBuilderStorageKey(), state);
   builderSavedAt = Date.now();
 }
 
 function resetBuilderState(): BuilderState {
   const mode = getBuilderMode();
-  localStorage.removeItem(getBuilderStorageKey(mode));
+  localStorageService.removeItem(getBuilderStorageKey(mode));
   builderSavedAt = Date.now();
   return mode === 'edit' ? createEditBuilderState() : createBuilderBaseState();
 }
@@ -1988,7 +2120,10 @@ function getBudgetInsights(state: BuilderState): {
   warnings: string[];
 } {
   const total = Math.max(state.totalBudget, state.dailyBudget);
-  const coverageDays = Math.max(1, Math.round(total / Math.max(state.dailyBudget, 1)));
+  const coverageDays = Math.max(
+    1,
+    Math.round(total / Math.max(state.dailyBudget, 1)),
+  );
   const plannedDays = getBudgetPeriodDays(state.period);
   const paceLabel =
     state.strategy === 'aggressive'
@@ -2034,7 +2169,10 @@ function getBudgetInsights(state: BuilderState): {
     paceNote,
     reserveLabel,
     reserveNote,
-    warningTone: coverageDays < plannedDays || state.totalBudget < state.dailyBudget * 7 ? 'warning' : 'normal',
+    warningTone:
+      coverageDays < plannedDays || state.totalBudget < state.dailyBudget * 7
+        ? 'warning'
+        : 'normal',
     warnings,
   };
 }
@@ -2138,27 +2276,38 @@ function syncStep(state: BuilderState): void {
     .forEach((button, index) => {
       const isActive = button.dataset.step === state.step;
       button.classList.toggle('campaign-builder__step--active', isActive);
-      button.classList.toggle('campaign-builder__step--complete', index < currentIndex);
+      button.classList.toggle(
+        'campaign-builder__step--complete',
+        index < currentIndex,
+      );
 
       const stateNode = button.querySelector<HTMLElement>(
         '.campaign-builder__step-state',
       );
       if (stateNode) {
-        stateNode.textContent = isActive ? 'Сейчас' : index < currentIndex ? 'Готово' : 'Далее';
+        stateNode.textContent = isActive
+          ? 'Сейчас'
+          : index < currentIndex
+            ? 'Готово'
+            : 'Далее';
       }
     });
 
-  document.querySelectorAll<HTMLElement>('[data-step-panel]').forEach((panel) => {
-    panel.hidden = panel.dataset.stepPanel !== state.step;
-  });
+  document
+    .querySelectorAll<HTMLElement>('[data-step-panel]')
+    .forEach((panel) => {
+      panel.hidden = panel.dataset.stepPanel !== state.step;
+    });
 
-  document.querySelectorAll<HTMLButtonElement>('[data-builder-submit]').forEach((button) => {
-    button.classList.toggle('campaign-builder__button--locked', !canSubmit);
-    button.setAttribute('aria-disabled', String(!canSubmit));
-    button.title = canSubmit
-      ? mode.primaryActionLabel
-      : mode.lockedDescription;
-  });
+  document
+    .querySelectorAll<HTMLButtonElement>('[data-builder-submit]')
+    .forEach((button) => {
+      button.classList.toggle('campaign-builder__button--locked', !canSubmit);
+      button.setAttribute('aria-disabled', String(!canSubmit));
+      button.title = canSubmit
+        ? mode.primaryActionLabel
+        : mode.lockedDescription;
+    });
 
   setText('[data-builder-current-step]', progress.currentStepTitle);
   setText('[data-builder-current-step-text]', progress.currentStepText);
@@ -2178,9 +2327,11 @@ function syncContent(state: BuilderState): void {
   const creativeSlots = getCreativeSlots(state.creative, state.creativeAssets);
   const formatLabel = FORMAT_LABELS[state.format];
   const goalLabel = GOAL_LABELS[state.goal];
-  const previewHeadline = state.headline.trim() || 'Добавьте заголовок объявления';
+  const previewHeadline =
+    state.headline.trim() || 'Добавьте заголовок объявления';
   const previewDescription =
-    state.description.trim() || 'Текст объявления появится здесь после заполнения формы.';
+    state.description.trim() ||
+    'Текст объявления появится здесь после заполнения формы.';
   const previewCta = state.cta.trim() || 'Добавьте кнопку';
 
   setTextAll('[data-preview-headline]', previewHeadline);
@@ -2193,24 +2344,31 @@ function syncContent(state: BuilderState): void {
   setTextAll('[data-summary-goal]', goalLabel);
   setText('[data-builder-select-value="format"]', formatLabel);
   setText('[data-builder-select-value="goal"]', goalLabel);
-  setText('[data-builder-headline-count]', String(state.headline.trim().length));
+  setText(
+    '[data-builder-headline-count]',
+    String(state.headline.trim().length),
+  );
   setText(
     '[data-builder-description-count]',
     String(state.description.trim().length),
   );
 
-  document.querySelectorAll<HTMLElement>('[data-builder-creative]').forEach((item) => {
-    item.classList.toggle(
-      'campaign-builder__creative--active',
-      item.dataset.creative === state.creative,
-    );
-  });
+  document
+    .querySelectorAll<HTMLElement>('[data-builder-creative]')
+    .forEach((item) => {
+      item.classList.toggle(
+        'campaign-builder__creative--active',
+        item.dataset.creative === state.creative,
+      );
+    });
 
   document
     .querySelectorAll<HTMLElement>('[data-builder-creative-slot]')
     .forEach((slot) => {
       const key = slot.dataset.slotKey as CreativeAssetKey | undefined;
-      const config = key ? creativeSlots.find((item) => item.key === key) : undefined;
+      const config = key
+        ? creativeSlots.find((item) => item.key === key)
+        : undefined;
 
       if (!config) {
         slot.hidden = true;
@@ -2224,31 +2382,40 @@ function syncContent(state: BuilderState): void {
       setText('[data-builder-slot-status]', config.status, slot);
       setText('[data-builder-slot-button-label]', config.buttonLabel, slot);
 
-      const input = slot.querySelector<HTMLInputElement>('[data-builder-slot-input]');
+      const input = slot.querySelector<HTMLInputElement>(
+        '[data-builder-slot-input]',
+      );
       if (input) {
         input.accept = config.accept;
         input.multiple = Boolean(config.multiple);
       }
     });
 
-  document.querySelectorAll<HTMLElement>('[data-builder-select-option]').forEach((option) => {
-    const key = option.dataset.selectKey;
-    const value = option.dataset.value;
-    const isActive =
-      (key === 'format' && value === state.format) ||
-      (key === 'goal' && value === state.goal) ||
-      (key === 'strategy' && value === state.strategy);
+  document
+    .querySelectorAll<HTMLElement>('[data-builder-select-option]')
+    .forEach((option) => {
+      const key = option.dataset.selectKey;
+      const value = option.dataset.value;
+      const isActive =
+        (key === 'format' && value === state.format) ||
+        (key === 'goal' && value === state.goal) ||
+        (key === 'strategy' && value === state.strategy);
 
-    option.classList.toggle('campaign-builder__select-option--active', isActive);
+      option.classList.toggle(
+        'campaign-builder__select-option--active',
+        isActive,
+      );
 
-    const meta = option.querySelector<HTMLElement>(
-      '.campaign-builder__select-option-meta',
-    );
+      const meta = option.querySelector<HTMLElement>(
+        '.campaign-builder__select-option-meta',
+      );
 
-    if (meta) {
-      meta.textContent = isActive ? 'Выбрано' : meta.dataset.defaultMeta || '';
-    }
-  });
+      if (meta) {
+        meta.textContent = isActive
+          ? 'Выбрано'
+          : meta.dataset.defaultMeta || '';
+      }
+    });
 
   setTextAll('[data-summary-creatives]', creative.count);
   setText('[data-summary-creatives-aside]', creative.count);
@@ -2274,11 +2441,18 @@ function syncAudience(state: BuilderState): void {
   );
   const ctrValue = Math.min(
     2.8,
-    Math.max(0.7, 0.85 + profileCount * 0.2 + interestsCount * 0.08 - citiesCount * 0.04),
+    Math.max(
+      0.7,
+      0.85 + profileCount * 0.2 + interestsCount * 0.08 - citiesCount * 0.04,
+    ),
   );
   const clicksValue = Math.round(reachValue * (ctrValue / 100));
   const breadth =
-    reachValue >= 320000 ? 'Широкий' : reachValue >= 200000 ? 'Сбалансированный' : 'Узкий';
+    reachValue >= 320000
+      ? 'Широкий'
+      : reachValue >= 200000
+        ? 'Сбалансированный'
+        : 'Узкий';
   const competition =
     profileCount >= 4 || interestsCount >= 4
       ? 'Выше средней'
@@ -2310,7 +2484,10 @@ function syncAudience(state: BuilderState): void {
         ? 'Настройки дают хороший объём для старта. Следите за качеством клика и при необходимости усиливайте исключения.'
         : 'Сегмент уже выглядит рабочим: охват достаточно широкий, а профильные признаки удерживают аудиторию близко к офферу.';
 
-  const setAudienceMetricLabel = (valueSelector: string, label: string): void => {
+  const setAudienceMetricLabel = (
+    valueSelector: string,
+    label: string,
+  ): void => {
     const valueNode = document.querySelector<HTMLElement>(valueSelector);
     const labelNode = valueNode
       ?.closest<HTMLElement>('.campaign-builder__metric')
@@ -2332,8 +2509,14 @@ function syncAudience(state: BuilderState): void {
 
   setText('[data-audience-cities]', audience.cities);
   setText('[data-audience-region-count]', audience.regionsLabel);
-  setText('[data-audience-reach]', new Intl.NumberFormat('ru-RU').format(reachValue));
-  setText('[data-audience-clicks]', new Intl.NumberFormat('ru-RU').format(clicksValue));
+  setText(
+    '[data-audience-reach]',
+    new Intl.NumberFormat('ru-RU').format(reachValue),
+  );
+  setText(
+    '[data-audience-clicks]',
+    new Intl.NumberFormat('ru-RU').format(clicksValue),
+  );
   setText('[data-audience-quality-text]', quality);
   setText('[data-audience-quality]', qualityState);
   setText('[data-audience-ctr]', `${ctrValue.toFixed(1)}%`);
@@ -2360,7 +2543,10 @@ function syncAudience(state: BuilderState): void {
   setAudienceMetricLabel('[data-audience-quality-text]', 'Качество аудитории');
   setAudienceMetricLabel('[data-audience-ctr]', 'Прогноз CTR');
   setAudienceMetricLabel('[data-audience-breadth]', 'Ширина сегмента');
-  setAudienceMetricLabel('[data-audience-competition]', 'Конкуренция в аукционе');
+  setAudienceMetricLabel(
+    '[data-audience-competition]',
+    'Конкуренция в аукционе',
+  );
 
   document
     .querySelectorAll<HTMLElement>(
@@ -2369,13 +2555,23 @@ function syncAudience(state: BuilderState): void {
     .forEach((label) => label.remove());
 
   document
-    .querySelectorAll<HTMLElement>('[data-audience-recommendation-title], [data-audience-recommendation-text]')
-    .forEach((node) => node.closest<HTMLElement>('.campaign-builder__metric')?.remove());
+    .querySelectorAll<HTMLElement>(
+      '[data-audience-recommendation-title], [data-audience-recommendation-text]',
+    )
+    .forEach((node) =>
+      node.closest<HTMLElement>('.campaign-builder__metric')?.remove(),
+    );
 
   const insights = getAudienceInsights(state);
   setText('[data-audience-matching-note]', insights.matchingNote);
-  setText('[data-audience-profile-priority-note]', insights.profilePriorityNote);
-  setText('[data-audience-interests-priority-note]', insights.interestsPriorityNote);
+  setText(
+    '[data-audience-profile-priority-note]',
+    insights.profilePriorityNote,
+  );
+  setText(
+    '[data-audience-interests-priority-note]',
+    insights.interestsPriorityNote,
+  );
   setText('[data-audience-expansion-state]', insights.expansionState);
   setText('[data-audience-expansion-note]', insights.expansionNote);
   setText('[data-audience-logic-badge]', insights.logicBadge);
@@ -2383,7 +2579,9 @@ function syncAudience(state: BuilderState): void {
   setText('[data-audience-risk-tone]', insights.riskToneLabel);
 
   document
-    .querySelectorAll<HTMLElement>('[data-builder-audience-setting="matchingMode"]')
+    .querySelectorAll<HTMLElement>(
+      '[data-builder-audience-setting="matchingMode"]',
+    )
     .forEach((button) => {
       button.classList.toggle(
         'campaign-builder__segmented-button--active',
@@ -2392,7 +2590,9 @@ function syncAudience(state: BuilderState): void {
     });
 
   document
-    .querySelectorAll<HTMLElement>('[data-builder-audience-setting="profilePriority"]')
+    .querySelectorAll<HTMLElement>(
+      '[data-builder-audience-setting="profilePriority"]',
+    )
     .forEach((button) => {
       button.classList.toggle(
         'campaign-builder__mini-chip--active',
@@ -2401,7 +2601,9 @@ function syncAudience(state: BuilderState): void {
     });
 
   document
-    .querySelectorAll<HTMLElement>('[data-builder-audience-setting="interestsPriority"]')
+    .querySelectorAll<HTMLElement>(
+      '[data-builder-audience-setting="interestsPriority"]',
+    )
     .forEach((button) => {
       button.classList.toggle(
         'campaign-builder__mini-chip--active',
@@ -2410,26 +2612,36 @@ function syncAudience(state: BuilderState): void {
     });
 
   document
-    .querySelectorAll<HTMLElement>('[data-builder-audience-toggle="expansionEnabled"]')
+    .querySelectorAll<HTMLElement>(
+      '[data-builder-audience-toggle="expansionEnabled"]',
+    )
     .forEach((button) => {
       button.classList.toggle(
         'campaign-builder__toggle--active',
         state.audienceConfig.expansionEnabled,
       );
-      button.setAttribute('aria-pressed', String(state.audienceConfig.expansionEnabled));
+      button.setAttribute(
+        'aria-pressed',
+        String(state.audienceConfig.expansionEnabled),
+      );
     });
 
   document
     .querySelectorAll<HTMLElement>('[data-audience-risk-tone]')
     .forEach((node) => {
-      node.classList.toggle('campaign-builder__pill--danger', insights.riskToneDanger);
+      node.classList.toggle(
+        'campaign-builder__pill--danger',
+        insights.riskToneDanger,
+      );
     });
 
-  document.querySelectorAll<HTMLElement>('[data-audience-risk-list]').forEach((list) => {
-    list.innerHTML = insights.risks
-      .map((risk) => `<li class="campaign-builder__risk-item">${risk}</li>`)
-      .join('');
-  });
+  document
+    .querySelectorAll<HTMLElement>('[data-audience-risk-list]')
+    .forEach((list) => {
+      list.innerHTML = insights.risks
+        .map((risk) => `<li class="campaign-builder__risk-item">${risk}</li>`)
+        .join('');
+    });
 
   renderSavedAudiencesList(state);
 }
@@ -2440,10 +2652,17 @@ function syncBudget(state: BuilderState): void {
   const plannedDays = getBudgetPeriodDays(state.period);
   const coverageDays = Math.max(
     1,
-    Math.round(Math.max(state.totalBudget, state.dailyBudget) / Math.max(state.dailyBudget, 1)),
+    Math.round(
+      Math.max(state.totalBudget, state.dailyBudget) /
+        Math.max(state.dailyBudget, 1),
+    ),
   );
-  const coverageRatio = Math.max(0.08, Math.min(1, coverageDays / Math.max(plannedDays, 1)));
-  const warningToneLabel = insights.warningTone === 'warning' ? 'Нужен контроль' : 'Риск умеренный';
+  const coverageRatio = Math.max(
+    0.08,
+    Math.min(1, coverageDays / Math.max(plannedDays, 1)),
+  );
+  const warningToneLabel =
+    insights.warningTone === 'warning' ? 'Нужен контроль' : 'Риск умеренный';
   const periodTitle =
     plannedDays <= 7
       ? 'Короткий тестовый запуск'
@@ -2458,7 +2677,9 @@ function syncBudget(state: BuilderState): void {
         : 'Подходит для стабильного запуска и постепенного масштабирования кампании.';
   const balanceTitle = `${formatRubles(state.dailyBudget)} в день x ${coverageDays} дн. = ${formatRubles(state.totalBudget)}`;
   const balanceBadge =
-    coverageDays >= plannedDays ? `${coverageDays} из ${plannedDays} дн.` : `Хватит на ${coverageDays} дн.`;
+    coverageDays >= plannedDays
+      ? `${coverageDays} из ${plannedDays} дн.`
+      : `Хватит на ${coverageDays} дн.`;
   const balanceNote =
     coverageDays >= plannedDays
       ? `Лимита хватает на весь период. Дополнительный запас: ${Math.max(0, coverageDays - plannedDays)} дн.`
@@ -2476,7 +2697,10 @@ function syncBudget(state: BuilderState): void {
   setText('[data-budget-reach-aside]', budget.reach);
   setText('[data-budget-clicks-aside]', budget.clicks);
   setText('[data-builder-budget-total]', formatRubles(state.totalBudget));
-  setText('[data-builder-select-value="strategy"]', STRATEGY_LABELS[state.strategy]);
+  setText(
+    '[data-builder-select-value="strategy"]',
+    STRATEGY_LABELS[state.strategy],
+  );
   setText('[data-budget-pace-label]', insights.paceLabel);
   setText('[data-budget-pace-note]', insights.paceNote);
   setText('[data-budget-reserve-label]', insights.reserveLabel);
@@ -2499,35 +2723,55 @@ function syncBudget(state: BuilderState): void {
   setText('[data-budget-balance-badge]', balanceBadge);
   setText('[data-budget-balance-note]', balanceNote);
 
-  document.querySelectorAll<HTMLInputElement>('[data-builder-budget="dailyBudget"]').forEach((field) => {
-    field.value = String(state.dailyBudget);
-  });
+  document
+    .querySelectorAll<HTMLInputElement>('[data-builder-budget="dailyBudget"]')
+    .forEach((field) => {
+      field.value = String(state.dailyBudget);
+    });
 
-  document.querySelectorAll<HTMLInputElement>('[data-builder-budget="totalBudget"]').forEach((field) => {
-    field.value = String(state.totalBudget);
-  });
+  document
+    .querySelectorAll<HTMLInputElement>('[data-builder-budget="totalBudget"]')
+    .forEach((field) => {
+      field.value = String(state.totalBudget);
+    });
 
-  document.querySelectorAll<HTMLInputElement>('[data-builder-budget="periodDays"]').forEach((field) => {
-    field.value = String(plannedDays);
-  });
+  document
+    .querySelectorAll<HTMLInputElement>('[data-builder-budget="periodDays"]')
+    .forEach((field) => {
+      field.value = String(plannedDays);
+    });
 
-  document.querySelectorAll<HTMLElement>('[data-budget-warning-tone]').forEach((node) => {
-    node.classList.toggle('campaign-builder__pill--danger', insights.warningTone === 'warning');
-  });
+  document
+    .querySelectorAll<HTMLElement>('[data-budget-warning-tone]')
+    .forEach((node) => {
+      node.classList.toggle(
+        'campaign-builder__pill--danger',
+        insights.warningTone === 'warning',
+      );
+    });
 
-  document.querySelectorAll<HTMLElement>('[data-budget-balance-badge]').forEach((node) => {
-    node.classList.toggle('campaign-builder__pill--danger', coverageDays < plannedDays);
-  });
+  document
+    .querySelectorAll<HTMLElement>('[data-budget-balance-badge]')
+    .forEach((node) => {
+      node.classList.toggle(
+        'campaign-builder__pill--danger',
+        coverageDays < plannedDays,
+      );
+    });
 
-  document.querySelectorAll<HTMLElement>('[data-budget-balance-fill]').forEach((node) => {
-    node.style.width = `${Math.round(coverageRatio * 100)}%`;
-  });
+  document
+    .querySelectorAll<HTMLElement>('[data-budget-balance-fill]')
+    .forEach((node) => {
+      node.style.width = `${Math.round(coverageRatio * 100)}%`;
+    });
 
-  document.querySelectorAll<HTMLElement>('[data-budget-warning-list]').forEach((list) => {
-    list.innerHTML = insights.warnings
-      .map((item) => `<li class="campaign-builder__risk-item">${item}</li>`)
-      .join('');
-  });
+  document
+    .querySelectorAll<HTMLElement>('[data-budget-warning-list]')
+    .forEach((list) => {
+      list.innerHTML = insights.warnings
+        .map((item) => `<li class="campaign-builder__risk-item">${item}</li>`)
+        .join('');
+    });
 
   document
     .querySelectorAll<HTMLElement>('[data-builder-budget-preset]')
@@ -2579,10 +2823,18 @@ function syncFinalReview(state: BuilderState): void {
       : 'Сверьте сегмент, площадки, срок и бюджет.',
   );
 
-  document.querySelectorAll<HTMLElement>('[data-final-health-badge]').forEach((node) => {
-    node.classList.toggle('campaign-builder__pill--success', finalReview.status.isPositive);
-    node.classList.toggle('campaign-builder__pill--danger', !finalReview.status.isPositive);
-  });
+  document
+    .querySelectorAll<HTMLElement>('[data-final-health-badge]')
+    .forEach((node) => {
+      node.classList.toggle(
+        'campaign-builder__pill--success',
+        finalReview.status.isPositive,
+      );
+      node.classList.toggle(
+        'campaign-builder__pill--danger',
+        !finalReview.status.isPositive,
+      );
+    });
 
   (Object.keys(checks) as FinalReviewCheckKey[]).forEach((key) => {
     const check = checks[key];
@@ -2619,15 +2871,20 @@ function syncHealth(state: BuilderState): void {
 function syncValidation(state: BuilderState): void {
   const errors = getFieldErrors(state);
 
-  document.querySelectorAll<HTMLElement>('[data-builder-error]').forEach((node) => {
-    const key = node.dataset.builderError as FieldKey | undefined;
-    const field = node.closest<HTMLElement>('.campaign-builder__field');
-    const message = key ? errors[key] || '' : '';
+  document
+    .querySelectorAll<HTMLElement>('[data-builder-error]')
+    .forEach((node) => {
+      const key = node.dataset.builderError as FieldKey | undefined;
+      const field = node.closest<HTMLElement>('.campaign-builder__field');
+      const message = key ? errors[key] || '' : '';
 
-    node.textContent = message;
-    node.hidden = !message;
-    field?.classList.toggle('campaign-builder__field--error', Boolean(message));
-  });
+      node.textContent = message;
+      node.hidden = !message;
+      field?.classList.toggle(
+        'campaign-builder__field--error',
+        Boolean(message),
+      );
+    });
 }
 
 function syncSaveState(): void {
@@ -2687,7 +2944,8 @@ function moveStep(state: BuilderState, direction: 'next' | 'prev'): void {
       showToast({
         title: validation.title || 'Проверьте шаг',
         description:
-          validation.description || 'Перед переходом заполните обязательные поля.',
+          validation.description ||
+          'Перед переходом заполните обязательные поля.',
       });
       syncBuilder(state);
       return;
@@ -2706,7 +2964,10 @@ function moveStep(state: BuilderState, direction: 'next' | 'prev'): void {
 }
 
 export async function renderCampaignCreatePage(): Promise<string> {
-  return renderTemplate(campaignCreateTemplate, getTemplateContext(getBuilderState()));
+  return renderTemplate(
+    campaignCreateTemplate,
+    getTemplateContext(getBuilderState()),
+  );
 }
 
 export function CampaignCreate(): void | VoidFunction {
@@ -2811,7 +3072,10 @@ export function CampaignCreate(): void | VoidFunction {
       button.addEventListener(
         'click',
         () => {
-          const direction = button.dataset.direction as 'next' | 'prev' | undefined;
+          const direction = button.dataset.direction as
+            | 'next'
+            | 'prev'
+            | undefined;
           if (direction) {
             moveStep(state, direction);
           }
@@ -2826,7 +3090,9 @@ export function CampaignCreate(): void | VoidFunction {
       button.addEventListener(
         'click',
         () => {
-          const key = button.dataset.reviewJump as FinalReviewCheckKey | undefined;
+          const key = button.dataset.reviewJump as
+            | FinalReviewCheckKey
+            | undefined;
           if (key) {
             jumpToReviewSection(key);
           }
@@ -2836,8 +3102,12 @@ export function CampaignCreate(): void | VoidFunction {
     });
 
   const closeMoreMenu = (): void => {
-    const menu = document.querySelector<HTMLElement>('[data-builder-more-menu]');
-    const trigger = document.querySelector<HTMLElement>('[data-builder-more-trigger]');
+    const menu = document.querySelector<HTMLElement>(
+      '[data-builder-more-menu]',
+    );
+    const trigger = document.querySelector<HTMLElement>(
+      '[data-builder-more-trigger]',
+    );
     menu?.setAttribute('hidden', '');
     trigger?.setAttribute('aria-expanded', 'false');
   };
@@ -2846,8 +3116,12 @@ export function CampaignCreate(): void | VoidFunction {
     'click',
     (event) => {
       event.preventDefault();
-      const menu = document.querySelector<HTMLElement>('[data-builder-more-menu]');
-      const trigger = document.querySelector<HTMLElement>('[data-builder-more-trigger]');
+      const menu = document.querySelector<HTMLElement>(
+        '[data-builder-more-menu]',
+      );
+      const trigger = document.querySelector<HTMLElement>(
+        '[data-builder-more-trigger]',
+      );
       const isOpen = menu ? !menu.hasAttribute('hidden') : false;
 
       if (isOpen) {
@@ -2862,14 +3136,16 @@ export function CampaignCreate(): void | VoidFunction {
   );
 
   document
-    .querySelectorAll<HTMLInputElement | HTMLTextAreaElement>(
-      '[data-builder-input]',
-    )
+    .querySelectorAll<
+      HTMLInputElement | HTMLTextAreaElement
+    >('[data-builder-input]')
     .forEach((field) => {
       field.addEventListener(
         'input',
         () => {
-          const key = field.dataset.builderInput as keyof BuilderState | undefined;
+          const key = field.dataset.builderInput as
+            | keyof BuilderState
+            | undefined;
           if (!key) {
             return;
           }
@@ -2900,7 +3176,11 @@ export function CampaignCreate(): void | VoidFunction {
           () => {
             const value = field.value.trim();
 
-            if (value && !value.startsWith('http://') && !value.startsWith('https://')) {
+            if (
+              value &&
+              !value.startsWith('http://') &&
+              !value.startsWith('https://')
+            ) {
               field.value = `https://${value}`;
               state.link = field.value;
               persistBuilderState(state);
@@ -2913,40 +3193,48 @@ export function CampaignCreate(): void | VoidFunction {
     });
 
   const closeSelects = (): void => {
-    document.querySelectorAll<HTMLElement>('[data-builder-select]').forEach((select) => {
-      select.classList.remove('campaign-builder__select--open');
-      select
-        .querySelector<HTMLElement>('[data-builder-select-menu]')
-        ?.setAttribute('hidden', '');
-      select
-        .querySelector<HTMLElement>('[data-builder-select-trigger]')
-        ?.setAttribute('aria-expanded', 'false');
-    });
+    document
+      .querySelectorAll<HTMLElement>('[data-builder-select]')
+      .forEach((select) => {
+        select.classList.remove('campaign-builder__select--open');
+        select
+          .querySelector<HTMLElement>('[data-builder-select-menu]')
+          ?.setAttribute('hidden', '');
+        select
+          .querySelector<HTMLElement>('[data-builder-select-trigger]')
+          ?.setAttribute('aria-expanded', 'false');
+      });
   };
 
-  document.querySelectorAll<HTMLElement>('[data-builder-select]').forEach((select) => {
-    const trigger = select.querySelector<HTMLElement>(
-      '[data-builder-select-trigger]',
-    );
-    const menu = select.querySelector<HTMLElement>('[data-builder-select-menu]');
+  document
+    .querySelectorAll<HTMLElement>('[data-builder-select]')
+    .forEach((select) => {
+      const trigger = select.querySelector<HTMLElement>(
+        '[data-builder-select-trigger]',
+      );
+      const menu = select.querySelector<HTMLElement>(
+        '[data-builder-select-menu]',
+      );
 
-    trigger?.addEventListener(
-      'click',
-      (event) => {
-        event.preventDefault();
+      trigger?.addEventListener(
+        'click',
+        (event) => {
+          event.preventDefault();
 
-        const isOpen = select.classList.contains('campaign-builder__select--open');
-        closeSelects();
+          const isOpen = select.classList.contains(
+            'campaign-builder__select--open',
+          );
+          closeSelects();
 
-        if (!isOpen) {
-          select.classList.add('campaign-builder__select--open');
-          menu?.removeAttribute('hidden');
-          trigger.setAttribute('aria-expanded', 'true');
-        }
-      },
-      { signal },
-    );
-  });
+          if (!isOpen) {
+            select.classList.add('campaign-builder__select--open');
+            menu?.removeAttribute('hidden');
+            trigger.setAttribute('aria-expanded', 'true');
+          }
+        },
+        { signal },
+      );
+    });
 
   document
     .querySelectorAll<HTMLElement>('[data-builder-select-option]')
@@ -2991,7 +3279,10 @@ export function CampaignCreate(): void | VoidFunction {
     'click',
     (event) => {
       const target = event.target;
-      if (!(target instanceof Element) || target.closest('[data-builder-select]')) {
+      if (
+        !(target instanceof Element) ||
+        target.closest('[data-builder-select]')
+      ) {
         return;
       }
 
@@ -3004,7 +3295,10 @@ export function CampaignCreate(): void | VoidFunction {
     'click',
     (event) => {
       const target = event.target;
-      if (!(target instanceof Element) || target.closest('[data-builder-more]')) {
+      if (
+        !(target instanceof Element) ||
+        target.closest('[data-builder-more]')
+      ) {
         return;
       }
 
@@ -3025,22 +3319,24 @@ export function CampaignCreate(): void | VoidFunction {
     { signal },
   );
 
-  document.querySelectorAll<HTMLElement>('[data-builder-creative]').forEach((button) => {
-    button.addEventListener(
-      'click',
-      () => {
-        const creative = button.dataset.creative as CreativeKey | undefined;
-        if (!creative) {
-          return;
-        }
+  document
+    .querySelectorAll<HTMLElement>('[data-builder-creative]')
+    .forEach((button) => {
+      button.addEventListener(
+        'click',
+        () => {
+          const creative = button.dataset.creative as CreativeKey | undefined;
+          if (!creative) {
+            return;
+          }
 
-        state.creative = creative;
-        persistBuilderState(state);
-        syncBuilder(state);
-      },
-      { signal },
-    );
-  });
+          state.creative = creative;
+          persistBuilderState(state);
+          syncBuilder(state);
+        },
+        { signal },
+      );
+    });
 
   document
     .querySelectorAll<HTMLInputElement>('[data-builder-slot-input]')
@@ -3048,7 +3344,9 @@ export function CampaignCreate(): void | VoidFunction {
       input.addEventListener(
         'change',
         () => {
-          const key = input.dataset.builderSlotInput as CreativeAssetKey | undefined;
+          const key = input.dataset.builderSlotInput as
+            | CreativeAssetKey
+            | undefined;
           const files = input.files ? Array.from(input.files) : [];
 
           if (!key || files.length === 0) {
@@ -3063,7 +3361,8 @@ export function CampaignCreate(): void | VoidFunction {
             input.value = '';
             showToast({
               title: 'Нужен видеофайл',
-              description: 'Для этого слота загрузите MP4, MOV или другой видеофайл.',
+              description:
+                'Для этого слота загрузите MP4, MOV или другой видеофайл.',
             });
             return;
           }
@@ -3072,7 +3371,8 @@ export function CampaignCreate(): void | VoidFunction {
             input.value = '';
             showToast({
               title: 'Нужна обложка',
-              description: 'Для обложки загрузите PNG, JPG или другое изображение.',
+              description:
+                'Для обложки загрузите PNG, JPG или другое изображение.',
             });
             return;
           }
@@ -3194,12 +3494,15 @@ export function CampaignCreate(): void | VoidFunction {
     });
 
   document
-    .querySelectorAll<HTMLElement>('[data-builder-audience-toggle="expansionEnabled"]')
+    .querySelectorAll<HTMLElement>(
+      '[data-builder-audience-toggle="expansionEnabled"]',
+    )
     .forEach((button) => {
       button.addEventListener(
         'click',
         () => {
-          state.audienceConfig.expansionEnabled = !state.audienceConfig.expansionEnabled;
+          state.audienceConfig.expansionEnabled =
+            !state.audienceConfig.expansionEnabled;
           persistBuilderState(state);
           syncBuilder(state);
         },
@@ -3207,85 +3510,99 @@ export function CampaignCreate(): void | VoidFunction {
       );
     });
 
-  document.querySelectorAll<HTMLElement>('[data-builder-save-audience]').forEach((button) => {
-    button.addEventListener(
-      'click',
-      () => {
-        const name = window.prompt('Название аудитории', `Аудитория ${state.audienceConfig.ageRange}`);
-
-        if (!name || !name.trim()) {
-          return;
-        }
-
-        const items = getSavedAudiences();
-        const preset: SavedAudiencePreset = {
-          id: `${Date.now()}`,
-          name: name.trim(),
-          summary: formatSavedAudienceSummary(state.audienceConfig),
-          config: cloneAudienceConfig(state.audienceConfig),
-        };
-
-        persistSavedAudiences([preset, ...items].slice(0, 8));
-        renderSavedAudiencesList(state);
-        showToast({
-          title: 'Аудитория сохранена',
-          description: `Набор "${preset.name}" теперь можно быстро применить в новых кампаниях.`,
-        });
-      },
-      { signal },
-    );
-  });
-
-  document.querySelectorAll<HTMLElement>('[data-builder-saved-audiences]').forEach((container) => {
-    container.addEventListener(
-      'click',
-      (event) => {
-        const target = event.target;
-
-        if (!(target instanceof HTMLElement)) {
-          return;
-        }
-
-        const applyButton = target.closest<HTMLElement>('[data-builder-apply-audience]');
-        const deleteButton = target.closest<HTMLElement>('[data-builder-delete-audience]');
-
-        if (applyButton?.dataset.builderApplyAudience) {
-          const preset = getSavedAudiences().find(
-            (item) => item.id === applyButton.dataset.builderApplyAudience,
+  document
+    .querySelectorAll<HTMLElement>('[data-builder-save-audience]')
+    .forEach((button) => {
+      button.addEventListener(
+        'click',
+        () => {
+          const name = window.prompt(
+            'Название аудитории',
+            `Аудитория ${state.audienceConfig.ageRange}`,
           );
 
-          if (!preset) {
+          if (!name || !name.trim()) {
             return;
           }
 
-          state.audienceConfig = cloneAudienceConfig(preset.config);
-          persistBuilderState(state);
-          syncBuilder(state);
-          showToast({
-            title: 'Аудитория применена',
-            description: `Настройки из "${preset.name}" перенесены в текущую кампанию.`,
-          });
-          return;
-        }
+          const items = getSavedAudiences();
+          const preset: SavedAudiencePreset = {
+            id: `${Date.now()}`,
+            name: name.trim(),
+            summary: formatSavedAudienceSummary(state.audienceConfig),
+            config: cloneAudienceConfig(state.audienceConfig),
+          };
 
-        if (deleteButton?.dataset.builderDeleteAudience) {
-          const nextItems = getSavedAudiences().filter(
-            (item) => item.id !== deleteButton.dataset.builderDeleteAudience,
-          );
-
-          persistSavedAudiences(nextItems);
+          persistSavedAudiences([preset, ...items].slice(0, 8));
           renderSavedAudiencesList(state);
           showToast({
-            title: 'Аудитория удалена',
-            description: 'Сохранённый набор больше не будет доступен в быстрых сценариях.',
+            title: 'Аудитория сохранена',
+            description: `Набор "${preset.name}" теперь можно быстро применить в новых кампаниях.`,
           });
-        }
-      },
-      { signal },
-    );
-  });
+        },
+        { signal },
+      );
+    });
 
-  const audienceModal = document.querySelector<HTMLElement>('[data-builder-audience-modal]');
+  document
+    .querySelectorAll<HTMLElement>('[data-builder-saved-audiences]')
+    .forEach((container) => {
+      container.addEventListener(
+        'click',
+        (event) => {
+          const target = event.target;
+
+          if (!(target instanceof HTMLElement)) {
+            return;
+          }
+
+          const applyButton = target.closest<HTMLElement>(
+            '[data-builder-apply-audience]',
+          );
+          const deleteButton = target.closest<HTMLElement>(
+            '[data-builder-delete-audience]',
+          );
+
+          if (applyButton?.dataset.builderApplyAudience) {
+            const preset = getSavedAudiences().find(
+              (item) => item.id === applyButton.dataset.builderApplyAudience,
+            );
+
+            if (!preset) {
+              return;
+            }
+
+            state.audienceConfig = cloneAudienceConfig(preset.config);
+            persistBuilderState(state);
+            syncBuilder(state);
+            showToast({
+              title: 'Аудитория применена',
+              description: `Настройки из "${preset.name}" перенесены в текущую кампанию.`,
+            });
+            return;
+          }
+
+          if (deleteButton?.dataset.builderDeleteAudience) {
+            const nextItems = getSavedAudiences().filter(
+              (item) => item.id !== deleteButton.dataset.builderDeleteAudience,
+            );
+
+            persistSavedAudiences(nextItems);
+            renderSavedAudiencesList(state);
+            showToast({
+              title: 'Аудитория удалена',
+              description:
+                'Сохранённый набор больше не будет доступен в быстрых сценариях.',
+            });
+          }
+        },
+        { signal },
+      );
+    });
+
+  const audienceModal = document.querySelector<HTMLElement>(
+    '[data-builder-audience-modal]',
+  );
   const audienceModalOptions = document.querySelector<HTMLElement>(
     '[data-builder-audience-modal-options]',
   );
@@ -3305,7 +3622,9 @@ export function CampaignCreate(): void | VoidFunction {
       return;
     }
 
-    const profileState = getProfileSelectionState(draftAudienceConfig.profileTags);
+    const profileState = getProfileSelectionState(
+      draftAudienceConfig.profileTags,
+    );
     const countNode = audienceModalOptions.querySelector<HTMLElement>(
       '[data-profile-selected-count]',
     );
@@ -3399,11 +3718,11 @@ export function CampaignCreate(): void | VoidFunction {
         ? draftAudienceConfig?.cities || []
         : key === 'age'
           ? [draftAudienceConfig?.ageRange || state.audienceConfig.ageRange]
-        : key === 'profile'
-          ? draftAudienceConfig?.profileTags || []
-          : key === 'exclusions'
-            ? draftAudienceConfig?.exclusions || []
-            : draftAudienceConfig?.interests || [];
+          : key === 'profile'
+            ? draftAudienceConfig?.profileTags || []
+            : key === 'exclusions'
+              ? draftAudienceConfig?.exclusions || []
+              : draftAudienceConfig?.interests || [];
 
     if (key === 'profile') {
       const filteredOptions = config.options.filter((option) => {
@@ -3483,7 +3802,8 @@ export function CampaignCreate(): void | VoidFunction {
     audienceModalOptions.innerHTML = filteredOptions
       .map((option) => {
         const checked = selectedValues.includes(option.value);
-        const controlType = config.selectionType === 'single' ? 'radio' : 'checkbox';
+        const controlType =
+          config.selectionType === 'single' ? 'radio' : 'checkbox';
         return `
           <label class="campaign-builder__modal-option">
             <input
@@ -3536,7 +3856,9 @@ export function CampaignCreate(): void | VoidFunction {
     if (audienceModalSearch) {
       audienceModalSearch.value = '';
       audienceModalSearch.placeholder =
-        key === 'profile' ? 'Найти роль, поведение или признак' : 'Найти вариант';
+        key === 'profile'
+          ? 'Найти роль, поведение или признак'
+          : 'Найти вариант';
     }
     audienceModalSearchField?.toggleAttribute('hidden', key === 'age');
     renderAudienceModalOptions(key);
@@ -3553,7 +3875,9 @@ export function CampaignCreate(): void | VoidFunction {
       button.addEventListener(
         'click',
         () => {
-          const key = button.dataset.builderAudienceDetail as AudienceDetailKey | undefined;
+          const key = button.dataset.builderAudienceDetail as
+            | AudienceDetailKey
+            | undefined;
           if (!key || !audienceModal) {
             return;
           }
@@ -3569,7 +3893,11 @@ export function CampaignCreate(): void | VoidFunction {
   audienceModalOptions?.addEventListener(
     'change',
     () => {
-      if (!activeAudienceModal || !draftAudienceConfig || !audienceModalOptions) {
+      if (
+        !activeAudienceModal ||
+        !draftAudienceConfig ||
+        !audienceModalOptions
+      ) {
         return;
       }
 
@@ -3586,7 +3914,9 @@ export function CampaignCreate(): void | VoidFunction {
           selectedValues[0] || state.audienceConfig.ageRange;
       } else if (activeAudienceModal === 'profile') {
         const checkedTagInputs = Array.from(
-          audienceModalOptions.querySelectorAll<HTMLInputElement>('[data-profile-tag]:checked'),
+          audienceModalOptions.querySelectorAll<HTMLInputElement>(
+            '[data-profile-tag]:checked',
+          ),
         );
         if (checkedTagInputs.length > PROFILE_TAG_RULES.max) {
           const lastChecked = checkedTagInputs[checkedTagInputs.length - 1];
@@ -3632,43 +3962,47 @@ export function CampaignCreate(): void | VoidFunction {
       button.addEventListener('click', closeAudienceModal, { signal });
     });
 
-  document.querySelector('[data-builder-audience-modal-save]')?.addEventListener(
-    'click',
-    () => {
-      if (!activeAudienceModal || !draftAudienceConfig) {
-        return;
-      }
+  document
+    .querySelector('[data-builder-audience-modal-save]')
+    ?.addEventListener(
+      'click',
+      () => {
+        if (!activeAudienceModal || !draftAudienceConfig) {
+          return;
+        }
 
-      state.audienceConfig = {
-        cities: draftAudienceConfig.cities.length
-          ? draftAudienceConfig.cities
-          : state.audienceConfig.cities,
-        ageRange: draftAudienceConfig.ageRange,
-        profileTags: draftAudienceConfig.profileTags,
-        exclusions: draftAudienceConfig.exclusions.length
-          ? draftAudienceConfig.exclusions
-          : state.audienceConfig.exclusions,
-        interests: draftAudienceConfig.interests.length
-          ? draftAudienceConfig.interests
-          : state.audienceConfig.interests,
-        matchingMode: state.audienceConfig.matchingMode,
-        expansionEnabled: state.audienceConfig.expansionEnabled,
-        profilePriority: state.audienceConfig.profilePriority,
-        interestsPriority: state.audienceConfig.interestsPriority,
-      };
-      persistBuilderState(state);
-      syncBuilder(state);
-      closeAudienceModal();
-      showToast({
-        title: 'Аудитория обновлена',
-        description: 'Изменения сохранены в настройках таргетинга.',
-      });
-    },
-    { signal },
-  );
+        state.audienceConfig = {
+          cities: draftAudienceConfig.cities.length
+            ? draftAudienceConfig.cities
+            : state.audienceConfig.cities,
+          ageRange: draftAudienceConfig.ageRange,
+          profileTags: draftAudienceConfig.profileTags,
+          exclusions: draftAudienceConfig.exclusions.length
+            ? draftAudienceConfig.exclusions
+            : state.audienceConfig.exclusions,
+          interests: draftAudienceConfig.interests.length
+            ? draftAudienceConfig.interests
+            : state.audienceConfig.interests,
+          matchingMode: state.audienceConfig.matchingMode,
+          expansionEnabled: state.audienceConfig.expansionEnabled,
+          profilePriority: state.audienceConfig.profilePriority,
+          interestsPriority: state.audienceConfig.interestsPriority,
+        };
+        persistBuilderState(state);
+        syncBuilder(state);
+        closeAudienceModal();
+        showToast({
+          title: 'Аудитория обновлена',
+          description: 'Изменения сохранены в настройках таргетинга.',
+        });
+      },
+      { signal },
+    );
 
   document
-    .querySelectorAll<HTMLInputElement | HTMLSelectElement>('[data-builder-budget]')
+    .querySelectorAll<
+      HTMLInputElement | HTMLSelectElement
+    >('[data-builder-budget]')
     .forEach((field) => {
       const update = () => {
         const key = field.dataset.builderBudget;
@@ -3681,7 +4015,10 @@ export function CampaignCreate(): void | VoidFunction {
           state[key] = (Number.isFinite(parsed) ? parsed : 0) as never;
         } else if (key === 'periodDays') {
           const parsed = Number(field.value);
-          const clamped = Math.max(1, Math.min(365, Number.isFinite(parsed) ? Math.round(parsed) : 14));
+          const clamped = Math.max(
+            1,
+            Math.min(365, Number.isFinite(parsed) ? Math.round(parsed) : 14),
+          );
 
           field.value = String(clamped);
           state.period = formatBudgetPeriod(clamped);
@@ -3697,23 +4034,28 @@ export function CampaignCreate(): void | VoidFunction {
       field.addEventListener('change', update, { signal });
     });
 
-  document.querySelectorAll<HTMLElement>('[data-builder-save-template]').forEach((button) => {
-    button.addEventListener(
-      'click',
-      () => {
-        localStorage.setItem('campaign_builder_template', JSON.stringify(state));
-        persistBuilderState(state);
-        syncSaveState();
-        closeMoreMenu();
-        showToast({
-          title: 'Шаблон сохранён',
-          description:
-            'Текущую конфигурацию можно использовать как основу для следующей кампании.',
-        });
-      },
-      { signal },
-    );
-  });
+  document
+    .querySelectorAll<HTMLElement>('[data-builder-save-template]')
+    .forEach((button) => {
+      button.addEventListener(
+        'click',
+        () => {
+          localStorageService.setJson(
+            LocalStorageKey.CampaignBuilderTemplate,
+            state,
+          );
+          persistBuilderState(state);
+          syncSaveState();
+          closeMoreMenu();
+          showToast({
+            title: 'Шаблон сохранён',
+            description:
+              'Текущую конфигурацию можно использовать как основу для следующей кампании.',
+          });
+        },
+        { signal },
+      );
+    });
 
   document.querySelector('[data-builder-duplicate]')?.addEventListener(
     'click',
@@ -3744,63 +4086,68 @@ export function CampaignCreate(): void | VoidFunction {
     { signal },
   );
 
-  document.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(
-    '[data-builder-input], [data-builder-budget]',
-  ).forEach((field) => {
-    field.addEventListener(
-      'change',
-      () => {
-        syncSaveState();
-      },
-      { signal },
-    );
-  });
+  document
+    .querySelectorAll<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >('[data-builder-input], [data-builder-budget]')
+    .forEach((field) => {
+      field.addEventListener(
+        'change',
+        () => {
+          syncSaveState();
+        },
+        { signal },
+      );
+    });
 
-  document.querySelectorAll<HTMLElement>('[data-builder-submit]').forEach((button) => {
-    button.addEventListener(
-      'click',
-      () => {
-        const mode = getBuilderModeConfig();
+  document
+    .querySelectorAll<HTMLElement>('[data-builder-submit]')
+    .forEach((button) => {
+      button.addEventListener(
+        'click',
+        () => {
+          const mode = getBuilderModeConfig();
 
-        if (state.step !== 'publication') {
-          const validation = validateBuilder(state);
+          if (state.step !== 'publication') {
+            const validation = validateBuilder(state);
 
-          showToast({
-            title: validation.ok ? mode.lockedTitle : 'Ещё не всё заполнено',
-            description: validation.ok
-              ? mode.lockedDescription
-              : validation.description || 'Заполните обязательные поля перед отправкой.',
-          });
-          return;
-        }
-
-        const validation = validateBuilder(state);
-
-        if (!validation.ok) {
-          if (validation.step) {
-            setStep(validation.step);
+            showToast({
+              title: validation.ok ? mode.lockedTitle : 'Ещё не всё заполнено',
+              description: validation.ok
+                ? mode.lockedDescription
+                : validation.description ||
+                  'Заполните обязательные поля перед отправкой.',
+            });
+            return;
           }
 
-          showToast({
-            title: validation.title || mode.submitValidationTitle,
-            description:
-              validation.description || 'Не все обязательные поля заполнены.',
-          });
-          return;
-        }
+          const validation = validateBuilder(state);
 
-        state.step = 'publication';
-        persistBuilderState(state);
-        persistEditSeedFromState(state);
-        syncBuilder(state);
-        showToast({
-          title: mode.submitSuccessTitle,
-          description: mode.submitSuccessDescription,
-        });
-      },
-      { signal },
-    );
-  });
+          if (!validation.ok) {
+            if (validation.step) {
+              setStep(validation.step);
+            }
+
+            showToast({
+              title: validation.title || mode.submitValidationTitle,
+              description:
+                validation.description || 'Не все обязательные поля заполнены.',
+            });
+            return;
+          }
+
+          state.step = 'publication';
+          persistBuilderState(state);
+          persistEditSeedFromState(state);
+          syncBuilder(state);
+          showToast({
+            title: mode.submitSuccessTitle,
+            description: mode.submitSuccessDescription,
+          });
+        },
+        { signal },
+      );
+    });
 
   document
     .querySelector('[data-builder-toast-close]')
@@ -3821,6 +4168,3 @@ export function CampaignCreate(): void | VoidFunction {
     controller.abort();
   };
 }
-
-
-

@@ -45,7 +45,7 @@ function sendIndexHtml(req, res) {
 app.get('/', sendIndexHtml);
 app.get(/^\/(?!api|fonts|icons|img|js|css|sw\.js).*/, sendIndexHtml);
 
-const PORT = 8080;
+const PORT = 8081;
 
 app.listen(PORT, () => {
   console.log(

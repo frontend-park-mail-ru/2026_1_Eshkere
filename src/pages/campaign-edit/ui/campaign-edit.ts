@@ -1,5 +1,6 @@
 import './campaign-edit.scss';
 import { navigateTo } from 'app/navigation';
+import { LocalStorageKey, localStorageService } from 'shared/lib/local-storage';
 import { renderTemplate } from 'shared/lib/render';
 import { formatPrice } from 'shared/lib/format';
 import campaignEditTemplate from './campaign-edit.hbs';
@@ -63,8 +64,8 @@ interface CampaignEditTemplateContext {
   ctaOptions: Array<{ value: CtaKey; label: string; selected: boolean }>;
 }
 
-const CAMPAIGN_EDIT_STORAGE_KEY = 'campaign_edit_state';
-const CAMPAIGN_EDIT_SEED_KEY = 'campaign_edit_seed';
+const CAMPAIGN_EDIT_STORAGE_KEY = LocalStorageKey.CampaignEditState;
+const CAMPAIGN_EDIT_SEED_KEY = LocalStorageKey.CampaignEditSeed;
 const CAMPAIGN_EDIT_TOAST_DELAY = 3200;
 
 const CTA_OPTIONS: Array<{ value: CtaKey; label: string }> = [
@@ -125,95 +126,96 @@ let campaignEditLifecycleController: AbortController | null = null;
 let editToastTimer: number | null = null;
 
 function getCtaLabel(value: CtaKey): string {
-  return CTA_OPTIONS.find((option) => option.value === value)?.label || CTA_OPTIONS[0].label;
+  return (
+    CTA_OPTIONS.find((option) => option.value === value)?.label ||
+    CTA_OPTIONS[0].label
+  );
 }
 
 function getSeededState(): Partial<CampaignEditState> {
-  try {
-    const raw = localStorage.getItem(CAMPAIGN_EDIT_SEED_KEY);
-    if (!raw) {
-      return {};
-    }
-
-    const parsed = JSON.parse(raw) as Partial<CampaignEditState> & {
+  const parsed = localStorageService.getJson<
+    Partial<CampaignEditState> & {
       title?: string;
       budgetValue?: number;
       goal?: string;
-    };
+    }
+  >(CAMPAIGN_EDIT_SEED_KEY);
 
-    const seededBudget =
-      typeof parsed.budgetValue === 'number' && Number.isFinite(parsed.budgetValue)
-        ? Math.max(1000, Math.round(parsed.budgetValue))
-        : DEFAULT_STATE.dailyBudget;
+  if (!parsed) {
+    return {};
+  }
 
-    return {
-      id: typeof parsed.id === 'string' ? parsed.id : DEFAULT_STATE.id,
+  const seededBudget =
+    typeof parsed.budgetValue === 'number' &&
+    Number.isFinite(parsed.budgetValue)
+      ? Math.max(1000, Math.round(parsed.budgetValue))
+      : DEFAULT_STATE.dailyBudget;
+
+  return {
+    id: typeof parsed.id === 'string' ? parsed.id : DEFAULT_STATE.id,
+    name:
+      typeof parsed.name === 'string'
+        ? parsed.name
+        : typeof parsed.title === 'string'
+          ? `${parsed.title} - версия 2`
+          : DEFAULT_STATE.name,
+    baseline: {
+      ...DEFAULT_STATE.baseline,
       name:
         typeof parsed.name === 'string'
           ? parsed.name
           : typeof parsed.title === 'string'
-            ? `${parsed.title} - версия 2`
-            : DEFAULT_STATE.name,
-      baseline: {
-        ...DEFAULT_STATE.baseline,
-        name:
-          typeof parsed.name === 'string'
-            ? parsed.name
-            : typeof parsed.title === 'string'
-              ? parsed.title
-              : DEFAULT_STATE.baseline.name,
-        dailyBudget: seededBudget,
-      },
+            ? parsed.title
+            : DEFAULT_STATE.baseline.name,
       dailyBudget: seededBudget,
-      remainingBudget: Math.max(12000, seededBudget * 4),
-      goal: typeof parsed.goal === 'string' ? parsed.goal : DEFAULT_STATE.goal,
-    };
-  } catch {
-    return {};
-  }
+    },
+    dailyBudget: seededBudget,
+    remainingBudget: Math.max(12000, seededBudget * 4),
+    goal: typeof parsed.goal === 'string' ? parsed.goal : DEFAULT_STATE.goal,
+  };
 }
 
 function getCampaignEditState(): CampaignEditState {
-  try {
-    const persisted = localStorage.getItem(CAMPAIGN_EDIT_STORAGE_KEY);
-    const base = {
-      ...DEFAULT_STATE,
-      ...getSeededState(),
-    };
+  const base = {
+    ...DEFAULT_STATE,
+    ...getSeededState(),
+  };
+  const persisted = localStorageService.getJson<Partial<CampaignEditState>>(
+    CAMPAIGN_EDIT_STORAGE_KEY,
+  );
 
-    if (!persisted) {
-      return base;
-    }
-
-    const parsed = JSON.parse(persisted) as Partial<CampaignEditState>;
-
-    return {
-      ...base,
-      ...parsed,
-      history: Array.isArray(parsed.history) ? parsed.history : base.history,
-      baseline: {
-        ...base.baseline,
-        ...(parsed.baseline || {}),
-      },
-    };
-  } catch {
-    return {
-      ...DEFAULT_STATE,
-      ...getSeededState(),
-    };
+  if (!persisted) {
+    return base;
   }
+
+  return {
+    ...base,
+    ...persisted,
+    history: Array.isArray(persisted.history)
+      ? persisted.history
+      : base.history,
+    baseline: {
+      ...base.baseline,
+      ...(persisted.baseline || {}),
+    },
+  };
 }
 
 function persistCampaignEditState(state: CampaignEditState): void {
-  localStorage.setItem(CAMPAIGN_EDIT_STORAGE_KEY, JSON.stringify(state));
+  localStorageService.setJson(CAMPAIGN_EDIT_STORAGE_KEY, state);
 }
 
-function createChangeSummary(state: CampaignEditState): Array<{ key: string; label: string; value: string }> {
-  const headlineChanged = state.headline.trim() !== state.baseline.headline.trim();
-  const descriptionChanged = state.description.trim() !== state.baseline.description.trim();
+function createChangeSummary(
+  state: CampaignEditState,
+): Array<{ key: string; label: string; value: string }> {
+  const headlineChanged =
+    state.headline.trim() !== state.baseline.headline.trim();
+  const descriptionChanged =
+    state.description.trim() !== state.baseline.description.trim();
   const ctaChanged = state.cta !== state.baseline.cta;
   const budgetDelta = state.dailyBudget - state.baseline.dailyBudget;
-  const moderationRequired = headlineChanged || descriptionChanged || ctaChanged;
+  const moderationRequired =
+    headlineChanged || descriptionChanged || ctaChanged;
 
   const textChangedParts: string[] = [];
   if (headlineChanged) textChangedParts.push('Заголовок');
@@ -256,14 +258,24 @@ function createChangeSummary(state: CampaignEditState): Array<{ key: string; lab
   ];
 }
 
-function toTemplateContext(state: CampaignEditState): CampaignEditTemplateContext {
+function toTemplateContext(
+  state: CampaignEditState,
+): CampaignEditTemplateContext {
   return {
     moderationBadge: state.moderationBadge,
     saveState: 'Черновик сохранён',
     stats: [
       { key: 'status', label: 'Текущий статус', value: state.status },
-      { key: 'updated', label: 'Последнее обновление', value: state.updatedLabel },
-      { key: 'budget', label: 'Остаток бюджета', value: formatPrice(state.remainingBudget) },
+      {
+        key: 'updated',
+        label: 'Последнее обновление',
+        value: state.updatedLabel,
+      },
+      {
+        key: 'budget',
+        label: 'Остаток бюджета',
+        value: formatPrice(state.remainingBudget),
+      },
       { key: 'ctr', label: 'CTR', value: `${state.ctr.toFixed(1)}%` },
     ],
     form: {
@@ -296,7 +308,9 @@ function setText(selector: string, value: string): void {
 }
 
 function renderHistory(state: CampaignEditState): void {
-  const historyRoot = document.querySelector<HTMLElement>('[data-edit-history]');
+  const historyRoot = document.querySelector<HTMLElement>(
+    '[data-edit-history]',
+  );
   if (!historyRoot) {
     return;
   }
@@ -317,7 +331,9 @@ function renderHistory(state: CampaignEditState): void {
 }
 
 function renderSummary(state: CampaignEditState): void {
-  const summaryRoot = document.querySelector<HTMLElement>('[data-edit-summary]');
+  const summaryRoot = document.querySelector<HTMLElement>(
+    '[data-edit-summary]',
+  );
   if (!summaryRoot) {
     return;
   }
@@ -338,22 +354,26 @@ function renderSummary(state: CampaignEditState): void {
 
 function syncCtaSelect(state: CampaignEditState): void {
   setText('[data-edit-select-value]', getCtaLabel(state.cta));
-  document.querySelectorAll<HTMLElement>('[data-edit-cta-option]').forEach((node) => {
-    const isSelected = node.dataset.editCtaOption === state.cta;
-    node.classList.toggle('is-selected', isSelected);
-    const metaNode = node.querySelector<HTMLElement>('.campaign-edit__select-meta');
+  document
+    .querySelectorAll<HTMLElement>('[data-edit-cta-option]')
+    .forEach((node) => {
+      const isSelected = node.dataset.editCtaOption === state.cta;
+      node.classList.toggle('is-selected', isSelected);
+      const metaNode = node.querySelector<HTMLElement>(
+        '.campaign-edit__select-meta',
+      );
 
-    if (isSelected && !metaNode) {
-      const meta = document.createElement('span');
-      meta.className = 'campaign-edit__select-meta';
-      meta.textContent = 'Выбрано';
-      node.appendChild(meta);
-    }
+      if (isSelected && !metaNode) {
+        const meta = document.createElement('span');
+        meta.className = 'campaign-edit__select-meta';
+        meta.textContent = 'Выбрано';
+        node.appendChild(meta);
+      }
 
-    if (!isSelected && metaNode) {
-      metaNode.remove();
-    }
-  });
+      if (!isSelected && metaNode) {
+        metaNode.remove();
+      }
+    });
 }
 
 function syncCampaignEdit(state: CampaignEditState, dirty: boolean): void {
@@ -365,9 +385,13 @@ function syncCampaignEdit(state: CampaignEditState, dirty: boolean): void {
   setText('[data-edit-stat="ctr"]', `${state.ctr.toFixed(1)}%`);
   setText('[data-edit-moderation-badge]', state.moderationBadge);
 
-  const saveStateNode = document.querySelector<HTMLElement>('[data-edit-save-state]');
+  const saveStateNode = document.querySelector<HTMLElement>(
+    '[data-edit-save-state]',
+  );
   if (saveStateNode) {
-    saveStateNode.textContent = dirty ? 'Есть несохранённые изменения' : 'Черновик сохранён';
+    saveStateNode.textContent = dirty
+      ? 'Есть несохранённые изменения'
+      : 'Черновик сохранён';
     saveStateNode.dataset.state = dirty ? 'dirty' : 'saved';
   }
 
@@ -431,13 +455,18 @@ function closeDeleteModal(): void {
 
 function buildSaveHistoryText(state: CampaignEditState): string {
   const changes = createChangeSummary(state);
-  const textChange = changes.find((item) => item.key === 'text')?.value || 'Нет';
-  const budgetChange = changes.find((item) => item.key === 'budget')?.value || 'Без изменений';
+  const textChange =
+    changes.find((item) => item.key === 'text')?.value || 'Нет';
+  const budgetChange =
+    changes.find((item) => item.key === 'budget')?.value || 'Без изменений';
   return `Текст: ${textChange}. Бюджет: ${budgetChange}.`;
 }
 
 export async function renderCampaignEditPage(): Promise<string> {
-  return renderTemplate(campaignEditTemplate, toTemplateContext(getCampaignEditState()));
+  return renderTemplate(
+    campaignEditTemplate,
+    toTemplateContext(getCampaignEditState()),
+  );
 }
 
 export function CampaignEdit(): void | VoidFunction {
@@ -470,99 +499,114 @@ export function CampaignEdit(): void | VoidFunction {
     { signal },
   );
 
-  document.querySelector<HTMLElement>('[data-edit-duplicate]')?.addEventListener(
-    'click',
-    () => {
-      const draft = {
-        name: `${state.name} — копия`,
-        headline: state.headline,
-        description: state.description,
-        cta: getCtaLabel(state.cta),
-        link: 'https://eshke.ru/promo/spring',
-        dailyBudget: state.dailyBudget,
-        period: state.period,
+  document
+    .querySelector<HTMLElement>('[data-edit-duplicate]')
+    ?.addEventListener(
+      'click',
+      () => {
+        const draft = {
+          name: `${state.name} — копия`,
+          headline: state.headline,
+          description: state.description,
+          cta: getCtaLabel(state.cta),
+          link: 'https://eshke.ru/promo/spring',
+          dailyBudget: state.dailyBudget,
+          period: state.period,
+        };
+
+        localStorageService.setJson(
+          LocalStorageKey.CampaignBuilderDraft,
+          draft,
+        );
+        navigateTo('/ads/create');
+      },
+      { signal },
+    );
+
+  document
+    .querySelector<HTMLElement>('[data-edit-delete-open]')
+    ?.addEventListener('click', openDeleteModal, { signal });
+
+  document
+    .querySelector<HTMLElement>('[data-edit-delete-cancel]')
+    ?.addEventListener('click', closeDeleteModal, { signal });
+
+  document
+    .querySelector<HTMLElement>('[data-edit-delete-confirm]')
+    ?.addEventListener(
+      'click',
+      () => {
+        localStorageService.removeItem(CAMPAIGN_EDIT_STORAGE_KEY);
+        localStorageService.removeItem(CAMPAIGN_EDIT_SEED_KEY);
+        closeDeleteModal();
+        navigateTo('/ads');
+      },
+      { signal },
+    );
+
+  document
+    .querySelector<HTMLElement>('[data-edit-delete-modal]')
+    ?.addEventListener(
+      'click',
+      (event) => {
+        if (event.target === event.currentTarget) {
+          closeDeleteModal();
+        }
+      },
+      { signal },
+    );
+
+  document
+    .querySelector<HTMLElement>('[data-edit-toast-close]')
+    ?.addEventListener('click', hideEditToast, { signal });
+
+  document
+    .querySelectorAll<
+      HTMLInputElement | HTMLTextAreaElement
+    >('[data-edit-input]')
+    .forEach((field) => {
+      const key = field.dataset.editInput;
+
+      const update = (): void => {
+        if (key === 'name') {
+          state.name = field.value.trim();
+        }
+
+        if (key === 'headline') {
+          state.headline = field.value.trim();
+        }
+
+        if (key === 'description') {
+          state.description = field.value.trim();
+        }
+
+        if (key === 'dailyBudget') {
+          const nextValue = Number(field.value);
+          state.dailyBudget = Number.isFinite(nextValue)
+            ? Math.max(1000, nextValue)
+            : state.dailyBudget;
+        }
+
+        if (key === 'period') {
+          state.period = field.value.trim();
+        }
+
+        markDirty();
       };
 
-      localStorage.setItem('campaign_builder_draft', JSON.stringify(draft));
-      navigateTo('/ads/create');
-    },
-    { signal },
+      field.addEventListener('input', update, { signal });
+      field.addEventListener('change', update, { signal });
+    });
+
+  const ctaSelect = document.querySelector<HTMLElement>(
+    '[data-edit-select="cta"]',
   );
-
-  document.querySelector<HTMLElement>('[data-edit-delete-open]')?.addEventListener(
-    'click',
-    openDeleteModal,
-    { signal },
+  const ctaTrigger = ctaSelect?.querySelector<HTMLElement>(
+    '[data-edit-select-trigger]',
   );
-
-  document.querySelector<HTMLElement>('[data-edit-delete-cancel]')?.addEventListener(
-    'click',
-    closeDeleteModal,
-    { signal },
+  const ctaMenu = ctaSelect?.querySelector<HTMLElement>(
+    '[data-edit-select-menu]',
   );
-
-  document.querySelector<HTMLElement>('[data-edit-delete-confirm]')?.addEventListener(
-    'click',
-    () => {
-      localStorage.removeItem(CAMPAIGN_EDIT_STORAGE_KEY);
-      localStorage.removeItem(CAMPAIGN_EDIT_SEED_KEY);
-      closeDeleteModal();
-      navigateTo('/ads');
-    },
-    { signal },
-  );
-
-  document.querySelector<HTMLElement>('[data-edit-delete-modal]')?.addEventListener(
-    'click',
-    (event) => {
-      if (event.target === event.currentTarget) {
-        closeDeleteModal();
-      }
-    },
-    { signal },
-  );
-
-  document.querySelector<HTMLElement>('[data-edit-toast-close]')?.addEventListener(
-    'click',
-    hideEditToast,
-    { signal },
-  );
-
-  document.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('[data-edit-input]').forEach((field) => {
-    const key = field.dataset.editInput;
-
-    const update = (): void => {
-      if (key === 'name') {
-        state.name = field.value.trim();
-      }
-
-      if (key === 'headline') {
-        state.headline = field.value.trim();
-      }
-
-      if (key === 'description') {
-        state.description = field.value.trim();
-      }
-
-      if (key === 'dailyBudget') {
-        const nextValue = Number(field.value);
-        state.dailyBudget = Number.isFinite(nextValue) ? Math.max(1000, nextValue) : state.dailyBudget;
-      }
-
-      if (key === 'period') {
-        state.period = field.value.trim();
-      }
-
-      markDirty();
-    };
-
-    field.addEventListener('input', update, { signal });
-    field.addEventListener('change', update, { signal });
-  });
-
-  const ctaSelect = document.querySelector<HTMLElement>('[data-edit-select="cta"]');
-  const ctaTrigger = ctaSelect?.querySelector<HTMLElement>('[data-edit-select-trigger]');
-  const ctaMenu = ctaSelect?.querySelector<HTMLElement>('[data-edit-select-menu]');
 
   const setCtaMenuOpen = (open: boolean): void => {
     if (ctaTrigger) {
@@ -587,22 +631,24 @@ export function CampaignEdit(): void | VoidFunction {
     { signal },
   );
 
-  document.querySelectorAll<HTMLElement>('[data-edit-cta-option]').forEach((option) => {
-    option.addEventListener(
-      'click',
-      () => {
-        const nextValue = option.dataset.editCtaOption as CtaKey | undefined;
-        if (!nextValue) {
-          return;
-        }
+  document
+    .querySelectorAll<HTMLElement>('[data-edit-cta-option]')
+    .forEach((option) => {
+      option.addEventListener(
+        'click',
+        () => {
+          const nextValue = option.dataset.editCtaOption as CtaKey | undefined;
+          if (!nextValue) {
+            return;
+          }
 
-        state.cta = nextValue;
-        setCtaMenuOpen(false);
-        markDirty();
-      },
-      { signal },
-    );
-  });
+          state.cta = nextValue;
+          setCtaMenuOpen(false);
+          markDirty();
+        },
+        { signal },
+      );
+    });
 
   document.addEventListener(
     'click',
@@ -648,7 +694,10 @@ export function CampaignEdit(): void | VoidFunction {
       persistCampaignEditState(state);
       dirty = false;
       syncCampaignEdit(state, dirty);
-      showEditToast('Изменения сохранены', 'Новая версия объявления готова к повторной проверке.');
+      showEditToast(
+        'Изменения сохранены',
+        'Новая версия объявления готова к повторной проверке.',
+      );
     },
     { signal },
   );

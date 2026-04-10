@@ -308,16 +308,10 @@
   &__logout-modal-dialog {
     width: min(460px, 100%);
     padding: 24px;
-    border: 1px solid rgba(198, 204, 235, 0.8);
+    border: 1px solid var(--border-panel-soft);
     border-radius: 24px;
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.98) 0%,
-      rgba(248, 249, 255, 0.98) 100%
-    );
-    box-shadow:
-      0 28px 70px rgba(20, 24, 48, 0.2),
-      0 0 0 1px rgba(255, 255, 255, 0.45) inset;
+    background: var(--gradient-modal-surface);
+    box-shadow: var(--shadow-modal-strong), var(--shadow-inset-highlight);
     display: flex;
     flex-direction: column;
     gap: 18px;
@@ -334,7 +328,7 @@
     font-size: 20px;
     line-height: 1.15;
     font-weight: 800;
-    color: #0d0f19;
+    color: var(--text-heading);
   }
 
   &__logout-modal-text {
@@ -342,7 +336,7 @@
     max-width: 340px;
     font-size: 14px;
     line-height: 1.4;
-    color: #8d94ab;
+    color: var(--text-muted);
   }
 
   &__logout-modal-illustration {
@@ -371,12 +365,8 @@
   &__logout-modal-note {
     padding: 16px 18px;
     border-radius: 16px;
-    background: linear-gradient(
-      180deg,
-      rgba(237, 238, 255, 0.95) 0%,
-      rgba(229, 231, 252, 0.95) 100%
-    );
-    color: #606782;
+    background: var(--gradient-note-surface);
+    color: var(--text-note);
     font-size: 13px;
     line-height: 1.45;
   }
@@ -390,26 +380,23 @@
     flex: 1;
     height: 52px;
     border-radius: 14px;
-    border: 1px solid #d8dced;
+    border: 1px solid var(--border-strong);
     font-size: 17px;
     font-weight: 700;
     cursor: pointer;
-    @include mixins.interactive-lift(
-      -1px,
-      0 10px 20px rgba(20, 24, 48, 0.08)
-    );
-    @include mixins.focus-ring(rgba(90, 84, 255, 0.25));
+    @include mixins.interactive-lift(-1px, var(--shadow-button-soft));
+    @include mixins.focus-ring(var(--focus-ring));
 
     &--primary {
       border-color: transparent;
       background: t.$primary-gradient;
-      color: #fff;
+      color: var(--white);
       box-shadow: t.$shadow-primary;
     }
 
     &--secondary {
-      background: #fff;
-      color: #2f3546;
+      background: var(--white);
+      color: var(--text-body-alt);
     }
   }
 }

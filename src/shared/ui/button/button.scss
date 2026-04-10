@@ -17,7 +17,7 @@
 
   &--secondary {
     border: 1px solid var(--border);
-    background: rgba(255, 255, 255, 0.65);
-    color: #2d3345;
+    background: var(--surface-button-secondary);
+    color: var(--text-body);
   }
 }

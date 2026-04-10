@@ -1,5 +1,5 @@
 import './ads.scss';
-import { renderTemplate } from 'shared/lib/render';
+import { renderElement, renderTemplate } from 'shared/lib/render';
 import {
   addMonths,
   endOfMonth,
@@ -15,10 +15,12 @@ import {
   startOfYear,
 } from 'shared/lib/date';
 import { formatDate, formatPrice } from 'shared/lib/format';
+import { LocalStorageKey, localStorageService } from 'shared/lib/local-storage';
 import { MONTHS_RU_FULL } from 'shared/lib/constants/ru-months';
 import { getAds } from 'features/ads';
 import { navigateTo } from 'app/navigation';
 import type { AdItem } from 'features/ads/api/get-ads';
+import adsActionMenuTemplate from './ads-action-menu.hbs';
 import adsPageTemplate from './ads.hbs';
 
 let adsPageLifecycleController: AbortController | null = null;
@@ -426,43 +428,17 @@ function CampaignActionMenus(signal: AbortSignal): void {
       return existing;
     }
 
-    const menu = document.createElement('div');
-    menu.className = 'campaign-row__menu';
-    menu.hidden = true;
-    menu.innerHTML = `
-      <button type="button" class="campaign-row__menu-item">
-        <svg viewBox="0 0 24 24" class="campaign-row__menu-icon campaign-row__menu-icon--blue">
-          <path d="M4 4h16v16H4V4Zm3 12h2V9H7v7Zm4 0h2V12h-2v4Zm4 0h2V7h-2v9Z"/>
-        </svg>
-        <span>Статистика</span>
-      </button>
-      <button type="button" class="campaign-row__menu-item">
-        <svg viewBox="0 0 24 24" class="campaign-row__menu-icon campaign-row__menu-icon--blue">
-          <path d="m12 4V1L8 5l4 4V6a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8Zm-1 4v5l4 2 .9-1.8-2.9-1.4V8H11Z"/>
-        </svg>
-        <span>История действий</span>
-      </button>
-      <button type="button" class="campaign-row__menu-item js-edit-menu-item">
-        <svg viewBox="0 0 24 24" class="campaign-row__menu-icon campaign-row__menu-icon--blue">
-          <path d="m3 17.25 9.9-9.9 3.75 3.75-9.9 9.9H3v-3.75Zm14.7-10.2 1.8-1.8a1 1 0 0 0 0-1.4L18.15 2.5a1 1 0 0 0-1.4 0l-1.8 1.8 2.75 2.75Z"/>
-        </svg>
-        <span>Редактировать</span>
-      </button>
-      <button type="button" class="campaign-row__menu-item campaign-row__menu-item--danger js-delete-menu-item">
-        <svg viewBox="0 0 24 24" class="campaign-row__menu-icon campaign-row__menu-icon--red">
-          <path d="M9 3.75A1.75 1.75 0 0 1 10.75 2h2.5A1.75 1.75 0 0 1 15 3.75V4h3.25a.75.75 0 0 1 0 1.5h-.77l-.63 12.03A2 2 0 0 1 14.85 19.5H9.15a2 2 0 0 1-2-1.97L6.52 5.5h-.77a.75.75 0 0 1 0-1.5H9v-.25Zm1.5.25h3v-.25a.25.25 0 0 0-.25-.25h-2.5a.25.25 0 0 0-.25.25V4Zm-1.85 14h6.7a.5.5 0 0 0 .5-.48L16.47 5.5H7.53l.62 12.02a.5.5 0 0 0 .5.48ZM10 8.75a.75.75 0 0 1 1.5 0v5.5a.75.75 0 0 1-1.5 0v-5.5Zm2.5 0a.75.75 0 0 1 1.5 0v5.5a.75.75 0 0 1-1.5 0v-5.5Z"/>
-        </svg>
-        <span>Удалить</span>
-      </button>
-    `;
+    const menu = renderElement(adsActionMenuTemplate);
     actions.appendChild(menu);
     return menu;
   };
 
   const closeAll = (): void => {
-    document.querySelectorAll<HTMLElement>('.campaign-row__menu').forEach((menu) => {
-      menu.hidden = true;
-    });
+    document
+      .querySelectorAll<HTMLElement>('.campaign-row__menu')
+      .forEach((menu) => {
+        menu.hidden = true;
+      });
 
     triggerButtons.forEach((button) => {
       button.setAttribute('aria-expanded', 'false');
@@ -473,37 +449,18 @@ function CampaignActionMenus(signal: AbortSignal): void {
     const row = target.closest<HTMLElement>('.campaign-row');
 
     if (row) {
-      localStorage.setItem(
-        'campaign_edit_seed',
-        JSON.stringify({
-          id: row.dataset.campaignId || '',
-          title: row.dataset.campaignTitle || '',
-          budgetValue: Number(row.dataset.campaignBudgetValue || '0'),
-          goal: row.dataset.campaignGoal || '',
-        }),
-      );
+      localStorageService.setJson(LocalStorageKey.CampaignEditSeed, {
+        id: row.dataset.campaignId || '',
+        title: row.dataset.campaignTitle || '',
+        budgetValue: Number(row.dataset.campaignBudgetValue || '0'),
+        goal: row.dataset.campaignGoal || '',
+      });
     }
 
     navigateTo('/ads/edit');
   };
 
   triggerButtons.forEach((button) => {
-    if (!button.querySelector('.campaign-row__actions-trigger-glyph')) {
-      const labelNode = button.querySelector('.campaign-row__actions-trigger-label');
-
-      if (labelNode) {
-        const glyph = document.createElement('span');
-        glyph.className = 'campaign-row__actions-trigger-glyph';
-        glyph.setAttribute('aria-hidden', 'true');
-        glyph.innerHTML = `
-          <svg viewBox="0 0 24 24" class="campaign-row__actions-trigger-glyph-icon">
-            <path d="M4 17.25V20h2.75l8.1-8.1-2.75-2.75-8.1 8.1ZM18.71 7.04a1 1 0 0 0 0-1.42l-1.33-1.33a1 1 0 0 0-1.42 0l-1.56 1.56 2.75 2.75 1.56-1.56Z"/>
-          </svg>
-        `;
-        button.insertBefore(glyph, labelNode);
-      }
-    }
-
     ensureMenu(button);
     button.addEventListener(
       'click',
@@ -534,9 +491,7 @@ function CampaignActionMenus(signal: AbortSignal): void {
         event.preventDefault();
         event.stopPropagation();
         closeAll();
-        document.dispatchEvent(
-          new CustomEvent('campaigns:open-delete-modal'),
-        );
+        document.dispatchEvent(new CustomEvent('campaigns:open-delete-modal'));
       },
       { signal },
     );
@@ -565,9 +520,7 @@ function CampaignActionMenus(signal: AbortSignal): void {
       }
 
       if (menuItem.classList.contains('js-delete-menu-item')) {
-        document.dispatchEvent(
-          new CustomEvent('campaigns:open-delete-modal'),
-        );
+        document.dispatchEvent(new CustomEvent('campaigns:open-delete-modal'));
       }
     },
     { signal },
@@ -653,10 +606,18 @@ function CampaignDeleteModal(signal: AbortSignal): void {
 function CampaignPagination(signal: AbortSignal): void {
   const table = document.querySelector<HTMLElement>('.campaigns-table');
   const body = table?.querySelector<HTMLElement>('.campaigns-table__body');
-  const footer = table?.querySelector<HTMLElement>('[data-campaigns-pagination]');
-  const prevButton = footer?.querySelector<HTMLButtonElement>('[data-pagination-prev]');
-  const nextButton = footer?.querySelector<HTMLButtonElement>('[data-pagination-next]');
-  const pagesNode = footer?.querySelector<HTMLElement>('[data-pagination-pages]');
+  const footer = table?.querySelector<HTMLElement>(
+    '[data-campaigns-pagination]',
+  );
+  const prevButton = footer?.querySelector<HTMLButtonElement>(
+    '[data-pagination-prev]',
+  );
+  const nextButton = footer?.querySelector<HTMLButtonElement>(
+    '[data-pagination-next]',
+  );
+  const pagesNode = footer?.querySelector<HTMLElement>(
+    '[data-pagination-pages]',
+  );
 
   if (!table || !body || !footer || !prevButton || !nextButton || !pagesNode) {
     return;
@@ -836,16 +797,20 @@ export function Ads(): void | VoidFunction {
     );
   }
 
-  document.querySelectorAll<HTMLElement>('.campaigns-page__create-button, .campaigns-empty__create-button').forEach((button) => {
-    button.addEventListener(
-      'click',
-      (event) => {
-        event.preventDefault();
-        navigateTo('/ads/create');
-      },
-      { signal },
-    );
-  });
+  document
+    .querySelectorAll<HTMLElement>(
+      '.campaigns-page__create-button, .campaigns-empty__create-button',
+    )
+    .forEach((button) => {
+      button.addEventListener(
+        'click',
+        (event) => {
+          event.preventDefault();
+          navigateTo('/ads/create');
+        },
+        { signal },
+      );
+    });
 
   DatePicker(signal);
   CampaignActionMenus(signal);

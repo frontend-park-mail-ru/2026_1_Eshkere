@@ -1,4 +1,5 @@
 import { request } from 'shared/lib/request';
+import { LocalStorageKey, localStorageService } from 'shared/lib/local-storage';
 
 export interface AuthUser {
   id: number;
@@ -19,13 +20,7 @@ export interface AuthUser {
 }
 
 class AuthState {
-  private readonly AUTH_KEY = 'ads_auth';
   private confirmedSession = false;
-
-  constructor() {
-    this.AUTH_KEY = 'ads_auth';
-    this.confirmedSession = false;
-  }
 
   public getCurrentUser(): AuthUser | null {
     return this.readStoredUser();
@@ -69,19 +64,11 @@ class AuthState {
   }
 
   private readStoredUser(): AuthUser | null {
-    const raw = localStorage.getItem(this.AUTH_KEY);
-    if (!raw) {
-      return null;
-    }
-    try {
-      return JSON.parse(raw);
-    } catch {
-      return null;
-    }
+    return localStorageService.getJson<AuthUser>(LocalStorageKey.AdsAuth);
   }
 
   private writeStoredUser(user: AuthUser): void {
-    localStorage.setItem(this.AUTH_KEY, JSON.stringify(user));
+    localStorageService.setJson(LocalStorageKey.AdsAuth, user);
   }
 
   private hasStoredAuth(): boolean {
@@ -89,7 +76,7 @@ class AuthState {
   }
 
   private clearStoredAuth(): void {
-    localStorage.removeItem(this.AUTH_KEY);
+    localStorageService.removeItem(LocalStorageKey.AdsAuth);
   }
 }
 
