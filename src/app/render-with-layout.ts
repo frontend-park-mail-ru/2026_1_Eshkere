@@ -2,7 +2,10 @@ import {
   renderPublicLayout,
   updatePublicNavbarSlot,
 } from 'app/components/public-layout';
-import { renderDashboardLayout } from 'app/components/dashboard-layout';
+import {
+  renderDashboardLayout,
+  updateDashboardLayoutSlots,
+} from 'app/components/dashboard-layout';
 /**
  * @typedef {'public' | 'dashboard'} LayoutKind
  */
@@ -21,8 +24,9 @@ export async function renderLayoutShell(
   pathname: string = '/',
 ): Promise<string> {
   if (layout === 'dashboard') {
-    return renderDashboardLayout('');
+    return renderDashboardLayout('', pathname);
   }
   return renderPublicLayout('', pathname);
 }
 export { updatePublicNavbarSlot };
+export { updateDashboardLayoutSlots };

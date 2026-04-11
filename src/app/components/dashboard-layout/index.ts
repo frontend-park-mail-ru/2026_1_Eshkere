@@ -1,1 +1,4 @@
-export { renderDashboardLayout } from './ui/dashboard-layout';
+export {
+  renderDashboardLayout,
+  updateDashboardLayoutSlots,
+} from './ui/dashboard-layout';

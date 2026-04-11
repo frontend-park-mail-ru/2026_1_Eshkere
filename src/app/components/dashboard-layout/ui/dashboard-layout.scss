@@ -2,7 +2,7 @@
 @use '../../../../shared/styles/mixins';
 
 .dashboard-layout {
-  @include mixins.page-background('/img/back.png');
+  @include mixins.page-background('/img/RightFon.png');
 
   &__container {
     position: relative;
@@ -16,7 +16,21 @@
     display: grid;
     grid-template-columns: 240px 1fr;
     gap: 20px;
-    align-items: stretch;
+    align-items: start;
+
+    &--full {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__sidebar {
+    position: sticky;
+    top: 96px;
+    align-self: start;
+
+    &[hidden] {
+      display: none !important;
+    }
   }
 
   &__content {
@@ -24,6 +38,10 @@
   }
 
   @include mixins.media-max(t.$bp-xl) {
+    &__sidebar {
+      position: static;
+    }
+
     &__body {
       grid-template-columns: 1fr;
     }

@@ -1,22 +1,35 @@
 <aside class="sidebar">
   <div class="sidebar__section">
     <a href="/ads" class="sidebar__link">Обзор</a>
-    <a href="/ads" class="sidebar__link sidebar__link--active">Кампании</a>
+    <a
+      href="/ads"
+      class="sidebar__link {{#if isCampaigns}}sidebar__link--active{{/if}}"
+    >
+      Кампании
+    </a>
     <a href="/ads" class="sidebar__link">Аудитории</a>
-    <a href="/ads" class="sidebar__link">Баланс</a>
-    <a href="/ads" class="sidebar__link">Центр коммерции</a>
-    <a href="/ads" class="sidebar__link">Сайты</a>
-    <a href="/ads" class="sidebar__link">Календарь</a>
+    <a
+      href="/balance"
+      class="sidebar__link {{#if isBalance}}sidebar__link--active{{/if}}"
+    >
+      Баланс
+    </a>
     <a href="/ads" class="sidebar__link">История действий</a>
     <a href="/ads" class="sidebar__link">Поддержка</a>
   </div>
 
   <div class="sidebar__footer">
-    <a href="/ads" class="sidebar__link">Настройки</a>
+    <a
+      href="/profile"
+      class="sidebar__link {{#if isProfile}}sidebar__link--active{{/if}}"
+    >
+      Профиль
+    </a>
     <button
       type="button"
       class="sidebar__link sidebar__button"
-      id="logout-button">
+      id="logout-button"
+    >
       Выйти
     </button>
   </div>

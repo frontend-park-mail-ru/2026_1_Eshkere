@@ -1,0 +1,707 @@
+<section class="profile-page">
+  <div class="profile-hero">
+    <div class="profile-hero__identity">
+      <button class="profile-hero__avatar{{#if hasAvatar}} profile-hero__avatar--image{{/if}}" type="button" data-open-avatar-modal data-profile-avatar-button aria-label="Изменить аватар">
+        <img class="profile-hero__avatar-image" data-profile-avatar-image src="{{avatar}}" alt="" {{#unless hasAvatar}}hidden{{/unless}} />
+        <span class="profile-hero__avatar-initials" data-profile-avatar-initials {{#if hasAvatar}}hidden{{/if}}>{{initials}}</span>
+      </button>
+
+      <div class="profile-hero__identity-content">
+        <h1 class="profile-hero__title" data-profile-full-name>{{fullName}}</h1>
+        <p class="profile-hero__subtitle">{{role}}</p>
+
+        <div class="profile-hero__badges">
+          <span
+            class="profile-hero__badge {{accountStatusClass}}"
+            data-profile-account-badge
+            data-profile-account-status
+          >
+            {{accountStatusLabel}}
+          </span>
+          <span class="profile-hero__badge">{{accountId}}</span>
+          <span class="profile-hero__badge">{{memberSince}}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-hero__stats">
+      <article class="profile-stat">
+        <span class="profile-stat__label">Баланс</span>
+        <strong class="profile-stat__value" data-profile-balance>{{balance}}</strong>
+      </article>
+
+      <article class="profile-stat">
+        <span class="profile-stat__label">Тариф</span>
+        <strong class="profile-stat__value" data-profile-tariff>{{tariff}}</strong>
+      </article>
+
+      <article class="profile-stat">
+        <span class="profile-stat__label">Активных кампаний</span>
+        <strong class="profile-stat__value" data-profile-campaigns>{{activeCampaigns}}</strong>
+      </article>
+
+      <article class="profile-stat">
+        <span class="profile-stat__label">Последнее действие</span>
+        <strong class="profile-stat__value" data-profile-last-action>{{lastAction}}</strong>
+      </article>
+    </div>
+  </div>
+
+  <div class="profile-toast profile-toast--success" data-profile-toast hidden>
+    <div class="profile-toast__icon" aria-hidden="true"></div>
+    <div class="profile-toast__content">
+      <strong class="profile-toast__title" data-profile-toast-title></strong>
+      <p class="profile-toast__text" data-profile-toast-text></p>
+    </div>
+    <button class="profile-toast__close" type="button" aria-label="Закрыть уведомление" data-profile-toast-close>
+      ×
+    </button>
+  </div>
+
+  <div class="profile-grid">
+    <section class="profile-card profile-card--wide">
+      <div class="profile-card__head profile-card__head--row">
+        <div>
+          <h2 class="profile-card__title">Основная информация</h2>
+          <p class="profile-card__subtitle">Базовые данные профиля и компании</p>
+        </div>
+        <button class="profile-card__action" type="button" data-open-profile-edit>
+          Редактировать
+        </button>
+      </div>
+
+      <div class="profile-fields">
+        <article class="profile-field" data-profile-field="firstName">
+          <span class="profile-field__label">Имя</span>
+          <strong class="profile-field__value" data-profile-field-value>{{profileFields.[0].value}}</strong>
+        </article>
+
+        <article class="profile-field" data-profile-field="lastName">
+          <span class="profile-field__label">Фамилия</span>
+          <strong class="profile-field__value" data-profile-field-value>{{profileFields.[1].value}}</strong>
+        </article>
+
+        <article class="profile-field" data-profile-field="company">
+          <span class="profile-field__label">Компания</span>
+          <strong class="profile-field__value" data-profile-field-value>{{profileFields.[4].value}}</strong>
+        </article>
+
+        <article class="profile-field" data-profile-field="city">
+          <span class="profile-field__label">Город</span>
+          <strong class="profile-field__value" data-profile-field-value>{{profileFields.[5].value}}</strong>
+        </article>
+      </div>
+    </section>
+
+    <section class="profile-card">
+      <div class="profile-card__head">
+        <h2 class="profile-card__title">Контакты</h2>
+        <p class="profile-card__subtitle">Чувствительные данные с подтверждением обновления</p>
+      </div>
+
+      <div class="profile-contact-list">
+        <article class="profile-contact-item">
+          <div class="profile-contact-item__main">
+            <span class="profile-contact-item__label">Электронная почта</span>
+            <strong class="profile-contact-item__value" data-profile-field-value data-profile-field="email">{{profileFields.[2].value}}</strong>
+          </div>
+          <button class="profile-contact-item__action" type="button" data-open-email-modal>
+            Изменить
+          </button>
+        </article>
+
+        <article class="profile-contact-item">
+          <div class="profile-contact-item__main">
+            <span class="profile-contact-item__label">Телефон</span>
+            <strong class="profile-contact-item__value" data-profile-field-value data-profile-field="phone">{{profileFields.[3].value}}</strong>
+          </div>
+          <button class="profile-contact-item__action" type="button" data-open-phone-modal>
+            Изменить
+          </button>
+        </article>
+      </div>
+    </section>
+
+    <section class="profile-card">
+      <div class="profile-card__head">
+        <h2 class="profile-card__title">Платежи и тариф</h2>
+        <p class="profile-card__subtitle">Ключевые финансовые данные</p>
+      </div>
+
+      <div class="profile-stack">
+        <article class="profile-stack__item">
+          <div>
+            <strong class="profile-stack__title">Текущий тариф</strong>
+            <p class="profile-stack__text" data-profile-tariff-description>{{tariffDescription}}</p>
+          </div>
+          <div class="profile-stack__meta">
+            <span class="profile-stack__pill profile-stack__pill--success" data-profile-tariff>
+              {{tariff}}
+            </span>
+            <button class="profile-stack__action" type="button" data-open-tariff-modal>
+              Сменить
+            </button>
+          </div>
+        </article>
+
+        <article class="profile-stack__item">
+          <div>
+            <strong class="profile-stack__title">Способ оплаты</strong>
+            <p class="profile-stack__text" data-profile-card>{{cardMasked}}</p>
+          </div>
+          <button class="profile-stack__action" type="button" data-open-payment-modal>
+            Обновить
+          </button>
+        </article>
+
+        <article class="profile-stack__item">
+          <div>
+            <strong class="profile-stack__title">Последнее пополнение</strong>
+            <p class="profile-stack__text" data-profile-last-top-up>{{lastTopUp}}</p>
+          </div>
+          <button class="profile-stack__action" type="button" data-open-topup-modal>
+            Пополнить
+          </button>
+        </article>
+      </div>
+    </section>
+
+    <section class="profile-card profile-card--wide">
+      <div class="profile-card__head">
+        <h2 class="profile-card__title">Безопасность</h2>
+        <p class="profile-card__subtitle">Состояние доступа и способы входа</p>
+      </div>
+
+      <div class="profile-security">
+        <article class="profile-security__item">
+          <div class="profile-security__main">
+            <div class="profile-security__headline">
+              <strong class="profile-security__title">Подтверждение аккаунта</strong>
+              <span class="profile-security__status profile-security__status--warning" data-profile-account-status>{{accountStatusLabel}}</span>
+            </div>
+            <p class="profile-security__text">Проверьте контактные данные и реквизиты компании</p>
+          </div>
+          <button class="profile-security__action" type="button" data-open-confirmation-modal>
+            <span data-profile-confirmation-button-label>{{accountActionText}}</span>
+          </button>
+        </article>
+
+        <article class="profile-security__item">
+          <div class="profile-security__main">
+            <strong class="profile-security__title">Пароль</strong>
+            <p class="profile-security__text">Рекомендуется обновлять каждые 90 дней</p>
+          </div>
+          <button class="profile-security__action" type="button" data-open-password-modal>
+            <span data-profile-password-status>Сменить</span>
+          </button>
+        </article>
+      </div>
+    </section>
+
+    <section class="profile-card">
+      <div class="profile-card__head">
+        <h2 class="profile-card__title">Поддержка</h2>
+        <p class="profile-card__subtitle">Быстрый контакт по вопросам аккаунта</p>
+      </div>
+
+      <div class="profile-support">
+        <strong class="profile-support__title">Ваш контакт</strong>
+        <p class="profile-support__text">
+          Если возникнут вопросы по профилю, платежам или рекламным кампаниям, можно написать
+          ответственному менеджеру.
+        </p>
+        <a href="https://t.me/chocaboy" target="_blank" rel="noreferrer" class="profile-support__link">
+          {{contactHandle}}
+        </a>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal profile-modal" id="profile-avatar-modal" aria-hidden="true">
+    <div class="modal__backdrop" data-modal-close></div>
+    <div class="modal__content profile-modal__content" role="dialog" aria-modal="true" aria-labelledby="profile-avatar-title">
+      <div class="modal__inner profile-modal__inner">
+        <div class="profile-modal__head">
+          <h2 class="profile-modal__title" id="profile-avatar-title">Обновить аватар</h2>
+          <p class="profile-modal__subtitle">Выберите изображение с компьютера или вставьте ссылку на картинку.</p>
+        </div>
+
+        <form class="profile-modal__form profile-modal__form--avatar" id="profile-avatar-form" novalidate>
+          <div class="profile-modal__banner profile-modal__banner--error" data-form-error hidden></div>
+
+          <div class="profile-avatar-layout">
+            <div class="profile-avatar-layout__preview">
+              <div class="profile-avatar-picker" data-avatar-preview>
+                <img class="profile-avatar-picker__image" data-avatar-preview-image src="{{avatar}}" alt="" {{#unless hasAvatar}}hidden{{/unless}} />
+                <span class="profile-avatar-picker__initials" data-avatar-preview-initials {{#if hasAvatar}}hidden{{/if}}>{{initials}}</span>
+              </div>
+            </div>
+
+            <div class="profile-avatar-layout__fields">
+              <label class="profile-modal__field" data-field="avatarFile">
+                <span class="profile-modal__label">Файл изображения</span>
+                <input class="profile-modal__input profile-modal__input--file" type="file" name="avatarFile" accept="image/png,image/jpeg,image/webp,image/gif" />
+              </label>
+
+              <label class="profile-modal__field" data-field="avatarUrl">
+                <span class="profile-modal__label">Ссылка на изображение</span>
+                <input class="profile-modal__input" type="url" name="avatarUrl" placeholder="https://example.com/avatar.png" />
+              </label>
+
+              <button class="profile-modal__link-button" type="button" data-avatar-reset>
+                Удалить фото и вернуть инициалы
+              </button>
+            </div>
+          </div>
+
+          <div class="profile-modal__actions">
+            <button class="profile-modal__button profile-modal__button--secondary" type="button" data-modal-close>Отмена</button>
+            <button class="profile-modal__button profile-modal__button--primary" type="submit">Сохранить</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal profile-modal" id="profile-edit-modal" aria-hidden="true">
+    <div class="modal__backdrop" data-modal-close></div>
+    <div class="modal__content profile-modal__content profile-modal__content--wide" role="dialog" aria-modal="true" aria-labelledby="profile-edit-title">
+      <div class="modal__inner profile-modal__inner">
+        <div class="profile-modal__head">
+          <h2 class="profile-modal__title" id="profile-edit-title">Редактировать профиль</h2>
+          <p class="profile-modal__subtitle">Изменение основных данных, которые не требуют отдельного подтверждения.</p>
+        </div>
+
+        <form class="profile-modal__form profile-modal__form--grid" id="profile-edit-form" novalidate>
+          <div class="profile-modal__banner profile-modal__banner--error profile-modal__banner--grid" data-form-error hidden></div>
+
+          <label class="profile-modal__field" data-field="firstName">
+            <span class="profile-modal__label">Имя</span>
+            <input class="profile-modal__input" type="text" name="firstName" value="{{profileFields.[0].value}}" />
+            <span class="profile-modal__error" data-error-for="firstName"></span>
+          </label>
+
+          <label class="profile-modal__field" data-field="lastName">
+            <span class="profile-modal__label">Фамилия</span>
+            <input class="profile-modal__input" type="text" name="lastName" value="{{profileFields.[1].value}}" />
+            <span class="profile-modal__error" data-error-for="lastName"></span>
+          </label>
+
+          <label class="profile-modal__field" data-field="company">
+            <span class="profile-modal__label">Компания</span>
+            <input class="profile-modal__input" type="text" name="company" value="{{profileFields.[4].value}}" />
+            <span class="profile-modal__error" data-error-for="company"></span>
+          </label>
+
+          <label class="profile-modal__field" data-field="city">
+            <span class="profile-modal__label">Город</span>
+            <input class="profile-modal__input" type="text" name="city" value="{{profileFields.[5].value}}" />
+            <span class="profile-modal__error" data-error-for="city"></span>
+          </label>
+
+          <div class="profile-modal__actions profile-modal__actions--grid">
+            <button class="profile-modal__button profile-modal__button--secondary" type="button" data-modal-close>Отмена</button>
+            <button class="profile-modal__button profile-modal__button--primary" type="submit">Сохранить</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal profile-modal" id="profile-email-modal" aria-hidden="true">
+    <div class="modal__backdrop" data-modal-close></div>
+    <div class="modal__content profile-modal__content" role="dialog" aria-modal="true" aria-labelledby="profile-email-title">
+      <div class="modal__inner profile-modal__inner">
+        <div class="profile-modal__head">
+          <h2 class="profile-modal__title" id="profile-email-title">Обновить email</h2>
+          <p class="profile-modal__subtitle">Сначала укажите новую почту, затем подтвердите изменение кодом из письма.</p>
+        </div>
+
+        <form class="profile-modal__form" id="profile-email-form" novalidate>
+          <div class="profile-modal__banner profile-modal__banner--error" data-form-error hidden></div>
+          <div class="profile-modal__banner profile-modal__banner--success" data-form-success hidden></div>
+
+          <div class="profile-modal__step" data-step="input">
+            <label class="profile-modal__field" data-field="email">
+              <span class="profile-modal__label">Новый email</span>
+              <input class="profile-modal__input" type="email" name="email" placeholder="name@example.com" />
+              <span class="profile-modal__error" data-error-for="email"></span>
+            </label>
+          </div>
+
+          <div class="profile-modal__step" data-step="confirm" hidden>
+            <div class="profile-modal__hint">
+              Мы отправили код на <strong data-confirm-target>name@example.com</strong>. Тестовый код:
+              <strong>123456</strong>
+            </div>
+
+            <label class="profile-modal__field" data-field="code">
+              <span class="profile-modal__label">Код подтверждения</span>
+              <input class="profile-modal__input" type="text" name="code" placeholder="Введите код из письма" />
+              <span class="profile-modal__error" data-error-for="code"></span>
+            </label>
+
+            <button class="profile-modal__link-button" type="button" data-resend-code>
+              Отправить код повторно
+            </button>
+          </div>
+
+          <div class="profile-modal__actions">
+            <button class="profile-modal__button profile-modal__button--secondary" type="button" data-modal-close>Отмена</button>
+            <button class="profile-modal__button profile-modal__button--primary" type="submit" data-step-submit>
+              Отправить код
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal profile-modal" id="profile-phone-modal" aria-hidden="true">
+    <div class="modal__backdrop" data-modal-close></div>
+    <div class="modal__content profile-modal__content" role="dialog" aria-modal="true" aria-labelledby="profile-phone-title">
+      <div class="modal__inner profile-modal__inner">
+        <div class="profile-modal__head">
+          <h2 class="profile-modal__title" id="profile-phone-title">Обновить телефон</h2>
+          <p class="profile-modal__subtitle">Сначала укажите новый номер, затем подтвердите изменение кодом из SMS.</p>
+        </div>
+
+        <form class="profile-modal__form" id="profile-phone-form" novalidate>
+          <div class="profile-modal__banner profile-modal__banner--error" data-form-error hidden></div>
+          <div class="profile-modal__banner profile-modal__banner--success" data-form-success hidden></div>
+
+          <div class="profile-modal__step" data-step="input">
+            <label class="profile-modal__field" data-field="phone">
+              <span class="profile-modal__label">Новый телефон</span>
+              <input class="profile-modal__input" type="tel" inputmode="tel" autocomplete="tel" name="phone" placeholder="+7 999 123 45 67" />
+              <span class="profile-modal__error" data-error-for="phone"></span>
+            </label>
+          </div>
+
+          <div class="profile-modal__step" data-step="confirm" hidden>
+            <div class="profile-modal__hint">
+              Мы отправили SMS-код на <strong data-confirm-target>+7 999 123 45 67</strong>. Тестовый код:
+              <strong>123456</strong>
+            </div>
+
+            <label class="profile-modal__field" data-field="code">
+              <span class="profile-modal__label">SMS-код</span>
+              <input class="profile-modal__input" type="text" name="code" placeholder="Введите код из SMS" />
+              <span class="profile-modal__error" data-error-for="code"></span>
+            </label>
+
+            <button class="profile-modal__link-button" type="button" data-resend-code>
+              Отправить код повторно
+            </button>
+          </div>
+
+          <div class="profile-modal__actions">
+            <button class="profile-modal__button profile-modal__button--secondary" type="button" data-modal-close>Отмена</button>
+            <button class="profile-modal__button profile-modal__button--primary" type="submit" data-step-submit>
+              Отправить код
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal profile-modal" id="profile-password-modal" aria-hidden="true">
+    <div class="modal__backdrop" data-modal-close></div>
+    <div class="modal__content profile-modal__content" role="dialog" aria-modal="true" aria-labelledby="profile-password-title">
+      <div class="modal__inner profile-modal__inner">
+        <div class="profile-modal__head">
+          <h2 class="profile-modal__title" id="profile-password-title">Смена пароля</h2>
+          <p class="profile-modal__subtitle">Безопасное обновление пароля для входа в аккаунт.</p>
+        </div>
+
+        <form class="profile-modal__form" id="profile-password-form" novalidate>
+          <div class="profile-modal__banner profile-modal__banner--error" data-form-error hidden></div>
+
+          <label class="profile-modal__field" data-field="currentPassword">
+            <span class="profile-modal__label">Текущий пароль</span>
+            <span class="ui-field__control ui-field__control--with-toggle profile-modal__input-wrap">
+              <input class="profile-modal__input ui-input--with-toggle" type="password" name="currentPassword" placeholder="Введите текущий пароль" />
+              <button
+                class="ui-field__password-toggle"
+                type="button"
+                data-password-toggle
+                aria-label="Показать пароль"
+                aria-pressed="false"
+                title="Показать пароль"
+              >
+                <svg class="ui-field__icon ui-field__icon--show" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M2 12C3.7 8.5 7.3 6 12 6s8.3 2.5 10 6c-1.7 3.5-5.3 6-10 6s-8.3-2.5-10-6z" />
+                  <circle cx="12" cy="12" r="2.8" />
+                </svg>
+                <svg class="ui-field__icon ui-field__icon--hide" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M2 12C3.7 8.5 7.3 6 12 6s8.3 2.5 10 6c-1.7 3.5-5.3 6-10 6s-8.3-2.5-10-6z" />
+                  <path d="M8 12.5c1.1-1 2.5-1.5 4-1.5s2.9.5 4 1.5" />
+                </svg>
+              </button>
+            </span>
+            <span class="profile-modal__error" data-error-for="currentPassword"></span>
+          </label>
+
+          <label class="profile-modal__field" data-field="newPassword">
+            <span class="profile-modal__label">Новый пароль</span>
+            <span class="ui-field__control ui-field__control--with-toggle profile-modal__input-wrap">
+              <input class="profile-modal__input ui-input--with-toggle" type="password" name="newPassword" placeholder="Минимум 6 символов" />
+              <button
+                class="ui-field__password-toggle"
+                type="button"
+                data-password-toggle
+                aria-label="Показать пароль"
+                aria-pressed="false"
+                title="Показать пароль"
+              >
+                <svg class="ui-field__icon ui-field__icon--show" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M2 12C3.7 8.5 7.3 6 12 6s8.3 2.5 10 6c-1.7 3.5-5.3 6-10 6s-8.3-2.5-10-6z" />
+                  <circle cx="12" cy="12" r="2.8" />
+                </svg>
+                <svg class="ui-field__icon ui-field__icon--hide" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M2 12C3.7 8.5 7.3 6 12 6s8.3 2.5 10 6c-1.7 3.5-5.3 6-10 6s-8.3-2.5-10-6z" />
+                  <path d="M8 12.5c1.1-1 2.5-1.5 4-1.5s2.9.5 4 1.5" />
+                </svg>
+              </button>
+            </span>
+            <span class="profile-modal__error" data-error-for="newPassword"></span>
+          </label>
+
+          <label class="profile-modal__field" data-field="repeatPassword">
+            <span class="profile-modal__label">Повторите пароль</span>
+            <span class="ui-field__control ui-field__control--with-toggle profile-modal__input-wrap">
+              <input class="profile-modal__input ui-input--with-toggle" type="password" name="repeatPassword" placeholder="Повторите новый пароль" />
+              <button
+                class="ui-field__password-toggle"
+                type="button"
+                data-password-toggle
+                aria-label="Показать пароль"
+                aria-pressed="false"
+                title="Показать пароль"
+              >
+                <svg class="ui-field__icon ui-field__icon--show" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M2 12C3.7 8.5 7.3 6 12 6s8.3 2.5 10 6c-1.7 3.5-5.3 6-10 6s-8.3-2.5-10-6z" />
+                  <circle cx="12" cy="12" r="2.8" />
+                </svg>
+                <svg class="ui-field__icon ui-field__icon--hide" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M2 12C3.7 8.5 7.3 6 12 6s8.3 2.5 10 6c-1.7 3.5-5.3 6-10 6s-8.3-2.5-10-6z" />
+                  <path d="M8 12.5c1.1-1 2.5-1.5 4-1.5s2.9.5 4 1.5" />
+                </svg>
+              </button>
+            </span>
+            <span class="profile-modal__error" data-error-for="repeatPassword"></span>
+          </label>
+
+          <div class="profile-modal__actions">
+            <button class="profile-modal__button profile-modal__button--secondary" type="button" data-modal-close>Позже</button>
+            <button class="profile-modal__button profile-modal__button--primary" type="submit">Обновить</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal profile-modal" id="profile-payment-modal" aria-hidden="true">
+    <div class="modal__backdrop" data-modal-close></div>
+    <div class="modal__content profile-modal__content" role="dialog" aria-modal="true" aria-labelledby="profile-payment-title">
+      <div class="modal__inner profile-modal__inner">
+        <div class="profile-modal__head">
+          <h2 class="profile-modal__title" id="profile-payment-title">Обновить способ оплаты</h2>
+          <p class="profile-modal__subtitle">Новая карта начнет использоваться только после подтверждения кода.</p>
+        </div>
+
+        <form class="profile-modal__form" id="profile-payment-form" novalidate>
+          <div class="profile-modal__banner profile-modal__banner--error" data-form-error hidden></div>
+
+          <div class="profile-modal__step" data-step="input">
+            <label class="profile-modal__field" data-field="cardNumber">
+              <span class="profile-modal__label">Номер карты</span>
+              <input class="profile-modal__input" type="text" name="cardNumber" placeholder="0000 0000 0000 0000" />
+              <span class="profile-modal__error" data-error-for="cardNumber"></span>
+            </label>
+
+            <label class="profile-modal__field" data-field="expiryDate">
+              <span class="profile-modal__label">Срок действия</span>
+              <input class="profile-modal__input" type="text" name="expiryDate" placeholder="MM / YY" />
+              <span class="profile-modal__error" data-error-for="expiryDate"></span>
+            </label>
+
+            <label class="profile-modal__field" data-field="holderName">
+              <span class="profile-modal__label">Имя держателя</span>
+              <input class="profile-modal__input" type="text" name="holderName" placeholder="EKATERINA KUZNETSOVA" />
+              <span class="profile-modal__error" data-error-for="holderName"></span>
+            </label>
+
+            <label class="profile-modal__field" data-field="cvv">
+              <span class="profile-modal__label">CVV</span>
+              <input class="profile-modal__input" type="password" name="cvv" placeholder="***" />
+              <span class="profile-modal__error" data-error-for="cvv"></span>
+            </label>
+          </div>
+
+          <div class="profile-modal__step" data-step="confirm" hidden>
+            <div class="profile-modal__hint">
+              Подтвердите новую карту <strong data-confirm-target>•••• 0000</strong>. Тестовый код:
+              <strong>123456</strong>
+            </div>
+
+            <label class="profile-modal__field" data-field="code">
+              <span class="profile-modal__label">Код подтверждения</span>
+              <input class="profile-modal__input" type="text" name="code" placeholder="Введите код из SMS / 3DS" />
+              <span class="profile-modal__error" data-error-for="code"></span>
+            </label>
+
+            <button class="profile-modal__link-button" type="button" data-resend-code>
+              Отправить код повторно
+            </button>
+          </div>
+
+          <div class="profile-modal__actions">
+            <button class="profile-modal__button profile-modal__button--secondary" type="button" data-modal-close>Закрыть</button>
+            <button class="profile-modal__button profile-modal__button--primary" type="submit" data-step-submit>
+              Продолжить
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal profile-modal" id="profile-topup-modal" aria-hidden="true">
+    <div class="modal__backdrop" data-modal-close></div>
+    <div class="modal__content profile-modal__content" role="dialog" aria-modal="true" aria-labelledby="profile-topup-title">
+      <div class="modal__inner profile-modal__inner">
+        <div class="profile-modal__head">
+          <h2 class="profile-modal__title" id="profile-topup-title">Пополнение баланса</h2>
+          <p class="profile-modal__subtitle">Выберите сумму и подтвердите способ оплаты.</p>
+        </div>
+
+        <form class="profile-modal__form" id="profile-topup-form" novalidate>
+          <div class="profile-modal__banner profile-modal__banner--error" data-form-error hidden></div>
+
+          <div class="profile-topup-hero">
+            <span class="profile-topup-hero__label">Текущий баланс</span>
+            <strong class="profile-topup-hero__amount" data-profile-balance>{{balance}}</strong>
+            <p class="profile-topup-hero__text">Пополнение зачисляется сразу и доступно для запуска кампаний.</p>
+          </div>
+
+          <div class="profile-modal__quick">
+            <button class="profile-modal__quick-button" type="button" data-quick-amount="1000">
+              <span class="profile-modal__quick-title">1 000 ₽</span>
+              <span class="profile-modal__quick-text">Тестовый запуск</span>
+            </button>
+            <button class="profile-modal__quick-button" type="button" data-quick-amount="5000">
+              <span class="profile-modal__quick-title">5 000 ₽</span>
+              <span class="profile-modal__quick-text">На неделю рекламы</span>
+            </button>
+            <button class="profile-modal__quick-button" type="button" data-quick-amount="10000">
+              <span class="profile-modal__quick-title">10 000 ₽</span>
+              <span class="profile-modal__quick-text">Активная кампания</span>
+            </button>
+          </div>
+
+          <label class="profile-modal__field" data-field="amount">
+            <span class="profile-modal__label">Сумма пополнения</span>
+            <input class="profile-modal__input" type="text" name="amount" placeholder="Введите сумму в рублях" />
+            <span class="profile-modal__error" data-error-for="amount"></span>
+          </label>
+
+          <div class="profile-modal__actions">
+            <button class="profile-modal__button profile-modal__button--secondary" type="button" data-modal-close>Отмена</button>
+            <button class="profile-modal__button profile-modal__button--primary" type="submit">Пополнить</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal profile-modal" id="profile-tariff-modal" aria-hidden="true">
+    <div class="modal__backdrop" data-modal-close></div>
+    <div class="modal__content profile-modal__content profile-modal__content--wide" role="dialog" aria-modal="true" aria-labelledby="profile-tariff-title">
+      <div class="modal__inner profile-modal__inner">
+        <div class="profile-modal__head">
+          <h2 class="profile-modal__title" id="profile-tariff-title">Смена тарифа</h2>
+          <p class="profile-modal__subtitle">Выберите подходящий тариф под текущий объем рекламных кампаний.</p>
+        </div>
+
+        <form class="profile-modal__form" id="profile-tariff-form" novalidate>
+          <div class="profile-modal__banner profile-modal__banner--error" data-form-error hidden></div>
+
+          <div class="profile-modal__tariffs">
+            <label class="profile-modal__tariff-card">
+              <input class="profile-modal__tariff-input" type="radio" name="nextTariff" value="basic" />
+              <span class="profile-modal__tariff-label">Basic</span>
+              <span class="profile-modal__tariff-price">990 ₽ / мес</span>
+              <span class="profile-modal__tariff-text">До 5 активных кампаний и базовая аналитика</span>
+            </label>
+
+            <label class="profile-modal__tariff-card">
+              <input class="profile-modal__tariff-input" type="radio" name="nextTariff" value="pro" checked />
+              <span class="profile-modal__tariff-label">Pro</span>
+              <span class="profile-modal__tariff-price">3 900 ₽ / мес</span>
+              <span class="profile-modal__tariff-text">До 20 кампаний и расширенная аналитика</span>
+            </label>
+
+            <label class="profile-modal__tariff-card">
+              <input class="profile-modal__tariff-input" type="radio" name="nextTariff" value="business" />
+              <span class="profile-modal__tariff-label">Business</span>
+              <span class="profile-modal__tariff-price">8 900 ₽ / мес</span>
+              <span class="profile-modal__tariff-text">До 50 кампаний и приоритетная поддержка</span>
+            </label>
+          </div>
+
+          <div class="profile-modal__actions">
+            <button class="profile-modal__button profile-modal__button--secondary" type="button" data-modal-close>Оставить текущий</button>
+            <button class="profile-modal__button profile-modal__button--primary" type="submit">Перейти на тариф</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal profile-modal" id="profile-confirmation-modal" aria-hidden="true">
+    <div class="modal__backdrop" data-modal-close></div>
+    <div class="modal__content profile-modal__content profile-modal__content--wide" role="dialog" aria-modal="true" aria-labelledby="profile-confirmation-title">
+      <div class="modal__inner profile-modal__inner">
+        <div class="profile-modal__head">
+          <h2 class="profile-modal__title" id="profile-confirmation-title">Подтверждение аккаунта</h2>
+          <p class="profile-modal__subtitle">Проверьте контакты и реквизиты, чтобы сохранить доступ к рекламному кабинету.</p>
+        </div>
+
+        <form class="profile-modal__form profile-modal__form--grid" id="profile-confirmation-form" novalidate>
+          <div class="profile-modal__banner profile-modal__banner--error profile-modal__banner--grid" data-form-error hidden></div>
+
+          <label class="profile-modal__field" data-field="email">
+            <span class="profile-modal__label">Электронная почта</span>
+            <input class="profile-modal__input profile-modal__input--readonly" type="email" name="email" value="{{profileFields.[2].value}}" readonly />
+            <span class="profile-modal__error" data-error-for="email"></span>
+          </label>
+
+          <label class="profile-modal__field" data-field="phone">
+            <span class="profile-modal__label">Телефон</span>
+            <input class="profile-modal__input profile-modal__input--readonly" type="text" name="phone" value="{{profileFields.[3].value}}" readonly />
+            <span class="profile-modal__error" data-error-for="phone"></span>
+          </label>
+
+          <label class="profile-modal__field" data-field="company">
+            <span class="profile-modal__label">Компания</span>
+            <input class="profile-modal__input" type="text" name="company" value="{{profileFields.[4].value}}" />
+            <span class="profile-modal__error" data-error-for="company"></span>
+          </label>
+
+          <label class="profile-modal__field" data-field="inn">
+            <span class="profile-modal__label">ИНН</span>
+            <input class="profile-modal__input" type="text" name="inn" value="7701234567" />
+            <span class="profile-modal__error" data-error-for="inn"></span>
+          </label>
+
+          <div class="profile-modal__actions profile-modal__actions--grid">
+            <button class="profile-modal__button profile-modal__button--secondary" type="button" data-modal-close>Позже</button>
+            <button class="profile-modal__button profile-modal__button--primary" type="submit">Отправить на проверку</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>

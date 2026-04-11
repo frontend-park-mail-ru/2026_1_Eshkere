@@ -43,11 +43,11 @@
         </button>
 
         <div class="navbar__profile-menu" id="navbar-profile-menu" hidden>
-          <button class="navbar__profile-menu-head" type="button">
+          <a class="navbar__profile-menu-head" href="/profile">
             <img class="navbar__profile-menu-avatar" src="{{user.avatar}}" alt="{{user.name}}" />
             <span class="navbar__profile-menu-name">{{user.name}}</span>
             <span class="navbar__profile-menu-arrow">›</span>
-          </button>
+          </a>
           <button class="navbar__profile-menu-logout" type="button" id="navbar-logout-button">
             Выйти
           </button>
@@ -55,28 +55,38 @@
 
         <div class="navbar__logout-modal" id="navbar-logout-modal" hidden>
           <div class="navbar__logout-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="navbar-logout-modal-title">
-            <h3 class="navbar__logout-modal-title" id="navbar-logout-modal-title">
-              Вы уверены, что вы хотите выйти?
-            </h3>
-            <img
-              class="navbar__logout-modal-image"
-              src="/img/Bored.png"
-              alt=""
-            />
+            <div class="navbar__logout-modal-head">
+              <h3 class="navbar__logout-modal-title" id="navbar-logout-modal-title">
+                Выход из аккаунта
+              </h3>
+              <p class="navbar__logout-modal-text">
+                Подтвердите действие, если хотите завершить текущую сессию.
+              </p>
+            </div>
+
+            <div class="navbar__logout-modal-illustration" aria-hidden="true">
+              <span class="navbar__logout-modal-blob"></span>
+              <img
+                class="navbar__logout-modal-image"
+                src="/img/Bored.png"
+                alt=""
+              />
+            </div>
+
+            <div class="navbar__logout-modal-note">
+              После выхода потребуется заново авторизоваться, чтобы открыть рекламный кабинет.
+            </div>
+
             <div class="navbar__logout-modal-actions">
-              <button type="button" class="navbar__logout-modal-button navbar__logout-modal-button--yes" id="navbar-logout-confirm">
-                Да
+              <button type="button" class="navbar__logout-modal-button navbar__logout-modal-button--secondary" id="navbar-logout-cancel">
+                Остаться
               </button>
-              <button type="button" class="navbar__logout-modal-button navbar__logout-modal-button--no" id="navbar-logout-cancel">
-                Нет
+              <button type="button" class="navbar__logout-modal-button navbar__logout-modal-button--primary" id="navbar-logout-confirm">
+                Выйти
               </button>
             </div>
           </div>
         </div>
-
-        {{!-- <div class="navbar__avata">
-          <img src="{{user.avatar}}" alt="{{user.name}}" />
-        </div> --}}
       </div>
 
     {{else}}

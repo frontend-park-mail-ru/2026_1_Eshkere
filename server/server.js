@@ -4,6 +4,7 @@ const express = require('express');
 const app = express();
 const projectRoot = path.join(__dirname, '..');
 const distRoot = path.join(projectRoot, 'dist');
+const publicRoot = path.join(projectRoot, 'public');
 const isDevelopment = process.argv.includes('--dev');
 let compiler = null;
 
@@ -18,11 +19,13 @@ if (isDevelopment) {
     publicPath: '/',
     writeToDisk: false,
   }));
+
+  app.use(express.static(publicRoot));
 } else {
   app.use(express.static(distRoot));
 }
 
-app.get('/', (req, res) => {
+function sendIndexHtml(req, res) {
   if (isDevelopment && compiler) {
     const outputFileSystem = compiler.outputFileSystem;
     const indexPath = path.join(compiler.outputPath, 'index.html');
@@ -40,9 +43,12 @@ app.get('/', (req, res) => {
   }
 
   res.sendFile(path.join(distRoot, 'index.html'));
-});
+}
 
-const PORT = 8080;
+app.get('/', sendIndexHtml);
+app.get(/^\/(?!api|fonts|icons|img|js|css|sw\.js).*/, sendIndexHtml);
+
+const PORT = 8081;
 
 app.listen(PORT, () => {
   console.log(
