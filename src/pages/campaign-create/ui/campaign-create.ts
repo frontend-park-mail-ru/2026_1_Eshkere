@@ -2,375 +2,71 @@
 import { renderTemplate } from 'shared/lib/render';
 import {
   LocalStorageKey,
-  createLocalStorageKey,
   localStorageService,
 } from 'shared/lib/local-storage';
 import campaignCreateTemplate from './campaign-create.hbs';
 
-import { getCurrentPath } from 'app/navigation';
-
-type BuilderMode = 'create' | 'edit';
-type StepKey = 'content' | 'audience' | 'budget' | 'publication';
-type CreativeKey = 'feed' | 'stories' | 'video';
-type MatchingMode = 'any' | 'balanced' | 'strict';
-type PriorityMode = 'primary' | 'secondary';
-type CreativeAssetKey =
-  | 'feedVisual'
-  | 'storyVisual'
-  | 'mainVideo'
-  | 'verticalVideo'
-  | 'videoCover';
-type AudienceDetailKey = 'geo' | 'age' | 'profile' | 'exclusions' | 'interests';
-type AudienceChipKey = 'geo' | 'retail' | 'b2b' | 'lookalike';
-type StrategyKey = 'even' | 'aggressive' | 'smart';
-type GoalKey = 'website' | 'leads' | 'awareness';
-type FormatKey = 'feed-card' | 'stories' | 'video-15';
-
-interface BuilderState {
-  step: StepKey;
-  name: string;
-  format: FormatKey;
-  goal: GoalKey;
-  headline: string;
-  description: string;
-  cta: string;
-  link: string;
-  creative: CreativeKey;
-  creativeAssets: Partial<Record<CreativeAssetKey, string>>;
-  audienceChip: AudienceChipKey;
-  audienceConfig: {
-    cities: string[];
-    ageRange: string;
-    profileTags: string[];
-    exclusions: string[];
-    interests: string[];
-    matchingMode: MatchingMode;
-    expansionEnabled: boolean;
-    profilePriority: PriorityMode;
-    interestsPriority: PriorityMode;
-  };
-  dailyBudget: number;
-  totalBudget: number;
-  period: string;
-  strategy: StrategyKey;
-}
-
-interface ToastPayload {
-  title: string;
-  description: string;
-}
-
-interface AudienceSummary {
-  cities: string;
-  regionsLabel: string;
-  reach: string;
-  clicks: string;
-  quality: string;
-  qualityState: string;
-  ageRange: string;
-  profile: string;
-  profileLabel: string;
-  exclusions: string;
-  interests: string;
-  ctr?: string;
-  breadth?: string;
-  competition?: string;
-  recommendationTitle?: string;
-  recommendationText?: string;
-}
-
-interface AudiencePresetSummary extends Omit<
-  AudienceSummary,
-  | 'ageRange'
-  | 'profile'
-  | 'profileLabel'
-  | 'ctr'
-  | 'breadth'
-  | 'competition'
-  | 'recommendationTitle'
-  | 'recommendationText'
-> {
-  age: string;
-}
-
-interface AudienceModalConfig {
-  title: string;
-  description: string;
-  selectionType: 'single' | 'multiple';
-  options: Array<{ value: string; label: string; description?: string }>;
-}
-
-interface SavedAudiencePreset {
-  id: string;
-  name: string;
-  summary: string;
-  config: BuilderState['audienceConfig'];
-}
-
-interface BuilderHealth {
-  badge: string;
-  title: string;
-  text: string;
-  isPositive: boolean;
-}
-
-type FinalReviewCheckKey = 'content' | 'creative' | 'audience' | 'budget';
-
-const FINAL_REVIEW_JUMP_TARGETS: Record<
-  FinalReviewCheckKey,
-  { step: StepKey; selector: string; focusSelector?: string }
-> = {
-  content: {
-    step: 'content',
-    selector: '[data-step-panel="content"] .campaign-builder__card--message',
-    focusSelector: '[data-builder-input="headline"]',
-  },
-  creative: {
-    step: 'content',
-    selector: '[data-step-panel="content"] .campaign-builder__card--wide',
-    focusSelector: '[data-builder-creative]',
-  },
-  audience: {
-    step: 'audience',
-    selector: '[data-step-panel="audience"] .campaign-builder__card',
-    focusSelector: '[data-builder-audience-detail="geo"]',
-  },
-  budget: {
-    step: 'budget',
-    selector: '[data-step-panel="budget"] .campaign-builder__card',
-    focusSelector: '[data-builder-budget="dailyBudget"]',
-  },
-};
-
-interface FinalReviewCheck {
-  title: string;
-  text: string;
-  status: string;
-  success: boolean;
-}
-
-interface FinalReviewData {
-  status: BuilderHealth;
-  content: FinalReviewCheck;
-  creative: FinalReviewCheck;
-  audience: FinalReviewCheck;
-  budget: FinalReviewCheck;
-}
-
-interface CampaignEditSeed {
-  id: string;
-  title: string;
-  budgetValue: number;
-  goal: string;
-}
-
-const AUDIENCE_PRESET_CONFIGS: Record<
+import {
+  AUDIENCE_PRESET_CONFIGS,
+  CONTENT_LIMITS,
+  DEFAULT_STATE,
+  FINAL_REVIEW_JUMP_TARGETS,
+  FORMAT_LABELS,
+  GOAL_LABELS,
+  PROFILE_AGE_OPTIONS,
+  PROFILE_TAG_RULES,
+  STEP_META,
+  STEP_ORDER,
+  STRATEGY_LABELS,
+} from 'features/campaign-builder/model/config';
+import {
+  formatSaveStateLabel,
+  getBuilderMode,
+  getBuilderModeConfig,
+  getBuilderState,
+  persistBuilderState,
+  persistEditSeedFromState,
+  resetBuilderState,
+} from 'features/campaign-builder/model/state';
+import type {
   AudienceChipKey,
-  BuilderState['audienceConfig']
-> = {
-  geo: {
-    cities: ['Москва', 'Санкт-Петербург', 'Казань'],
-    ageRange: '23-40',
-    profileTags: ['Активная городская аудитория', 'Средний доход'],
-    exclusions: ['Нерелевантные регионы', 'Частые отказы', 'bots'],
-    interests: ['Предпринимательство', 'Маркетинг', 'e-commerce', 'digital'],
-    matchingMode: 'balanced',
-    expansionEnabled: true,
-    profilePriority: 'primary',
-    interestsPriority: 'secondary',
-  },
-  retail: {
-    cities: ['Москва', 'Екатеринбург', 'Новосибирск'],
-    ageRange: '25-44',
-    profileTags: ['Покупатели маркетплейсов', 'Retail / e-com'],
-    exclusions: ['Текущие клиенты', 'Сотрудники', 'Случайный трафик'],
-    interests: ['Онлайн-покупки', 'Скидки', 'lifestyle', 'Доставка'],
-    matchingMode: 'any',
-    expansionEnabled: true,
-    profilePriority: 'secondary',
-    interestsPriority: 'primary',
-  },
-  b2b: {
-    cities: ['Москва', 'Санкт-Петербург', 'Казань'],
-    ageRange: '27-45',
-    profileTags: ['Маркетологи', 'Владельцы SMB', 'Sales ops'],
-    exclusions: ['Студенты', 'Крупный enterprise', 'Нецелевые отрасли'],
-    interests: ['CRM', 'Аналитика', 'performance', 'Автоматизация'],
-    matchingMode: 'strict',
-    expansionEnabled: false,
-    profilePriority: 'primary',
-    interestsPriority: 'secondary',
-  },
-  lookalike: {
-    cities: ['Москва', 'Санкт-Петербург', 'Краснодар'],
-    ageRange: '24-40',
-    profileTags: ['Look-alike', 'Похожие на текущую клиентскую базу'],
-    exclusions: ['Низкая вовлечённость', 'Старые лиды', 'Дубли'],
-    interests: ['Похожие сегменты', 'Бизнес-сервисы', 'growth', 'SaaS'],
-    matchingMode: 'balanced',
-    expansionEnabled: true,
-    profilePriority: 'primary',
-    interestsPriority: 'primary',
-  },
-};
-
-type FieldKey =
-  | 'name'
-  | 'headline'
-  | 'description'
-  | 'cta'
-  | 'link'
-  | 'dailyBudget'
-  | 'totalBudget'
-  | 'period'
-  | 'strategy';
-
-type FieldErrors = Partial<Record<FieldKey, string>>;
+  AudienceDetailKey,
+  AudienceModalConfig,
+  AudiencePresetSummary,
+  AudienceSummary,
+  BuilderHealth,
+  BuilderState,
+  CreativeAssetKey,
+  CreativeKey,
+  FieldErrors,
+  FinalReviewCheckKey,
+  FinalReviewData,
+  FormatKey,
+  GoalKey,
+  SavedAudiencePreset,
+  StepKey,
+  StrategyKey,
+  ToastPayload,
+} from 'features/campaign-builder/model/types';
+import { syncCampaignBuilderAudienceView } from 'widgets/campaign-builder-audience/ui/audience';
+import { initCampaignBuilderAudienceControls } from 'widgets/campaign-builder-audience/ui/init';
+import { initCampaignBuilderActions } from 'widgets/campaign-builder-actions/ui/actions';
+import { syncCampaignBuilderBudgetView } from 'widgets/campaign-builder-budget/ui/budget';
+import { initCampaignBuilderBudgetControls } from 'widgets/campaign-builder-budget/ui/init';
+import { syncCampaignBuilderContentView } from 'widgets/campaign-builder-content/ui/content';
+import { initCampaignBuilderContentControls } from 'widgets/campaign-builder-content/ui/init';
+import { syncCampaignBuilderReviewView } from 'widgets/campaign-builder-review/ui/review';
+import {
+  syncCampaignBuilderHealthView,
+  syncCampaignBuilderModeCopyView,
+  syncCampaignBuilderSaveStateView,
+  syncCampaignBuilderValidationView,
+} from 'widgets/campaign-builder-status/ui/status';
+import { syncCampaignBuilderStepView } from 'widgets/campaign-builder-step/ui/step';
+import { initCampaignBuilderStepControls } from 'widgets/campaign-builder-step/ui/init';
 
 let campaignCreateLifecycleController: AbortController | null = null;
 let builderToastTimer: number | null = null;
-let builderSavedAt = Date.now();
-
-const DEFAULT_STATE: BuilderState = {
-  step: 'content',
-  name: 'Весенняя распродажа для новых клиентов',
-  format: 'feed-card',
-  goal: 'website',
-  headline: 'До 30% на запуск первой кампании',
-  description:
-    'Подключите продвижение за несколько минут, получите готовые рекомендации по бюджету и начните привлекать клиентов уже сегодня.',
-  cta: 'Запустить сейчас',
-  link: 'https://eshke.ru/promo/spring',
-  creative: 'feed',
-  creativeAssets: {},
-  audienceChip: 'geo',
-  audienceConfig: AUDIENCE_PRESET_CONFIGS.geo,
-  dailyBudget: 7500,
-  totalBudget: 90000,
-  period: '15 мар - 15 апр',
-  strategy: 'even',
-};
-
-const CAMPAIGN_CREATE_STORAGE_KEY = LocalStorageKey.CampaignBuilderDraft;
-const CAMPAIGN_EDIT_STORAGE_KEY = LocalStorageKey.CampaignEditBuilderState;
-const CAMPAIGN_EDIT_SEED_KEY = LocalStorageKey.CampaignEditSeed;
-
-const STEP_ORDER: StepKey[] = ['content', 'audience', 'budget', 'publication'];
-
-const STEP_META = {
-  content: {
-    index: '01',
-    title: 'Контент',
-    text: 'Оффер, формат и текст объявления',
-  },
-  audience: {
-    index: '02',
-    title: 'Аудитория',
-    text: 'Сегменты, география и профиль пользователей',
-  },
-  budget: {
-    index: '03',
-    title: 'Бюджет',
-    text: 'Лимиты, период и стратегия показа',
-  },
-  publication: {
-    index: '04',
-    title: 'Проверка',
-    text: 'Финальная сводка и отправка на модерацию',
-  },
-} satisfies Record<StepKey, { index: string; title: string; text: string }>;
-
-function getBuilderMode(): BuilderMode {
-  return getCurrentPath() === '/ads/edit' ? 'edit' : 'create';
-}
-
-function getBuilderModeConfig(mode: BuilderMode = getBuilderMode()) {
-  if (mode === 'edit') {
-    return {
-      title: 'Редактирование объявления',
-      subtitle:
-        'Обновите существующее объявление по тем же шагам: контент, аудитория, бюджет и финальная проверка перед сохранением.',
-      closeLabel: 'Вернуться к списку',
-      duplicateLabel: 'Сделать копию',
-      resetLabel: 'Сбросить изменения',
-      primaryActionLabel: 'Сохранить изменения',
-      saveStateFallback: 'Изменения сохранены',
-      reviewTitle: 'Финальная сверка перед сохранением',
-      reviewReadyText:
-        'Все обязательные блоки заполнены. Сверьте ключевые параметры ниже перед сохранением.',
-      reviewPendingPrefix: 'Исправьте перед сохранением:',
-      lockedTitle: 'Перейдите к проверке',
-      lockedDescription: 'Сохранять изменения можно только на шаге «Проверка».',
-      submitSuccessTitle: 'Изменения сохранены',
-      submitSuccessDescription:
-        'Обновлённая версия объявления сохранена. При необходимости вернитесь к нужному шагу и внесите дополнительные правки.',
-      submitValidationTitle: 'Не всё готово к сохранению',
-    };
-  }
-
-  return {
-    title: 'Создание объявления',
-    subtitle:
-      'Соберите объявление по шагам: текст, креатив, аудитория, бюджет и финальная проверка перед запуском.',
-    closeLabel: 'Закрыть',
-    duplicateLabel: 'Создать копию',
-    resetLabel: 'Очистить форму',
-    primaryActionLabel: 'Отправить на модерацию',
-    saveStateFallback: 'Черновик сохранён',
-    reviewTitle: 'Финальная сверка перед отправкой',
-    reviewReadyText:
-      'Все обязательные блоки заполнены. Сверьте ключевые параметры ниже.',
-    reviewPendingPrefix: 'Исправьте:',
-    lockedTitle: 'Перейдите к проверке',
-    lockedDescription: 'Финальная отправка доступна на шаге «Проверка».',
-    submitSuccessTitle: 'Отправлено на модерацию',
-    submitSuccessDescription:
-      'Кампания собрана корректно. Проверьте финальную сводку и дождитесь проверки.',
-    submitValidationTitle: 'Проверьте форму',
-  };
-}
-
-const FORMAT_LABELS: Record<FormatKey, string> = {
-  'feed-card': 'Карточка в ленте',
-  stories: 'Stories / Reels',
-  'video-15': 'Видео pre-roll',
-};
-
-const GOAL_LABELS: Record<GoalKey, string> = {
-  website: 'Переход на сайт',
-  leads: 'Сбор лидов',
-  awareness: 'Охват и узнаваемость',
-};
-
-const STRATEGY_LABELS: Record<StrategyKey, string> = {
-  even: 'Равномерный показ',
-  aggressive: 'Ускоренный старт',
-  smart: 'Автооптимизация',
-};
-
-const CONTENT_LIMITS = {
-  name: 80,
-  headline: 60,
-  description: 180,
-  cta: 32,
-} as const;
-
-const PROFILE_AGE_OPTIONS = [
-  '18-24',
-  '23-30',
-  '24-40',
-  '25-44',
-  '27-45',
-  '30-50',
-  '35-55',
-] as const;
-
-const PROFILE_TAG_RULES = {
-  min: 2,
-  max: 6,
-  optimalMax: 4,
-} as const;
-
 const PROFILE_TAG_OPTIONS = [
   {
     value: 'Активная городская аудитория',
@@ -1702,21 +1398,6 @@ function getFinalReviewData(state: BuilderState): FinalReviewData {
   };
 }
 
-function formatSaveStateLabel(): string {
-  const mode = getBuilderModeConfig();
-  const delta = Math.max(0, Math.round((Date.now() - builderSavedAt) / 1000));
-
-  if (delta < 5) {
-    return 'Сохранено только что';
-  }
-
-  if (delta < 60) {
-    return `Сохранено ${delta} сек назад`;
-  }
-
-  return mode.saveStateFallback;
-}
-
 function getTemplateContext(state: BuilderState) {
   const audience = getAudienceStateSummary(state);
   const budget = getBudgetForecast(state);
@@ -1884,207 +1565,6 @@ function getTemplateContext(state: BuilderState) {
     },
     finalReview,
   };
-}
-
-function createBuilderBaseState(): BuilderState {
-  return {
-    ...DEFAULT_STATE,
-    creativeAssets: { ...DEFAULT_STATE.creativeAssets },
-    audienceConfig: {
-      ...DEFAULT_STATE.audienceConfig,
-      cities: [...DEFAULT_STATE.audienceConfig.cities],
-      profileTags: [...DEFAULT_STATE.audienceConfig.profileTags],
-      exclusions: [...DEFAULT_STATE.audienceConfig.exclusions],
-      interests: [...DEFAULT_STATE.audienceConfig.interests],
-      matchingMode: DEFAULT_STATE.audienceConfig.matchingMode,
-      expansionEnabled: DEFAULT_STATE.audienceConfig.expansionEnabled,
-      profilePriority: DEFAULT_STATE.audienceConfig.profilePriority,
-      interestsPriority: DEFAULT_STATE.audienceConfig.interestsPriority,
-    },
-  };
-}
-
-function getCampaignEditSeed(): CampaignEditSeed | null {
-  const parsed = localStorageService.getJson<Partial<CampaignEditSeed>>(
-    CAMPAIGN_EDIT_SEED_KEY,
-  );
-
-  if (!parsed) {
-    return null;
-  }
-
-  return {
-    id: typeof parsed.id === 'string' ? parsed.id : 'default',
-    title: typeof parsed.title === 'string' ? parsed.title : '',
-    budgetValue:
-      typeof parsed.budgetValue === 'number' &&
-      Number.isFinite(parsed.budgetValue)
-        ? parsed.budgetValue
-        : 0,
-    goal: typeof parsed.goal === 'string' ? parsed.goal : '',
-  };
-}
-
-function mapSeedGoalToGoalKey(goal: string): GoalKey {
-  const normalized = goal.trim().toLowerCase();
-
-  if (normalized.includes('лид') || normalized.includes('заяв')) {
-    return 'leads';
-  }
-
-  if (normalized.includes('охват') || normalized.includes('узнава')) {
-    return 'awareness';
-  }
-
-  return 'website';
-}
-
-function getDefaultCtaByGoal(goal: GoalKey): string {
-  if (goal === 'leads') {
-    return 'Оставить заявку';
-  }
-
-  if (goal === 'awareness') {
-    return 'Узнать больше';
-  }
-
-  return 'Перейти на сайт';
-}
-
-function getBuilderStorageKey(mode: BuilderMode = getBuilderMode()): string {
-  if (mode === 'edit') {
-    const seed = getCampaignEditSeed();
-    return createLocalStorageKey(
-      CAMPAIGN_EDIT_STORAGE_KEY,
-      seed?.id || 'default',
-    );
-  }
-
-  return CAMPAIGN_CREATE_STORAGE_KEY;
-}
-
-function createEditBuilderState(): BuilderState {
-  const base = createBuilderBaseState();
-  const seed = getCampaignEditSeed();
-  const goal = seed?.goal ? mapSeedGoalToGoalKey(seed.goal) : base.goal;
-  const dailyBudget =
-    seed?.budgetValue && seed.budgetValue > 0
-      ? Math.max(1000, Math.round(seed.budgetValue))
-      : base.dailyBudget;
-
-  return {
-    ...base,
-    step: 'content',
-    name: seed?.title || `${base.name} — версия 2`,
-    goal,
-    cta: getDefaultCtaByGoal(goal),
-    dailyBudget,
-    totalBudget: Math.max(base.totalBudget, dailyBudget * 12),
-  };
-}
-
-function persistEditSeedFromState(state: BuilderState): void {
-  if (getBuilderMode() !== 'edit') {
-    return;
-  }
-
-  const seed = getCampaignEditSeed();
-
-  localStorageService.setJson(CAMPAIGN_EDIT_SEED_KEY, {
-    id: seed?.id || 'default',
-    title: state.name,
-    budgetValue: state.dailyBudget,
-    goal: GOAL_LABELS[state.goal],
-  });
-}
-
-function getBuilderState(): BuilderState {
-  const mode = getBuilderMode();
-
-  const parsed = localStorageService.getJson<
-    Partial<BuilderState> & {
-      audienceConfig?: Partial<BuilderState['audienceConfig']> & {
-        age?: string;
-      };
-    }
-  >(getBuilderStorageKey(mode));
-
-  if (!parsed) {
-    return mode === 'edit'
-      ? createEditBuilderState()
-      : createBuilderBaseState();
-  }
-
-  const fallbackState =
-    mode === 'edit' ? createEditBuilderState() : createBuilderBaseState();
-  const fallbackAudience =
-    AUDIENCE_PRESET_CONFIGS[parsed.audienceChip || fallbackState.audienceChip];
-  const storedAudience = parsed.audienceConfig || {};
-
-  return {
-    ...fallbackState,
-    ...parsed,
-    audienceConfig: {
-      cities: Array.isArray(storedAudience.cities)
-        ? storedAudience.cities
-        : [...fallbackAudience.cities],
-      ageRange:
-        typeof storedAudience.ageRange === 'string' && storedAudience.ageRange
-          ? storedAudience.ageRange
-          : typeof storedAudience.age === 'string' && storedAudience.age
-            ? storedAudience.age.split(',')[0]?.trim() ||
-              fallbackAudience.ageRange
-            : fallbackAudience.ageRange,
-      profileTags: Array.isArray(storedAudience.profileTags)
-        ? storedAudience.profileTags
-        : typeof storedAudience.age === 'string' &&
-            storedAudience.age.includes(',')
-          ? storedAudience.age
-              .split(',')
-              .slice(1)
-              .map((item) => item.trim())
-              .filter(Boolean)
-          : [...fallbackAudience.profileTags],
-      exclusions: Array.isArray(storedAudience.exclusions)
-        ? storedAudience.exclusions
-        : [...fallbackAudience.exclusions],
-      interests: Array.isArray(storedAudience.interests)
-        ? storedAudience.interests
-        : [...fallbackAudience.interests],
-      matchingMode:
-        storedAudience.matchingMode === 'any' ||
-        storedAudience.matchingMode === 'balanced' ||
-        storedAudience.matchingMode === 'strict'
-          ? storedAudience.matchingMode
-          : fallbackAudience.matchingMode,
-      expansionEnabled:
-        typeof storedAudience.expansionEnabled === 'boolean'
-          ? storedAudience.expansionEnabled
-          : fallbackAudience.expansionEnabled,
-      profilePriority:
-        storedAudience.profilePriority === 'primary' ||
-        storedAudience.profilePriority === 'secondary'
-          ? storedAudience.profilePriority
-          : fallbackAudience.profilePriority,
-      interestsPriority:
-        storedAudience.interestsPriority === 'primary' ||
-        storedAudience.interestsPriority === 'secondary'
-          ? storedAudience.interestsPriority
-          : fallbackAudience.interestsPriority,
-    },
-  };
-}
-
-function persistBuilderState(state: BuilderState): void {
-  localStorageService.setJson(getBuilderStorageKey(), state);
-  builderSavedAt = Date.now();
-}
-
-function resetBuilderState(): BuilderState {
-  const mode = getBuilderMode();
-  localStorageService.removeItem(getBuilderStorageKey(mode));
-  builderSavedAt = Date.now();
-  return mode === 'edit' ? createEditBuilderState() : createBuilderBaseState();
 }
 
 function getBudgetPeriodDays(period: string): number {
@@ -2271,55 +1751,16 @@ function syncStep(state: BuilderState): void {
   const canSubmit = state.step === 'publication';
   const mode = getBuilderModeConfig();
 
-  document
-    .querySelectorAll<HTMLElement>('[data-builder-step-trigger]')
-    .forEach((button, index) => {
-      const isActive = button.dataset.step === state.step;
-      button.classList.toggle('campaign-builder__step--active', isActive);
-      button.classList.toggle(
-        'campaign-builder__step--complete',
-        index < currentIndex,
-      );
-
-      const stateNode = button.querySelector<HTMLElement>(
-        '.campaign-builder__step-state',
-      );
-      if (stateNode) {
-        stateNode.textContent = isActive
-          ? 'Сейчас'
-          : index < currentIndex
-            ? 'Готово'
-            : 'Далее';
-      }
-    });
-
-  document
-    .querySelectorAll<HTMLElement>('[data-step-panel]')
-    .forEach((panel) => {
-      panel.hidden = panel.dataset.stepPanel !== state.step;
-    });
-
-  document
-    .querySelectorAll<HTMLButtonElement>('[data-builder-submit]')
-    .forEach((button) => {
-      button.classList.toggle('campaign-builder__button--locked', !canSubmit);
-      button.setAttribute('aria-disabled', String(!canSubmit));
-      button.title = canSubmit
-        ? mode.primaryActionLabel
-        : mode.lockedDescription;
-    });
-
-  setText('[data-builder-current-step]', progress.currentStepTitle);
-  setText('[data-builder-current-step-text]', progress.currentStepText);
-  setText('[data-builder-aside-step]', progress.currentStepTitle);
-  setText('[data-builder-progress-value]', progress.progressLabel);
-
-  const progressFill = document.querySelector<HTMLElement>(
-    '[data-builder-progress-fill]',
-  );
-  if (progressFill) {
-    progressFill.style.width = `${progress.progressValue}%`;
-  }
+  syncCampaignBuilderStepView({
+    canSubmit,
+    currentIndex,
+    currentStepText: progress.currentStepText,
+    currentStepTitle: progress.currentStepTitle,
+    lockedDescription: mode.lockedDescription,
+    progressLabel: progress.progressLabel,
+    progressValue: progress.progressValue,
+    step: state.step,
+  });
 }
 
 function syncContent(state: BuilderState): void {
@@ -2334,93 +1775,25 @@ function syncContent(state: BuilderState): void {
     'Текст объявления появится здесь после заполнения формы.';
   const previewCta = state.cta.trim() || 'Добавьте кнопку';
 
-  setTextAll('[data-preview-headline]', previewHeadline);
-  setTextAll('[data-preview-description]', previewDescription);
-  setTextAll('[data-preview-cta]', previewCta);
-  setTextAll('[data-preview-format]', formatLabel);
-  setTextAll('[data-preview-goal]', goalLabel);
-  setText('[data-summary-name]', state.name);
-  setTextAll('[data-summary-format]', formatLabel);
-  setTextAll('[data-summary-goal]', goalLabel);
-  setText('[data-builder-select-value="format"]', formatLabel);
-  setText('[data-builder-select-value="goal"]', goalLabel);
-  setText(
-    '[data-builder-headline-count]',
-    String(state.headline.trim().length),
-  );
-  setText(
-    '[data-builder-description-count]',
-    String(state.description.trim().length),
-  );
-
-  document
-    .querySelectorAll<HTMLElement>('[data-builder-creative]')
-    .forEach((item) => {
-      item.classList.toggle(
-        'campaign-builder__creative--active',
-        item.dataset.creative === state.creative,
-      );
-    });
-
-  document
-    .querySelectorAll<HTMLElement>('[data-builder-creative-slot]')
-    .forEach((slot) => {
-      const key = slot.dataset.slotKey as CreativeAssetKey | undefined;
-      const config = key
-        ? creativeSlots.find((item) => item.key === key)
-        : undefined;
-
-      if (!config) {
-        slot.hidden = true;
-        return;
-      }
-
-      slot.hidden = false;
-      setText('[data-builder-slot-title]', config.title, slot);
-      setText('[data-builder-slot-text]', config.text, slot);
-      setText('[data-builder-slot-meta]', config.meta, slot);
-      setText('[data-builder-slot-status]', config.status, slot);
-      setText('[data-builder-slot-button-label]', config.buttonLabel, slot);
-
-      const input = slot.querySelector<HTMLInputElement>(
-        '[data-builder-slot-input]',
-      );
-      if (input) {
-        input.accept = config.accept;
-        input.multiple = Boolean(config.multiple);
-      }
-    });
-
-  document
-    .querySelectorAll<HTMLElement>('[data-builder-select-option]')
-    .forEach((option) => {
-      const key = option.dataset.selectKey;
-      const value = option.dataset.value;
-      const isActive =
-        (key === 'format' && value === state.format) ||
-        (key === 'goal' && value === state.goal) ||
-        (key === 'strategy' && value === state.strategy);
-
-      option.classList.toggle(
-        'campaign-builder__select-option--active',
-        isActive,
-      );
-
-      const meta = option.querySelector<HTMLElement>(
-        '.campaign-builder__select-option-meta',
-      );
-
-      if (meta) {
-        meta.textContent = isActive
-          ? 'Выбрано'
-          : meta.dataset.defaultMeta || '';
-      }
-    });
-
-  setTextAll('[data-summary-creatives]', creative.count);
-  setText('[data-summary-creatives-aside]', creative.count);
-  setTextAll('[data-summary-placement]', creative.placements);
-  setText('[data-summary-placement-aside]', creative.placements);
+  syncCampaignBuilderContentView({
+    creative: state.creative,
+    creativeCount: creative.count,
+    creativePlacements: creative.placements,
+    creativeSlots,
+    descriptionCount: state.description.trim().length,
+    formatLabel,
+    goalLabel,
+    headlineCount: state.headline.trim().length,
+    name: state.name,
+    previewCta,
+    previewDescription,
+    previewHeadline,
+    selectedValues: {
+      format: state.format,
+      goal: state.goal,
+      strategy: state.strategy,
+    },
+  });
 }
 
 function syncAudience(state: BuilderState): void {
@@ -2484,164 +1857,26 @@ function syncAudience(state: BuilderState): void {
         ? 'Настройки дают хороший объём для старта. Следите за качеством клика и при необходимости усиливайте исключения.'
         : 'Сегмент уже выглядит рабочим: охват достаточно широкий, а профильные признаки удерживают аудиторию близко к офферу.';
 
-  const setAudienceMetricLabel = (
-    valueSelector: string,
-    label: string,
-  ): void => {
-    const valueNode = document.querySelector<HTMLElement>(valueSelector);
-    const labelNode = valueNode
-      ?.closest<HTMLElement>('.campaign-builder__metric')
-      ?.querySelector<HTMLElement>('.campaign-builder__metric-label');
-
-    if (labelNode) {
-      labelNode.textContent = label;
-    }
-  };
-
-  document
-    .querySelectorAll<HTMLElement>('[data-builder-audience-chip]')
-    .forEach((chip) => {
-      chip.classList.toggle(
-        'campaign-builder__chip--active',
-        chip.dataset.chip === state.audienceChip,
-      );
-    });
-
-  setText('[data-audience-cities]', audience.cities);
-  setText('[data-audience-region-count]', audience.regionsLabel);
-  setText(
-    '[data-audience-reach]',
-    new Intl.NumberFormat('ru-RU').format(reachValue),
-  );
-  setText(
-    '[data-audience-clicks]',
-    new Intl.NumberFormat('ru-RU').format(clicksValue),
-  );
-  setText('[data-audience-quality-text]', quality);
-  setText('[data-audience-quality]', qualityState);
-  setText('[data-audience-ctr]', `${ctrValue.toFixed(1)}%`);
-  setText('[data-audience-breadth]', breadth);
-  setText('[data-audience-competition]', competition);
-  setText('[data-audience-recommendation-title]', recommendationTitle);
-  setText('[data-audience-recommendation-text]', recommendationText);
-  setText('[data-audience-age-range]', audience.ageRange);
-  setText('[data-audience-age-pill]', audience.ageRange);
-  setText('[data-audience-profile]', audience.profile);
-  setText('[data-audience-profile-count]', audience.profileLabel);
-  setText('[data-audience-exclusions]', audience.exclusions);
-  setText(
-    '[data-audience-exclusions-count]',
-    `${state.audienceConfig.exclusions.length} фильтра`,
-  );
-  setText('[data-audience-interests]', audience.interests);
-  setText(
-    '[data-audience-interests-count]',
-    `${state.audienceConfig.interests.length} темы`,
-  );
-  setAudienceMetricLabel('[data-audience-reach]', 'Потенциальный охват');
-  setAudienceMetricLabel('[data-audience-clicks]', 'Прогноз кликов');
-  setAudienceMetricLabel('[data-audience-quality-text]', 'Качество аудитории');
-  setAudienceMetricLabel('[data-audience-ctr]', 'Прогноз CTR');
-  setAudienceMetricLabel('[data-audience-breadth]', 'Ширина сегмента');
-  setAudienceMetricLabel(
-    '[data-audience-competition]',
-    'Конкуренция в аукционе',
-  );
-
-  document
-    .querySelectorAll<HTMLElement>(
-      '[data-step-panel="audience"] .campaign-builder__metrics > .campaign-builder__metric-label',
-    )
-    .forEach((label) => label.remove());
-
-  document
-    .querySelectorAll<HTMLElement>(
-      '[data-audience-recommendation-title], [data-audience-recommendation-text]',
-    )
-    .forEach((node) =>
-      node.closest<HTMLElement>('.campaign-builder__metric')?.remove(),
-    );
-
   const insights = getAudienceInsights(state);
-  setText('[data-audience-matching-note]', insights.matchingNote);
-  setText(
-    '[data-audience-profile-priority-note]',
-    insights.profilePriorityNote,
-  );
-  setText(
-    '[data-audience-interests-priority-note]',
-    insights.interestsPriorityNote,
-  );
-  setText('[data-audience-expansion-state]', insights.expansionState);
-  setText('[data-audience-expansion-note]', insights.expansionNote);
-  setText('[data-audience-logic-badge]', insights.logicBadge);
-  setText('[data-audience-explanation]', insights.explanation);
-  setText('[data-audience-risk-tone]', insights.riskToneLabel);
 
-  document
-    .querySelectorAll<HTMLElement>(
-      '[data-builder-audience-setting="matchingMode"]',
-    )
-    .forEach((button) => {
-      button.classList.toggle(
-        'campaign-builder__segmented-button--active',
-        button.dataset.value === state.audienceConfig.matchingMode,
-      );
-    });
-
-  document
-    .querySelectorAll<HTMLElement>(
-      '[data-builder-audience-setting="profilePriority"]',
-    )
-    .forEach((button) => {
-      button.classList.toggle(
-        'campaign-builder__mini-chip--active',
-        button.dataset.value === state.audienceConfig.profilePriority,
-      );
-    });
-
-  document
-    .querySelectorAll<HTMLElement>(
-      '[data-builder-audience-setting="interestsPriority"]',
-    )
-    .forEach((button) => {
-      button.classList.toggle(
-        'campaign-builder__mini-chip--active',
-        button.dataset.value === state.audienceConfig.interestsPriority,
-      );
-    });
-
-  document
-    .querySelectorAll<HTMLElement>(
-      '[data-builder-audience-toggle="expansionEnabled"]',
-    )
-    .forEach((button) => {
-      button.classList.toggle(
-        'campaign-builder__toggle--active',
-        state.audienceConfig.expansionEnabled,
-      );
-      button.setAttribute(
-        'aria-pressed',
-        String(state.audienceConfig.expansionEnabled),
-      );
-    });
-
-  document
-    .querySelectorAll<HTMLElement>('[data-audience-risk-tone]')
-    .forEach((node) => {
-      node.classList.toggle(
-        'campaign-builder__pill--danger',
-        insights.riskToneDanger,
-      );
-    });
-
-  document
-    .querySelectorAll<HTMLElement>('[data-audience-risk-list]')
-    .forEach((list) => {
-      list.innerHTML = insights.risks
-        .map((risk) => `<li class="campaign-builder__risk-item">${risk}</li>`)
-        .join('');
-    });
+  syncCampaignBuilderAudienceView({
+    audience,
+    audienceChip: state.audienceChip,
+    breadth,
+    clicks: new Intl.NumberFormat('ru-RU').format(clicksValue),
+    competition,
+    ctr: `${ctrValue.toFixed(1)}%`,
+    exclusionsCount,
+    expansionEnabled: state.audienceConfig.expansionEnabled,
+    interestsCount,
+    interestsPriority: state.audienceConfig.interestsPriority,
+    insights,
+    matchingMode: state.audienceConfig.matchingMode,
+    profilePriority: state.audienceConfig.profilePriority,
+    quality,
+    qualityState,
+    reach: new Intl.NumberFormat('ru-RU').format(reachValue),
+  });
 
   renderSavedAudiencesList(state);
 }
@@ -2685,112 +1920,23 @@ function syncBudget(state: BuilderState): void {
       ? `Лимита хватает на весь период. Дополнительный запас: ${Math.max(0, coverageDays - plannedDays)} дн.`
       : `При текущем соотношении лимита и расхода кампании хватит примерно на ${coverageDays} дн. из ${plannedDays}.`;
 
-  setText('[data-budget-reach]', budget.reach);
-  setText('[data-budget-clicks]', budget.clicks);
-  setText('[data-budget-cpc]', budget.cpc);
-  setText('[data-budget-note]', budget.note);
-  setTextAll('[data-final-daily-budget]', formatRubles(state.dailyBudget));
-  setText('[data-final-total-budget]', formatRubles(state.totalBudget));
-  setTextAll('[data-final-period]', state.period);
-  setTextAll('[data-final-strategy]', STRATEGY_LABELS[state.strategy]);
-  setTextAll('[data-summary-reach]', budget.reach);
-  setText('[data-budget-reach-aside]', budget.reach);
-  setText('[data-budget-clicks-aside]', budget.clicks);
-  setText('[data-builder-budget-total]', formatRubles(state.totalBudget));
-  setText(
-    '[data-builder-select-value="strategy"]',
-    STRATEGY_LABELS[state.strategy],
-  );
-  setText('[data-budget-pace-label]', insights.paceLabel);
-  setText('[data-budget-pace-note]', insights.paceNote);
-  setText('[data-budget-reserve-label]', insights.reserveLabel);
-  setText('[data-budget-reserve-note]', insights.reserveNote);
-  setText('[data-budget-warning-tone]', warningToneLabel);
-  setText(
-    '[data-budget-preset-note]',
-    `Дневной бюджет ${formatRubles(state.dailyBudget)} при общем лимите ${formatRubles(state.totalBudget)}.`,
-  );
-  setText(
-    '[data-budget-period-note]',
-    `Выберите удобный горизонт запуска. Сейчас кампания запланирована на ${plannedDays} дн.`,
-  );
-  setText('[data-budget-period-label]', 'Горизонт запуска');
-  setText('[data-budget-period-title]', periodTitle);
-  setText('[data-budget-period-badge]', `${plannedDays} дн.`);
-  setText('[data-budget-period-summary]', periodSummary);
-  setText('[data-budget-balance-label]', 'Связка лимитов');
-  setText('[data-budget-balance-title]', balanceTitle);
-  setText('[data-budget-balance-badge]', balanceBadge);
-  setText('[data-budget-balance-note]', balanceNote);
-
-  document
-    .querySelectorAll<HTMLInputElement>('[data-builder-budget="dailyBudget"]')
-    .forEach((field) => {
-      field.value = String(state.dailyBudget);
-    });
-
-  document
-    .querySelectorAll<HTMLInputElement>('[data-builder-budget="totalBudget"]')
-    .forEach((field) => {
-      field.value = String(state.totalBudget);
-    });
-
-  document
-    .querySelectorAll<HTMLInputElement>('[data-builder-budget="periodDays"]')
-    .forEach((field) => {
-      field.value = String(plannedDays);
-    });
-
-  document
-    .querySelectorAll<HTMLElement>('[data-budget-warning-tone]')
-    .forEach((node) => {
-      node.classList.toggle(
-        'campaign-builder__pill--danger',
-        insights.warningTone === 'warning',
-      );
-    });
-
-  document
-    .querySelectorAll<HTMLElement>('[data-budget-balance-badge]')
-    .forEach((node) => {
-      node.classList.toggle(
-        'campaign-builder__pill--danger',
-        coverageDays < plannedDays,
-      );
-    });
-
-  document
-    .querySelectorAll<HTMLElement>('[data-budget-balance-fill]')
-    .forEach((node) => {
-      node.style.width = `${Math.round(coverageRatio * 100)}%`;
-    });
-
-  document
-    .querySelectorAll<HTMLElement>('[data-budget-warning-list]')
-    .forEach((list) => {
-      list.innerHTML = insights.warnings
-        .map((item) => `<li class="campaign-builder__risk-item">${item}</li>`)
-        .join('');
-    });
-
-  document
-    .querySelectorAll<HTMLElement>('[data-builder-budget-preset]')
-    .forEach((button) => {
-      const value = Number(button.dataset.builderBudgetPreset);
-      button.classList.toggle(
-        'campaign-builder__mini-chip--active',
-        Number.isFinite(value) && value === state.dailyBudget,
-      );
-    });
-
-  document
-    .querySelectorAll<HTMLElement>('[data-builder-period-preset]')
-    .forEach((button) => {
-      button.classList.toggle(
-        'campaign-builder__mini-chip--active',
-        button.dataset.builderPeriodPreset === state.period,
-      );
-    });
+  syncCampaignBuilderBudgetView({
+    balanceBadge,
+    balanceNote,
+    balanceTitle,
+    budget,
+    coverageDays,
+    coverageRatio,
+    dailyBudget: state.dailyBudget,
+    insights,
+    period: state.period,
+    periodSummary,
+    periodTitle,
+    plannedDays,
+    strategyLabel: STRATEGY_LABELS[state.strategy],
+    totalBudget: state.totalBudget,
+    warningToneLabel,
+  });
 }
 
 function syncFinalReview(state: BuilderState): void {
@@ -2802,93 +1948,30 @@ function syncFinalReview(state: BuilderState): void {
     audience: finalReview.audience,
     budget: finalReview.budget,
   };
-
-  setTextAll('[data-final-cities]', audience.cities || 'Не выбрано');
-  setTextAll('[data-final-age]', audience.ageRange || 'Не выбрано');
-  setTextAll('[data-final-profile]', audience.profile || 'Не выбрано');
-  setTextAll('[data-final-interests]', audience.interests || 'Не выбрано');
-  setTextAll('[data-final-exclusions]', audience.exclusions || 'Не настроено');
-  setText('[data-final-health-badge]', finalReview.status.badge);
-  setText('[data-final-health-title]', finalReview.status.title);
-  setText('[data-final-health-text]', finalReview.status.text);
-
   const pendingChecks = (Object.keys(checks) as FinalReviewCheckKey[])
     .filter((key) => !checks[key].success)
     .map((key) => checks[key].title.toLowerCase());
 
-  setText(
-    '[data-final-note]',
-    pendingChecks.length
-      ? `Исправьте: ${pendingChecks.join(', ')}.`
-      : 'Сверьте сегмент, площадки, срок и бюджет.',
-  );
-
-  document
-    .querySelectorAll<HTMLElement>('[data-final-health-badge]')
-    .forEach((node) => {
-      node.classList.toggle(
-        'campaign-builder__pill--success',
-        finalReview.status.isPositive,
-      );
-      node.classList.toggle(
-        'campaign-builder__pill--danger',
-        !finalReview.status.isPositive,
-      );
-    });
-
-  (Object.keys(checks) as FinalReviewCheckKey[]).forEach((key) => {
-    const check = checks[key];
-    setText(`[data-final-check-title="${key}"]`, check.title);
-    setText(`[data-final-check-text="${key}"]`, check.text);
-    setText(`[data-final-check-status="${key}"]`, check.status);
-
-    document
-      .querySelectorAll<HTMLElement>(`[data-final-check-status="${key}"]`)
-      .forEach((node) => {
-        node.classList.toggle('campaign-builder__pill--success', check.success);
-        node.classList.toggle('campaign-builder__pill--danger', !check.success);
-      });
+  syncCampaignBuilderReviewView({
+    audience,
+    checks,
+    finalHealth: finalReview.status,
+    pendingChecks,
   });
 }
 
 function syncHealth(state: BuilderState): void {
-  const health = getBuilderHealth(state);
-
-  setText('[data-builder-completion-state]', health.badge);
-
-  const badge = document.querySelector<HTMLElement>(
-    '[data-builder-completion-state]',
-  );
-
-  if (badge) {
-    badge.classList.toggle(
-      'campaign-builder__hero-meta-badge--success',
-      health.isPositive,
-    );
-  }
+  syncCampaignBuilderHealthView(getBuilderHealth(state));
 }
 
 function syncValidation(state: BuilderState): void {
-  const errors = getFieldErrors(state);
-
-  document
-    .querySelectorAll<HTMLElement>('[data-builder-error]')
-    .forEach((node) => {
-      const key = node.dataset.builderError as FieldKey | undefined;
-      const field = node.closest<HTMLElement>('.campaign-builder__field');
-      const message = key ? errors[key] || '' : '';
-
-      node.textContent = message;
-      node.hidden = !message;
-      field?.classList.toggle(
-        'campaign-builder__field--error',
-        Boolean(message),
-      );
-    });
+  syncCampaignBuilderValidationView({
+    errors: getFieldErrors(state),
+  });
 }
 
 function syncSaveState(): void {
-  setText('[data-builder-save-state]', formatSaveStateLabel());
+  syncCampaignBuilderSaveStateView(formatSaveStateLabel());
 }
 
 function syncBuilderModeCopy(): void {
@@ -2898,30 +1981,7 @@ function syncBuilderModeCopy(): void {
     return;
   }
 
-  setText(
-    '[data-step-panel="publication"] .campaign-builder__card--review-summary .campaign-builder__card-title',
-    'Что сохранится после правок',
-  );
-  setText(
-    '[data-step-panel="publication"] .campaign-builder__card--review-summary .campaign-builder__card-subtitle',
-    'Финальная конфигурация объявления после редактирования.',
-  );
-  setText(
-    '[data-step-panel="publication"] .campaign-builder__card--review-checks .campaign-builder__card-title',
-    'Перед сохранением',
-  );
-  setText(
-    '[data-step-panel="publication"] .campaign-builder__card--review-checks .campaign-builder__card-subtitle',
-    'Пункты, которые стоит открыть и сверить перед сохранением.',
-  );
-  setText(
-    '[data-step-panel="publication"] .campaign-builder__review-next .campaign-builder__review-section-title',
-    'После сохранения',
-  );
-  setText(
-    '[data-step-panel="publication"] .campaign-builder__panel-note',
-    'После сохранения изменения останутся в кабинете. Если правки затрагивают креатив, текст или площадки, объявление может уйти на повторную модерацию.',
-  );
+  syncCampaignBuilderModeCopyView();
 }
 
 function syncBuilder(state: BuilderState): void {
@@ -2979,9 +2039,6 @@ export function CampaignCreate(): void | VoidFunction {
   campaignCreateLifecycleController = controller;
   const { signal } = controller;
   const state = getBuilderState();
-  let activeAudienceModal: AudienceDetailKey | null = null;
-  let draftAudienceConfig: BuilderState['audienceConfig'] | null = null;
-  let currentAudienceSearch = '';
 
   const combinedAudienceButton = document.querySelector<HTMLElement>(
     '[data-builder-audience-detail="profile"]',
@@ -3051,1107 +2108,58 @@ export function CampaignCreate(): void | VoidFunction {
     });
   };
 
-  document
-    .querySelectorAll<HTMLElement>('[data-builder-step-trigger]')
-    .forEach((button) => {
-      button.addEventListener(
-        'click',
-        () => {
-          const step = button.dataset.step as StepKey | undefined;
-          if (step) {
-            setStep(step);
-          }
-        },
-        { signal },
-      );
-    });
-
-  document
-    .querySelectorAll<HTMLElement>('[data-builder-step-action]')
-    .forEach((button) => {
-      button.addEventListener(
-        'click',
-        () => {
-          const direction = button.dataset.direction as
-            | 'next'
-            | 'prev'
-            | undefined;
-          if (direction) {
-            moveStep(state, direction);
-          }
-        },
-        { signal },
-      );
-    });
-
-  document
-    .querySelectorAll<HTMLElement>('[data-review-jump]')
-    .forEach((button) => {
-      button.addEventListener(
-        'click',
-        () => {
-          const key = button.dataset.reviewJump as
-            | FinalReviewCheckKey
-            | undefined;
-          if (key) {
-            jumpToReviewSection(key);
-          }
-        },
-        { signal },
-      );
-    });
-
-  const closeMoreMenu = (): void => {
-    const menu = document.querySelector<HTMLElement>(
-      '[data-builder-more-menu]',
-    );
-    const trigger = document.querySelector<HTMLElement>(
-      '[data-builder-more-trigger]',
-    );
-    menu?.setAttribute('hidden', '');
-    trigger?.setAttribute('aria-expanded', 'false');
-  };
-
-  document.querySelector('[data-builder-more-trigger]')?.addEventListener(
-    'click',
-    (event) => {
-      event.preventDefault();
-      const menu = document.querySelector<HTMLElement>(
-        '[data-builder-more-menu]',
-      );
-      const trigger = document.querySelector<HTMLElement>(
-        '[data-builder-more-trigger]',
-      );
-      const isOpen = menu ? !menu.hasAttribute('hidden') : false;
-
-      if (isOpen) {
-        closeMoreMenu();
-        return;
-      }
-
-      menu?.removeAttribute('hidden');
-      trigger?.setAttribute('aria-expanded', 'true');
-    },
-    { signal },
-  );
-
-  document
-    .querySelectorAll<
-      HTMLInputElement | HTMLTextAreaElement
-    >('[data-builder-input]')
-    .forEach((field) => {
-      field.addEventListener(
-        'input',
-        () => {
-          const key = field.dataset.builderInput as
-            | keyof BuilderState
-            | undefined;
-          if (!key) {
-            return;
-          }
-
-          let nextValue = field.value;
-
-          if (key === 'name') {
-            nextValue = clampText(nextValue, CONTENT_LIMITS.name);
-          } else if (key === 'headline') {
-            nextValue = clampText(nextValue, CONTENT_LIMITS.headline);
-          } else if (key === 'description') {
-            nextValue = clampText(nextValue, CONTENT_LIMITS.description);
-          } else if (key === 'cta') {
-            nextValue = clampText(nextValue, CONTENT_LIMITS.cta);
-          }
-
-          field.value = nextValue;
-          state[key] = nextValue as never;
-          persistBuilderState(state);
-          syncBuilder(state);
-        },
-        { signal },
-      );
-
-      if (field.dataset.builderInput === 'link') {
-        field.addEventListener(
-          'blur',
-          () => {
-            const value = field.value.trim();
-
-            if (
-              value &&
-              !value.startsWith('http://') &&
-              !value.startsWith('https://')
-            ) {
-              field.value = `https://${value}`;
-              state.link = field.value;
-              persistBuilderState(state);
-              syncBuilder(state);
-            }
-          },
-          { signal },
-        );
-      }
-    });
-
-  const closeSelects = (): void => {
-    document
-      .querySelectorAll<HTMLElement>('[data-builder-select]')
-      .forEach((select) => {
-        select.classList.remove('campaign-builder__select--open');
-        select
-          .querySelector<HTMLElement>('[data-builder-select-menu]')
-          ?.setAttribute('hidden', '');
-        select
-          .querySelector<HTMLElement>('[data-builder-select-trigger]')
-          ?.setAttribute('aria-expanded', 'false');
-      });
-  };
-
-  document
-    .querySelectorAll<HTMLElement>('[data-builder-select]')
-    .forEach((select) => {
-      const trigger = select.querySelector<HTMLElement>(
-        '[data-builder-select-trigger]',
-      );
-      const menu = select.querySelector<HTMLElement>(
-        '[data-builder-select-menu]',
-      );
-
-      trigger?.addEventListener(
-        'click',
-        (event) => {
-          event.preventDefault();
-
-          const isOpen = select.classList.contains(
-            'campaign-builder__select--open',
-          );
-          closeSelects();
-
-          if (!isOpen) {
-            select.classList.add('campaign-builder__select--open');
-            menu?.removeAttribute('hidden');
-            trigger.setAttribute('aria-expanded', 'true');
-          }
-        },
-        { signal },
-      );
-    });
-
-  document
-    .querySelectorAll<HTMLElement>('[data-builder-select-option]')
-    .forEach((option) => {
-      const meta = option.querySelector<HTMLElement>(
-        '.campaign-builder__select-option-meta',
-      );
-      if (meta) {
-        meta.dataset.defaultMeta = getSelectOptionDefaultMeta(
-          option.dataset.selectKey,
-          option.dataset.value,
-        );
-      }
-
-      option.addEventListener(
-        'click',
-        () => {
-          const key = option.dataset.selectKey;
-          const value = option.dataset.value;
-
-          if (!key || !value) {
-            return;
-          }
-
-          if (key === 'format') {
-            state.format = value as FormatKey;
-          } else if (key === 'goal') {
-            state.goal = value as GoalKey;
-          } else if (key === 'strategy') {
-            state.strategy = value as StrategyKey;
-          }
-
-          persistBuilderState(state);
-          syncBuilder(state);
-          closeSelects();
-        },
-        { signal },
-      );
-    });
-
-  document.addEventListener(
-    'click',
-    (event) => {
-      const target = event.target;
-      if (
-        !(target instanceof Element) ||
-        target.closest('[data-builder-select]')
-      ) {
-        return;
-      }
-
-      closeSelects();
-    },
-    { signal },
-  );
-
-  document.addEventListener(
-    'click',
-    (event) => {
-      const target = event.target;
-      if (
-        !(target instanceof Element) ||
-        target.closest('[data-builder-more]')
-      ) {
-        return;
-      }
-
-      closeMoreMenu();
-    },
-    { signal },
-  );
-
-  document.addEventListener(
-    'keydown',
-    (event) => {
-      if (event.key === 'Escape') {
-        closeSelects();
-        closeMoreMenu();
-        closeAudienceModal();
-      }
-    },
-    { signal },
-  );
-
-  document
-    .querySelectorAll<HTMLElement>('[data-builder-creative]')
-    .forEach((button) => {
-      button.addEventListener(
-        'click',
-        () => {
-          const creative = button.dataset.creative as CreativeKey | undefined;
-          if (!creative) {
-            return;
-          }
-
-          state.creative = creative;
-          persistBuilderState(state);
-          syncBuilder(state);
-        },
-        { signal },
-      );
-    });
-
-  document
-    .querySelectorAll<HTMLInputElement>('[data-builder-slot-input]')
-    .forEach((input) => {
-      input.addEventListener(
-        'change',
-        () => {
-          const key = input.dataset.builderSlotInput as
-            | CreativeAssetKey
-            | undefined;
-          const files = input.files ? Array.from(input.files) : [];
-
-          if (!key || files.length === 0) {
-            return;
-          }
-
-          const firstFile = files[0];
-          const expectsVideo = key === 'mainVideo' || key === 'verticalVideo';
-          const expectsImage = key === 'videoCover';
-
-          if (expectsVideo && !firstFile.type.startsWith('video/')) {
-            input.value = '';
-            showToast({
-              title: 'Нужен видеофайл',
-              description:
-                'Для этого слота загрузите MP4, MOV или другой видеофайл.',
-            });
-            return;
-          }
-
-          if (expectsImage && !firstFile.type.startsWith('image/')) {
-            input.value = '';
-            showToast({
-              title: 'Нужна обложка',
-              description:
-                'Для обложки загрузите PNG, JPG или другое изображение.',
-            });
-            return;
-          }
-
-          state.creativeAssets[key] =
-            files.length === 1
-              ? firstFile.name
-              : `${files.length} файла, первый: ${firstFile.name}`;
-
-          persistBuilderState(state);
-          syncBuilder(state);
-          showToast({
-            title: 'Креатив обновлён',
-            description: `Файл "${firstFile.name}" сохранён в черновике кампании.`,
-          });
-          input.value = '';
-        },
-        { signal },
-      );
-    });
-
-  document
-    .querySelectorAll<HTMLElement>('[data-builder-audience-chip]')
-    .forEach((button) => {
-      button.addEventListener(
-        'click',
-        () => {
-          const chip = button.dataset.chip as AudienceChipKey | undefined;
-          if (!chip) {
-            return;
-          }
-
-          state.audienceChip = chip;
-          state.audienceConfig = {
-            ...AUDIENCE_PRESET_CONFIGS[chip],
-            cities: [...AUDIENCE_PRESET_CONFIGS[chip].cities],
-            profileTags: [...AUDIENCE_PRESET_CONFIGS[chip].profileTags],
-            exclusions: [...AUDIENCE_PRESET_CONFIGS[chip].exclusions],
-            interests: [...AUDIENCE_PRESET_CONFIGS[chip].interests],
-            matchingMode: AUDIENCE_PRESET_CONFIGS[chip].matchingMode,
-            expansionEnabled: AUDIENCE_PRESET_CONFIGS[chip].expansionEnabled,
-            profilePriority: AUDIENCE_PRESET_CONFIGS[chip].profilePriority,
-            interestsPriority: AUDIENCE_PRESET_CONFIGS[chip].interestsPriority,
-          };
-          persistBuilderState(state);
-          syncBuilder(state);
-        },
-        { signal },
-      );
-    });
-
-  document
-    .querySelectorAll<HTMLElement>('[data-builder-audience-setting]')
-    .forEach((button) => {
-      button.addEventListener(
-        'click',
-        () => {
-          const key = button.dataset.builderAudienceSetting;
-          const value = button.dataset.value;
-
-          if (!key || !value) {
-            return;
-          }
-
-          if (key === 'matchingMode') {
-            state.audienceConfig.matchingMode = value as MatchingMode;
-          } else if (key === 'profilePriority') {
-            state.audienceConfig.profilePriority = value as PriorityMode;
-          } else if (key === 'interestsPriority') {
-            state.audienceConfig.interestsPriority = value as PriorityMode;
-          }
-
-          persistBuilderState(state);
-          syncBuilder(state);
-        },
-        { signal },
-      );
-    });
-
-  document
-    .querySelectorAll<HTMLElement>('[data-builder-budget-preset]')
-    .forEach((button) => {
-      button.addEventListener(
-        'click',
-        () => {
-          const value = Number(button.dataset.builderBudgetPreset);
-
-          if (!Number.isFinite(value)) {
-            return;
-          }
-
-          state.dailyBudget = value;
-          state.totalBudget = Math.max(state.totalBudget, value * 10);
-          persistBuilderState(state);
-          syncBuilder(state);
-        },
-        { signal },
-      );
-    });
-
-  document
-    .querySelectorAll<HTMLElement>('[data-builder-period-preset]')
-    .forEach((button) => {
-      button.addEventListener(
-        'click',
-        () => {
-          const value = button.dataset.builderPeriodPreset;
-
-          if (!value) {
-            return;
-          }
-
-          state.period = value;
-          persistBuilderState(state);
-          syncBuilder(state);
-        },
-        { signal },
-      );
-    });
-
-  document
-    .querySelectorAll<HTMLElement>(
-      '[data-builder-audience-toggle="expansionEnabled"]',
-    )
-    .forEach((button) => {
-      button.addEventListener(
-        'click',
-        () => {
-          state.audienceConfig.expansionEnabled =
-            !state.audienceConfig.expansionEnabled;
-          persistBuilderState(state);
-          syncBuilder(state);
-        },
-        { signal },
-      );
-    });
-
-  document
-    .querySelectorAll<HTMLElement>('[data-builder-save-audience]')
-    .forEach((button) => {
-      button.addEventListener(
-        'click',
-        () => {
-          const name = window.prompt(
-            'Название аудитории',
-            `Аудитория ${state.audienceConfig.ageRange}`,
-          );
-
-          if (!name || !name.trim()) {
-            return;
-          }
-
-          const items = getSavedAudiences();
-          const preset: SavedAudiencePreset = {
-            id: `${Date.now()}`,
-            name: name.trim(),
-            summary: formatSavedAudienceSummary(state.audienceConfig),
-            config: cloneAudienceConfig(state.audienceConfig),
-          };
-
-          persistSavedAudiences([preset, ...items].slice(0, 8));
-          renderSavedAudiencesList(state);
-          showToast({
-            title: 'Аудитория сохранена',
-            description: `Набор "${preset.name}" теперь можно быстро применить в новых кампаниях.`,
-          });
-        },
-        { signal },
-      );
-    });
-
-  document
-    .querySelectorAll<HTMLElement>('[data-builder-saved-audiences]')
-    .forEach((container) => {
-      container.addEventListener(
-        'click',
-        (event) => {
-          const target = event.target;
-
-          if (!(target instanceof HTMLElement)) {
-            return;
-          }
-
-          const applyButton = target.closest<HTMLElement>(
-            '[data-builder-apply-audience]',
-          );
-          const deleteButton = target.closest<HTMLElement>(
-            '[data-builder-delete-audience]',
-          );
-
-          if (applyButton?.dataset.builderApplyAudience) {
-            const preset = getSavedAudiences().find(
-              (item) => item.id === applyButton.dataset.builderApplyAudience,
-            );
-
-            if (!preset) {
-              return;
-            }
-
-            state.audienceConfig = cloneAudienceConfig(preset.config);
-            persistBuilderState(state);
-            syncBuilder(state);
-            showToast({
-              title: 'Аудитория применена',
-              description: `Настройки из "${preset.name}" перенесены в текущую кампанию.`,
-            });
-            return;
-          }
-
-          if (deleteButton?.dataset.builderDeleteAudience) {
-            const nextItems = getSavedAudiences().filter(
-              (item) => item.id !== deleteButton.dataset.builderDeleteAudience,
-            );
-
-            persistSavedAudiences(nextItems);
-            renderSavedAudiencesList(state);
-            showToast({
-              title: 'Аудитория удалена',
-              description:
-                'Сохранённый набор больше не будет доступен в быстрых сценариях.',
-            });
-          }
-        },
-        { signal },
-      );
-    });
-
-  const audienceModal = document.querySelector<HTMLElement>(
-    '[data-builder-audience-modal]',
-  );
-  const audienceModalOptions = document.querySelector<HTMLElement>(
-    '[data-builder-audience-modal-options]',
-  );
-  const audienceModalSearch = document.querySelector<HTMLInputElement>(
-    '[data-builder-audience-modal-search]',
-  );
-  const audienceModalSearchField = audienceModalSearch?.closest<HTMLElement>(
-    '.campaign-builder__modal-search',
-  );
-  const audienceModalSave = document.querySelector<HTMLButtonElement>(
-    '[data-builder-audience-modal-save]',
-  );
-  let audienceModalCloseTimer: number | null = null;
-
-  const syncProfileSelectionUI = (): void => {
-    if (!audienceModalOptions || !draftAudienceConfig) {
-      return;
-    }
-
-    const profileState = getProfileSelectionState(
-      draftAudienceConfig.profileTags,
-    );
-    const countNode = audienceModalOptions.querySelector<HTMLElement>(
-      '[data-profile-selected-count]',
-    );
-    const tagsNode = audienceModalOptions.querySelector<HTMLElement>(
-      '[data-profile-selected-tags]',
-    );
-    const noteNode = audienceModalOptions.querySelector<HTMLElement>(
-      '[data-profile-selection-note]',
-    );
-
-    if (countNode) {
-      countNode.textContent = profileState.label;
-    }
-
-    if (tagsNode) {
-      tagsNode.innerHTML = draftAudienceConfig.profileTags.length
-        ? draftAudienceConfig.profileTags
-            .map(
-              (value) =>
-                `<span class="campaign-builder__profile-tag-chip">${value}</span>`,
-            )
-            .join('')
-        : '<p class="campaign-builder__profile-empty">Добавьте несколько признаков, чтобы сегмент был точнее.</p>';
-    }
-
-    if (noteNode) {
-      noteNode.textContent = profileState.note;
-      noteNode.dataset.tone = profileState.tone;
-    }
-
-    if (audienceModalSave) {
-      audienceModalSave.disabled =
-        activeAudienceModal === 'profile' ? !profileState.canSave : false;
-    }
-  };
-
-  const openAudienceModal = (): void => {
-    if (!audienceModal) {
-      return;
-    }
-
-    if (audienceModalCloseTimer) {
-      window.clearTimeout(audienceModalCloseTimer);
-      audienceModalCloseTimer = null;
-    }
-
-    audienceModal.hidden = false;
-    audienceModal.classList.remove('is-closing');
-    requestAnimationFrame(() => {
-      audienceModal.classList.add('is-open');
-    });
-  };
-
-  const closeAudienceModal = (): void => {
-    activeAudienceModal = null;
-    draftAudienceConfig = null;
-    currentAudienceSearch = '';
-    if (audienceModalCloseTimer) {
-      window.clearTimeout(audienceModalCloseTimer);
-      audienceModalCloseTimer = null;
-    }
-    audienceModal?.classList.remove('is-open');
-    audienceModal?.classList.add('is-closing');
-    audienceModalCloseTimer = window.setTimeout(() => {
-      if (audienceModalOptions) {
-        audienceModalOptions.innerHTML = '';
-      }
-      audienceModal?.setAttribute('hidden', '');
-      audienceModal?.classList.remove('is-closing');
-      audienceModalCloseTimer = null;
-    }, 180);
-    if (audienceModalSearch) {
-      audienceModalSearch.value = '';
-    }
-    audienceModalSearchField?.removeAttribute('hidden');
-    if (audienceModalSave) {
-      audienceModalSave.disabled = false;
-    }
-  };
-
-  const renderAudienceModalOptions = (key: AudienceDetailKey): void => {
-    const config = getAudienceModalConfig(key);
-
-    if (!audienceModalOptions) {
-      return;
-    }
-
-    const normalizedSearch = currentAudienceSearch.trim().toLowerCase();
-    const selectedValues =
-      key === 'geo'
-        ? draftAudienceConfig?.cities || []
-        : key === 'age'
-          ? [draftAudienceConfig?.ageRange || state.audienceConfig.ageRange]
-          : key === 'profile'
-            ? draftAudienceConfig?.profileTags || []
-            : key === 'exclusions'
-              ? draftAudienceConfig?.exclusions || []
-              : draftAudienceConfig?.interests || [];
-
-    if (key === 'profile') {
-      const filteredOptions = config.options.filter((option) => {
-        if (!normalizedSearch) {
-          return true;
-        }
-
-        return `${option.label} ${option.description || ''} ${option.value}`
-          .toLowerCase()
-          .includes(normalizedSearch);
-      });
-
-      const selectedTagsMarkup = selectedValues.length
-        ? `
-          ${selectedValues
-            .map(
-              (value) =>
-                `<span class="campaign-builder__profile-tag-chip">${value}</span>`,
-            )
-            .join('')}
-        `
-        : '<p class="campaign-builder__profile-empty">Добавьте несколько признаков, чтобы сегмент был точнее.</p>';
-
-      const profileSelectionState = getProfileSelectionState(selectedValues);
-
-      audienceModalOptions.innerHTML = `
-        <section class="campaign-builder__profile-section">
-          <div class="campaign-builder__profile-section-head">
-            <div>
-              <strong class="campaign-builder__profile-section-title">Профиль аудитории</strong>
-              <p class="campaign-builder__profile-section-text">Отметьте роли, признаки и модели поведения, которые подходят под оффер.</p>
-            </div>
-            <span class="campaign-builder__pill" data-profile-selected-count>${profileSelectionState.label}</span>
-          </div>
-          <div class="campaign-builder__profile-tags" data-profile-selected-tags>${selectedTagsMarkup}</div>
-          <p class="campaign-builder__profile-selection-note" data-profile-selection-note data-tone="${profileSelectionState.tone}">${profileSelectionState.note}</p>
-          <div class="campaign-builder__modal-option-list campaign-builder__modal-option-list--profile">
-            ${filteredOptions
-              .map((option) => {
-                const checked = selectedValues.includes(option.value);
-                return `
-                  <label class="campaign-builder__modal-option">
-                    <input
-                      class="campaign-builder__modal-option-input"
-                      type="checkbox"
-                      value="${option.value}"
-                      data-profile-tag
-                      ${checked ? 'checked' : ''}
-                    />
-                    <span class="campaign-builder__modal-option-copy">
-                      <strong class="campaign-builder__modal-option-title">${option.label}</strong>
-                      ${option.description ? `<span class="campaign-builder__modal-option-text">${option.description}</span>` : ''}
-                    </span>
-                  </label>
-                `;
-              })
-              .join('')}
-          </div>
-        </section>
-      `;
-      if (audienceModalSave) {
-        audienceModalSave.disabled = !profileSelectionState.canSave;
-      }
-      return;
-    }
-
-    const filteredOptions = config.options.filter((option) => {
-      if (!normalizedSearch) {
-        return true;
-      }
-
-      return `${option.label} ${option.description || ''} ${option.value}`
-        .toLowerCase()
-        .includes(normalizedSearch);
-    });
-
-    audienceModalOptions.innerHTML = filteredOptions
-      .map((option) => {
-        const checked = selectedValues.includes(option.value);
-        const controlType =
-          config.selectionType === 'single' ? 'radio' : 'checkbox';
-        return `
-          <label class="campaign-builder__modal-option">
-            <input
-              class="campaign-builder__modal-option-input"
-              type="${controlType}"
-              name="audience-modal-selection"
-              value="${option.value}"
-              ${checked ? 'checked' : ''}
-            />
-            <span class="campaign-builder__modal-option-copy">
-              <strong class="campaign-builder__modal-option-title">${option.label}</strong>
-              ${option.description ? `<span class="campaign-builder__modal-option-text">${option.description}</span>` : ''}
-            </span>
-          </label>
-        `;
-      })
-      .join('');
-  };
-
-  const renderAudienceModal = (key: AudienceDetailKey): void => {
-    const config = getAudienceModalConfig(key);
-    draftAudienceConfig = {
-      cities: [...state.audienceConfig.cities],
-      ageRange: state.audienceConfig.ageRange,
-      profileTags: [...state.audienceConfig.profileTags],
-      exclusions: [...state.audienceConfig.exclusions],
-      interests: [...state.audienceConfig.interests],
-      matchingMode: state.audienceConfig.matchingMode,
-      expansionEnabled: state.audienceConfig.expansionEnabled,
-      profilePriority: state.audienceConfig.profilePriority,
-      interestsPriority: state.audienceConfig.interestsPriority,
-    };
-    currentAudienceSearch = '';
-
-    const modalTitle =
-      key === 'age'
-        ? 'Возрастной диапазон'
-        : key === 'profile'
-          ? 'Профиль аудитории'
-          : config.title;
-    const modalDescription =
-      key === 'age'
-        ? 'Выберите возрастной диапазон, внутри которого система будет искать аудиторию.'
-        : key === 'profile'
-          ? 'Выберите роли, признаки и модели поведения, которые подходят под оффер.'
-          : config.description;
-
-    setText('[data-builder-audience-modal-title]', modalTitle);
-    setText('[data-builder-audience-modal-text]', modalDescription);
-    if (audienceModalSearch) {
-      audienceModalSearch.value = '';
-      audienceModalSearch.placeholder =
-        key === 'profile'
-          ? 'Найти роль, поведение или признак'
-          : 'Найти вариант';
-    }
-    audienceModalSearchField?.toggleAttribute('hidden', key === 'age');
-    renderAudienceModalOptions(key);
-    if (key === 'profile') {
-      syncProfileSelectionUI();
-    } else if (audienceModalSave) {
-      audienceModalSave.disabled = false;
-    }
-  };
-
-  document
-    .querySelectorAll<HTMLElement>('[data-builder-audience-detail]')
-    .forEach((button) => {
-      button.addEventListener(
-        'click',
-        () => {
-          const key = button.dataset.builderAudienceDetail as
-            | AudienceDetailKey
-            | undefined;
-          if (!key || !audienceModal) {
-            return;
-          }
-
-          activeAudienceModal = key;
-          renderAudienceModal(key);
-          openAudienceModal();
-        },
-        { signal },
-      );
-    });
-
-  audienceModalOptions?.addEventListener(
-    'change',
-    () => {
-      if (
-        !activeAudienceModal ||
-        !draftAudienceConfig ||
-        !audienceModalOptions
-      ) {
-        return;
-      }
-
-      const selectedValues = Array.from(
-        audienceModalOptions.querySelectorAll<HTMLInputElement>(
-          '.campaign-builder__modal-option-input:checked',
-        ),
-      ).map((input) => input.value);
-
-      if (activeAudienceModal === 'geo') {
-        draftAudienceConfig.cities = selectedValues;
-      } else if (activeAudienceModal === 'age') {
-        draftAudienceConfig.ageRange =
-          selectedValues[0] || state.audienceConfig.ageRange;
-      } else if (activeAudienceModal === 'profile') {
-        const checkedTagInputs = Array.from(
-          audienceModalOptions.querySelectorAll<HTMLInputElement>(
-            '[data-profile-tag]:checked',
-          ),
-        );
-        if (checkedTagInputs.length > PROFILE_TAG_RULES.max) {
-          const lastChecked = checkedTagInputs[checkedTagInputs.length - 1];
-          lastChecked.checked = false;
-          showToast({
-            title: 'Слишком много признаков',
-            description: `Оставьте до ${PROFILE_TAG_RULES.max} тегов, иначе сегмент станет трудно масштабировать.`,
-          });
-        }
-        draftAudienceConfig.profileTags = Array.from(
-          audienceModalOptions.querySelectorAll<HTMLInputElement>(
-            '[data-profile-tag]:checked',
-          ),
-        ).map((input) => input.value);
-        syncProfileSelectionUI();
-      } else if (activeAudienceModal === 'exclusions') {
-        draftAudienceConfig.exclusions = selectedValues;
-      } else if (activeAudienceModal === 'interests') {
-        draftAudienceConfig.interests = selectedValues;
-      }
-    },
-    { signal },
-  );
-
-  audienceModalSearch?.addEventListener(
-    'input',
-    () => {
-      if (!activeAudienceModal) {
-        return;
-      }
-
-      currentAudienceSearch = audienceModalSearch.value;
-      renderAudienceModalOptions(activeAudienceModal);
-    },
-    { signal },
-  );
-
-  document
-    .querySelectorAll<HTMLElement>(
-      '[data-builder-audience-modal-close], [data-builder-audience-modal-cancel]',
-    )
-    .forEach((button) => {
-      button.addEventListener('click', closeAudienceModal, { signal });
-    });
-
-  document
-    .querySelector('[data-builder-audience-modal-save]')
-    ?.addEventListener(
-      'click',
-      () => {
-        if (!activeAudienceModal || !draftAudienceConfig) {
-          return;
-        }
-
-        state.audienceConfig = {
-          cities: draftAudienceConfig.cities.length
-            ? draftAudienceConfig.cities
-            : state.audienceConfig.cities,
-          ageRange: draftAudienceConfig.ageRange,
-          profileTags: draftAudienceConfig.profileTags,
-          exclusions: draftAudienceConfig.exclusions.length
-            ? draftAudienceConfig.exclusions
-            : state.audienceConfig.exclusions,
-          interests: draftAudienceConfig.interests.length
-            ? draftAudienceConfig.interests
-            : state.audienceConfig.interests,
-          matchingMode: state.audienceConfig.matchingMode,
-          expansionEnabled: state.audienceConfig.expansionEnabled,
-          profilePriority: state.audienceConfig.profilePriority,
-          interestsPriority: state.audienceConfig.interestsPriority,
-        };
-        persistBuilderState(state);
-        syncBuilder(state);
-        closeAudienceModal();
-        showToast({
-          title: 'Аудитория обновлена',
-          description: 'Изменения сохранены в настройках таргетинга.',
-        });
-      },
-      { signal },
-    );
-
-  document
-    .querySelectorAll<
-      HTMLInputElement | HTMLSelectElement
-    >('[data-builder-budget]')
-    .forEach((field) => {
-      const update = () => {
-        const key = field.dataset.builderBudget;
-        if (!key) {
-          return;
-        }
-
-        if (key === 'dailyBudget' || key === 'totalBudget') {
-          const parsed = Number(field.value);
-          state[key] = (Number.isFinite(parsed) ? parsed : 0) as never;
-        } else if (key === 'periodDays') {
-          const parsed = Number(field.value);
-          const clamped = Math.max(
-            1,
-            Math.min(365, Number.isFinite(parsed) ? Math.round(parsed) : 14),
-          );
-
-          field.value = String(clamped);
-          state.period = formatBudgetPeriod(clamped);
-        } else if (key === 'strategy') {
-          state.strategy = field.value as StrategyKey;
-        }
-
-        persistBuilderState(state);
-        syncBuilder(state);
-      };
-
-      field.addEventListener('input', update, { signal });
-      field.addEventListener('change', update, { signal });
-    });
-
-  document
-    .querySelectorAll<HTMLElement>('[data-builder-save-template]')
-    .forEach((button) => {
-      button.addEventListener(
-        'click',
-        () => {
-          localStorageService.setJson(
-            LocalStorageKey.CampaignBuilderTemplate,
-            state,
-          );
-          persistBuilderState(state);
-          syncSaveState();
-          closeMoreMenu();
-          showToast({
-            title: 'Шаблон сохранён',
-            description:
-              'Текущую конфигурацию можно использовать как основу для следующей кампании.',
-          });
-        },
-        { signal },
-      );
-    });
-
-  document.querySelector('[data-builder-duplicate]')?.addEventListener(
-    'click',
-    () => {
-      persistBuilderState(state);
-      closeMoreMenu();
-      showToast({
-        title: 'Копия подготовлена',
-        description:
-          'Текущую конфигурацию можно использовать как основу для новой кампании.',
-      });
-    },
-    { signal },
-  );
-
-  document.querySelector('[data-builder-reset]')?.addEventListener(
-    'click',
-    () => {
-      const nextState = resetBuilderState();
-      Object.assign(state, nextState);
-      syncBuilder(state);
-      closeMoreMenu();
-      showToast({
-        title: 'Форма очищена',
-        description: 'Вернули базовую конфигурацию для новой кампании.',
-      });
-    },
-    { signal },
-  );
-
-  document
-    .querySelectorAll<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >('[data-builder-input], [data-builder-budget]')
-    .forEach((field) => {
-      field.addEventListener(
-        'change',
-        () => {
-          syncSaveState();
-        },
-        { signal },
-      );
-    });
-
-  document
-    .querySelectorAll<HTMLElement>('[data-builder-submit]')
-    .forEach((button) => {
-      button.addEventListener(
-        'click',
-        () => {
-          const mode = getBuilderModeConfig();
-
-          if (state.step !== 'publication') {
-            const validation = validateBuilder(state);
-
-            showToast({
-              title: validation.ok ? mode.lockedTitle : 'Ещё не всё заполнено',
-              description: validation.ok
-                ? mode.lockedDescription
-                : validation.description ||
-                  'Заполните обязательные поля перед отправкой.',
-            });
-            return;
-          }
-
-          const validation = validateBuilder(state);
-
-          if (!validation.ok) {
-            if (validation.step) {
-              setStep(validation.step);
-            }
-
-            showToast({
-              title: validation.title || mode.submitValidationTitle,
-              description:
-                validation.description || 'Не все обязательные поля заполнены.',
-            });
-            return;
-          }
-
-          state.step = 'publication';
-          persistBuilderState(state);
-          persistEditSeedFromState(state);
-          syncBuilder(state);
-          showToast({
-            title: mode.submitSuccessTitle,
-            description: mode.submitSuccessDescription,
-          });
-        },
-        { signal },
-      );
-    });
-
-  document
-    .querySelector('[data-builder-toast-close]')
-    ?.addEventListener('click', hideToast, { signal });
+  initCampaignBuilderStepControls({
+    jumpToReviewSection,
+    moveStep: (direction) => moveStep(state, direction),
+    setStep,
+    signal,
+  });
+  initCampaignBuilderContentControls({
+    clampText,
+    getSelectOptionDefaultMeta,
+    persistState: persistBuilderState,
+    showToast,
+    signal,
+    state,
+    syncBuilder,
+  });
+
+  initCampaignBuilderAudienceControls({
+    cloneAudienceConfig,
+    formatSavedAudienceSummary,
+    getAudienceModalConfig,
+    getProfileSelectionState,
+    getSavedAudiences,
+    persistSavedAudiences,
+    persistState: persistBuilderState,
+    renderSavedAudiencesList,
+    showToast,
+    signal,
+    state,
+    syncBuilder,
+  });
+  initCampaignBuilderBudgetControls({
+    formatBudgetPeriod,
+    persistState: persistBuilderState,
+    signal,
+    state,
+    syncBuilder,
+  });
+
+  initCampaignBuilderActions({
+    getModeConfig: getBuilderModeConfig,
+    hideToast,
+    persistEditSeedFromState,
+    persistState: persistBuilderState,
+    resetState: resetBuilderState,
+    setStep,
+    showToast,
+    signal,
+    state,
+    syncBuilder,
+    syncSaveState,
+    validateBuilder,
+  });
 
   syncBuilder(state);
 

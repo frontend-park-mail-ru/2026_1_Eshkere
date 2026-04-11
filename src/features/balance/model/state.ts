@@ -163,7 +163,8 @@ function sanitizeOperationDetails(
 
   if (!value || hasMojibake(value)) {
     return (
-      createDefaultOperations()[index]?.details ?? 'Без дополнительного комментария'
+      createDefaultOperations()[index]?.details ??
+      'Без дополнительного комментария'
     );
   }
 

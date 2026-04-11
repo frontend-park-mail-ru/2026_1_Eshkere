@@ -1,8 +1,15 @@
 import './campaign-edit.scss';
 import { navigateTo } from 'app/navigation';
 import { LocalStorageKey, localStorageService } from 'shared/lib/local-storage';
-import { renderTemplate } from 'shared/lib/render';
 import { formatPrice } from 'shared/lib/format';
+import { renderTemplate } from 'shared/lib/render';
+import { initCampaignEditCtaSelect, syncCampaignEditCtaSelect } from 'widgets/campaign-edit-cta/ui/cta-select';
+import {
+  createCampaignEditDeleteModalController,
+  initCampaignEditDeleteModal,
+} from 'widgets/campaign-edit-delete/ui/delete-modal';
+import { syncCampaignEditOverview } from 'widgets/campaign-edit-overview/ui/overview';
+import { createCampaignEditToastController } from 'widgets/campaign-edit-toast/ui/toast';
 import campaignEditTemplate from './campaign-edit.hbs';
 
 type CtaKey = 'discount' | 'start' | 'details' | 'lead';
@@ -66,7 +73,6 @@ interface CampaignEditTemplateContext {
 
 const CAMPAIGN_EDIT_STORAGE_KEY = LocalStorageKey.CampaignEditState;
 const CAMPAIGN_EDIT_SEED_KEY = LocalStorageKey.CampaignEditSeed;
-const CAMPAIGN_EDIT_TOAST_DELAY = 3200;
 
 const CTA_OPTIONS: Array<{ value: CtaKey; label: string }> = [
   { value: 'discount', label: 'Получить скидку' },
@@ -123,7 +129,6 @@ const DEFAULT_STATE: CampaignEditState = {
 };
 
 let campaignEditLifecycleController: AbortController | null = null;
-let editToastTimer: number | null = null;
 
 function getCtaLabel(value: CtaKey): string {
   return (
@@ -191,9 +196,7 @@ function getCampaignEditState(): CampaignEditState {
   return {
     ...base,
     ...persisted,
-    history: Array.isArray(persisted.history)
-      ? persisted.history
-      : base.history,
+    history: Array.isArray(persisted.history) ? persisted.history : base.history,
     baseline: {
       ...base.baseline,
       ...(persisted.baseline || {}),
@@ -300,157 +303,11 @@ function toTemplateContext(
   };
 }
 
-function setText(selector: string, value: string): void {
-  const node = document.querySelector<HTMLElement>(selector);
-  if (node) {
-    node.textContent = value;
-  }
-}
-
-function renderHistory(state: CampaignEditState): void {
-  const historyRoot = document.querySelector<HTMLElement>(
-    '[data-edit-history]',
-  );
-  if (!historyRoot) {
-    return;
-  }
-
-  historyRoot.innerHTML = state.history
-    .map(
-      (item) => `
-        <article class="campaign-edit__history-item">
-          <span class="campaign-edit__history-time">${item.time}</span>
-          <div class="campaign-edit__history-copy">
-            <strong class="campaign-edit__history-title">${item.title}</strong>
-            <p class="campaign-edit__history-text">${item.text}</p>
-          </div>
-        </article>
-      `,
-    )
-    .join('');
-}
-
-function renderSummary(state: CampaignEditState): void {
-  const summaryRoot = document.querySelector<HTMLElement>(
-    '[data-edit-summary]',
-  );
-  if (!summaryRoot) {
-    return;
-  }
-
-  summaryRoot.innerHTML = createChangeSummary(state)
-    .map(
-      (item) => `
-        <div class="campaign-edit__summary-row">
-          <span class="campaign-edit__summary-key">${item.label}</span>
-          <strong class="campaign-edit__summary-value" data-edit-summary-value="${item.key}">
-            ${item.value}
-          </strong>
-        </div>
-      `,
-    )
-    .join('');
-}
-
-function syncCtaSelect(state: CampaignEditState): void {
-  setText('[data-edit-select-value]', getCtaLabel(state.cta));
-  document
-    .querySelectorAll<HTMLElement>('[data-edit-cta-option]')
-    .forEach((node) => {
-      const isSelected = node.dataset.editCtaOption === state.cta;
-      node.classList.toggle('is-selected', isSelected);
-      const metaNode = node.querySelector<HTMLElement>(
-        '.campaign-edit__select-meta',
-      );
-
-      if (isSelected && !metaNode) {
-        const meta = document.createElement('span');
-        meta.className = 'campaign-edit__select-meta';
-        meta.textContent = 'Выбрано';
-        node.appendChild(meta);
-      }
-
-      if (!isSelected && metaNode) {
-        metaNode.remove();
-      }
-    });
-}
-
-function syncCampaignEdit(state: CampaignEditState, dirty: boolean): void {
-  setText('[data-edit-preview="headline"]', state.headline);
-  setText('[data-edit-preview="description"]', state.description);
-  setText('[data-edit-preview="cta"]', getCtaLabel(state.cta));
-  setText('[data-edit-stat="updated"]', state.updatedLabel);
-  setText('[data-edit-stat="budget"]', formatPrice(state.remainingBudget));
-  setText('[data-edit-stat="ctr"]', `${state.ctr.toFixed(1)}%`);
-  setText('[data-edit-moderation-badge]', state.moderationBadge);
-
-  const saveStateNode = document.querySelector<HTMLElement>(
-    '[data-edit-save-state]',
-  );
-  if (saveStateNode) {
-    saveStateNode.textContent = dirty
-      ? 'Есть несохранённые изменения'
-      : 'Черновик сохранён';
-    saveStateNode.dataset.state = dirty ? 'dirty' : 'saved';
-  }
-
-  renderHistory(state);
-  renderSummary(state);
-  syncCtaSelect(state);
-}
-
 function getTimeLabel(): string {
   return new Date().toLocaleTimeString('ru-RU', {
     hour: '2-digit',
     minute: '2-digit',
   });
-}
-
-function showEditToast(title: string, text: string): void {
-  const toast = document.querySelector<HTMLElement>('[data-edit-toast]');
-  if (!toast) {
-    return;
-  }
-
-  setText('[data-edit-toast-title]', title);
-  setText('[data-edit-toast-text]', text);
-  toast.hidden = false;
-
-  if (editToastTimer) {
-    window.clearTimeout(editToastTimer);
-  }
-
-  editToastTimer = window.setTimeout(() => {
-    toast.hidden = true;
-    editToastTimer = null;
-  }, CAMPAIGN_EDIT_TOAST_DELAY);
-}
-
-function hideEditToast(): void {
-  const toast = document.querySelector<HTMLElement>('[data-edit-toast]');
-  if (toast) {
-    toast.hidden = true;
-  }
-
-  if (editToastTimer) {
-    window.clearTimeout(editToastTimer);
-    editToastTimer = null;
-  }
-}
-
-function openDeleteModal(): void {
-  const modal = document.querySelector<HTMLElement>('[data-edit-delete-modal]');
-  if (modal) {
-    modal.hidden = false;
-  }
-}
-
-function closeDeleteModal(): void {
-  const modal = document.querySelector<HTMLElement>('[data-edit-delete-modal]');
-  if (modal) {
-    modal.hidden = true;
-  }
 }
 
 function buildSaveHistoryText(state: CampaignEditState): string {
@@ -460,6 +317,22 @@ function buildSaveHistoryText(state: CampaignEditState): string {
   const budgetChange =
     changes.find((item) => item.key === 'budget')?.value || 'Без изменений';
   return `Текст: ${textChange}. Бюджет: ${budgetChange}.`;
+}
+
+function syncCampaignEdit(state: CampaignEditState, dirty: boolean): void {
+  syncCampaignEditOverview({
+    ctaLabel: getCtaLabel(state.cta),
+    ctr: state.ctr,
+    description: state.description,
+    dirty,
+    headline: state.headline,
+    history: state.history,
+    moderationBadge: state.moderationBadge,
+    remainingBudget: state.remainingBudget,
+    summary: createChangeSummary(state),
+    updatedLabel: state.updatedLabel,
+  });
+  syncCampaignEditCtaSelect(state.cta, getCtaLabel);
 }
 
 export async function renderCampaignEditPage(): Promise<string> {
@@ -486,10 +359,15 @@ export function CampaignEdit(): void | VoidFunction {
   const state = getCampaignEditState();
   let dirty = false;
 
+  const deleteModal = createCampaignEditDeleteModalController();
+  const toast = createCampaignEditToastController();
+
   const markDirty = (): void => {
     dirty = true;
     syncCampaignEdit(state, dirty);
   };
+
+  initCampaignEditDeleteModal(signal, deleteModal.close);
 
   document.querySelector<HTMLElement>('[data-edit-back]')?.addEventListener(
     'click',
@@ -504,7 +382,7 @@ export function CampaignEdit(): void | VoidFunction {
     ?.addEventListener(
       'click',
       () => {
-        const draft = {
+        localStorageService.setJson(LocalStorageKey.CampaignBuilderDraft, {
           name: `${state.name} — копия`,
           headline: state.headline,
           description: state.description,
@@ -512,12 +390,7 @@ export function CampaignEdit(): void | VoidFunction {
           link: 'https://eshke.ru/promo/spring',
           dailyBudget: state.dailyBudget,
           period: state.period,
-        };
-
-        localStorageService.setJson(
-          LocalStorageKey.CampaignBuilderDraft,
-          draft,
-        );
+        });
         navigateTo('/ads/create');
       },
       { signal },
@@ -525,11 +398,11 @@ export function CampaignEdit(): void | VoidFunction {
 
   document
     .querySelector<HTMLElement>('[data-edit-delete-open]')
-    ?.addEventListener('click', openDeleteModal, { signal });
+    ?.addEventListener('click', deleteModal.open, { signal });
 
   document
     .querySelector<HTMLElement>('[data-edit-delete-cancel]')
-    ?.addEventListener('click', closeDeleteModal, { signal });
+    ?.addEventListener('click', deleteModal.close, { signal });
 
   document
     .querySelector<HTMLElement>('[data-edit-delete-confirm]')
@@ -538,32 +411,18 @@ export function CampaignEdit(): void | VoidFunction {
       () => {
         localStorageService.removeItem(CAMPAIGN_EDIT_STORAGE_KEY);
         localStorageService.removeItem(CAMPAIGN_EDIT_SEED_KEY);
-        closeDeleteModal();
+        deleteModal.close();
         navigateTo('/ads');
       },
       { signal },
     );
 
   document
-    .querySelector<HTMLElement>('[data-edit-delete-modal]')
-    ?.addEventListener(
-      'click',
-      (event) => {
-        if (event.target === event.currentTarget) {
-          closeDeleteModal();
-        }
-      },
-      { signal },
-    );
-
-  document
     .querySelector<HTMLElement>('[data-edit-toast-close]')
-    ?.addEventListener('click', hideEditToast, { signal });
+    ?.addEventListener('click', toast.hide, { signal });
 
   document
-    .querySelectorAll<
-      HTMLInputElement | HTMLTextAreaElement
-    >('[data-edit-input]')
+    .querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('[data-edit-input]')
     .forEach((field) => {
       const key = field.dataset.editInput;
 
@@ -598,109 +457,41 @@ export function CampaignEdit(): void | VoidFunction {
       field.addEventListener('change', update, { signal });
     });
 
-  const ctaSelect = document.querySelector<HTMLElement>(
-    '[data-edit-select="cta"]',
-  );
-  const ctaTrigger = ctaSelect?.querySelector<HTMLElement>(
-    '[data-edit-select-trigger]',
-  );
-  const ctaMenu = ctaSelect?.querySelector<HTMLElement>(
-    '[data-edit-select-menu]',
-  );
-
-  const setCtaMenuOpen = (open: boolean): void => {
-    if (ctaTrigger) {
-      ctaTrigger.setAttribute('aria-expanded', open ? 'true' : 'false');
-    }
-
-    if (ctaMenu) {
-      ctaMenu.hidden = !open;
-    }
-
-    ctaSelect?.classList.toggle('is-open', open);
-  };
-
-  setCtaMenuOpen(false);
-
-  ctaTrigger?.addEventListener(
-    'click',
-    () => {
-      const isOpen = ctaTrigger.getAttribute('aria-expanded') === 'true';
-      setCtaMenuOpen(!isOpen);
+  initCampaignEditCtaSelect<CtaKey>({
+    getLabel: getCtaLabel,
+    onChange: (nextValue) => {
+      state.cta = nextValue;
+      markDirty();
     },
-    { signal },
-  );
+    signal,
+  });
 
   document
-    .querySelectorAll<HTMLElement>('[data-edit-cta-option]')
-    .forEach((option) => {
-      option.addEventListener(
-        'click',
-        () => {
-          const nextValue = option.dataset.editCtaOption as CtaKey | undefined;
-          if (!nextValue) {
-            return;
-          }
+    .querySelector<HTMLElement>('[data-edit-save]')
+    ?.addEventListener(
+      'click',
+      () => {
+        state.updatedLabel = 'Только что';
+        state.moderationBadge = 'На модерации после правок';
+        state.history = [
+          {
+            time: getTimeLabel(),
+            title: 'Сохранены изменения',
+            text: buildSaveHistoryText(state),
+          },
+          ...state.history,
+        ].slice(0, 5);
 
-          state.cta = nextValue;
-          setCtaMenuOpen(false);
-          markDirty();
-        },
-        { signal },
-      );
-    });
-
-  document.addEventListener(
-    'click',
-    (event) => {
-      const target = event.target;
-      if (!(target instanceof Element)) {
-        return;
-      }
-
-      if (!target.closest('[data-edit-select="cta"]')) {
-        setCtaMenuOpen(false);
-      }
-    },
-    { signal },
-  );
-
-  document.addEventListener(
-    'keydown',
-    (event) => {
-      if (event.key === 'Escape') {
-        closeDeleteModal();
-        setCtaMenuOpen(false);
-      }
-    },
-    { signal },
-  );
-
-  document.querySelector<HTMLElement>('[data-edit-save]')?.addEventListener(
-    'click',
-    () => {
-      state.updatedLabel = 'Только что';
-      state.moderationBadge = 'На модерации после правок';
-
-      state.history = [
-        {
-          time: getTimeLabel(),
-          title: 'Сохранены изменения',
-          text: buildSaveHistoryText(state),
-        },
-        ...state.history,
-      ].slice(0, 5);
-
-      persistCampaignEditState(state);
-      dirty = false;
-      syncCampaignEdit(state, dirty);
-      showEditToast(
-        'Изменения сохранены',
-        'Новая версия объявления готова к повторной проверке.',
-      );
-    },
-    { signal },
-  );
+        persistCampaignEditState(state);
+        dirty = false;
+        syncCampaignEdit(state, dirty);
+        toast.show(
+          'Изменения сохранены',
+          'Новая версия объявления готова к повторной проверке.',
+        );
+      },
+      { signal },
+    );
 
   syncCampaignEdit(state, dirty);
 
@@ -708,7 +499,7 @@ export function CampaignEdit(): void | VoidFunction {
     if (campaignEditLifecycleController === controller) {
       campaignEditLifecycleController = null;
     }
-    hideEditToast();
+    toast.hide();
     controller.abort();
   };
 }

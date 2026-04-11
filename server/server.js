@@ -4,6 +4,7 @@ const express = require('express');
 const app = express();
 const projectRoot = path.join(__dirname, '..');
 const distRoot = path.join(projectRoot, 'dist');
+const publicRoot = path.join(projectRoot, 'public');
 const isDevelopment = process.argv.includes('--dev');
 let compiler = null;
 
@@ -18,6 +19,8 @@ if (isDevelopment) {
     publicPath: '/',
     writeToDisk: false,
   }));
+
+  app.use(express.static(publicRoot));
 } else {
   app.use(express.static(distRoot));
 }

@@ -1,3 +1,5 @@
+import { openModal } from 'shared/ui/modal/modal';
+
 export interface ToastController {
   hide: () => void;
   show: (title: string, text: string) => void;
@@ -61,16 +63,6 @@ export function createToastController(): ToastController {
   return { hide, show };
 }
 
-export function closeModal(modal: HTMLElement): void {
-  modal.setAttribute('aria-hidden', 'true');
-  modal.classList.remove('modal--open');
-}
-
-export function openModal(modal: HTMLElement): void {
-  modal.setAttribute('aria-hidden', 'false');
-  modal.classList.add('modal--open');
-}
-
 export function openTopupModal(
   modal: HTMLElement,
   focusAmount = false,
@@ -92,29 +84,4 @@ export function openTopupModal(
     amountInput.focus();
     amountInput.select();
   }, 40);
-}
-
-export function bindModalShell(
-  modal: HTMLElement,
-  signal: AbortSignal,
-): void {
-  modal.querySelectorAll<HTMLElement>('[data-modal-close]').forEach((node) => {
-    node.addEventListener(
-      'click',
-      () => {
-        closeModal(modal);
-      },
-      { signal },
-    );
-  });
-
-  modal.addEventListener(
-    'click',
-    (event) => {
-      if (event.target === modal) {
-        closeModal(modal);
-      }
-    },
-    { signal },
-  );
 }
