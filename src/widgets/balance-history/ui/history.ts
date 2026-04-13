@@ -62,7 +62,22 @@ function createHistoryLogNode(
 function createEmptyHistoryNode(): HTMLElement {
   const empty = document.createElement('div');
   empty.className = 'balance-log__empty';
-  empty.textContent = 'По текущему фильтру ничего не найдено.';
+
+  const image = document.createElement('img');
+  image.className = 'balance-log__empty-image';
+  image.src = '/img/No Results.png';
+  image.alt = 'Операции не найдены';
+
+  const title = document.createElement('strong');
+  title.className = 'balance-log__empty-title';
+  title.textContent = 'История операций пока пуста';
+
+  const text = document.createElement('p');
+  text.className = 'balance-log__empty-text';
+  text.textContent =
+    'Когда появятся пополнения, списания или возвраты, они отобразятся здесь.';
+
+  empty.append(image, title, text);
   return empty;
 }
 

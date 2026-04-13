@@ -8,6 +8,7 @@ export {
   validatePaymentMethodDraft,
 } from './payment-draft';
 export {
+  populatePaymentAddForm,
   resetPaymentAddForm,
   sanitizePaymentAddInput,
   syncPaymentAddFormKind,

@@ -70,6 +70,14 @@ export function initAdsDatePicker(signal: AbortSignal): void {
     return;
   }
 
+  if (
+    toggle instanceof HTMLButtonElement &&
+    (toggle.disabled || toggle.getAttribute('aria-disabled') === 'true')
+  ) {
+    picker.hidden = true;
+    return;
+  }
+
   const monthLeftLabel = document.getElementById('date-month-left-label');
   const monthRightLabel = document.getElementById('date-month-right-label');
   const gridLeft = document.getElementById('date-grid-left');

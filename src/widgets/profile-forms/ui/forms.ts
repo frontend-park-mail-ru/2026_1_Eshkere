@@ -51,11 +51,30 @@ export function populateProfileForms({
 
   const paymentForm = document.getElementById('profile-payment-form');
   if (paymentForm instanceof HTMLFormElement) {
-    (paymentForm.elements.namedItem('cardNumber') as HTMLInputElement | null).value = '';
-    (paymentForm.elements.namedItem('expiryDate') as HTMLInputElement | null).value = '';
-    (paymentForm.elements.namedItem('holderName') as HTMLInputElement | null).value =
-      `${state.firstName.toUpperCase()} ${state.lastName.toUpperCase()}`;
-    (paymentForm.elements.namedItem('cvv') as HTMLInputElement | null).value = '';
+    const cardNumber = paymentForm.elements.namedItem(
+      'cardNumber',
+    ) as HTMLInputElement | null;
+    const expiryDate = paymentForm.elements.namedItem(
+      'expiryDate',
+    ) as HTMLInputElement | null;
+    const holderName = paymentForm.elements.namedItem(
+      'holderName',
+    ) as HTMLInputElement | null;
+    const cvv = paymentForm.elements.namedItem('cvv') as HTMLInputElement | null;
+
+    if (cardNumber) {
+      cardNumber.value = '';
+    }
+    if (expiryDate) {
+      expiryDate.value = '';
+    }
+    if (holderName) {
+      holderName.value =
+        `${state.firstName.toUpperCase()} ${state.lastName.toUpperCase()}`;
+    }
+    if (cvv) {
+      cvv.value = '';
+    }
   }
 
   const passwordForm = document.getElementById('profile-password-form');
@@ -97,11 +116,29 @@ export function populateProfileForms({
 
   const confirmationForm = document.getElementById('profile-confirmation-form');
   if (confirmationForm instanceof HTMLFormElement) {
-    (confirmationForm.elements.namedItem('email') as HTMLInputElement | null).value = state.email;
-    (confirmationForm.elements.namedItem('phone') as HTMLInputElement | null).value = state.phone;
-    (confirmationForm.elements.namedItem('company') as HTMLInputElement | null).value =
-      state.company;
-    (confirmationForm.elements.namedItem('inn') as HTMLInputElement | null).value = state.inn;
+    const email = confirmationForm.elements.namedItem(
+      'email',
+    ) as HTMLInputElement | null;
+    const phone = confirmationForm.elements.namedItem(
+      'phone',
+    ) as HTMLInputElement | null;
+    const company = confirmationForm.elements.namedItem(
+      'company',
+    ) as HTMLInputElement | null;
+    const inn = confirmationForm.elements.namedItem('inn') as HTMLInputElement | null;
+
+    if (email) {
+      email.value = state.email;
+    }
+    if (phone) {
+      phone.value = state.phone;
+    }
+    if (company) {
+      company.value = state.company;
+    }
+    if (inn) {
+      inn.value = state.inn;
+    }
   }
 }
 

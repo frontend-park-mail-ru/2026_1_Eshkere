@@ -4,6 +4,10 @@ import { renderSidebar } from 'widgets/sidebar';
 import { renderNavbar } from 'widgets/navbar';
 import dashboardLayoutTemplate from './dashboard-layout.hbs';
 
+function shouldShowSidebar(pathname: string): boolean {
+  return !['/ads/create', '/ads/edit', '/ads/statistics'].includes(pathname);
+}
+
 /**
  * Рендерит layout дашборда с сайдбаром и navbar.
  *
@@ -14,8 +18,7 @@ export async function renderDashboardLayout(
   content: string,
   pathname: string = '/ads',
 ): Promise<string> {
-  const showSidebar =
-    pathname !== '/ads/create' && pathname !== '/ads/edit';
+  const showSidebar = shouldShowSidebar(pathname);
   const sidebar = showSidebar ? await renderSidebar(pathname) : '';
   const navbar = await renderNavbar(pathname);
 
@@ -33,8 +36,7 @@ export async function updateDashboardLayoutSlots(
   const navbarSlot = document.getElementById('app-navbar-slot');
   const sidebarSlot = document.getElementById('app-sidebar-slot');
   const body = document.querySelector<HTMLElement>('.dashboard-layout__body');
-  const showSidebar =
-    pathname !== '/ads/create' && pathname !== '/ads/edit';
+  const showSidebar = shouldShowSidebar(pathname);
 
   if (navbarSlot) {
     navbarSlot.innerHTML = await renderNavbar(pathname);

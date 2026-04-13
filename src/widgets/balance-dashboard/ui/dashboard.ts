@@ -42,6 +42,10 @@ function getAutopayNote(state: BalanceDashboardState): string {
     : 'Автопополнение отключено';
 }
 
+function getPaymentMethodLabel(state: BalanceDashboardState): string {
+  return state.paymentMethod || 'Не добавлен';
+}
+
 function getRecommendations(state: BalanceDashboardState): RecommendationRow[] {
   const daysLeft = getDaysLeft(state);
   const items: RecommendationRow[] = [];
@@ -112,6 +116,27 @@ function createOperationNode(
   return row;
 }
 
+function createEmptyOperationNode(): HTMLElement {
+  const empty = document.createElement('div');
+  empty.className = 'balance-table__empty';
+
+  const image = document.createElement('img');
+  image.className = 'balance-table__empty-image';
+  image.src = '/img/No Results.png';
+  image.alt = 'Операции не найдены';
+
+  const title = document.createElement('strong');
+  title.className = 'balance-table__empty-title';
+  title.textContent = 'История операций пока пуста';
+
+  const text = document.createElement('p');
+  text.className = 'balance-table__empty-text';
+  text.textContent = 'Здесь появятся пополнения, списания и возвраты по аккаунту.';
+
+  empty.append(image, title, text);
+  return empty;
+}
+
 function createRecommendationNode(item: RecommendationRow): HTMLButtonElement {
   const button = document.createElement('button');
   button.className = 'balance-actions__item';
@@ -144,8 +169,12 @@ function renderOperations(state: BalanceDashboardState): void {
     return;
   }
 
+  const visibleOperations = state.operations.slice(0, 6);
+
   operationsBody.replaceChildren(
-    ...state.operations.slice(0, 6).map((operation) => createOperationNode(operation)),
+    ...(visibleOperations.length
+      ? visibleOperations.map((operation) => createOperationNode(operation))
+      : [createEmptyOperationNode()]),
   );
 }
 
@@ -191,7 +220,7 @@ export function syncBalanceDashboardWidget(
   setText('[data-balance-stat="reserve"]', formatPrice(state.moderationReserve));
   setText('[data-balance-stat="monthlySpend"]', formatPrice(state.monthlySpend));
   setText('[data-balance-stat="autopay"]', getAutopayHeroLabel(state));
-  setText('[data-balance-payment-method]', state.paymentMethod);
+  setText('[data-balance-payment-method]', getPaymentMethodLabel(state));
   setText('[data-balance-autopay-status]', getAutopayStatus(state));
   setText('[data-balance-autopay-note]', getAutopayNote(state));
   setText(
@@ -246,6 +275,10 @@ export function initBalanceDashboardWidget({
           if (amount > 0) {
             state.selectedAmount = amount;
             commitState();
+
+            if (topupModal instanceof HTMLElement) {
+              openTopupModal(topupModal);
+            }
           }
         },
         { signal },
@@ -373,6 +406,14 @@ export function initBalanceDashboardWidget({
       if (amountError) {
         if (errorNode) {
           errorNode.textContent = amountError;
+        }
+        return;
+      }
+
+      if (!state.paymentMethod) {
+        if (errorNode) {
+          errorNode.textContent =
+            'Сначала добавьте способ оплаты в настройках баланса.';
         }
         return;
       }

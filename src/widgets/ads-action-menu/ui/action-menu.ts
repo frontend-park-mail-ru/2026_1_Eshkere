@@ -1,17 +1,25 @@
 import { navigateTo } from 'app/navigation';
-import { LocalStorageKey, localStorageService } from 'shared/lib/local-storage';
+import {
+  createLocalStorageKey,
+  LocalStorageKey,
+  localStorageService,
+} from 'shared/lib/local-storage';
 import { renderElement } from 'shared/lib/render';
+import { OPEN_CAMPAIGN_DELETE_MODAL_EVENT } from 'widgets/ads-delete-modal/ui/delete-modal';
 import adsActionMenuTemplate from 'pages/ads/ui/ads-action-menu.hbs';
 
 export function initCampaignActionMenus(signal: AbortSignal): void {
   const triggerButtons = Array.from(
     document.querySelectorAll<HTMLElement>('.js-campaign-actions-trigger'),
   );
+  const editButtons = Array.from(
+    document.querySelectorAll<HTMLElement>('.js-edit-action-trigger'),
+  );
   const deleteButtons = Array.from(
     document.querySelectorAll<HTMLElement>('.js-delete-action-trigger'),
   );
 
-  if (!triggerButtons.length && !deleteButtons.length) {
+  if (!triggerButtons.length && !editButtons.length && !deleteButtons.length) {
     return;
   }
 
@@ -47,8 +55,32 @@ export function initCampaignActionMenus(signal: AbortSignal): void {
   const navigateToEdit = (target: Element): void => {
     const row = target.closest<HTMLElement>('.campaign-row');
 
+    const campaignId = Number(row?.dataset.campaignId || '0');
+    if (!Number.isFinite(campaignId) || campaignId <= 0) {
+      return;
+    }
+
+    localStorageService.setJson(LocalStorageKey.CampaignEditSeed, {
+      id: String(campaignId),
+      title: row?.dataset.campaignTitle || '',
+      budgetValue: Number(row?.dataset.campaignBudgetValue || '0'),
+      goal: row?.dataset.campaignGoal || '',
+    });
+    localStorageService.removeItem(
+      createLocalStorageKey(
+        LocalStorageKey.CampaignEditBuilderState,
+        String(campaignId),
+      ),
+    );
+
+    navigateTo('/ads/edit');
+  };
+
+  const navigateToStatistics = (target: Element): void => {
+    const row = target.closest<HTMLElement>('.campaign-row');
+
     if (row) {
-      localStorageService.setJson(LocalStorageKey.CampaignEditSeed, {
+      localStorageService.setJson(LocalStorageKey.CampaignStatisticsSeed, {
         id: row.dataset.campaignId || '',
         title: row.dataset.campaignTitle || '',
         budgetValue: Number(row.dataset.campaignBudgetValue || '0'),
@@ -56,7 +88,28 @@ export function initCampaignActionMenus(signal: AbortSignal): void {
       });
     }
 
-    navigateTo('/ads/edit');
+    navigateTo('/ads/statistics');
+  };
+
+  const openDeleteModal = (target: Element): void => {
+    const row = target.closest<HTMLElement>('.campaign-row');
+    if (!row) {
+      return;
+    }
+
+    const id = Number(row.dataset.campaignId || '0');
+    if (!Number.isFinite(id) || id <= 0) {
+      return;
+    }
+
+    document.dispatchEvent(
+      new CustomEvent(OPEN_CAMPAIGN_DELETE_MODAL_EVENT, {
+        detail: {
+          id,
+          title: row.dataset.campaignTitle || 'кампания',
+        },
+      }),
+    );
   };
 
   triggerButtons.forEach((button) => {
@@ -90,7 +143,20 @@ export function initCampaignActionMenus(signal: AbortSignal): void {
         event.preventDefault();
         event.stopPropagation();
         closeAll();
-        document.dispatchEvent(new CustomEvent('campaigns:open-delete-modal'));
+        openDeleteModal(button);
+      },
+      { signal },
+    );
+  });
+
+  editButtons.forEach((button) => {
+    button.addEventListener(
+      'click',
+      (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        closeAll();
+        navigateToEdit(button);
       },
       { signal },
     );
@@ -118,8 +184,13 @@ export function initCampaignActionMenus(signal: AbortSignal): void {
         return;
       }
 
+      if (menuItem.classList.contains('js-statistics-menu-item')) {
+        navigateToStatistics(menuItem);
+        return;
+      }
+
       if (menuItem.classList.contains('js-delete-menu-item')) {
-        document.dispatchEvent(new CustomEvent('campaigns:open-delete-modal'));
+        openDeleteModal(menuItem);
       }
     },
     { signal },

@@ -1,4 +1,4 @@
-import { formatPrice } from 'shared/lib/format';
+﻿import { formatPrice } from 'shared/lib/format';
 import { formatCardNumber } from 'shared/lib/payment-format';
 import {
   parseAmountInput,
@@ -7,6 +7,7 @@ import {
   validateCardExpiry,
   validateCardNumber,
 } from 'shared/validators';
+import { getBalanceState, persistBalanceState } from 'features/balance';
 import {
   attachMaskedInput,
   clearFieldError,
@@ -149,6 +150,24 @@ export function initProfileBillingModals({
       }
 
       state.cardMasked = paymentForm.dataset.pendingValue || state.cardMasked;
+      const balanceState = getBalanceState();
+      const hasMethod = balanceState.paymentMethods.some(
+        (method) => method.value === state.cardMasked,
+      );
+      if (!hasMethod && state.cardMasked) {
+        balanceState.paymentMethods = [
+          {
+            id: `payment_profile_${Date.now()}`,
+            kind: 'card',
+            value: state.cardMasked,
+            caption: 'Основной способ оплаты',
+            badge: 'Личная',
+          },
+          ...balanceState.paymentMethods,
+        ];
+      }
+      balanceState.paymentMethod = state.cardMasked || '';
+      persistBalanceState(balanceState);
       onStateChange(state);
       showProfileFeedback({
         title: 'Карта сохранена',
@@ -204,6 +223,10 @@ export function initProfileBillingModals({
 
       state.balanceValue += amount;
       state.lastTopUp = formatTopUpDate(amount);
+      const balanceState = getBalanceState();
+      balanceState.balanceValue = state.balanceValue;
+      balanceState.paymentMethod = state.cardMasked || '';
+      persistBalanceState(balanceState);
       onStateChange(state);
       showProfileFeedback({
         title: 'Баланс пополнен',

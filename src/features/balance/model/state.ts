@@ -1,5 +1,9 @@
 import { authState } from 'features/auth';
-import { LocalStorageKey, localStorageService } from 'shared/lib/local-storage';
+import {
+  LocalStorageKey,
+  createLocalStorageKey,
+  localStorageService,
+} from 'shared/lib/local-storage';
 import type {
   BalanceDashboardState,
   BalanceOperation,
@@ -10,32 +14,52 @@ import type {
 
 const BALANCE_STORAGE_KEY = LocalStorageKey.BalanceDashboardState;
 
-export const DEFAULT_PAYMENT_METHOD = 'Банковская карта •••• 4481';
+function getBalanceStorageKey(): string {
+  const currentUser = authState.getCurrentUser();
+  const suffix =
+    typeof currentUser?.id === 'number' && currentUser.id > 0
+      ? String(currentUser.id)
+      : 'guest';
 
-function createDefaultPaymentMethods(): PaymentMethodOption[] {
-  return [
-    {
-      id: 'payment_card_main',
-      kind: 'card',
-      value: 'Банковская карта •••• 4481',
-      caption: 'Основной способ для ручных пополнений',
-      note: 'Visa Business',
-    },
-    {
-      id: 'payment_card_corp',
-      kind: 'corporate',
-      value: 'Корпоративная карта •••• 9024',
-      caption: 'Резервный способ для пиковых пополнений',
-      note: 'Mastercard',
-    },
-    {
-      id: 'payment_invoice_main',
-      kind: 'invoice',
-      value: 'Безналичный счет компании',
-      caption: 'Подходит для крупных пополнений по счету',
-      note: 'Без НДС',
-    },
-  ];
+  return createLocalStorageKey(BALANCE_STORAGE_KEY, suffix);
+}
+
+export const DEFAULT_PAYMENT_METHOD = 'Банковская карта •••• 4481';
+const DEFAULT_CORPORATE_PAYMENT_METHOD = 'Корпоративная карта •••• 9024';
+const DEFAULT_INVOICE_PAYMENT_METHOD = 'Безналичный счет компании';
+const LEGACY_DEFAULT_METHOD_IDS = new Set([
+  'payment_card_main',
+  'payment_card_corp',
+  'payment_invoice_main',
+]);
+
+function isLegacyDefaultMethod(method: Partial<PaymentMethodOption>): boolean {
+  const id = typeof method.id === 'string' ? method.id : '';
+  const value = typeof method.value === 'string' ? method.value.trim() : '';
+
+  return (
+    LEGACY_DEFAULT_METHOD_IDS.has(id) ||
+    value === DEFAULT_PAYMENT_METHOD ||
+    value === DEFAULT_CORPORATE_PAYMENT_METHOD ||
+    value === DEFAULT_INVOICE_PAYMENT_METHOD
+  );
+}
+
+function createPaymentMethodFromMasked(
+  maskedValue: string,
+): PaymentMethodOption | null {
+  const value = String(maskedValue || '').trim();
+  if (!value || hasMojibake(value)) {
+    return null;
+  }
+
+  return {
+    id: `payment_primary_${Date.now()}`,
+    kind: 'card',
+    value,
+    caption: 'Основной способ оплаты',
+    badge: 'Личная',
+  };
 }
 
 function hasMojibake(value: string): boolean {
@@ -46,11 +70,7 @@ function hasMojibake(value: string): boolean {
 function sanitizePaymentMethod(raw: unknown): string {
   const value = typeof raw === 'string' ? raw.trim() : '';
 
-  if (!value || hasMojibake(value)) {
-    return DEFAULT_PAYMENT_METHOD;
-  }
-
-  return value;
+  return !value || hasMojibake(value) ? '' : value;
 }
 
 function createDefaultOperations(): BalanceOperation[] {
@@ -173,56 +193,62 @@ function sanitizeOperationDetails(
 
 function getInitialState(): BalanceDashboardState {
   const currentUser = authState.getCurrentUser();
-  const paymentMethods = createDefaultPaymentMethods();
   const paymentMethod = sanitizePaymentMethod(currentUser?.cardMasked);
+  const paymentMethods = paymentMethod
+    ? [createPaymentMethodFromMasked(paymentMethod)].filter(
+        (method): method is PaymentMethodOption => Boolean(method),
+      )
+    : [];
 
   return {
     balanceValue:
-      typeof currentUser?.balance === 'number' ? currentUser.balance : 48200,
-    moderationReserve: 6000,
-    monthlySpend: 124900,
+      typeof currentUser?.balance === 'number' ? currentUser.balance : 0,
+    moderationReserve: 0,
+    monthlySpend: 0,
     autopayEnabled: true,
     autopayThreshold: 5000,
     autopayLimit: 30000,
     paymentMethod: paymentMethods.some((item) => item.value === paymentMethod)
       ? paymentMethod
-      : DEFAULT_PAYMENT_METHOD,
+      : '',
     paymentMethods,
     vatEnabled: true,
     selectedAmount: 10000,
-    operations: createDefaultOperations(),
+    operations: [],
   };
 }
 
 function normalizePaymentMethods(
   rawPaymentMethods: BalanceDashboardState['paymentMethods'] | undefined,
 ): PaymentMethodOption[] {
-  const fallbackPaymentMethods = createDefaultPaymentMethods();
-
   if (!Array.isArray(rawPaymentMethods)) {
-    return fallbackPaymentMethods;
+    return [];
   }
 
-  return rawPaymentMethods.filter(Boolean).map((item, index) => ({
-    id: typeof item?.id === 'string' ? item.id : `payment_${index}`,
-    kind: ['card', 'corporate', 'invoice'].includes(String(item?.kind))
-      ? (item?.kind as PaymentMethodKind)
-      : 'card',
-    value: sanitizePaymentMethod(item?.value),
-    caption:
-      typeof item?.caption === 'string' &&
-      item.caption.trim() &&
-      !hasMojibake(item.caption)
-        ? item.caption.trim()
-        : (fallbackPaymentMethods[index]?.caption ??
-          'Способ оплаты для операций в кабинете'),
-    note:
-      typeof item?.note === 'string' &&
-      item.note.trim() &&
-      !hasMojibake(item.note)
-        ? item.note.trim()
-        : (fallbackPaymentMethods[index]?.note ?? 'Добавлено вручную'),
-  }));
+  return rawPaymentMethods
+    .filter(Boolean)
+    .map((item, index) => ({
+      id: typeof item?.id === 'string' ? item.id : `payment_${index}`,
+      kind: ['card', 'corporate', 'invoice'].includes(String(item?.kind))
+        ? (item?.kind as PaymentMethodKind)
+        : 'card',
+      value: sanitizePaymentMethod(item?.value),
+      caption:
+        typeof item?.caption === 'string' &&
+        item.caption.trim() &&
+        !hasMojibake(item.caption)
+          ? item.caption.trim()
+          : 'Способ оплаты для операций в кабинете',
+      note:
+        typeof item?.note === 'string' &&
+        item.note.trim() &&
+        !hasMojibake(item.note)
+          ? item.note.trim()
+          : 'Добавлено вручную',
+    }))
+    .filter(
+      (method) => Boolean(method.value) && !isLegacyDefaultMethod(method),
+    );
 }
 
 function normalizeOperations(
@@ -254,8 +280,16 @@ function normalizeState(raw: unknown): BalanceDashboardState {
   }
 
   const data = raw as Partial<BalanceDashboardState>;
-  const paymentMethods = normalizePaymentMethods(data.paymentMethods);
+  let paymentMethods = normalizePaymentMethods(data.paymentMethods);
   const selectedPaymentMethod = sanitizePaymentMethod(data.paymentMethod);
+  const currentUserMethod = sanitizePaymentMethod(authState.getCurrentUser()?.cardMasked);
+
+  if (!paymentMethods.length && currentUserMethod) {
+    const method = createPaymentMethodFromMasked(currentUserMethod);
+    if (method && !isLegacyDefaultMethod(method)) {
+      paymentMethods = [method];
+    }
+  }
 
   return {
     balanceValue:
@@ -286,7 +320,7 @@ function normalizeState(raw: unknown): BalanceDashboardState {
       (item) => item.value === selectedPaymentMethod,
     )
       ? selectedPaymentMethod
-      : (paymentMethods[0]?.value ?? DEFAULT_PAYMENT_METHOD),
+      : (paymentMethods[0]?.value ?? ''),
     paymentMethods,
     vatEnabled:
       typeof data.vatEnabled === 'boolean'
@@ -303,13 +337,13 @@ function normalizeState(raw: unknown): BalanceDashboardState {
 export function getBalanceState(): BalanceDashboardState {
   return normalizeState(
     localStorageService.getJson<Partial<BalanceDashboardState>>(
-      BALANCE_STORAGE_KEY,
+      getBalanceStorageKey(),
     ),
   );
 }
 
 export function persistBalanceState(state: BalanceDashboardState): void {
-  localStorageService.setJson(BALANCE_STORAGE_KEY, state);
+  localStorageService.setJson(getBalanceStorageKey(), state);
 
   const currentUser = authState.getCurrentUser();
   if (!currentUser) {
@@ -319,6 +353,6 @@ export function persistBalanceState(state: BalanceDashboardState): void {
   authState.setAuthenticatedUser({
     ...currentUser,
     balance: state.balanceValue,
-    cardMasked: state.paymentMethod,
+    cardMasked: state.paymentMethod || undefined,
   });
 }

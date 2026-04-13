@@ -5,6 +5,7 @@ import {
   closeBalanceSelect,
   createPaymentMethodOption,
   openBalanceSelect,
+  populatePaymentAddForm,
   readPaymentMethodDraft,
   resetPaymentAddForm,
   sanitizePaymentAddInput,
@@ -12,7 +13,7 @@ import {
   syncPaymentAddFormKind,
   validatePaymentMethodDraft,
 } from 'features/balance/lib/payment';
-import { DEFAULT_PAYMENT_METHOD } from 'features/balance/model/state';
+import { createFallbackPaymentMethodDraft } from 'features/balance/lib/payment-draft';
 import type {
   BalanceDashboardState,
   PaymentMethodOption,
@@ -30,21 +31,36 @@ interface InitBalancePaymentWidgetParams {
   toast: ToastController;
 }
 
+function getPaymentMethodBadge(method: PaymentMethodOption): string {
+  if (method.badge) {
+    return method.badge;
+  }
+
+  if (method.kind === 'invoice') {
+    return 'По счету';
+  }
+
+  return method.kind === 'corporate' ? 'Корпоративная' : 'Личная';
+}
+
 function createPaymentMethodNode(
   method: PaymentMethodOption,
   selectedValue: string,
 ): HTMLElement {
-  const label = document.createElement('label');
-  label.className = 'balance-modal__method';
+  const wrapper = document.createElement('div');
+  wrapper.className = 'balance-modal__method';
+  wrapper.dataset.methodId = method.id;
 
   const input = document.createElement('input');
   input.type = 'radio';
   input.name = 'method';
   input.value = method.value;
   input.checked = method.value === selectedValue;
+  input.id = `balance-payment-method-${method.id}`;
 
-  const ui = document.createElement('span');
-  ui.className = 'balance-modal__method-ui';
+  const label = document.createElement('label');
+  label.className = 'balance-modal__method-ui';
+  label.htmlFor = input.id;
 
   const main = document.createElement('span');
   main.className = 'balance-modal__method-main';
@@ -57,14 +73,38 @@ function createPaymentMethodNode(
   caption.className = 'balance-modal__method-caption';
   caption.textContent = method.caption;
 
-  const note = document.createElement('span');
-  note.className = 'balance-modal__method-note';
-  note.textContent = method.note;
+  const side = document.createElement('span');
+  side.className = 'balance-modal__method-side';
 
+  const badge = document.createElement('span');
+  badge.className = 'balance-modal__method-badge';
+  badge.textContent = getPaymentMethodBadge(method);
+
+  const actions = document.createElement('span');
+  actions.className = 'balance-modal__method-actions';
+
+  const editButton = document.createElement('button');
+  editButton.type = 'button';
+  editButton.className = 'balance-modal__method-action';
+  editButton.dataset.paymentMethodAction = 'edit';
+  editButton.dataset.methodId = method.id;
+  editButton.textContent = 'Редактировать';
+
+  const deleteButton = document.createElement('button');
+  deleteButton.type = 'button';
+  deleteButton.className =
+    'balance-modal__method-action balance-modal__method-action--danger';
+  deleteButton.dataset.paymentMethodAction = 'delete';
+  deleteButton.dataset.methodId = method.id;
+  deleteButton.textContent = 'Удалить';
+
+  actions.append(editButton, deleteButton);
+  side.append(badge, actions);
   main.append(title, caption);
-  ui.append(main, note);
-  label.append(input, ui);
-  return label;
+  label.append(main, side);
+  wrapper.append(input, label);
+
+  return wrapper;
 }
 
 function focusPaymentAddField(modal: HTMLElement): void {
@@ -91,11 +131,18 @@ export function syncBalancePaymentWidget(
   );
 
   if (methodsNode) {
-    methodsNode.replaceChildren(
-      ...state.paymentMethods.map((method) =>
-        createPaymentMethodNode(method, state.paymentMethod),
-      ),
-    );
+    if (!state.paymentMethods.length) {
+      const emptyNode = document.createElement('p');
+      emptyNode.className = 'balance-modal__hint';
+      emptyNode.textContent = 'Способы оплаты еще не добавлены.';
+      methodsNode.replaceChildren(emptyNode);
+    } else {
+      methodsNode.replaceChildren(
+        ...state.paymentMethods.map((method) =>
+          createPaymentMethodNode(method, state.paymentMethod),
+        ),
+      );
+    }
   }
 
   const paymentInputs = document.querySelectorAll<HTMLInputElement>(
@@ -114,10 +161,7 @@ export function syncBalancePaymentWidget(
   });
 
   if (!hasMatch) {
-    const fallback =
-      [...paymentInputs].find(
-        (input) => input.value === DEFAULT_PAYMENT_METHOD,
-      ) ?? paymentInputs[0];
+    const fallback = paymentInputs[0];
 
     if (fallback) {
       fallback.checked = true;
@@ -135,6 +179,53 @@ export function initBalancePaymentWidget({
   state,
   toast,
 }: InitBalancePaymentWidgetParams): void {
+  const paymentAddTitle = paymentAddModal?.querySelector<HTMLElement>(
+    '[data-balance-payment-add-title]',
+  );
+  const paymentAddSubmitButton = paymentAddForm?.querySelector<HTMLButtonElement>(
+    '[data-balance-payment-add-submit]',
+  );
+
+  const syncPaymentAddMode = (mode: 'create' | 'edit'): void => {
+    if (paymentAddTitle) {
+      paymentAddTitle.textContent =
+        mode === 'edit'
+          ? 'Редактировать способ оплаты'
+          : 'Добавить способ оплаты';
+    }
+
+    if (paymentAddSubmitButton) {
+      paymentAddSubmitButton.textContent =
+        mode === 'edit' ? 'Сохранить' : 'Добавить';
+    }
+  };
+
+  const openPaymentAddModal = (method?: PaymentMethodOption): void => {
+    if (paymentModal instanceof HTMLElement) {
+      closeModal(paymentModal);
+    }
+
+    if (!(paymentAddModal instanceof HTMLElement) || !paymentAddForm) {
+      return;
+    }
+
+    if (method) {
+      paymentAddForm.dataset.editingMethodId = method.id;
+      populatePaymentAddForm(
+        paymentAddForm,
+        method.draft ?? createFallbackPaymentMethodDraft(method),
+      );
+      syncPaymentAddMode('edit');
+    } else {
+      delete paymentAddForm.dataset.editingMethodId;
+      resetPaymentAddForm(paymentAddForm);
+      syncPaymentAddMode('create');
+    }
+
+    openModal(paymentAddModal);
+    focusPaymentAddField(paymentAddModal);
+  };
+
   document
     .querySelectorAll<HTMLElement>('[data-balance-open-payment]')
     .forEach((node) => {
@@ -155,17 +246,7 @@ export function initBalancePaymentWidget({
       node.addEventListener(
         'click',
         () => {
-          if (paymentModal instanceof HTMLElement) {
-            closeModal(paymentModal);
-          }
-
-          if (!(paymentAddModal instanceof HTMLElement) || !paymentAddForm) {
-            return;
-          }
-
-          resetPaymentAddForm(paymentAddForm);
-          openModal(paymentAddModal);
-          focusPaymentAddField(paymentAddModal);
+          openPaymentAddModal();
         },
         { signal },
       );
@@ -230,6 +311,49 @@ export function initBalancePaymentWidget({
 
   if (paymentForm && paymentModal instanceof HTMLElement) {
     paymentForm.addEventListener(
+      'click',
+      (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) {
+          return;
+        }
+
+        const actionButton = target.closest<HTMLElement>(
+          '[data-payment-method-action]',
+        );
+        if (!actionButton) {
+          return;
+        }
+
+        const methodId = actionButton.dataset.methodId ?? '';
+        const method = state.paymentMethods.find((item) => item.id === methodId);
+        if (!method) {
+          return;
+        }
+
+        if (actionButton.dataset.paymentMethodAction === 'edit') {
+          openPaymentAddModal(method);
+          return;
+        }
+
+        state.paymentMethods = state.paymentMethods.filter(
+          (item) => item.id !== method.id,
+        );
+
+        if (state.paymentMethod === method.value) {
+          state.paymentMethod = state.paymentMethods[0]?.value ?? '';
+        }
+
+        commitState();
+        toast.show(
+          'Способ оплаты удален',
+          `${method.value} больше не используется в кабинете.`,
+        );
+      },
+      { signal },
+    );
+
+    paymentForm.addEventListener(
       'submit',
       (event) => {
         event.preventDefault();
@@ -258,7 +382,7 @@ export function initBalancePaymentWidget({
           (method) => method.value === nextMethod,
         )
           ? nextMethod
-          : DEFAULT_PAYMENT_METHOD;
+          : '';
 
         commitState();
         closeModal(paymentModal);
@@ -276,6 +400,7 @@ export function initBalancePaymentWidget({
   }
 
   syncPaymentAddFormKind(paymentAddForm);
+  syncPaymentAddMode('create');
 
   paymentAddForm.addEventListener(
     'input',
@@ -300,6 +425,7 @@ export function initBalancePaymentWidget({
       );
       const draft = readPaymentMethodDraft(paymentAddForm);
       const validationError = validatePaymentMethodDraft(draft);
+      const editingMethodId = paymentAddForm.dataset.editingMethodId;
 
       if (errorNode) {
         errorNode.textContent = '';
@@ -312,13 +438,31 @@ export function initBalancePaymentWidget({
         return;
       }
 
-      const method = createPaymentMethodOption(draft);
+      const previousMethod = editingMethodId
+        ? state.paymentMethods.find((item) => item.id === editingMethodId)
+        : null;
+      const method = createPaymentMethodOption(
+        draft,
+        editingMethodId || undefined,
+      );
 
-      state.paymentMethods = [method, ...state.paymentMethods];
-      state.paymentMethod = method.value;
+      if (previousMethod) {
+        state.paymentMethods = state.paymentMethods.map((item) =>
+          item.id === editingMethodId ? method : item,
+        );
+
+        if (state.paymentMethod === previousMethod.value) {
+          state.paymentMethod = method.value;
+        }
+      } else {
+        state.paymentMethods = [method, ...state.paymentMethods];
+        state.paymentMethod = method.value;
+      }
 
       commitState();
       resetPaymentAddForm(paymentAddForm);
+      delete paymentAddForm.dataset.editingMethodId;
+      syncPaymentAddMode('create');
       closeModal(paymentAddModal);
 
       if (paymentModal instanceof HTMLElement) {
@@ -326,8 +470,12 @@ export function initBalancePaymentWidget({
       }
 
       toast.show(
-        'Способ оплаты добавлен',
-        `${method.value} добавлен в список и выбран основным.`,
+        previousMethod
+          ? 'Способ оплаты обновлен'
+          : 'Способ оплаты добавлен',
+        previousMethod
+          ? `${method.value} обновлен и готов к использованию.`
+          : `${method.value} добавлен в список и выбран основным.`,
       );
     },
     { signal },

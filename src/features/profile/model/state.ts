@@ -1,6 +1,15 @@
 import { authState } from 'features/auth';
 import { getAds } from 'features/ads';
+import { DEFAULT_PAYMENT_METHOD } from 'features/balance/model/state';
+import { formatPhoneInput } from 'features/profile/lib/form';
+import { request } from 'shared/lib/request';
 import { formatDate, formatPrice } from 'shared/lib/format';
+const LEGACY_DEFAULT_PAYMENT_METHODS = new Set([
+  DEFAULT_PAYMENT_METHOD,
+  'Корпоративная карта •••• 9024',
+  'Безналичный счет компании',
+]);
+
 import type {
   AccountStatus,
   ProfileField,
@@ -42,13 +51,23 @@ function splitFullName(name: string): { firstName: string; lastName: string } {
   }
 
   return {
-    firstName: parts[0] || 'Екатерина',
-    lastName: 'Кузнецова',
+    firstName: parts[0] || '',
+    lastName: '',
   };
 }
 
 function isEmailLike(value: string): boolean {
   return /.+@.+\..+/.test(value.trim());
+}
+
+function formatPhoneForDisplay(value: string): string {
+  const normalized = String(value || '').trim();
+  if (!normalized) {
+    return '';
+  }
+
+  const formatted = formatPhoneInput(normalized);
+  return formatted || normalized;
 }
 
 function buildProfileFields(state: ProfileState): ProfileField[] {
@@ -63,7 +82,7 @@ function buildProfileFields(state: ProfileState): ProfileField[] {
 }
 
 export function getInitials(firstName: string, lastName: string): string {
-  return `${firstName[0] || 'Е'}${lastName[0] || 'К'}`.toUpperCase();
+  return `${firstName[0] || 'Н'}${lastName[0] || 'П'}`.toUpperCase();
 }
 
 export function getTariffMeta(tariffKey: TariffKey): TariffMeta {
@@ -79,18 +98,49 @@ export function getAccountActionText(status: AccountStatus): string {
 }
 
 export async function getProfileState(): Promise<ProfileState> {
-  const currentUser = authState.getCurrentUser() ?? {
-    id: 4839014,
-    email: 'ekaterina@eshke.ru',
-    phone: '+7 999 123 45 67',
-    name: 'Екатерина Кузнецова',
-    balance: 48200,
+  let currentUser = authState.getCurrentUser() ?? {
+    id: 0,
+    email: '',
+    phone: '',
+    name: '',
+    balance: 0,
   };
+
+  try {
+    const response = await request<{
+      id: number;
+      name?: string;
+      email?: string;
+      phone?: string;
+      balance?: number;
+    }>('/advertiser/me', { method: 'GET' });
+    const profile = response.data;
+
+    currentUser = {
+      ...currentUser,
+      id: typeof profile?.id === 'number' ? profile.id : currentUser.id,
+      name: typeof profile?.name === 'string' ? profile.name : currentUser.name,
+      email:
+        typeof profile?.email === 'string' ? profile.email : currentUser.email,
+      phone:
+        typeof profile?.phone === 'string' ? profile.phone : currentUser.phone,
+      balance:
+        typeof profile?.balance === 'number'
+          ? profile.balance
+          : currentUser.balance,
+    };
+
+    authState.setAuthenticatedUser(currentUser);
+  } catch {
+    // На profile route уже есть проверка авторизации; если /me временно недоступен,
+    // используем данные из локального состояния, чтобы не ломать рендер страницы.
+  }
+
   const rawName = typeof currentUser.name === 'string' ? currentUser.name.trim() : '';
-  const fullName = rawName && !isEmailLike(rawName) ? rawName : 'Екатерина Кузнецова';
+  const fullName = rawName && !isEmailLike(rawName) ? rawName : '';
   const { firstName, lastName } = splitFullName(fullName);
   const adsResult = await getAds();
-  const activeCampaigns = adsResult.error ? 12 : adsResult.ads.length;
+  const activeCampaigns = adsResult.error ? 0 : adsResult.ads.length;
   const lastCampaign = adsResult.error
     ? null
     : [...adsResult.ads].sort((first, second) => {
@@ -103,20 +153,24 @@ export async function getProfileState(): Promise<ProfileState> {
     avatar: currentUser.avatar || '',
     firstName,
     lastName,
-    email: currentUser.email || 'ekaterina@eshke.ru',
-    phone: currentUser.phone || '+7 999 123 45 67',
-    company: currentUser.company || 'ООО «Эшке Медиа»',
-    city: currentUser.city || 'Москва',
-    inn: currentUser.inn || '7701234567',
-    balanceValue: typeof currentUser.balance === 'number' ? currentUser.balance : 48200,
-    tariffKey: currentUser.tariffKey || 'pro',
+    email: currentUser.email || '',
+    phone: formatPhoneForDisplay(currentUser.phone || ''),
+    company: currentUser.company || '',
+    city: currentUser.city || '',
+    inn: currentUser.inn || '',
+    balanceValue: typeof currentUser.balance === 'number' ? currentUser.balance : 0,
+    tariffKey: currentUser.tariffKey || 'basic',
     accountStatus: currentUser.accountStatus || 'pending',
     activeCampaigns,
-    lastAction: lastCampaign?.created_at ? formatDate(lastCampaign.created_at) : 'Сегодня',
-    contactHandle: currentUser.contactHandle || '@chocaboy',
-    cardMasked: currentUser.cardMasked || 'Банковская карта •••• 4481',
-    lastTopUp: currentUser.lastTopUp || '12 марта 2026 · 15 000 ₽',
-    passwordStatus: currentUser.passwordStatus || 'Сменить',
+    lastAction: lastCampaign?.created_at ? formatDate(lastCampaign.created_at) : '—',
+    contactHandle: currentUser.contactHandle || '',
+    cardMasked:
+      currentUser.cardMasked &&
+      !LEGACY_DEFAULT_PAYMENT_METHODS.has(currentUser.cardMasked)
+        ? currentUser.cardMasked
+        : '',
+    lastTopUp: currentUser.lastTopUp || '—',
+    passwordStatus: currentUser.passwordStatus || 'Добавить',
   };
 }
 
@@ -127,9 +181,9 @@ export function toTemplateContext(state: ProfileState): TemplateContext {
     avatar: state.avatar,
     initials: getInitials(state.firstName, state.lastName),
     hasAvatar: Boolean(state.avatar),
-    fullName: `${state.firstName} ${state.lastName}`,
+    fullName: `${state.firstName} ${state.lastName}`.trim() || 'Новый профиль',
     role: 'Рекламодатель · Основной аккаунт',
-    accountId: `ID ${authState.getCurrentUser()?.id || 4839014}`,
+    accountId: `ID ${authState.getCurrentUser()?.id || '—'}`,
     memberSince: 'С нами с 14 марта 2026',
     balance: formatPrice(state.balanceValue),
     tariff: tariff.label,

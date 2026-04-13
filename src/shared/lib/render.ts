@@ -7,13 +7,13 @@
  * @return {Promise<string>} Сгенерированная строка HTML.
  */
 
-type TemplateFn = (data: Record<string, unknown>) => string;
+type TemplateFn = (data?: Record<string, unknown>) => string;
 
-export async function renderTemplate(
+export async function renderTemplate<T extends object>(
   template: TemplateFn,
-  data: Record<string, unknown> = {},
+  data: T,
 ): Promise<string> {
-  return template(data);
+  return template(data as Record<string, unknown>);
 }
 
 /**
@@ -23,12 +23,12 @@ export async function renderTemplate(
  * @param {Record<string, unknown>} [data={}] Контекст данных для шаблона.
  * @return {HTMLElement} Корневой HTML-элемент шаблона.
  */
-export function renderElement(
+export function renderElement<T extends object>(
   template: TemplateFn,
-  data: Record<string, unknown> = {},
+  data?: T,
 ): HTMLElement {
   const root = document.createElement('template');
-  root.innerHTML = template(data).trim();
+  root.innerHTML = template(data as Record<string, unknown> | undefined).trim();
 
   const element = root.content.firstElementChild;
   if (!(element instanceof HTMLElement)) {

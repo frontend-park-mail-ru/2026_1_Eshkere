@@ -79,6 +79,20 @@
     &.is-open {
       border-color: var(--primary-border);
     }
+
+    &:disabled,
+    &[aria-disabled='true'] {
+      color: var(--text-soft);
+      background: var(--surface-muted);
+      border-color: var(--border);
+      opacity: 0.62;
+      cursor: not-allowed;
+    }
+
+    &:disabled:hover,
+    &[aria-disabled='true']:hover {
+      border-color: var(--border);
+    }
   }
 
   &__search {
@@ -86,6 +100,8 @@
     appearance: none;
     -webkit-appearance: none;
     outline: none;
+    color: var(--text-body);
+    caret-color: var(--primary-active);
 
     &::placeholder {
       color: var(--text-soft);
@@ -779,13 +795,18 @@
   }
 
   &--paused {
-    color: var(--danger);
-    background: var(--danger-badge);
+    color: #de4b43;
+    background: rgba(255, 92, 92, 0.12);
   }
 
   &--pending {
     color: var(--primary-active);
     background: var(--primary-badge);
+  }
+
+  &--draft {
+    color: var(--text-soft);
+    background: rgba(170, 178, 199, 0.18);
   }
 }
 
@@ -829,7 +850,8 @@
   }
 }
 
-.campaigns-delete-modal {
+.campaigns-delete-modal,
+.campaigns-status-modal {
   @include mixins.modal-overlay(70);
 
   &[hidden] {
@@ -934,6 +956,48 @@
   }
 }
 
+.campaigns-delete-modal {
+  &__illustration {
+    align-items: start;
+    padding-top: 0;
+  }
+
+  &__image {
+    margin-top: -10px;
+  }
+}
+
+.campaigns-status-modal {
+  &__illustration {
+    height: 320px;
+    padding: 0;
+    border-radius: 20px;
+    background: transparent;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+
+  &__blob {
+    display: none;
+  }
+
+  &__image {
+    width: min(100%, 400px);
+    height: min(100%, 320px);
+    max-width: 100%;
+    display: block;
+    object-fit: contain;
+    object-position: center;
+    background: transparent;
+  }
+
+  &__note {
+    margin-top: -4px;
+    background: rgba(104, 100, 255, 0.08);
+  }
+}
+
 @include mixins.media-max(t.$bp-lg) {
   .campaigns-page {
     min-height: 0;
@@ -1016,12 +1080,23 @@
     text-align: center;
   }
 
-  .campaigns-delete-modal__dialog {
+  .campaigns-delete-modal__dialog,
+  .campaigns-status-modal__dialog {
     width: min(100%, 430px);
     padding: 20px;
   }
 
-  .campaigns-delete-modal__button {
+  .campaigns-status-modal__illustration {
+    height: 220px;
+  }
+
+  .campaigns-status-modal__image {
+    width: min(100%, 280px);
+    height: min(100%, 220px);
+  }
+
+  .campaigns-delete-modal__button,
+  .campaigns-status-modal__button {
     height: 48px;
     font-size: 15px;
   }
@@ -1090,21 +1165,30 @@
     font-size: 16px;
   }
 
-  .campaigns-delete-modal__dialog {
+  .campaigns-delete-modal__dialog,
+  .campaigns-status-modal__dialog {
     border-radius: 16px;
     padding: 16px;
   }
 
-  .campaigns-delete-modal__illustration {
+  .campaigns-delete-modal__illustration,
+  .campaigns-status-modal__illustration {
     height: 188px;
   }
 
-  .campaigns-delete-modal__actions {
+  .campaigns-status-modal__image {
+    width: min(100%, 240px);
+    height: min(100%, 188px);
+  }
+
+  .campaigns-delete-modal__actions,
+  .campaigns-status-modal__actions {
     width: 100%;
     flex-direction: column;
   }
 
-  .campaigns-delete-modal__button {
+  .campaigns-delete-modal__button,
+  .campaigns-status-modal__button {
     width: 100%;
     height: 46px;
     font-size: 15px;

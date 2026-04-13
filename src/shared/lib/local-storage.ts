@@ -7,6 +7,7 @@ export enum LocalStorageKey {
   CampaignEditBuilderState = 'campaign_edit_builder_state',
   CampaignEditSeed = 'campaign_edit_seed',
   CampaignEditState = 'campaign_edit_state',
+  CampaignStatisticsSeed = 'campaign_statistics_seed',
 }
 
 function getStorage(): Storage | null {

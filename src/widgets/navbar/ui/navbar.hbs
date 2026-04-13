@@ -24,14 +24,82 @@
   <div class="navbar__actions">
     {{#if isAuthenticated}}
       <div class="navbar__actions-user">
-        <div class="navbar__balance">{{user.balance}} ₽</div>
-        <button class="navbar__actions-user-icon" type="button">
-          <img src="/icons/wallet.svg" alt="" />
+        <div class="navbar__balance">{{user.balanceLabel}}</div>
+
+        <a
+          class="navbar__actions-user-icon navbar__actions-user-icon--wallet"
+          href="/balance"
+          aria-label="Перейти к балансу"
+        >
+          <span
+            class="navbar__actions-user-glyph navbar__actions-user-glyph--wallet"
+            aria-hidden="true"
+          ></span>
+        </a>
+
+        <button
+          class="navbar__actions-user-icon navbar__actions-user-icon--notification"
+          type="button"
+          id="navbar-notifications-toggle"
+          aria-expanded="false"
+          aria-controls="navbar-notifications-menu"
+          aria-label="Открыть уведомления"
+        >
+          <span
+            class="navbar__actions-user-glyph navbar__actions-user-glyph--notification"
+            aria-hidden="true"
+          ></span>
         </button>
-        <button class="navbar__actions-user-icon navbar__actions-user-icon--notification" type="button">
-          <img src="/icons/notification.svg" alt="" />
-        </button>
+
+        <div class="navbar__notifications-menu" id="navbar-notifications-menu" hidden>
+          <div class="navbar__notifications-head">
+            <div class="navbar__notifications-copy">
+              <span class="navbar__notifications-kicker">Уведомления</span>
+              <strong class="navbar__notifications-title">Последние события кабинета</strong>
+            </div>
+            <span class="navbar__notifications-badge">{{notifications.length}}</span>
+          </div>
+
+          <div class="navbar__notifications-list">
+            {{#each notifications}}
+              <article
+                class="navbar__notification-card navbar__notification-card--{{tone}}"
+                data-notification-item
+                data-notification-id="{{@index}}"
+              >
+                <span class="navbar__notification-dot" aria-hidden="true"></span>
+                <div class="navbar__notification-content">
+                  <div class="navbar__notification-row">
+                    <strong class="navbar__notification-title">{{title}}</strong>
+                    <button
+                      class="navbar__notification-dismiss"
+                      type="button"
+                      aria-label="Скрыть уведомление"
+                      data-notification-dismiss
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <p class="navbar__notification-text">{{text}}</p>
+                  <span class="navbar__notification-time">{{time}}</span>
+                </div>
+              </article>
+            {{/each}}
+          </div>
+
+          <div class="navbar__notifications-footer">
+            <button
+              class="navbar__notifications-all"
+              type="button"
+              id="navbar-notifications-all"
+            >
+              Показать все
+            </button>
+          </div>
+        </div>
+
         <img class="navbar__avatar" src="{{user.avatar}}" alt="{{user.name}}" />
+
         <button
           class="navbar__profile-toggle"
           type="button"
@@ -44,19 +112,52 @@
 
         <div class="navbar__profile-menu" id="navbar-profile-menu" hidden>
           <a class="navbar__profile-menu-head" href="/profile">
-            <img class="navbar__profile-menu-avatar" src="{{user.avatar}}" alt="{{user.name}}" />
-            <span class="navbar__profile-menu-name">{{user.name}}</span>
+            <img
+              class="navbar__profile-menu-avatar"
+              src="{{user.avatar}}"
+              alt="{{user.name}}"
+            />
+            <div class="navbar__profile-menu-copy">
+              <span class="navbar__profile-menu-kicker">Аккаунт</span>
+              <span class="navbar__profile-menu-name">{{user.name}}</span>
+            </div>
             <span class="navbar__profile-menu-arrow">›</span>
           </a>
-          <button class="navbar__profile-menu-logout" type="button" id="navbar-logout-button">
+
+          <div class="navbar__profile-menu-body">
+            <a class="navbar__profile-menu-link" href="/profile">
+              <span
+                class="navbar__profile-menu-link-icon navbar__profile-menu-link-icon--profile"
+                aria-hidden="true"
+              ></span>
+              <span class="navbar__profile-menu-link-copy">
+                <strong>Профиль</strong>
+                <span>Личные данные и настройки кабинета</span>
+              </span>
+            </a>
+          </div>
+
+          <button
+            class="navbar__profile-menu-logout"
+            type="button"
+            id="navbar-logout-button"
+          >
             Выйти
           </button>
         </div>
 
         <div class="navbar__logout-modal" id="navbar-logout-modal" hidden>
-          <div class="navbar__logout-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="navbar-logout-modal-title">
+          <div
+            class="navbar__logout-modal-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="navbar-logout-modal-title"
+          >
             <div class="navbar__logout-modal-head">
-              <h3 class="navbar__logout-modal-title" id="navbar-logout-modal-title">
+              <h3
+                class="navbar__logout-modal-title"
+                id="navbar-logout-modal-title"
+              >
                 Выход из аккаунта
               </h3>
               <p class="navbar__logout-modal-text">
@@ -74,21 +175,98 @@
             </div>
 
             <div class="navbar__logout-modal-note">
-              После выхода потребуется заново авторизоваться, чтобы открыть рекламный кабинет.
+              После выхода потребуется заново авторизоваться, чтобы открыть
+              рекламный кабинет.
             </div>
 
             <div class="navbar__logout-modal-actions">
-              <button type="button" class="navbar__logout-modal-button navbar__logout-modal-button--secondary" id="navbar-logout-cancel">
+              <button
+                type="button"
+                class="navbar__logout-modal-button navbar__logout-modal-button--secondary"
+                id="navbar-logout-cancel"
+              >
                 Остаться
               </button>
-              <button type="button" class="navbar__logout-modal-button navbar__logout-modal-button--primary" id="navbar-logout-confirm">
+              <button
+                type="button"
+                class="navbar__logout-modal-button navbar__logout-modal-button--primary"
+                id="navbar-logout-confirm"
+              >
                 Выйти
               </button>
             </div>
           </div>
         </div>
-      </div>
 
+        <div class="navbar__notifications-modal" id="navbar-notifications-modal" hidden>
+          <div
+            class="navbar__notifications-modal-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="navbar-notifications-modal-title"
+          >
+            <div class="navbar__notifications-modal-head">
+              <div class="navbar__notifications-copy">
+                <span class="navbar__notifications-kicker">Уведомления</span>
+                <h3
+                  class="navbar__notifications-modal-title"
+                  id="navbar-notifications-modal-title"
+                >
+                  Все уведомления кабинета
+                </h3>
+              </div>
+
+              <button
+                class="navbar__notifications-modal-close"
+                type="button"
+                id="navbar-notifications-close"
+                aria-label="Закрыть уведомления"
+              >
+                ×
+              </button>
+            </div>
+
+            <div class="navbar__notifications-modal-list">
+              {{#each notifications}}
+                <article
+                  class="navbar__notification-card navbar__notification-card--{{tone}}"
+                  data-notification-modal-item
+                  data-notification-id="{{@index}}"
+                >
+                  <span class="navbar__notification-dot" aria-hidden="true"></span>
+                  <div class="navbar__notification-content">
+                    <div class="navbar__notification-row">
+                      <strong class="navbar__notification-title">{{title}}</strong>
+                      <button
+                        class="navbar__notification-dismiss"
+                        type="button"
+                        aria-label="Скрыть уведомление"
+                        data-notification-modal-dismiss
+                      >
+                        ×
+                      </button>
+                    </div>
+                    <p class="navbar__notification-text">{{text}}</p>
+                    <span class="navbar__notification-time">{{time}}</span>
+                  </div>
+                </article>
+              {{/each}}
+            </div>
+
+            <div class="navbar__notifications-empty" id="navbar-notifications-empty" hidden>
+              <img
+                class="navbar__notifications-empty-image"
+                src="/img/No%20Results.png"
+                alt=""
+              />
+              <strong class="navbar__notifications-empty-title">Уведомлений пока нет</strong>
+              <p class="navbar__notifications-empty-text">
+                Когда появятся новые события по кабинету, они отобразятся здесь.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     {{else}}
       <a
         href="/login"

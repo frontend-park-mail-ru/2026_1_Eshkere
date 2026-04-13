@@ -1,0 +1,270 @@
+<section class='campaign-statistics' data-campaign-statistics-page>
+  <div class='campaign-statistics__toolbar'>
+    <button class='campaign-statistics__ghost-button' type='button' data-statistics-back>
+      Назад к кампаниям
+    </button>
+
+    <div class='campaign-statistics__toolbar-actions'>
+      <div class='campaign-statistics__select' data-statistics-select='period'>
+        <button
+          class='campaign-statistics__select-trigger'
+          type='button'
+          data-statistics-select-trigger
+          aria-expanded='false'
+        >
+          <span data-statistics-select-value>{{selectedPeriodLabel}}</span>
+          <span class='campaign-statistics__select-arrow' aria-hidden='true'></span>
+        </button>
+
+        <div class='campaign-statistics__select-menu' data-statistics-select-menu hidden>
+          {{#each periodOptions}}
+            <button
+              class='campaign-statistics__select-option{{#if active}} is-selected{{/if}}'
+              type='button'
+              data-statistics-period='{{value}}'
+            >
+              <span>{{label}}</span>
+              {{#if active}}
+                <span class='campaign-statistics__select-meta'>Выбрано</span>
+              {{/if}}
+            </button>
+          {{/each}}
+        </div>
+      </div>
+
+      <button class='campaign-statistics__primary-button' type='button' data-statistics-edit>
+        Редактировать кампанию
+      </button>
+    </div>
+  </div>
+
+  <header class='campaign-statistics__hero'>
+    <div>
+      <div class='campaign-statistics__hero-meta'>
+        <span class='campaign-statistics__status campaign-statistics__status--{{statusTone}}'>
+          {{statusLabel}}
+        </span>
+        <span class='campaign-statistics__hero-period'>{{periodLabel}}</span>
+      </div>
+      <h1 class='campaign-statistics__title'>Статистика кампании "{{campaignName}}"</h1>
+      <p class='campaign-statistics__lead'>
+        Кампания уже набрала достаточно данных, чтобы оценить эффективность, выбрать лучший канал и понять, какие правки дадут следующий рост.
+      </p>
+    </div>
+
+    <div class='campaign-statistics__hero-note'>
+      <span class='campaign-statistics__hero-note-label'>Цель кампании</span>
+      <strong>{{goal}}</strong>
+      <p class='campaign-statistics__hero-note-text'>{{dataStateLabel}}</p>
+    </div>
+  </header>
+
+  <section class='campaign-statistics__metrics' aria-label='Ключевые показатели'>
+    {{#each metrics}}
+      <article class='campaign-statistics__metric-card'>
+        <span class='campaign-statistics__metric-label'>{{label}}</span>
+        <strong class='campaign-statistics__metric-value'>{{value}}</strong>
+        <span class='campaign-statistics__metric-delta campaign-statistics__metric-delta--{{tone}}'>
+          {{delta}}
+        </span>
+      </article>
+    {{/each}}
+  </section>
+
+  <div class='campaign-statistics__main-grid'>
+    <section class='campaign-statistics__card campaign-statistics__card--chart'>
+      <div class='campaign-statistics__card-head campaign-statistics__card-head--stack'>
+        <div class='campaign-statistics__card-head-copy'>
+          <h2 class='campaign-statistics__card-title'>{{chartTitle}}</h2>
+          <p class='campaign-statistics__card-text'>
+            Один главный график без шума: смотрим текущую метрику в динамике и принимаем решение по кампании.
+          </p>
+        </div>
+
+        <div class='campaign-statistics__chart-actions'>
+          <div class='campaign-statistics__metric-switch' role='tablist' aria-label='Метрика графика'>
+            {{#each metricOptions}}
+              <button
+                class='campaign-statistics__switch-button campaign-statistics__switch-button--metric{{#if active}} is-active{{/if}}'
+                type='button'
+                data-statistics-metric='{{value}}'
+              >
+                {{label}}
+              </button>
+            {{/each}}
+          </div>
+
+          <button
+            class='campaign-statistics__link-button'
+            type='button'
+            data-statistics-chart-action='{{chartActionTarget}}'
+          >
+            {{chartActionLabel}}
+          </button>
+        </div>
+      </div>
+
+      <div class='campaign-statistics__chart-summary'>
+        {{#each chartSummary}}
+          <div class='campaign-statistics__chart-summary-item'>
+            <span>{{label}}</span>
+            <strong>{{value}}</strong>
+          </div>
+        {{/each}}
+      </div>
+
+      <div class='campaign-statistics__chart-shell'>
+        <svg class='campaign-statistics__chart' viewBox='0 0 360 220' aria-hidden='true'>
+          <defs>
+            <linearGradient id='chart-area-primary' x1='0%' y1='0%' x2='0%' y2='100%'>
+              <stop offset='0%' stop-color='rgba(104, 100, 255, 0.28)'></stop>
+              <stop offset='100%' stop-color='rgba(104, 100, 255, 0)'></stop>
+            </linearGradient>
+          </defs>
+
+          {{#each chart.gridLines}}
+            <line
+              class='campaign-statistics__chart-grid-line'
+              x1='24'
+              y1='{{y}}'
+              x2='336'
+              y2='{{y}}'
+            ></line>
+          {{/each}}
+
+          <path class='campaign-statistics__chart-area' d='{{chart.areaPath}}'></path>
+          <polyline class='campaign-statistics__chart-line' points='{{chart.points}}'></polyline>
+
+          {{#each chart.dots}}
+            <circle class='campaign-statistics__chart-dot' cx='{{x}}' cy='{{y}}' r='4'></circle>
+          {{/each}}
+        </svg>
+
+        <div class='campaign-statistics__chart-labels'>
+          {{#each chart.labels}}
+            <span>{{this}}</span>
+          {{/each}}
+        </div>
+      </div>
+    </section>
+
+    <aside class='campaign-statistics__side-stack campaign-statistics__side-stack--main'>
+      <section class='campaign-statistics__card campaign-statistics__card--preview'>
+        <div class='campaign-statistics__card-head'>
+          <div>
+            <h2 class='campaign-statistics__card-title'>Что видит пользователь</h2>
+            <p class='campaign-statistics__card-text'>
+              Это реальная рекламная карточка: оффер, текст и CTA, с которыми взаимодействует аудитория.
+            </p>
+          </div>
+        </div>
+
+        <div class='campaign-statistics__preview-shell'>
+          <div class='campaign-statistics__preview-creative'></div>
+          <span class='campaign-statistics__preview-badge'>Реклама</span>
+          <h3 class='campaign-statistics__preview-title'>{{previewTitle}}</h3>
+          <p class='campaign-statistics__preview-text'>{{previewDescription}}</p>
+          <button class='campaign-statistics__preview-button' type='button'>
+            {{ctaLabel}}
+          </button>
+        </div>
+      </section>
+
+      <section class='campaign-statistics__card campaign-statistics__card--context-compact'>
+        <div class='campaign-statistics__card-head'>
+          <div>
+            <h2 class='campaign-statistics__card-title'>Контекст кампании</h2>
+            <p class='campaign-statistics__card-text'>
+              Отдельный служебный блок: параметры запуска, период, площадки и текущая рабочая гипотеза.
+            </p>
+          </div>
+        </div>
+
+        <div class='campaign-statistics__preview-meta'>
+          {{#each previewMeta}}
+            <article class='campaign-statistics__preview-meta-item'>
+              <span class='campaign-statistics__preview-meta-label'>{{label}}</span>
+              <strong class='campaign-statistics__preview-meta-value'>{{value}}</strong>
+            </article>
+          {{/each}}
+        </div>
+
+        <p class='campaign-statistics__preview-note'>{{contextNote}}</p>
+      </section>
+    </aside>
+  </div>
+
+  <div class='campaign-statistics__bottom-grid'>
+    <section
+      class='campaign-statistics__card campaign-statistics__card--placements'
+      data-statistics-placements
+    >
+      <div class='campaign-statistics__card-head'>
+        <div>
+          <h2 class='campaign-statistics__card-title'>Разбивка по площадкам</h2>
+          <p class='campaign-statistics__card-text'>
+            Здесь пользователь быстро видит, какой канал реально даёт отклик и куда логичнее направлять бюджет дальше.
+          </p>
+        </div>
+
+        <button
+          class='campaign-statistics__link-button'
+          type='button'
+          data-statistics-placements-action='insights'
+        >
+          Подробнее
+        </button>
+      </div>
+
+      <div class='campaign-statistics__table'>
+        <div class='campaign-statistics__table-head'>
+          <span>Площадка</span>
+          <span>Показы</span>
+          <span>Клики</span>
+          <span>CTR</span>
+          <span>Расход</span>
+          <span>CPC</span>
+        </div>
+
+        <div class='campaign-statistics__table-body'>
+          {{#each placements}}
+            <div class='campaign-statistics__table-row{{#if highlight}} campaign-statistics__table-row--highlight{{/if}}'>
+              <div class='campaign-statistics__table-cell campaign-statistics__table-cell--primary'>
+                <strong>{{name}}</strong>
+                <span>{{share}}</span>
+              </div>
+              <span>{{impressions}}</span>
+              <span>{{clicks}}</span>
+              <span>{{ctr}}</span>
+              <span>{{spend}}</span>
+              <span>{{cpc}}</span>
+            </div>
+          {{/each}}
+        </div>
+      </div>
+    </section>
+
+    <div class='campaign-statistics__side-stack'>
+      <section class='campaign-statistics__card' data-statistics-insights>
+        <div class='campaign-statistics__card-head'>
+          <div>
+            <h2 class='campaign-statistics__card-title'>Что делать дальше</h2>
+            <p class='campaign-statistics__card-text'>
+              Здесь собраны три действия: что уже работает, где лучший канал и какое решение выглядит следующим шагом.
+            </p>
+          </div>
+        </div>
+
+        <div class='campaign-statistics__insights campaign-statistics__insights--stack'>
+          {{#each insights}}
+            <article class='campaign-statistics__insight campaign-statistics__insight--{{tone}}'>
+              <span class='campaign-statistics__insight-label'>{{label}}</span>
+              <strong class='campaign-statistics__insight-value'>{{value}}</strong>
+              <p class='campaign-statistics__insight-text'>{{text}}</p>
+            </article>
+          {{/each}}
+        </div>
+      </section>
+    </div>
+  </div>
+</section>

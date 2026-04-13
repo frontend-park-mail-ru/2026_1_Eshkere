@@ -1,6 +1,8 @@
 import { initNavigation } from './navigation';
 import { renderRoute } from './router';
 import { authState } from 'features/auth';
+import { initOfflineModal } from 'widgets/offline-modal';
+import { initRequestErrorModal } from 'widgets/request-error-modal';
 import './styles/main.scss';
 
 /**
@@ -12,6 +14,8 @@ export async function initApp(): Promise<void> {
   initNavigation(() => {
     void renderRoute();
   });
+  initOfflineModal();
+  initRequestErrorModal();
   await registerServiceWorker();
   await authState.hasActiveSession();
   await renderRoute();
@@ -19,6 +23,16 @@ export async function initApp(): Promise<void> {
 
 async function registerServiceWorker(): Promise<void> {
   if (!('serviceWorker' in navigator)) {
+    return;
+  }
+
+  const isLocalhost =
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1';
+
+  if (isLocalhost) {
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(registrations.map((registration) => registration.unregister()));
     return;
   }
 

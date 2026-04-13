@@ -47,7 +47,7 @@ class AuthState {
     }
 
     try {
-      await request('/ads', { method: 'GET' });
+      await request('/ad_campaigns', { method: 'GET' });
       this.confirmedSession = true;
       return true;
     } catch (error: unknown) {

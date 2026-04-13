@@ -10,6 +10,7 @@ import {
   GOAL_LABELS,
 } from './config';
 import type {
+  BuilderAudienceConfig,
   BuilderMode,
   BuilderModeConfig,
   BuilderState,
@@ -117,8 +118,13 @@ function getCampaignEditSeed(): CampaignEditSeed | null {
     return null;
   }
 
+  const rawId = typeof parsed.id === 'string' ? parsed.id.trim() : '';
+  if (!rawId) {
+    return null;
+  }
+
   return {
-    id: typeof parsed.id === 'string' ? parsed.id : 'default',
+    id: rawId,
     title: typeof parsed.title === 'string' ? parsed.title : '',
     budgetValue:
       typeof parsed.budgetValue === 'number' &&
@@ -158,10 +164,7 @@ function getDefaultCtaByGoal(goal: GoalKey): string {
 function getBuilderStorageKey(mode: BuilderMode = getBuilderMode()): string {
   if (mode === 'edit') {
     const seed = getCampaignEditSeed();
-    return createLocalStorageKey(
-      CAMPAIGN_EDIT_STORAGE_KEY,
-      seed?.id || 'default',
-    );
+    return createLocalStorageKey(CAMPAIGN_EDIT_STORAGE_KEY, seed?.id || 'seedless');
   }
 
   return CAMPAIGN_CREATE_STORAGE_KEY;
@@ -195,7 +198,7 @@ export function persistEditSeedFromState(state: BuilderState): void {
   const seed = getCampaignEditSeed();
 
   localStorageService.setJson(CAMPAIGN_EDIT_SEED_KEY, {
-    id: seed?.id || 'default',
+    id: seed?.id || '',
     title: state.name,
     budgetValue: state.dailyBudget,
     goal: GOAL_LABELS[state.goal],
@@ -204,6 +207,10 @@ export function persistEditSeedFromState(state: BuilderState): void {
 
 export function getBuilderState(): BuilderState {
   const mode = getBuilderMode();
+  if (mode === 'edit' && !getCampaignEditSeed()) {
+    localStorageService.removeItem(getBuilderStorageKey(mode));
+    return createBuilderBaseState();
+  }
 
   const parsed = localStorageService.getJson<
     Partial<BuilderState> & {
@@ -223,7 +230,8 @@ export function getBuilderState(): BuilderState {
     mode === 'edit' ? createEditBuilderState() : createBuilderBaseState();
   const fallbackAudience =
     AUDIENCE_PRESET_CONFIGS[parsed.audienceChip || fallbackState.audienceChip];
-  const storedAudience = parsed.audienceConfig || {};
+  const storedAudience: Partial<BuilderAudienceConfig> & { age?: string } =
+    parsed.audienceConfig || {};
 
   return {
     ...fallbackState,
@@ -246,7 +254,7 @@ export function getBuilderState(): BuilderState {
           ? storedAudience.age
               .split(',')
               .slice(1)
-              .map((item) => item.trim())
+              .map((item: string) => item.trim())
               .filter(Boolean)
           : [...fallbackAudience.profileTags],
       exclusions: Array.isArray(storedAudience.exclusions)

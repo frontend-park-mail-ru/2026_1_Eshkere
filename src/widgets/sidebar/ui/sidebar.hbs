@@ -1,21 +1,29 @@
 <aside class="sidebar">
   <div class="sidebar__section">
-    <a href="/ads" class="sidebar__link">Обзор</a>
+    <span class="sidebar__link sidebar__link--disabled" aria-disabled="true">
+      Обзор
+    </span>
     <a
       href="/ads"
       class="sidebar__link {{#if isCampaigns}}sidebar__link--active{{/if}}"
     >
       Кампании
     </a>
-    <a href="/ads" class="sidebar__link">Аудитории</a>
+    <span class="sidebar__link sidebar__link--disabled" aria-disabled="true">
+      Аудитории
+    </span>
     <a
       href="/balance"
       class="sidebar__link {{#if isBalance}}sidebar__link--active{{/if}}"
     >
       Баланс
     </a>
-    <a href="/ads" class="sidebar__link">История действий</a>
-    <a href="/ads" class="sidebar__link">Поддержка</a>
+    <span class="sidebar__link sidebar__link--disabled" aria-disabled="true">
+      История действий
+    </span>
+    <span class="sidebar__link sidebar__link--disabled" aria-disabled="true">
+      Поддержка
+    </span>
   </div>
 
   <div class="sidebar__footer">

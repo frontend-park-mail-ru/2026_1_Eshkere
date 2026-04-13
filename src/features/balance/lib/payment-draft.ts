@@ -56,7 +56,8 @@ export function validatePaymentMethodDraft(
 
     const innError = validateInn(draft.inn, {
       requiredMessage: 'Для счета укажите ИНН компании.',
-      invalidLengthMessage: 'Для счета укажите ИНН из 10 или 12 цифр.',
+      invalidLengthMessage:
+        'Для счета укажите ИНН из 10 или 12 цифр.',
     });
     if (innError) {
       return innError;
@@ -89,8 +90,10 @@ export function validatePaymentMethodDraft(
   }
 
   const expiryError = validateCardExpiry(draft.expiry, {
-    invalidFormatMessage: 'Укажите срок действия карты в формате MM/YY.',
-    invalidMonthMessage: 'Укажите срок действия карты в формате MM/YY.',
+    invalidFormatMessage:
+      'Укажите срок действия карты в формате MM/YY.',
+    invalidMonthMessage:
+      'Укажите срок действия карты в формате MM/YY.',
   });
   if (expiryError) {
     return expiryError;
@@ -112,16 +115,16 @@ export function validatePaymentMethodDraft(
 
 export function createPaymentMethodOption(
   draft: PaymentMethodDraft,
+  id = `payment_${Date.now()}`,
 ): PaymentMethodOption {
-  const id = `payment_${Date.now()}`;
-
   if (draft.kind === 'invoice') {
     return {
       id,
       kind: draft.kind,
       value: draft.alias || `Счет ${draft.companyName}`,
       caption: `${draft.bankName}, р/с •••• ${draft.accountNumber.slice(-4)}`,
-      note: 'Безналично',
+      badge: 'По счету',
+      draft,
     };
   }
 
@@ -131,8 +134,73 @@ export function createPaymentMethodOption(
     value: `${draft.alias || (draft.kind === 'corporate' ? 'Корпоративная карта' : 'Личная карта')} •••• ${draft.cardNumber.slice(-4)}`,
     caption:
       draft.kind === 'card'
-        ? draft.holderName
-        : 'Корпоративная карта команды',
-    note: draft.kind === 'corporate' ? `до ${draft.expiry}` : 'Личная карта',
+        ? `${draft.holderName} · до ${draft.expiry}`
+        : `Командная карта · до ${draft.expiry}`,
+    badge:
+      draft.kind === 'corporate'
+        ? 'Корпоративная'
+        : 'Личная',
+    draft,
+  };
+}
+
+function getFallbackCardDraft(kind: PaymentMethodKind): PaymentMethodDraft {
+  return {
+    kind,
+    alias: '',
+    cardNumber: kind === 'corporate' ? '5555555555550000' : '4111111111110000',
+    expiry: '12/29',
+    cvc: '123',
+    holderName: kind === 'corporate' ? '' : 'CARD HOLDER',
+    companyName: '',
+    bankName: '',
+    inn: '',
+    bik: '',
+    accountNumber: '',
+  };
+}
+
+export function createFallbackPaymentMethodDraft(
+  method: Partial<PaymentMethodOption>,
+): PaymentMethodDraft {
+  if (method.kind === 'invoice') {
+    return {
+      kind: 'invoice',
+      alias: typeof method.value === 'string' ? method.value : '',
+      cardNumber: '',
+      expiry: '',
+      cvc: '',
+      holderName: '',
+      companyName:
+        typeof method.value === 'string' ? method.value : 'Организация',
+      bankName:
+        typeof method.caption === 'string' ? method.caption.split(',')[0] : '',
+      inn: '7701234567',
+      bik: '044525225',
+      accountNumber: '40702810000000001234',
+    };
+  }
+
+  const baseDraft = getFallbackCardDraft(
+    method.kind === 'corporate' ? 'corporate' : 'card',
+  );
+  const last4Match =
+    typeof method.value === 'string' ? method.value.match(/(\d{4})\s*$/) : null;
+
+  return {
+    ...baseDraft,
+    alias:
+      typeof method.value === 'string'
+        ? method.value.replace(/\s*[•.]+\s*\d{4}\s*$/, '').trim()
+        : '',
+    cardNumber: `${baseDraft.cardNumber.slice(0, 12)}${last4Match?.[1] ?? baseDraft.cardNumber.slice(-4)}`,
+    expiry:
+      typeof method.caption === 'string'
+        ? method.caption.match(/(\d{2}\/\d{2})/)?.[1] ?? baseDraft.expiry
+        : baseDraft.expiry,
+    holderName:
+      method.kind === 'card' && typeof method.caption === 'string'
+        ? method.caption.split('·')[0].trim()
+        : baseDraft.holderName,
   };
 }

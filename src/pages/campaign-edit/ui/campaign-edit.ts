@@ -1,9 +1,18 @@
 import './campaign-edit.scss';
 import { navigateTo } from 'app/navigation';
-import { LocalStorageKey, localStorageService } from 'shared/lib/local-storage';
+import { deleteAdCampaign, updateAdCampaign } from 'features/ads';
+import {
+  LocalStorageKey,
+  createLocalStorageKey,
+  localStorageService,
+} from 'shared/lib/local-storage';
 import { formatPrice } from 'shared/lib/format';
 import { renderTemplate } from 'shared/lib/render';
-import { initCampaignEditCtaSelect, syncCampaignEditCtaSelect } from 'widgets/campaign-edit-cta/ui/cta-select';
+import { REQUEST_ERROR_EVENT_NAME } from 'widgets/request-error-modal';
+import {
+  initCampaignEditCtaSelect,
+  syncCampaignEditCtaSelect,
+} from 'widgets/campaign-edit-cta/ui/cta-select';
 import {
   createCampaignEditDeleteModalController,
   initCampaignEditDeleteModal,
@@ -130,6 +139,19 @@ const DEFAULT_STATE: CampaignEditState = {
 
 let campaignEditLifecycleController: AbortController | null = null;
 
+function showCampaignEditRequestError(title: string, message: string): void {
+  window.dispatchEvent(
+    new CustomEvent(REQUEST_ERROR_EVENT_NAME, {
+      detail: {
+        title,
+        message,
+        note:
+          'В этом разделе могут идти технические работы. Как только сервис снова станет доступен, действие можно будет повторить.',
+      },
+    }),
+  );
+}
+
 function getCtaLabel(value: CtaKey): string {
   return (
     CTA_OPTIONS.find((option) => option.value === value)?.label ||
@@ -180,13 +202,21 @@ function getSeededState(): Partial<CampaignEditState> {
   };
 }
 
+function getCampaignEditStateStorageKey(): string {
+  const seed = localStorageService.getJson<{ id?: string }>(CAMPAIGN_EDIT_SEED_KEY);
+  const suffix =
+    typeof seed?.id === 'string' && seed.id.trim() ? seed.id.trim() : 'default';
+
+  return createLocalStorageKey(CAMPAIGN_EDIT_STORAGE_KEY, suffix);
+}
+
 function getCampaignEditState(): CampaignEditState {
   const base = {
     ...DEFAULT_STATE,
     ...getSeededState(),
   };
   const persisted = localStorageService.getJson<Partial<CampaignEditState>>(
-    CAMPAIGN_EDIT_STORAGE_KEY,
+    getCampaignEditStateStorageKey(),
   );
 
   if (!persisted) {
@@ -205,7 +235,7 @@ function getCampaignEditState(): CampaignEditState {
 }
 
 function persistCampaignEditState(state: CampaignEditState): void {
-  localStorageService.setJson(CAMPAIGN_EDIT_STORAGE_KEY, state);
+  localStorageService.setJson(getCampaignEditStateStorageKey(), state);
 }
 
 function createChangeSummary(
@@ -367,6 +397,11 @@ export function CampaignEdit(): void | VoidFunction {
     syncCampaignEdit(state, dirty);
   };
 
+  const getCampaignId = (): number | null => {
+    const campaignId = Number(state.id);
+    return Number.isFinite(campaignId) && campaignId > 0 ? campaignId : null;
+  };
+
   initCampaignEditDeleteModal(signal, deleteModal.close);
 
   document.querySelector<HTMLElement>('[data-edit-back]')?.addEventListener(
@@ -408,11 +443,29 @@ export function CampaignEdit(): void | VoidFunction {
     .querySelector<HTMLElement>('[data-edit-delete-confirm]')
     ?.addEventListener(
       'click',
-      () => {
-        localStorageService.removeItem(CAMPAIGN_EDIT_STORAGE_KEY);
-        localStorageService.removeItem(CAMPAIGN_EDIT_SEED_KEY);
-        deleteModal.close();
-        navigateTo('/ads');
+      async () => {
+        const campaignId = getCampaignId();
+
+        if (!campaignId) {
+          showCampaignEditRequestError(
+            'Не удалось удалить кампанию',
+            'Сейчас мы временно не можем удалить кампанию. Попробуйте повторить действие немного позже.',
+          );
+          return;
+        }
+
+        try {
+          await deleteAdCampaign(campaignId);
+          localStorageService.removeItem(getCampaignEditStateStorageKey());
+          localStorageService.removeItem(CAMPAIGN_EDIT_SEED_KEY);
+          deleteModal.close();
+          navigateTo('/ads');
+        } catch {
+          showCampaignEditRequestError(
+            'Не удалось удалить кампанию',
+            'Сейчас мы временно не можем удалить кампанию. Попробуйте повторить действие немного позже.',
+          );
+        }
       },
       { signal },
     );
@@ -470,25 +523,44 @@ export function CampaignEdit(): void | VoidFunction {
     .querySelector<HTMLElement>('[data-edit-save]')
     ?.addEventListener(
       'click',
-      () => {
-        state.updatedLabel = 'Только что';
-        state.moderationBadge = 'На модерации после правок';
-        state.history = [
-          {
-            time: getTimeLabel(),
-            title: 'Сохранены изменения',
-            text: buildSaveHistoryText(state),
-          },
-          ...state.history,
-        ].slice(0, 5);
+      async () => {
+        const campaignId = getCampaignId();
 
-        persistCampaignEditState(state);
-        dirty = false;
-        syncCampaignEdit(state, dirty);
-        toast.show(
-          'Изменения сохранены',
-          'Новая версия объявления готова к повторной проверке.',
-        );
+        if (!campaignId) {
+          showCampaignEditRequestError(
+            'Не удалось сохранить кампанию',
+            'Сейчас мы временно не можем сохранить изменения в кампании. Попробуйте обновить страницу и повторить действие немного позже.',
+          );
+          return;
+        }
+
+        try {
+          await updateAdCampaign(campaignId, {
+            name: state.name.trim(),
+            daily_budget: Math.max(1000, Math.round(state.dailyBudget)),
+          });
+
+          state.updatedLabel = 'Только что';
+          state.moderationBadge = 'На модерации после правок';
+          state.history = [
+            {
+              time: getTimeLabel(),
+              title: 'Сохранены изменения',
+              text: buildSaveHistoryText(state),
+            },
+            ...state.history,
+          ].slice(0, 5);
+
+          persistCampaignEditState(state);
+          dirty = false;
+          syncCampaignEdit(state, dirty);
+          navigateTo('/ads');
+        } catch {
+          showCampaignEditRequestError(
+            'Не удалось сохранить кампанию',
+            'Сейчас мы временно не можем сохранить изменения в кампании. Попробуйте обновить страницу и повторить действие немного позже.',
+          );
+        }
       },
       { signal },
     );

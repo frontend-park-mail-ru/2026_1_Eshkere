@@ -1,12 +1,18 @@
 import { request } from 'shared/lib/request';
 import { normalizeAdsErrorMessage } from '../lib/normalize-ads-error';
+import type {
+  AdCampaignResponse,
+  AdCampaignStatus,
+  ListAdCampaignsResponse,
+} from './contracts';
 
 export interface AdItem {
-  id?: string | number;
+  id?: number;
   title?: string;
   price?: number;
   target_action?: string;
   created_at?: string;
+  status?: AdCampaignStatus;
 }
 
 export interface GetAdsSuccess {
@@ -23,20 +29,23 @@ export interface GetAdsFailure {
 
 export type GetAdsResult = GetAdsSuccess | GetAdsFailure;
 
-interface AdsApiPayload {
-  data?: {
-    ads?: AdItem[];
+function mapCampaignToAdItem(campaign: AdCampaignResponse): AdItem {
+  return {
+    id: campaign.id,
+    title: campaign.name,
+    price: campaign.daily_budget,
+    status: campaign.status,
   };
 }
 
 export async function getAds(): Promise<GetAdsResult> {
   try {
-    const response = await request<AdsApiPayload>('/ads', {
+    const response = await request<ListAdCampaignsResponse>('/ad_campaigns', {
       method: 'GET',
     });
 
     return {
-      ads: response.data?.ads ?? [],
+      ads: (response.data.campaigns ?? []).map(mapCampaignToAdItem),
     };
   } catch (error: unknown) {
     const raw = error instanceof Error ? error.message : String(error);

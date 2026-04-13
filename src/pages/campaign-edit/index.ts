@@ -1,4 +1,1 @@
-export {
-  renderCampaignCreatePage as renderCampaignEditPage,
-  CampaignCreate as CampaignEdit,
-} from '../campaign-create';
+export { renderCampaignEditPage, CampaignEdit } from './ui/campaign-edit';
