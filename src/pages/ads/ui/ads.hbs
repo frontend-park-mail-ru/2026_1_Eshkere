@@ -7,7 +7,13 @@
     </div>
 
     <div class="campaigns-page__filters">
-      <button class="campaigns-page__date-filter" type="button" id="date-filter-toggle">
+      <button
+        class="campaigns-page__date-filter"
+        type="button"
+        id="date-filter-toggle"
+        disabled
+        aria-disabled="true"
+      >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h1V3a1 1 0 0 1 1-1Zm13 8H4v9a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-9ZM5 6a1 1 0 0 0-1 1v1h16V7a1 1 0 0 0-1-1H5Zm3 7a1 1 0 0 1 0 2H8a1 1 0 0 1 0-2Zm4 0a1 1 0 0 1 0 2h0a1 1 0 0 1 0-2Zm4 0a1 1 0 0 1 0 2h0a1 1 0 0 1 0-2Z" fill="currentColor"/>
         </svg>
@@ -84,9 +90,7 @@
   </div>
 
   {{#if loadError}}
-    <div class="campaigns-page__message campaigns-page__message--error">
-      Не удалось загрузить объявления: {{loadError}}
-    </div>
+    <div data-campaigns-load-error hidden>{{loadError}}</div>
   {{/if}}
 
   <div class="campaigns-table">
@@ -109,6 +113,7 @@
             data-campaign-title="{{title}}"
             data-campaign-budget-value="{{budgetValue}}"
             data-campaign-goal="{{goal}}"
+            data-status-key="{{statusKey}}"
           >
             <div class="campaign-row__name">{{title}}</div>
             <div>{{budget}}</div>
@@ -149,7 +154,7 @@
             </div>
 
             <div>
-              <span class="status-badge status-badge--{{statusType}}">
+              <span class="status-badge status-badge--{{statusType}}" data-campaign-status-badge>
                 {{status}}
               </span>
             </div>
@@ -226,6 +231,55 @@
         </button>
         <button type="button" class="campaigns-delete-modal__button campaigns-delete-modal__button--primary" id="campaigns-delete-confirm">
           Удалить
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="campaigns-status-modal" id="campaigns-status-modal" hidden>
+    <div
+      class="campaigns-status-modal__dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="campaigns-status-modal-title"
+    >
+      <div class="campaigns-status-modal__head">
+        <h3 class="campaigns-status-modal__title" id="campaigns-status-modal-title">
+          Подтвердите изменение статуса
+        </h3>
+        <p class="campaigns-status-modal__text" id="campaigns-status-modal-text">
+          После подтверждения статус кампании будет обновлен.
+        </p>
+      </div>
+
+      <div class="campaigns-status-modal__illustration" aria-hidden="true">
+        <span class="campaigns-status-modal__blob"></span>
+        <img
+          class="campaigns-status-modal__image"
+          id="campaigns-status-modal-image"
+          src="/img/Bored.png"
+          alt=""
+        />
+      </div>
+
+      <div class="campaigns-status-modal__note" id="campaigns-status-modal-note">
+        Вы можете вернуться позже и снова изменить состояние кампании.
+      </div>
+
+      <div class="campaigns-status-modal__actions">
+        <button
+          type="button"
+          class="campaigns-status-modal__button campaigns-status-modal__button--secondary"
+          id="campaigns-status-cancel"
+        >
+          Отмена
+        </button>
+        <button
+          type="button"
+          class="campaigns-status-modal__button campaigns-status-modal__button--primary"
+          id="campaigns-status-confirm"
+        >
+          Подтвердить
         </button>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import './profile.scss';
+﻿import './profile.scss';
 import 'shared/ui/modal/modal';
 import { renderTemplate } from 'shared/lib/render';
 import { getModalStep, setSubmitEnabled } from 'features/profile/lib/form';
@@ -25,6 +25,20 @@ export type {
 } from 'features/profile/model/types';
 
 let profileLifecycleController: AbortController | null = null;
+
+function getProfileFieldValue(fieldKey: string): string {
+  const directFieldValue = document.querySelector(
+    `[data-profile-field="${fieldKey}"][data-profile-field-value]`,
+  );
+  if (directFieldValue) {
+    return directFieldValue.textContent || '';
+  }
+
+  const nestedFieldValue = document.querySelector(
+    `[data-profile-field="${fieldKey}"] [data-profile-field-value]`,
+  );
+  return nestedFieldValue?.textContent || '';
+}
 
 function getFormFieldValue(
   formId: string,
@@ -57,29 +71,23 @@ function readProfileStateFromDom(): ProfileState {
 
   return {
     avatar,
-    firstName:
-      document.querySelector('[data-profile-field="firstName"] [data-profile-field-value]')?.textContent || 'Екатерина',
-    lastName:
-      document.querySelector('[data-profile-field="lastName"] [data-profile-field-value]')?.textContent || 'Кузнецова',
-    email:
-      document.querySelector('[data-profile-field="email"] [data-profile-field-value]')?.textContent || 'ekaterina@eshke.ru',
-    phone:
-      document.querySelector('[data-profile-field="phone"] [data-profile-field-value]')?.textContent || '+7 999 123 45 67',
-    company:
-      document.querySelector('[data-profile-field="company"] [data-profile-field-value]')?.textContent || 'ООО «Эшке Медиа»',
-    city:
-      document.querySelector('[data-profile-field="city"] [data-profile-field-value]')?.textContent || 'Москва',
-    inn: getFormFieldValue('profile-confirmation-form', 'inn', '7701234567'),
-    balanceValue: Number((document.querySelector('[data-profile-balance]')?.textContent || '48200').replace(/\D/g, '')),
+    firstName: getProfileFieldValue('firstName'),
+    lastName: getProfileFieldValue('lastName'),
+    email: getProfileFieldValue('email'),
+    phone: getProfileFieldValue('phone'),
+    company: getProfileFieldValue('company'),
+    city: getProfileFieldValue('city'),
+    inn: getFormFieldValue('profile-confirmation-form', 'inn', ''),
+    balanceValue: Number((document.querySelector('[data-profile-balance]')?.textContent || '0').replace(/\D/g, '')),
     tariffKey: getTariffKeyFromDom(),
     accountStatus:
       document.querySelector('[data-profile-account-status]')?.textContent === 'Аккаунт подтвержден' ? 'verified' : 'pending',
-    activeCampaigns: Number(document.querySelector('[data-profile-campaigns]')?.textContent || '12'),
-    lastAction: document.querySelector('[data-profile-last-action]')?.textContent || 'Сегодня',
-    contactHandle: document.querySelector('.profile-support__link')?.textContent?.trim() || '@chocaboy',
-    cardMasked: document.querySelector('[data-profile-card]')?.textContent || 'Банковская карта •••• 4481',
-    lastTopUp: document.querySelector('[data-profile-last-top-up]')?.textContent || '12 марта 2026 · 15 000 ₽',
-    passwordStatus: document.querySelector('[data-profile-password-status]')?.textContent || 'Сменить',
+    activeCampaigns: Number(document.querySelector('[data-profile-campaigns]')?.textContent || '0'),
+    lastAction: document.querySelector('[data-profile-last-action]')?.textContent || '—',
+    contactHandle: document.querySelector('.profile-support__link')?.textContent?.trim() || '',
+    cardMasked: document.querySelector('[data-profile-card]')?.textContent || '',
+    lastTopUp: document.querySelector('[data-profile-last-top-up]')?.textContent || '—',
+    passwordStatus: document.querySelector('[data-profile-password-status]')?.textContent || 'Добавить',
   };
 }
 

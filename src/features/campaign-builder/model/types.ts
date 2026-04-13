@@ -27,6 +27,10 @@ export interface BuilderAudienceConfig {
   interestsPriority: PriorityMode;
 }
 
+export interface StoredAudienceConfig extends Partial<BuilderAudienceConfig> {
+  age?: string;
+}
+
 export interface BuilderState {
   step: StepKey;
   name: string;

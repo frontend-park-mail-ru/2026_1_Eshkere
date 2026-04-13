@@ -23,6 +23,24 @@ function updateTextContentAll(selector: string, value: string): void {
   });
 }
 
+function syncNavbarIdentity(state: ProfileState, fullName: string): void {
+  const navbarAvatar = state.avatar || '/img/avatar-placeholder.png';
+  const navbarName = fullName || state.email || 'Профиль';
+
+  document
+    .querySelectorAll<HTMLImageElement>('.navbar__avatar, .navbar__profile-menu-avatar')
+    .forEach((node) => {
+      node.src = navbarAvatar;
+      node.alt = navbarName;
+    });
+
+  document
+    .querySelectorAll<HTMLElement>('.navbar__profile-menu-name')
+    .forEach((node) => {
+      node.textContent = navbarName;
+    });
+}
+
 function syncAvatarView({
   getInitials,
   state,
@@ -64,11 +82,12 @@ export function syncProfileView({
   state,
 }: SyncProfileViewParams): void {
   const tariff = getTariffMeta(state.tariffKey);
-  const fullName = `${state.firstName} ${state.lastName}`;
+  const fullName = `${state.firstName} ${state.lastName}`.trim() || 'Новый профиль';
   const accountStatusLabel = getAccountStatusLabel(state.accountStatus);
 
   updateTextContent('[data-profile-full-name]', fullName);
   updateTextContent('[data-profile-balance]', formatPrice(state.balanceValue));
+  updateTextContent('.navbar__balance', formatPrice(state.balanceValue));
   updateTextContent('[data-profile-tariff]', tariff.label);
   updateTextContent('[data-profile-tariff-description]', tariff.description);
   updateTextContent('[data-profile-campaigns]', String(state.activeCampaigns));
@@ -77,6 +96,7 @@ export function syncProfileView({
   updateTextContent('[data-profile-last-top-up]', state.lastTopUp);
   updateTextContent('[data-profile-password-status]', state.passwordStatus);
   updateTextContentAll('[data-profile-account-status]', accountStatusLabel);
+  syncNavbarIdentity(state, fullName);
 
   document
     .querySelectorAll<HTMLElement>('[data-profile-account-badge]')

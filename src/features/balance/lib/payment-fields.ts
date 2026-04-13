@@ -1,6 +1,6 @@
 import { getDigitsWithMax } from 'shared/lib/digits';
 import { formatCardExpiry, formatCardNumber } from 'shared/lib/payment-format';
-import type { PaymentMethodKind } from '../model/types';
+import type { PaymentMethodDraft, PaymentMethodKind } from '../model/types';
 import {
   DEFAULT_PAYMENT_KIND,
   DEFAULT_PAYMENT_KIND_LABEL,
@@ -104,6 +104,44 @@ export function resetPaymentAddForm(form: HTMLFormElement): void {
     );
     closeBalanceSelect(kindSelect);
   }
+
+  syncPaymentAddFormKind(form);
+}
+
+export function populatePaymentAddForm(
+  form: HTMLFormElement,
+  draft: PaymentMethodDraft,
+): void {
+  resetPaymentAddForm(form);
+
+  const kindSelect = form.querySelector<HTMLElement>(
+    '[data-balance-select="kind"]',
+  );
+  if (kindSelect) {
+    const labels: Record<PaymentMethodKind, string> = {
+      card: 'Личная банковская карта',
+      corporate: 'Корпоративная карта',
+      invoice: 'Безналичный счет компании',
+    };
+
+    syncBalanceSelectValue(
+      kindSelect,
+      draft.kind,
+      labels[draft.kind],
+    );
+    closeBalanceSelect(kindSelect);
+  }
+
+  (
+    Object.entries(draft) as Array<
+      [keyof typeof draft, typeof draft[keyof typeof draft]]
+    >
+  ).forEach(([name, value]) => {
+    const input = form.elements.namedItem(name);
+    if (input instanceof HTMLInputElement) {
+      input.value = value;
+    }
+  });
 
   syncPaymentAddFormKind(form);
 }

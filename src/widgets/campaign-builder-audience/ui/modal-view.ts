@@ -30,6 +30,22 @@ interface RenderAudienceModalOptionsParams {
   state: BuilderState;
 }
 
+function renderAudienceSearchEmptyState(): string {
+  return `
+    <div class="campaign-builder__modal-empty">
+      <img
+        class="campaign-builder__modal-empty-image"
+        src="/img/Searching - Looking.png"
+        alt="Ничего не найдено"
+      />
+      <strong class="campaign-builder__modal-empty-title">Ничего не найдено</strong>
+      <p class="campaign-builder__modal-empty-text">
+        Попробуйте изменить запрос или проверить написание названия компании.
+      </p>
+    </div>
+  `;
+}
+
 export function syncProfileSelectionUI({
   activeAudienceModal,
   audienceModalOptions,
@@ -121,26 +137,28 @@ export function renderAudienceModalOptions({
         <div class="campaign-builder__profile-tags" data-profile-selected-tags>${selectedTagsMarkup}</div>
         <p class="campaign-builder__profile-selection-note" data-profile-selection-note data-tone="${profileSelectionState.tone}">${profileSelectionState.note}</p>
         <div class="campaign-builder__modal-option-list campaign-builder__modal-option-list--profile">
-          ${filteredOptions
-            .map((option) => {
-              const checked = selectedValues.includes(option.value);
-              return `
-                <label class="campaign-builder__modal-option">
-                  <input
-                    class="campaign-builder__modal-option-input"
-                    type="checkbox"
-                    value="${option.value}"
-                    data-profile-tag
-                    ${checked ? 'checked' : ''}
-                  />
-                  <span class="campaign-builder__modal-option-copy">
-                    <strong class="campaign-builder__modal-option-title">${option.label}</strong>
-                    ${option.description ? `<span class="campaign-builder__modal-option-text">${option.description}</span>` : ''}
-                  </span>
-                </label>
-              `;
-            })
-            .join('')}
+          ${filteredOptions.length
+            ? filteredOptions
+                .map((option) => {
+                  const checked = selectedValues.includes(option.value);
+                  return `
+                    <label class="campaign-builder__modal-option">
+                      <input
+                        class="campaign-builder__modal-option-input"
+                        type="checkbox"
+                        value="${option.value}"
+                        data-profile-tag
+                        ${checked ? 'checked' : ''}
+                      />
+                      <span class="campaign-builder__modal-option-copy">
+                        <strong class="campaign-builder__modal-option-title">${option.label}</strong>
+                        ${option.description ? `<span class="campaign-builder__modal-option-text">${option.description}</span>` : ''}
+                      </span>
+                    </label>
+                  `;
+                })
+                .join('')
+            : renderAudienceSearchEmptyState()}
         </div>
       </section>
     `;
@@ -162,24 +180,28 @@ export function renderAudienceModalOptions({
   });
 
   audienceModalOptions.innerHTML = filteredOptions
-    .map((option) => {
-      const checked = selectedValues.includes(option.value);
-      const controlType = config.selectionType === 'single' ? 'radio' : 'checkbox';
-      return `
-        <label class="campaign-builder__modal-option">
-          <input
-            class="campaign-builder__modal-option-input"
-            type="${controlType}"
-            name="audience-modal-selection"
-            value="${option.value}"
-            ${checked ? 'checked' : ''}
-          />
-          <span class="campaign-builder__modal-option-copy">
-            <strong class="campaign-builder__modal-option-title">${option.label}</strong>
-            ${option.description ? `<span class="campaign-builder__modal-option-text">${option.description}</span>` : ''}
-          </span>
-        </label>
-      `;
-    })
-    .join('');
+    .length
+    ? filteredOptions
+        .map((option) => {
+          const checked = selectedValues.includes(option.value);
+          const controlType =
+            config.selectionType === 'single' ? 'radio' : 'checkbox';
+          return `
+            <label class="campaign-builder__modal-option">
+              <input
+                class="campaign-builder__modal-option-input"
+                type="${controlType}"
+                name="audience-modal-selection"
+                value="${option.value}"
+                ${checked ? 'checked' : ''}
+              />
+              <span class="campaign-builder__modal-option-copy">
+                <strong class="campaign-builder__modal-option-title">${option.label}</strong>
+                ${option.description ? `<span class="campaign-builder__modal-option-text">${option.description}</span>` : ''}
+              </span>
+            </label>
+          `;
+        })
+        .join('')
+    : renderAudienceSearchEmptyState();
 }

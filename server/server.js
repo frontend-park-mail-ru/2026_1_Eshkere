@@ -1,4 +1,5 @@
 const path = require('path');
+const http = require('http');
 const express = require('express');
 
 const app = express();
@@ -24,6 +25,36 @@ if (isDevelopment) {
 } else {
   app.use(express.static(distRoot));
 }
+
+function proxyApiRequest(req, res) {
+  const target = new URL(`http://localhost:8000${req.originalUrl.replace(/^\/api/, '')}`);
+  const headers = {...req.headers};
+  headers.host = req.headers.host || 'localhost:8081';
+
+  const proxyRequest = http.request(
+      target,
+      {
+        method: req.method,
+        headers,
+      },
+      (proxyResponse) => {
+        const responseHeaders = {...proxyResponse.headers};
+        delete responseHeaders['content-encoding'];
+        delete responseHeaders['content-length'];
+
+        res.writeHead(proxyResponse.statusCode || 502, responseHeaders);
+        proxyResponse.pipe(res);
+      },
+  );
+
+  proxyRequest.on('error', () => {
+    res.status(502).json({error: 'backend unavailable'});
+  });
+
+  req.pipe(proxyRequest);
+}
+
+app.use('/api', proxyApiRequest);
 
 function sendIndexHtml(req, res) {
   if (isDevelopment && compiler) {

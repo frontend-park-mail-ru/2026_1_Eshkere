@@ -1,9 +1,12 @@
 ﻿import './campaign-create.scss';
+import { navigateTo } from 'app/navigation';
+import { createAdCampaign, updateAdCampaign } from 'features/ads';
 import { renderTemplate } from 'shared/lib/render';
 import {
   LocalStorageKey,
   localStorageService,
 } from 'shared/lib/local-storage';
+import { REQUEST_ERROR_EVENT_NAME } from 'widgets/request-error-modal';
 import campaignCreateTemplate from './campaign-create.hbs';
 
 import {
@@ -39,6 +42,7 @@ import type {
   CreativeAssetKey,
   CreativeKey,
   FieldErrors,
+  FinalReviewCheck,
   FinalReviewCheckKey,
   FinalReviewData,
   FormatKey,
@@ -209,7 +213,7 @@ function getProfileSelectionState(profileTags: string[]): {
   label: string;
   note: string;
   canSave: boolean;
-  tone: 'muted' | 'success' | 'warning';
+  tone: 'info' | 'success' | 'warning';
 } {
   const count = Array.isArray(profileTags) ? profileTags.length : 0;
 
@@ -232,10 +236,10 @@ function getProfileSelectionState(profileTags: string[]): {
   }
 
   return {
-    label: `${count} выбрано`,
-    note: 'Сегмент становится уже. Проверьте, что каждый тег действительно нужен под этот оффер.',
-    canSave: true,
-    tone: 'muted',
+      label: `${count} выбрано`,
+      note: 'Сегмент становится уже. Проверьте, что каждый тег действительно нужен под этот оффер.',
+      canSave: true,
+      tone: 'info',
   };
 }
 
@@ -1757,6 +1761,7 @@ function syncStep(state: BuilderState): void {
     currentStepText: progress.currentStepText,
     currentStepTitle: progress.currentStepTitle,
     lockedDescription: mode.lockedDescription,
+    primaryActionLabel: mode.primaryActionLabel,
     progressLabel: progress.progressLabel,
     progressValue: progress.progressValue,
     step: state.step,
@@ -2156,6 +2161,45 @@ export function CampaignCreate(): void | VoidFunction {
     showToast,
     signal,
     state,
+    submitBuilder: async (currentState) => {
+      try {
+        const mode = getBuilderMode();
+        const payload = {
+          name: currentState.name.trim(),
+          daily_budget: Math.max(1000, Math.round(currentState.dailyBudget)),
+        };
+
+        if (mode === 'edit') {
+          const seed = localStorageService.getJson<{ id?: string }>(
+            LocalStorageKey.CampaignEditSeed,
+          );
+          const campaignId = Number(seed?.id || '0');
+
+          if (!Number.isFinite(campaignId) || campaignId <= 0) {
+            throw new Error('campaign id is required for edit mode');
+          }
+
+          await updateAdCampaign(campaignId, payload);
+        } else {
+          await createAdCampaign(payload);
+        }
+
+        localStorageService.removeItem(LocalStorageKey.CampaignBuilderDraft);
+        navigateTo('/ads');
+      } catch {
+        window.dispatchEvent(
+          new CustomEvent(REQUEST_ERROR_EVENT_NAME, {
+            detail: {
+              title: 'Не удалось создать кампанию',
+              message:
+                'Сейчас мы временно не можем сохранить новую кампанию. Попробуйте отправить ее немного позже.',
+              note:
+                'В этом разделе могут идти технические работы. После восстановления сервиса создание кампаний снова станет доступно.',
+            },
+          }),
+        );
+      }
+    },
     syncBuilder,
     syncSaveState,
     validateBuilder,

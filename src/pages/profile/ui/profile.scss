@@ -9,39 +9,44 @@
 
 .profile-toast {
   position: fixed;
-  right: 32px;
-  bottom: 32px;
+  right: 28px;
+  bottom: 28px;
   z-index: 40;
   width: min(420px, calc(100vw - 32px));
-  padding: 20px 24px;
-  border-radius: 24px;
+  min-width: 320px;
+  padding: 16px 18px;
+  border-radius: 18px;
   display: flex;
   align-items: flex-start;
-  gap: 18px;
-  background: rgba(255, 255, 255, 0.97);
-  box-shadow: 0 22px 44px rgba(20, 24, 48, 0.18);
-  backdrop-filter: blur(10px);
+  gap: 12px;
+  background: rgba(31, 36, 48, 0.94);
+  color: #fff;
+  box-shadow: 0 18px 40px rgba(24, 27, 60, 0.28);
+  backdrop-filter: blur(12px);
 
   &[hidden] {
     display: none !important;
   }
 
   &--success .profile-toast__icon {
-    background: rgba(214, 244, 221, 0.96);
+    background: #66d07d;
   }
 
   &--warning .profile-toast__icon {
-    background: rgba(255, 240, 208, 0.96);
+    background: #f2b35d;
   }
 
   &__icon {
-    width: 60px;
-    height: 60px;
+    width: 10px;
+    height: 10px;
     flex-shrink: 0;
-    border-radius: 20px;
+    border-radius: 50%;
+    margin-top: 6px;
   }
 
   &__content {
+    display: grid;
+    gap: 4px;
     min-width: 0;
     flex: 1;
   }
@@ -49,41 +54,37 @@
   &__title {
     display: block;
     margin: 0;
-    font-size: 18px;
-    line-height: 1.2;
-    font-weight: 800;
-    color: #2a3145;
+    font: 700 14px/1.25 t.$font-family-heading;
+    color: #fff;
   }
 
   &__text {
-    margin: 8px 0 0;
-    font-size: 14px;
-    line-height: 1.45;
-    color: #7d859b;
+    margin: 0;
+    font: 400 13px/1.45 t.$font-family-body;
+    color: rgba(255, 255, 255, 0.8);
   }
 
   &__close {
-    width: 36px;
-    height: 36px;
+    margin-left: auto;
+    width: 24px;
+    height: 24px;
     flex-shrink: 0;
     border: 0;
-    border-radius: 12px;
-    background: rgba(244, 246, 255, 0.96);
-    color: #7d859b;
-    font-size: 22px;
+    border-radius: 0;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 20px;
     line-height: 1;
     cursor: pointer;
     outline: none;
-    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    transition: color 0.2s ease;
 
     &:hover {
-      transform: translateY(-1px);
-      background: rgba(232, 236, 250, 0.98);
-      color: #4a536a;
+      color: #fff;
     }
 
     &:focus-visible {
-      box-shadow: 0 0 0 4px rgba(103, 95, 255, 0.12);
+      box-shadow: none;
     }
   }
 }
@@ -1190,17 +1191,15 @@
     right: 16px;
     bottom: 16px;
     width: auto;
-    padding: 18px;
-    gap: 14px;
+    min-width: 0;
 
     &__icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 16px;
+      width: 10px;
+      height: 10px;
     }
 
     &__title {
-      font-size: 16px;
+      font-size: 14px;
     }
 
     &__text {

@@ -1,0 +1,119 @@
+.offline-modal {
+  z-index: 120;
+
+  &__content {
+    width: min(480px, calc(100vw - 32px));
+    border-radius: 32px;
+    background: var(--gradient-modal-surface);
+    box-shadow: var(--shadow-modal-strong), var(--shadow-inset-highlight);
+    overflow: hidden;
+  }
+
+  &__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 28px;
+  }
+
+  &__hero {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  &__illustration {
+    width: 96px;
+    height: 96px;
+    flex: 0 0 96px;
+    object-fit: contain;
+  }
+
+  &__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 28px;
+    line-height: 1.1;
+    color: var(--text-title);
+  }
+
+  &__text {
+    margin: 0;
+    color: var(--text-body);
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  &__note {
+    padding: 16px 18px;
+    border-radius: 20px;
+    background: var(--gradient-note-surface);
+    color: var(--text-note);
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+
+  &__button {
+    min-width: 148px;
+    min-height: 52px;
+    border-radius: 999px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+      transform 0.18s ease,
+      box-shadow 0.18s ease,
+      background-color 0.18s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+    }
+
+    &--secondary {
+      background: rgba(255, 255, 255, 0.78);
+      color: var(--text-body);
+      box-shadow: var(--shadow-button-soft);
+    }
+
+    &--primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-active) 100%);
+      color: var(--white);
+      box-shadow: var(--shadow-primary-soft);
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .offline-modal {
+    &__inner {
+      padding: 22px;
+    }
+
+    &__hero {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    &__title {
+      font-size: 24px;
+    }
+
+    &__actions {
+      flex-direction: column-reverse;
+    }
+
+    &__button {
+      width: 100%;
+    }
+  }
+}

@@ -1,3 +1,6 @@
+export const CAMPAIGNS_PAGINATION_REFRESH_EVENT =
+  'campaigns:pagination-refresh';
+
 export function initCampaignPagination(signal: AbortSignal): void {
   const table = document.querySelector<HTMLElement>('.campaigns-table');
   const body = table?.querySelector<HTMLElement>('.campaigns-table__body');
@@ -25,10 +28,17 @@ export function initCampaignPagination(signal: AbortSignal): void {
   }
 
   const pageSize = 7;
-  const totalPages = Math.max(1, Math.ceil(rows.length / pageSize));
   let currentPage = 1;
 
+  const getVisibleRows = (): HTMLElement[] =>
+    rows.filter((row) => row.dataset.searchHidden !== 'true');
+
+  const getTotalPages = (): number =>
+    Math.max(1, Math.ceil(getVisibleRows().length / pageSize));
+
   const buildPageItems = (): Array<number | string> => {
+    const totalPages = getTotalPages();
+
     if (totalPages <= 7) {
       return Array.from({ length: totalPages }, (_, index) => index + 1);
     }
@@ -66,10 +76,15 @@ export function initCampaignPagination(signal: AbortSignal): void {
   };
 
   const renderRows = (): void => {
+    const visibleRows = getVisibleRows();
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
 
-    rows.forEach((row, index) => {
+    rows.forEach((row) => {
+      row.hidden = row.dataset.searchHidden === 'true';
+    });
+
+    visibleRows.forEach((row, index) => {
       row.hidden = index < startIndex || index >= endIndex;
     });
   };
@@ -99,6 +114,10 @@ export function initCampaignPagination(signal: AbortSignal): void {
       pageButton.addEventListener(
         'click',
         () => {
+          if (typeof item !== 'number') {
+            return;
+          }
+
           if (item === currentPage) {
             return;
           }
@@ -114,6 +133,12 @@ export function initCampaignPagination(signal: AbortSignal): void {
   };
 
   const sync = (): void => {
+    const visibleRows = getVisibleRows();
+    const totalPages = getTotalPages();
+
+    footer.hidden = visibleRows.length === 0;
+    currentPage = Math.min(currentPage, totalPages);
+
     renderRows();
     renderPages();
     prevButton.disabled = currentPage === 1;
@@ -141,6 +166,15 @@ export function initCampaignPagination(signal: AbortSignal): void {
       }
 
       currentPage += 1;
+      sync();
+    },
+    { signal },
+  );
+
+  document.addEventListener(
+    CAMPAIGNS_PAGINATION_REFRESH_EVENT,
+    () => {
+      currentPage = 1;
       sync();
     },
     { signal },

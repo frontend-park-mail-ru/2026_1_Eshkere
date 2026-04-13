@@ -18,7 +18,9 @@ export interface PaymentMethodOption {
   kind: PaymentMethodKind;
   value: string;
   caption: string;
-  note: string;
+  note?: string;
+  badge?: string;
+  draft?: PaymentMethodDraft;
 }
 
 export interface BalanceDashboardState {

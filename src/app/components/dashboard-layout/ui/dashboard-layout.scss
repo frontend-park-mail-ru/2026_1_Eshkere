@@ -3,6 +3,7 @@
 
 .dashboard-layout {
   @include mixins.page-background('/img/RightFon.png');
+  overflow: visible;
 
   &__container {
     position: relative;

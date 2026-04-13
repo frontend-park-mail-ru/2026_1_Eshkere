@@ -24,6 +24,7 @@ interface InitCampaignBuilderActionsParams {
   showToast: (payload: ToastPayload) => void;
   signal: AbortSignal;
   state: BuilderState;
+  submitBuilder?: (state: BuilderState) => Promise<void>;
   syncBuilder: (state: BuilderState) => void;
   syncSaveState: () => void;
   validateBuilder: (state: BuilderState) => ValidationResult;
@@ -39,6 +40,7 @@ export function initCampaignBuilderActions({
   showToast,
   signal,
   state,
+  submitBuilder,
   syncBuilder,
   syncSaveState,
   validateBuilder,
@@ -160,7 +162,7 @@ export function initCampaignBuilderActions({
     .forEach((button) => {
       button.addEventListener(
         'click',
-        () => {
+        async () => {
           const mode = getModeConfig();
 
           if (state.step !== 'publication') {
@@ -190,6 +192,11 @@ export function initCampaignBuilderActions({
           }
 
           state.step = 'publication';
+          if (submitBuilder) {
+            await submitBuilder(state);
+            return;
+          }
+
           persistState(state);
           persistEditSeedFromState(state);
           syncBuilder(state);

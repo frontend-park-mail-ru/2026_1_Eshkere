@@ -1,16 +1,20 @@
-import { renderHomePage } from 'pages/home';
-import { renderLoginPage, Login } from 'pages/login';
+import { authState } from 'features/auth';
+import { renderAdsPage, Ads } from 'pages/ads';
+import { renderBalancePage, Balance } from 'pages/balance';
+import { renderCampaignCreatePage, CampaignCreate } from 'pages/campaign-create';
+import {
+  renderCampaignStatisticsPage,
+  CampaignStatistics,
+} from 'pages/campaign-statistics';
 import {
   renderForgotPasswordPage,
   ForgotPassword,
 } from 'pages/forgot-password';
-import { renderRegisterPage, Register } from 'pages/register';
-import { renderAdsPage, Ads } from 'pages/ads';
-import { renderBalancePage, Balance } from 'pages/balance';
-import { renderCampaignCreatePage, CampaignCreate } from 'pages/campaign-create';
-import { renderCampaignEditPage, CampaignEdit } from 'pages/campaign-edit';
+import { renderHomePage } from 'pages/home';
+import { renderLoginPage, Login } from 'pages/login';
+import { renderNotFoundPage } from 'pages/not-found';
 import { renderProfilePage, Profile } from 'pages/profile';
-import { authState } from 'features/auth';
+import { renderRegisterPage, Register } from 'pages/register';
 import { Navbar } from 'widgets/navbar';
 import { getCurrentPath, navigateTo } from './navigation';
 import {
@@ -19,20 +23,6 @@ import {
   updatePublicNavbarSlot,
   type LayoutKind,
 } from './render-with-layout';
-/**
- * @typedef {import('./render-with-layout').LayoutKind} LayoutKind
- */
-
-/**
- * @typedef {Object} RouteDefinition
- * @property {() => Promise<string>} render HTML только контента страницы.
- * @property {LayoutKind} layout
- * @property {function(): (void|VoidFunction)} [init]
- * @property {boolean} [guestOnly]
- * @property {boolean} [protected]
- */
-
-/** @type {Record<string, RouteDefinition>} */
 
 type RouteCleanup = VoidFunction;
 type RouteInit = () => void | RouteCleanup;
@@ -81,9 +71,15 @@ const routes: Record<string, RouteDefinition> = {
     protected: true,
   },
   '/ads/edit': {
-    render: renderCampaignEditPage,
+    render: renderCampaignCreatePage,
     layout: 'dashboard',
-    init: CampaignEdit,
+    init: CampaignCreate,
+    protected: true,
+  },
+  '/ads/statistics': {
+    render: renderCampaignStatisticsPage,
+    layout: 'dashboard',
+    init: CampaignStatistics,
     protected: true,
   },
   '/balance': {
@@ -104,11 +100,6 @@ let activeCleanup: RouteCleanup | null = null;
 let renderRequestId = 0;
 let currentLayoutKind: LayoutKind | null = null;
 
-/**
- * Определяет текущий pathname-маршрут и рендерит нужную страницу.
- *
- * @return {Promise<void>} Завершение рендера маршрута.
- */
 export async function renderRoute(): Promise<void> {
   renderRequestId += 1;
   const currentRequestId = renderRequestId;
@@ -124,13 +115,10 @@ export async function renderRoute(): Promise<void> {
   }
 
   const path = getCurrentPath();
-  const route = routes[path];
-
-  if (!route) {
-    app.innerHTML = '<h1>404</h1><p>Страница не найдена</p>';
-    currentLayoutKind = null;
-    return;
-  }
+  const route: RouteDefinition = routes[path] ?? {
+    render: renderNotFoundPage,
+    layout: 'public',
+  };
 
   if (route.protected) {
     const sessionIsActive = await authState.hasActiveSession();
