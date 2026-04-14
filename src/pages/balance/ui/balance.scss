@@ -176,10 +176,10 @@
     min-width: 164px;
     height: 42px;
     padding: 0 16px;
-    border: 1px solid rgba(116, 130, 204, 0.2);
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.76);
-    color: t.$color-text-main;
+    border: 1px solid rgba(215, 221, 238, 0.92);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.96);
+    color: #4a536a;
     font: 700 13px/1 t.$font-family-body;
     cursor: pointer;
     @include mixins.interactive-lift(-1px);
@@ -707,10 +707,10 @@
   &__method-action {
     min-height: 32px;
     padding: 0 12px;
-    border: 1px solid rgba(116, 130, 204, 0.18);
+    border: 1px solid rgba(215, 221, 238, 0.92);
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.86);
-    color: t.$color-text-main;
+    background: rgba(255, 255, 255, 0.96);
+    color: #4a536a;
     font: 700 12px/1 t.$font-family-body;
     cursor: pointer;
     @include mixins.focus-ring();
@@ -988,16 +988,16 @@
     min-width: 148px;
     height: 52px;
     padding: 0 20px;
-    border-radius: 18px;
-    border: 1px solid rgba(116, 130, 204, 0.2);
+    border-radius: 12px;
+    border: 1px solid rgba(215, 221, 238, 0.92);
     font: 700 14px/1 t.$font-family-body;
     cursor: pointer;
     @include mixins.focus-ring();
   }
 
   &__button--secondary {
-    background: rgba(255, 255, 255, 0.8);
-    color: t.$color-text-main;
+    background: rgba(255, 255, 255, 0.96);
+    color: #4a536a;
   }
 
   &__button--primary {

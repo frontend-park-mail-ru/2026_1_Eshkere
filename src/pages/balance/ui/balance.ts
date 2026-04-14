@@ -6,7 +6,7 @@ import {
   getBalanceState,
   persistBalanceState,
 } from 'features/balance/model/state';
-import { bindModalShell, closeModal } from 'shared/ui/modal/modal';
+import { bindModalShell, closeModal, openModal } from 'shared/ui/modal/modal';
 import type { BalanceHistoryState } from 'features/balance/model/types';
 import {
   initBalanceAutopayWidget,
@@ -147,6 +147,8 @@ export function Balance(): void | VoidFunction {
   ]);
   commitState();
 
+  const shouldOpenPayment = new URLSearchParams(window.location.search).get('payment') === 'open';
+
   initBalanceDashboardWidget({
     autopayModal,
     commitState,
@@ -187,6 +189,10 @@ export function Balance(): void | VoidFunction {
     .forEach((modal) => {
       bindModalShell(modal, signal);
     });
+
+  if (shouldOpenPayment && paymentModal instanceof HTMLElement) {
+    openModal(paymentModal);
+  }
 
   document.querySelector('[data-balance-toast-close]')?.addEventListener(
     'click',

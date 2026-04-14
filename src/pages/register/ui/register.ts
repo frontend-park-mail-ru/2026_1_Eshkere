@@ -87,6 +87,12 @@ function applyRegisterServerError(
   setFieldState(form, 'password', '');
   setFieldState(form, 'repeatPassword', '');
 
+  if (normalized.includes('зарегистрир')) {
+    setFieldState(form, 'email', message);
+    setFieldState(form, 'phone', message);
+    return;
+  }
+
   if (normalized.includes('почт')) {
     setFieldState(form, 'email', message);
     return;

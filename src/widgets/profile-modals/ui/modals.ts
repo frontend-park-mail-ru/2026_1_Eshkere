@@ -1,4 +1,5 @@
 import { PasswordVisibilityToggles } from 'shared/ui/form-field/form-field';
+import { navigateTo } from 'app/navigation';
 import {
   clearFormState,
   resetTwoStepForm,
@@ -88,7 +89,7 @@ export function initProfileModals({
   document.querySelector('[data-open-password-modal]')?.addEventListener('click', () => openModal('profile-password-modal'), { signal });
   document.querySelector('[data-open-email-modal]')?.addEventListener('click', () => openModal('profile-email-modal'), { signal });
   document.querySelector('[data-open-phone-modal]')?.addEventListener('click', () => openModal('profile-phone-modal'), { signal });
-  document.querySelector('[data-open-payment-modal]')?.addEventListener('click', () => openModal('profile-payment-modal'), { signal });
+  document.querySelector('[data-open-payment-modal]')?.addEventListener('click', () => navigateTo('/balance?payment=open'), { signal });
   document.querySelector('[data-open-topup-modal]')?.addEventListener('click', () => openModal('profile-topup-modal'), { signal });
   document.querySelector('[data-open-tariff-modal]')?.addEventListener('click', () => openModal('profile-tariff-modal'), { signal });
   document.querySelector('[data-open-confirmation-modal]')?.addEventListener('click', () => openModal('profile-confirmation-modal'), { signal });
