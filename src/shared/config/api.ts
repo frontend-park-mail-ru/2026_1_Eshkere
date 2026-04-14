@@ -4,7 +4,7 @@
  */
 function resolveApiBaseUrl(): string {
   if (typeof window === 'undefined') {
-    return 'http://localhost:8000';
+    return 'http://212.233.96.112:8000';
   }
 
   return '/api';

@@ -184,7 +184,7 @@ export function toTemplateContext(state: ProfileState): TemplateContext {
     fullName: `${state.firstName} ${state.lastName}`.trim() || 'Новый профиль',
     role: 'Рекламодатель · Основной аккаунт',
     accountId: `ID ${authState.getCurrentUser()?.id || '—'}`,
-    memberSince: 'С нами с 14 марта 2026',
+    memberSince: 'С нами с 14 апреля 2026',
     balance: formatPrice(state.balanceValue),
     tariff: tariff.label,
     tariffDescription: tariff.description,
