@@ -16,6 +16,7 @@ import {
   watchFormState,
 } from 'features/profile/lib/form';
 import type { ProfileState } from 'features/profile/model/types';
+import { updateProfile } from 'features/profile/api/update-profile';
 import { showProfileFeedback } from 'widgets/profile-feedback/ui/toast';
 
 interface InitProfileContactModalsParams {
@@ -80,6 +81,9 @@ export function initProfileContactModals({
       state.lastName = lastName;
       state.company = company;
       state.city = city;
+
+      updateProfile({ name: `${firstName} ${lastName}`.trim() }).catch(() => {});
+
       onStateChange(state);
       showProfileFeedback({
         title: 'Профиль обновлен',
@@ -144,6 +148,9 @@ export function initProfileContactModals({
       }
 
       state.email = emailForm.dataset.pendingValue || state.email;
+
+      updateProfile({ email: state.email }).catch(() => {});
+
       onStateChange(state);
       showProfileFeedback({
         title: 'Email обновлен',
@@ -220,6 +227,9 @@ export function initProfileContactModals({
       }
 
       state.phone = phoneForm.dataset.pendingValue || state.phone;
+
+      updateProfile({ phone: normalizePhone(state.phone) || state.phone }).catch(() => {});
+
       onStateChange(state);
       showProfileFeedback({
         title: 'Телефон обновлен',

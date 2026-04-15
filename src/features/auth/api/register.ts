@@ -3,13 +3,15 @@ import { normalizeAuthErrorMessage } from '../lib/normalize-auth-error';
 import { authState, type AuthUser } from '../model/storage';
 
 export interface RegisterUserParams {
+  name: string;
   email: string;
   phone: string;
   password: string;
 }
 
-export async function registerUser({ email, phone, password }: RegisterUserParams) {
+export async function registerUser({ name, email, phone, password }: RegisterUserParams) {
   try {
+    const normalizedName = name.trim();
     const normalizedEmail = email.trim().toLowerCase();
     const normalizedPhone = phone.trim();
     const normalizedPassword = password.trim();
@@ -19,6 +21,7 @@ export async function registerUser({ email, phone, password }: RegisterUserParam
       {
         method: 'POST',
         body: {
+          name: normalizedName,
           email: normalizedEmail,
           phone: normalizedPhone,
           password: normalizedPassword,

@@ -116,7 +116,7 @@ export const STEP_META = {
   audience: {
     index: '02',
     title: 'Аудитория',
-    text: 'Сегменты, география и профиль пользователей',
+    text: 'Сегменты, таргетинг и география',
   },
   budget: {
     index: '03',
@@ -126,7 +126,7 @@ export const STEP_META = {
   publication: {
     index: '04',
     title: 'Проверка',
-    text: 'Финальная сводка и отправка на модерацию',
+    text: 'Финальная сводка перед отправкой',
   },
 } satisfies Record<StepKey, { index: string; title: string; text: string }>;
 

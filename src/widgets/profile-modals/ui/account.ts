@@ -17,6 +17,7 @@ import {
   watchFormState,
 } from 'features/profile/lib/form';
 import type { ProfileState } from 'features/profile/model/types';
+import { updateAvatar } from 'features/profile/api/update-avatar';
 import { showProfileFeedback } from 'widgets/profile-feedback/ui/toast';
 
 interface InitProfileAccountModalsParams {
@@ -99,6 +100,7 @@ export function initProfileAccountModals({
     const preview = avatarForm.querySelector<HTMLElement>('[data-avatar-preview]');
     const previewImage = avatarForm.querySelector<HTMLImageElement>('[data-avatar-preview-image]');
     const previewInitials = avatarForm.querySelector<HTMLElement>('[data-avatar-preview-initials]');
+    let pendingAvatarFile: File | null = null;
 
     const applyAvatarPreview = (value: string): void => {
       const hasAvatar = Boolean(value);
@@ -131,6 +133,7 @@ export function initProfileAccountModals({
 
         try {
           const dataUrl = await readFileAsDataUrl(file);
+          pendingAvatarFile = file;
           avatarForm.dataset.pendingAvatar = dataUrl;
           avatarForm.dataset.removeAvatar = 'false';
           if (urlInput instanceof HTMLInputElement) {
@@ -157,6 +160,7 @@ export function initProfileAccountModals({
 
     avatarForm.querySelector('[data-avatar-reset]')?.addEventListener('click', () => {
       clearFormState(avatarForm);
+      pendingAvatarFile = null;
       avatarForm.dataset.pendingAvatar = '';
       avatarForm.dataset.removeAvatar = 'true';
       if (fileInput instanceof HTMLInputElement) {
@@ -175,6 +179,19 @@ export function initProfileAccountModals({
 
       const pendingAvatar = avatarForm.dataset.pendingAvatar || '';
       state.avatar = pendingAvatar;
+
+      if (pendingAvatarFile) {
+        updateAvatar(pendingAvatarFile)
+          .then((profile) => {
+            if (typeof profile.avatar_url === 'string') {
+              state.avatar = profile.avatar_url;
+              onStateChange(state);
+            }
+          })
+          .catch(() => {});
+        pendingAvatarFile = null;
+      }
+
       onStateChange(state);
       showProfileFeedback({
         title: state.avatar ? 'Аватар обновлен' : 'Аватар удален',

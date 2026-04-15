@@ -51,7 +51,7 @@ class AuthState {
       this.confirmedSession = true;
       return true;
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : String(error);
+      const message = (error instanceof Error ? error.message : String(error)).toLowerCase();
 
       if (message.includes('unauthorized') || message.includes('не авториз')) {
         this.clearAuthState();

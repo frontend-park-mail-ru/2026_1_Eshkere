@@ -1,5 +1,6 @@
 const APP_SHELL_CACHE = 'app-shell-v2';
 const STATIC_CACHE = 'static-assets-v2';
+const API_CACHE = 'api-responses-v1';
 const APP_SHELL_URL = '/index.html';
 const PRECACHE_URLS = [
   '/',
@@ -46,7 +47,7 @@ self.addEventListener('activate', (event) => {
       .then((keys) =>
         Promise.all(
           keys
-            .filter((key) => ![APP_SHELL_CACHE, STATIC_CACHE].includes(key))
+            .filter((key) => ![APP_SHELL_CACHE, STATIC_CACHE, API_CACHE].includes(key))
             .map((key) => caches.delete(key)),
         ),
       )
