@@ -26,6 +26,7 @@ import registerPageTemplate from './register.hbs';
 
 type RegisterFormElement = HTMLFormElement & {
   readonly elements: HTMLFormControlsCollection & {
+    name: HTMLInputElement;
     email: HTMLInputElement;
     phone: HTMLInputElement;
     password: HTMLInputElement;
@@ -117,6 +118,16 @@ function applyRegisterServerError(
  * @return {Promise<string>} Сгенерированная строка HTML.
  */
 export async function renderRegisterPage(): Promise<string> {
+  const nameField = await renderFormField({
+    id: 'register-name',
+    name: 'name',
+    type: 'text',
+    label: 'Имя',
+    placeholder: 'Ваше имя',
+    autocomplete: 'name',
+    required: true,
+  });
+
   const emailField = await renderFormField({
     id: 'register-email',
     name: 'email',
@@ -170,6 +181,7 @@ export async function renderRegisterPage(): Promise<string> {
   });
 
   return renderTemplate(registerPageTemplate, {
+    nameField,
     emailField,
     phoneField,
     passwordField,
@@ -200,6 +212,13 @@ export function Register(): void {
   const submitDebounceMs = 400;
   let submitDebounceTimer: ReturnType<typeof setTimeout> | null = null;
   let isSubmitting = false;
+
+  function validateNameField(): boolean {
+    const value = form.elements.name.value.trim();
+    const error = value ? '' : 'Введите ваше имя';
+    setFieldState(form, 'name', error);
+    return !error;
+  }
 
   /**
    * Валидирует email.
@@ -249,6 +268,7 @@ export function Register(): void {
     return !error;
   }
 
+  form.elements.name.addEventListener('input', validateNameField);
   form.elements.email.addEventListener('input', validateEmailField);
   form.elements.phone.addEventListener('input', () => {
     form.elements.phone.value = formatPhoneInput(form.elements.phone.value);
@@ -278,12 +298,14 @@ export function Register(): void {
       return;
     }
 
+    const isNameValid = validateNameField();
     const isEmailValid = validateEmailField();
     const isPhoneValid = validatePhoneField();
     const isPasswordValid = validatePasswordField();
     const isRepeatPasswordValid = validateRepeatPasswordField();
 
     if (
+      !isNameValid ||
       !isEmailValid ||
       !isPhoneValid ||
       !isPasswordValid ||
@@ -300,6 +322,7 @@ export function Register(): void {
     try {
       const normalizedPhone = normalizePhone(form.elements.phone.value);
       const result = await registerUser({
+        name: form.elements.name.value.trim(),
         email: form.elements.email.value,
         phone: normalizedPhone,
         password: form.elements.password.value,

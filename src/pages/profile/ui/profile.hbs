@@ -200,6 +200,44 @@
 
     <section class="profile-card">
       <div class="profile-card__head">
+        <h2 class="profile-card__title">Фид объявлений</h2>
+        <p class="profile-card__subtitle">Публичная ссылка на все ваши объявления</p>
+      </div>
+
+      <div class="profile-feed-link" data-feed-link-section>
+        <p class="profile-feed-link__desc">
+          Сгенерируйте уникальную ссылку, чтобы партнёры могли получать список ваших объявлений без авторизации.
+          При повторной генерации старая ссылка перестаёт работать.
+        </p>
+
+        <div class="profile-feed-link__result" data-feed-link-result hidden>
+          <div class="profile-feed-link__url-row">
+            <input
+              class="profile-feed-link__url-input"
+              type="text"
+              readonly
+              data-feed-link-url
+              aria-label="Ссылка на фид объявлений"
+            />
+            <button class="profile-feed-link__copy" type="button" data-feed-link-copy aria-label="Скопировать ссылку">
+              Скопировать
+            </button>
+          </div>
+          <p class="profile-feed-link__copied" data-feed-link-copied hidden>Ссылка скопирована</p>
+        </div>
+
+        <div class="profile-feed-link__actions">
+          <button class="profile-stack__action" type="button" data-generate-feed-link>
+            Сгенерировать ссылку
+          </button>
+        </div>
+
+        <div class="profile-feed-link__error" data-feed-link-error hidden></div>
+      </div>
+    </section>
+
+    <section class="profile-card">
+      <div class="profile-card__head">
         <h2 class="profile-card__title">Поддержка</h2>
         <p class="profile-card__subtitle">Быстрый контакт по вопросам аккаунта</p>
       </div>

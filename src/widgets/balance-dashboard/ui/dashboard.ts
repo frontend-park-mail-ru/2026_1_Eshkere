@@ -1,6 +1,7 @@
 import { formatPrice } from 'shared/lib/format';
 import { parseAmountInput, validateMinAmount } from 'shared/validators';
 import { openTopupModal, type ToastController } from 'features/balance/lib/modal';
+import { topUpBalance } from 'features/balance/api/topup';
 import type {
   BalanceDashboardState,
   RecommendationRow,
@@ -419,7 +420,17 @@ export function initBalanceDashboardWidget({
       }
 
       state.selectedAmount = amount;
-      state.balanceValue += amount;
+
+      topUpBalance(amount)
+        .then((result) => {
+          state.balanceValue = result.balance;
+          commitState();
+        })
+        .catch(() => {
+          state.balanceValue += amount;
+          commitState();
+        });
+
       state.operations = [
         {
           id: `topup_${Date.now()}`,

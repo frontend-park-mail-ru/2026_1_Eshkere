@@ -1,4 +1,4 @@
-import { CONTENT_LIMITS } from 'features/campaign-builder/model/config';
+import { CONTENT_LIMITS, DEFAULT_STATE } from 'features/campaign-builder/model/config';
 import type {
   BuilderState,
   CreativeAssetKey,
@@ -52,6 +52,18 @@ export function initCampaignBuilderContentControls({
 
           field.value = nextValue;
           state[key] = nextValue as never;
+
+          if (
+            key === 'name' ||
+            key === 'headline' ||
+            key === 'description' ||
+            key === 'cta' ||
+            key === 'link'
+          ) {
+            const isExample = nextValue === (DEFAULT_STATE[key] as string);
+            field.classList.toggle('campaign-builder__input--example', isExample);
+          }
+
           persistState(state);
           syncBuilder(state);
         },

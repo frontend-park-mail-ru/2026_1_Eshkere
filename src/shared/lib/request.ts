@@ -132,17 +132,19 @@ export async function request<T = unknown>(
   const isGet = isGetRequest(options);
   const method = String(options.method || 'GET').toUpperCase();
 
+  const isFormData = body instanceof FormData;
+
   const execute = async (): Promise<Response> => {
     const csrfToken = isUnsafeMethod(method) ? getCookie('csrf_token') : '';
     return await fetch(url, {
       credentials: 'include',
       headers: {
-        'Content-Type': 'application/json',
+        ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
         ...(csrfToken ? { 'X-CSRF-Token': csrfToken } : {}),
         ...(customHeaders || {}),
       },
       ...rest,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body: body !== undefined ? (isFormData ? body : JSON.stringify(body)) : undefined,
     });
   };
 
@@ -167,13 +169,6 @@ export async function request<T = unknown>(
 
     return normalizeResponse<T>(payload);
   } catch (error: unknown) {
-    if (isGet && isNetworkError(error)) {
-      const cachedResponse = await readCachedResponse<T>(url);
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-    }
-
     if (isNetworkError(error)) {
       if (typeof window !== 'undefined') {
         window.dispatchEvent(
@@ -181,6 +176,13 @@ export async function request<T = unknown>(
             detail: { message: OFFLINE_ERROR_MESSAGE },
           }),
         );
+      }
+
+      if (isGet) {
+        const cachedResponse = await readCachedResponse<T>(url);
+        if (cachedResponse) {
+          return cachedResponse;
+        }
       }
 
       throw new Error(OFFLINE_ERROR_MESSAGE);

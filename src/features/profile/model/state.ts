@@ -113,6 +113,8 @@ export async function getProfileState(): Promise<ProfileState> {
       email?: string;
       phone?: string;
       balance?: number;
+      avatar_url?: string;
+      created_at?: string;
     }>('/advertiser/me', { method: 'GET' });
     const profile = response.data;
 
@@ -128,6 +130,8 @@ export async function getProfileState(): Promise<ProfileState> {
         typeof profile?.balance === 'number'
           ? profile.balance
           : currentUser.balance,
+      avatar:
+        typeof profile?.avatar_url === 'string' ? profile.avatar_url : currentUser.avatar,
     };
 
     authState.setAuthenticatedUser(currentUser);

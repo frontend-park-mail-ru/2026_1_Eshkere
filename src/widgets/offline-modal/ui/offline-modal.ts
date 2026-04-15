@@ -90,12 +90,22 @@ export function initOfflineModal(): void {
 
   closeButton?.addEventListener('click', hide);
   retryButton?.addEventListener('click', () => {
-    if (navigator.onLine) {
-      window.location.reload();
-      return;
-    }
+    retryButton.setAttribute('disabled', 'true');
 
-    show();
+    fetch('/manifest.json', { method: 'HEAD', cache: 'no-store' })
+      .then((response) => {
+        if (response.ok) {
+          window.location.reload();
+        } else {
+          show();
+        }
+      })
+      .catch(() => {
+        show();
+      })
+      .finally(() => {
+        retryButton.removeAttribute('disabled');
+      });
   });
 
   modal.addEventListener('click', (event) => {

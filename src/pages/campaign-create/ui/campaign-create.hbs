@@ -53,13 +53,13 @@
           <div class="campaign-builder__card campaign-builder__card--message">
             <div class="campaign-builder__card-head">
               <h2 class="campaign-builder__card-title">Основные данные</h2>
-              <p class="campaign-builder__card-subtitle">Название, формат и основное сообщение кампании.</p>
+              <p class="campaign-builder__card-subtitle">Оффер, формат и сообщение кампании.</p>
             </div>
 
             <div class="campaign-builder__form">
               <label class="campaign-builder__field">
                 <span class="campaign-builder__label">Внутреннее название</span>
-                <input class="campaign-builder__input" type="text" maxlength="80" value="{{content.name}}" data-builder-input="name" />
+                <input class="campaign-builder__input{{#if content.nameIsExample}} campaign-builder__input--example{{/if}}" type="text" maxlength="80" value="{{content.name}}" data-builder-input="name" />
                 <span class="campaign-builder__hint">Это название видно только вам и команде. Лучше указывать оффер, сезон или сегмент.</span>
                 <span class="campaign-builder__error" data-builder-error="name"></span>
               </label>
@@ -108,7 +108,7 @@
 
               <label class="campaign-builder__field">
                 <span class="campaign-builder__label">Заголовок объявления</span>
-                <input class="campaign-builder__input" type="text" maxlength="60" value="{{content.headline}}" data-builder-input="headline" />
+                <input class="campaign-builder__input{{#if content.headlineIsExample}} campaign-builder__input--example{{/if}}" type="text" maxlength="60" value="{{content.headline}}" data-builder-input="headline" />
                 <span class="campaign-builder__hint">
                   Короткий оффер работает лучше длинного промо-текста.
                   <strong data-builder-headline-count>{{content.headlineLength}}</strong>/60
@@ -118,7 +118,7 @@
 
               <label class="campaign-builder__field">
                 <span class="campaign-builder__label">Текст объявления</span>
-                <textarea class="campaign-builder__input campaign-builder__input--textarea" maxlength="180" data-builder-input="description">{{content.description}}</textarea>
+                <textarea class="campaign-builder__input campaign-builder__input--textarea{{#if content.descriptionIsExample}} campaign-builder__input--example{{/if}}" maxlength="180" data-builder-input="description">{{content.description}}</textarea>
                 <span class="campaign-builder__hint">
                   Используйте одно главное обещание и один явный следующий шаг.
                   <strong data-builder-description-count>{{content.descriptionLength}}</strong>/180
@@ -129,13 +129,13 @@
               <div class="campaign-builder__row campaign-builder__row--double">
                 <label class="campaign-builder__field">
                   <span class="campaign-builder__label">Текст кнопки</span>
-                  <input class="campaign-builder__input" type="text" maxlength="32" value="{{content.cta}}" data-builder-input="cta" />
+                  <input class="campaign-builder__input{{#if content.ctaIsExample}} campaign-builder__input--example{{/if}}" type="text" maxlength="32" value="{{content.cta}}" data-builder-input="cta" />
                   <span class="campaign-builder__error" data-builder-error="cta"></span>
                 </label>
 
                 <label class="campaign-builder__field">
                   <span class="campaign-builder__label">Ссылка перехода</span>
-                  <input class="campaign-builder__input" type="url" value="{{content.link}}" data-builder-input="link" />
+                  <input class="campaign-builder__input{{#if content.linkIsExample}} campaign-builder__input--example{{/if}}" type="url" value="{{content.link}}" data-builder-input="link" />
                   <span class="campaign-builder__error" data-builder-error="link"></span>
                 </label>
               </div>
@@ -288,7 +288,7 @@
             <div class="campaign-builder__card-head campaign-builder__card-head--spread">
               <div>
                 <h2 class="campaign-builder__card-title">Аудитория и таргетинг</h2>
-                <p class="campaign-builder__card-subtitle">География, сегмент и ограничения показа.</p>
+                <p class="campaign-builder__card-subtitle">Таргетинг и ограничения показа.</p>
               </div>
               <span class="campaign-builder__status campaign-builder__status--success" data-audience-quality>{{audience.qualityState}}</span>
             </div>
@@ -435,7 +435,7 @@
           <div class="campaign-builder__card">
             <div class="campaign-builder__card-head">
               <h2 class="campaign-builder__card-title">Прогноз</h2>
-              <p class="campaign-builder__card-subtitle">Ожидаемый результат при текущих настройках.</p>
+              <p class="campaign-builder__card-subtitle">Прогноз при текущих настройках.</p>
             </div>
 
             <div class="campaign-builder__metrics">
@@ -470,7 +470,7 @@
             <div class="campaign-builder__card-head campaign-builder__card-head--spread">
               <div>
                 <h2 class="campaign-builder__card-title">Готовность к отправке</h2>
-              <p class="campaign-builder__card-subtitle">Ключевые параметры кампании перед отправкой.</p>
+              <p class="campaign-builder__card-subtitle">Параметры и статус перед отправкой.</p>
               </div>
               <span class="campaign-builder__pill{{#if finalReview.status.isPositive}} campaign-builder__pill--success{{else}} campaign-builder__pill--danger{{/if}}" data-final-health-badge>{{finalReview.status.badge}}</span>
             </div>
@@ -499,7 +499,7 @@
           <div class="campaign-builder__card campaign-builder__card--publication-preview">
             <div class="campaign-builder__card-head">
               <h2 class="campaign-builder__card-title">Предпросмотр объявления</h2>
-              <p class="campaign-builder__card-subtitle">Финальный вид объявления перед модерацией.</p>
+              <p class="campaign-builder__card-subtitle">Финальный вид перед модерацией.</p>
             </div>
 
             <div class="campaign-preview">
@@ -521,7 +521,7 @@
           <div class="campaign-builder__card campaign-builder__card--review-summary">
             <div class="campaign-builder__card-head">
               <h2 class="campaign-builder__card-title">Что отправится в публикацию</h2>
-              <p class="campaign-builder__card-subtitle">Финальная конфигурация по ключевым блокам.</p>
+              <p class="campaign-builder__card-subtitle">Ключевые блоки перед публикацией.</p>
             </div>
 
             <div class="campaign-builder__review-sections">
@@ -563,7 +563,7 @@
           <div class="campaign-builder__card campaign-builder__card--review-checks">
             <div class="campaign-builder__card-head">
               <h2 class="campaign-builder__card-title">Перед запуском</h2>
-              <p class="campaign-builder__card-subtitle">Пункты, которые стоит открыть и сверить.</p>
+              <p class="campaign-builder__card-subtitle">Проверьте перед запуском.</p>
             </div>
 
             <div class="campaign-builder__stack campaign-builder__stack--tight">

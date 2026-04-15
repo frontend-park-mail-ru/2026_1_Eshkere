@@ -1445,6 +1445,11 @@ function getTemplateContext(state: BuilderState) {
       descriptionLength: state.description.trim().length,
       formatLabel: FORMAT_LABELS[state.format],
       goalLabel: GOAL_LABELS[state.goal],
+      nameIsExample: state.name === DEFAULT_STATE.name,
+      headlineIsExample: state.headline === DEFAULT_STATE.headline,
+      descriptionIsExample: state.description === DEFAULT_STATE.description,
+      ctaIsExample: state.cta === DEFAULT_STATE.cta,
+      linkIsExample: state.link === DEFAULT_STATE.link,
     },
     formats: [
       {

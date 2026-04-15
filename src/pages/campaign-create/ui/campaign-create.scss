@@ -1232,6 +1232,14 @@
     resize: vertical;
   }
 
+  &__input--example {
+    color: #a0a8be;
+
+    &:focus {
+      color: #2b334b;
+    }
+  }
+
   &__input-with-suffix {
     position: relative;
   }

@@ -7,7 +7,7 @@ import {
   validateCardExpiry,
   validateCardNumber,
 } from 'shared/validators';
-import { getBalanceState, persistBalanceState } from 'features/balance';
+import { getBalanceState, persistBalanceState, topUpBalance } from 'features/balance';
 import {
   attachMaskedInput,
   clearFieldError,
@@ -221,18 +221,28 @@ export function initProfileBillingModals({
         return;
       }
 
-      state.balanceValue += amount;
-      state.lastTopUp = formatTopUpDate(amount);
-      const balanceState = getBalanceState();
-      balanceState.balanceValue = state.balanceValue;
-      balanceState.paymentMethod = state.cardMasked || '';
-      persistBalanceState(balanceState);
-      onStateChange(state);
-      showProfileFeedback({
-        title: 'Баланс пополнен',
-        description: `На счет зачислено ${formatPrice(amount)}. Средства уже доступны для запуска кампаний.`,
-      });
-      closeModalById('profile-topup-modal');
+      const applyTopUp = (newBalance: number): void => {
+        state.balanceValue = newBalance;
+        state.lastTopUp = formatTopUpDate(amount);
+        const balanceState = getBalanceState();
+        balanceState.balanceValue = newBalance;
+        balanceState.paymentMethod = state.cardMasked || '';
+        persistBalanceState(balanceState);
+        onStateChange(state);
+        showProfileFeedback({
+          title: 'Баланс пополнен',
+          description: `На счет зачислено ${formatPrice(amount)}. Средства уже доступны для запуска кампаний.`,
+        });
+        closeModalById('profile-topup-modal');
+      };
+
+      topUpBalance(amount)
+        .then((result) => {
+          applyTopUp(result.balance);
+        })
+        .catch(() => {
+          applyTopUp(state.balanceValue + amount);
+        });
     }, { signal });
   }
 
