@@ -56,6 +56,22 @@ function proxyApiRequest(req, res) {
 
 app.use('/api', proxyApiRequest);
 
+function proxyS3Request(req, res) {
+  const target = new URL(`http://localhost:9000${req.originalUrl.replace(/^\/s3/, '')}`);
+  const proxyRequest = http.request(
+      target,
+      { method: req.method, headers: { host: 'localhost:9000' } },
+      (proxyResponse) => {
+        res.writeHead(proxyResponse.statusCode || 502, proxyResponse.headers);
+        proxyResponse.pipe(res);
+      },
+  );
+  proxyRequest.on('error', () => res.status(502).end());
+  req.pipe(proxyRequest);
+}
+
+app.use('/s3', proxyS3Request);
+
 function sendIndexHtml(req, res) {
   if (isDevelopment && compiler) {
     const outputFileSystem = compiler.outputFileSystem;
@@ -77,9 +93,9 @@ function sendIndexHtml(req, res) {
 }
 
 app.get('/', sendIndexHtml);
-app.get(/^\/(?!api|fonts|icons|img|js|css|sw\.js).*/, sendIndexHtml);
+app.get(/^\/(?!api|s3|fonts|icons|img|js|css|sw\.js).*/, sendIndexHtml);
 
-const PORT = 8081;
+const PORT = 8080;
 
 app.listen(PORT, () => {
   console.log(

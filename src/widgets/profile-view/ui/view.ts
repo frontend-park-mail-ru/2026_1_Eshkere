@@ -32,6 +32,10 @@ function syncNavbarIdentity(state: ProfileState, fullName: string): void {
     .forEach((node) => {
       node.src = navbarAvatar;
       node.alt = navbarName;
+      node.onerror = () => {
+        node.onerror = null;
+        node.src = '/img/avatar-placeholder.png';
+      };
     });
 
   document
@@ -57,9 +61,18 @@ function syncAvatarView({
   );
 
   if (avatarImage) {
+    avatarImage.onerror = null;
     if (hasAvatar) {
       avatarImage.src = state.avatar;
       avatarImage.hidden = false;
+      avatarImage.onerror = () => {
+        avatarImage.onerror = null;
+        avatarImage.hidden = true;
+        if (avatarInitials) {
+          avatarInitials.hidden = false;
+        }
+        avatarButton?.classList.remove('profile-hero__avatar--image');
+      };
     } else {
       avatarImage.src = '';
       avatarImage.hidden = true;

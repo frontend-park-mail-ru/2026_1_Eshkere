@@ -2172,6 +2172,10 @@ export function CampaignCreate(): void | VoidFunction {
         const payload = {
           name: currentState.name.trim(),
           daily_budget: Math.max(1000, Math.round(currentState.dailyBudget)),
+          title: currentState.headline?.trim() || '',
+          short_desc: currentState.description?.trim() || '',
+          image_url: currentState.creativeAssets?.feedVisual || '',
+          target_url: currentState.link?.trim() || '',
         };
 
         if (mode === 'edit') {

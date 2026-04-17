@@ -16,6 +16,7 @@ import { hideProfileFeedback } from 'widgets/profile-feedback/ui/toast';
 import { populateProfileForms, refreshProfileFormStates } from 'widgets/profile-forms/ui/forms';
 import { initProfileModals } from 'widgets/profile-modals/ui/modals';
 import { syncProfileView } from 'widgets/profile-view/ui/view';
+import { initProfileFeedLink } from 'widgets/profile-feed-link/ui/feed-link';
 import profileTemplate from './profile.hbs';
 
 export type {
@@ -148,6 +149,8 @@ export function Profile(): VoidFunction | void {
     signal: controller.signal,
     state,
   });
+
+  initProfileFeedLink(controller.signal);
 
   populateForms(state);
   refreshModalSubmitStates(state);

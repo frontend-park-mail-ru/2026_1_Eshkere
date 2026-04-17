@@ -206,9 +206,15 @@
 
       <div class="profile-feed-link" data-feed-link-section>
         <p class="profile-feed-link__desc">
-          Сгенерируйте уникальную ссылку, чтобы партнёры могли получать список ваших объявлений без авторизации.
+          Сгенерируйте уникальную ссылку для кампании, чтобы партнёры могли получать её объявления без авторизации.
           При повторной генерации старая ссылка перестаёт работать.
         </p>
+
+        <p class="profile-feed-link__empty" data-feed-link-no-campaigns hidden>
+          Нет рекламных кампаний. Создайте хотя бы одну, чтобы сгенерировать ссылку.
+        </p>
+
+        <select class="profile-feed-link__select" data-feed-link-campaign hidden aria-label="Выберите кампанию"></select>
 
         <div class="profile-feed-link__result" data-feed-link-result hidden>
           <div class="profile-feed-link__url-row">
@@ -227,7 +233,7 @@
         </div>
 
         <div class="profile-feed-link__actions">
-          <button class="profile-stack__action" type="button" data-generate-feed-link>
+          <button class="profile-stack__action" type="button" data-generate-feed-link disabled>
             Сгенерировать ссылку
           </button>
         </div>
