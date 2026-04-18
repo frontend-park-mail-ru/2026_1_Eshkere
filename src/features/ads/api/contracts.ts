@@ -20,6 +20,10 @@ export interface ListAdCampaignsResponse {
 export interface CreateAdCampaignRequest {
   name: string;
   daily_budget: number;
+  title?: string;
+  short_desc?: string;
+  image_url?: string;
+  target_url?: string;
 }
 
 export interface CreateAdCampaignResponse {
@@ -30,4 +34,8 @@ export interface UpdateAdCampaignRequest {
   name?: string;
   daily_budget?: number;
   status?: AdCampaignStatus;
+  title?: string;
+  short_desc?: string;
+  image_url?: string;
+  target_url?: string;
 }

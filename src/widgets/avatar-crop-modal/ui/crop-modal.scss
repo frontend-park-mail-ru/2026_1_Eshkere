@@ -1,0 +1,129 @@
+.avatar-crop-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(16, 19, 39, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  &[aria-hidden='true'] {
+    display: none;
+  }
+
+  &__backdrop {
+    position: absolute;
+    inset: 0;
+  }
+
+  &__dialog {
+    position: relative;
+    z-index: 1;
+    background: #fff;
+    border-radius: 20px;
+    padding: 24px;
+    width: min(380px, 100%);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
+  }
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111;
+  }
+
+  &__subtitle {
+    font-size: 13px;
+    color: #888;
+  }
+
+  &__stage {
+    position: relative;
+    width: 320px;
+    height: 320px;
+    margin: 0 auto;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #000;
+  }
+
+  &__canvas {
+    display: block;
+    width: 320px;
+    height: 320px;
+    cursor: grab;
+    user-select: none;
+  }
+
+  &__mask {
+    position: absolute;
+    inset: 28px;
+    pointer-events: none;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55);
+    border-radius: 20px;
+  }
+
+  &__zoom {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__zoom-icon {
+    font-size: 18px;
+    color: #666;
+    line-height: 1;
+    user-select: none;
+    width: 20px;
+    text-align: center;
+  }
+
+  &__zoom-slider {
+    flex: 1;
+    accent-color: #6c5ce7;
+    height: 4px;
+    cursor: pointer;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  &__btn {
+    flex: 1;
+    height: 44px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s;
+
+    &:hover {
+      opacity: 0.85;
+    }
+
+    &--secondary {
+      background: #f0f0f5;
+      color: #333;
+    }
+
+    &--primary {
+      background: #6c5ce7;
+      color: #fff;
+    }
+  }
+}

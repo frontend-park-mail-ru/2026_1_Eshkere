@@ -852,7 +852,7 @@
 
 .campaigns-delete-modal,
 .campaigns-status-modal {
-  @include mixins.modal-overlay(70);
+  @include mixins.modal-overlay(150);
 
   &[hidden] {
     display: none;

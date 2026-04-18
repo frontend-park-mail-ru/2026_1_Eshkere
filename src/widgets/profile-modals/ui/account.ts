@@ -19,6 +19,7 @@ import {
 import type { ProfileState } from 'features/profile/model/types';
 import { updateAvatar } from 'features/profile/api/update-avatar';
 import { showProfileFeedback } from 'widgets/profile-feedback/ui/toast';
+import { openAvatarCropModal } from 'widgets/avatar-crop-modal/ui/crop-modal';
 
 interface InitProfileAccountModalsParams {
   closeModalById: (id: string) => void;
@@ -131,15 +132,20 @@ export function initProfileAccountModals({
           return;
         }
 
+        const result = await openAvatarCropModal(file);
+        if (!result) {
+          fileInput.value = '';
+          return;
+        }
+
         try {
-          const dataUrl = await readFileAsDataUrl(file);
-          pendingAvatarFile = file;
-          avatarForm.dataset.pendingAvatar = dataUrl;
+          pendingAvatarFile = new File([result.blob], file.name, { type: 'image/jpeg' });
+          avatarForm.dataset.pendingAvatar = result.dataUrl;
           avatarForm.dataset.removeAvatar = 'false';
           if (urlInput instanceof HTMLInputElement) {
             urlInput.value = '';
           }
-          applyAvatarPreview(dataUrl);
+          applyAvatarPreview(result.dataUrl);
           refreshSubmitStates(state);
         } catch {
           setFormMessage(avatarForm, '[data-form-error]', 'Не удалось загрузить выбранный файл');
@@ -178,18 +184,29 @@ export function initProfileAccountModals({
       clearFormState(avatarForm);
 
       const pendingAvatar = avatarForm.dataset.pendingAvatar || '';
+      const prevAvatar = state.avatar;
       state.avatar = pendingAvatar;
 
       if (pendingAvatarFile) {
-        updateAvatar(pendingAvatarFile)
+        const fileToUpload = pendingAvatarFile;
+        pendingAvatarFile = null;
+
+        updateAvatar(fileToUpload)
           .then((profile) => {
             if (typeof profile.avatar_url === 'string') {
               state.avatar = profile.avatar_url;
               onStateChange(state);
             }
           })
-          .catch(() => {});
-        pendingAvatarFile = null;
+          .catch(() => {
+            state.avatar = prevAvatar;
+            onStateChange(state);
+            showProfileFeedback({
+              title: 'Ошибка загрузки',
+              description: 'Не удалось сохранить аватар. Попробуйте ещё раз.',
+              tone: 'warning',
+            });
+          });
       }
 
       onStateChange(state);
