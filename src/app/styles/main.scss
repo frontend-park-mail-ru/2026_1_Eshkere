@@ -10,6 +10,8 @@
 :root {
   --bg-main: #{tokens.$color-bg-main};
   --bg-main-image: url('/img/RightFon.png');
+  --bg-main-overlay-start: rgba(240, 244, 255, 0.26);
+  --bg-main-overlay-end: rgba(240, 244, 255, 0.34);
   --text-main: #{tokens.$color-text-main};
   --text-muted: #{tokens.$color-text-muted};
   --border: #{tokens.$color-border};
@@ -101,6 +103,102 @@
   );
 }
 
+[data-theme='dark'] {
+  --bg-main: #090d18;
+  --bg-main-image: url('/img/darkBack.png');
+  --bg-main-overlay-start: rgba(6, 10, 22, 0.24);
+  --bg-main-overlay-end: rgba(6, 10, 22, 0.34);
+  --text-main: #eef2ff;
+  --text-muted: #9aa6cf;
+  --border: #2f395d;
+  --primary: #7d6eff;
+  --white: #ffffff;
+  --shadow: 0 16px 34px rgba(0, 0, 0, 0.42);
+  --surface-glass: rgba(14, 20, 37, 0.74);
+  --surface-card: rgba(16, 23, 41, 0.9);
+  --surface-muted: rgba(13, 19, 35, 0.96);
+  --surface-card-strong: rgba(18, 25, 45, 0.97);
+  --surface-card-hover: rgba(22, 30, 54, 0.98);
+  --surface-button-secondary: rgba(26, 36, 62, 0.92);
+  --surface-panel: #151d35;
+  --surface-panel-muted: #121a2f;
+  --surface-panel-alt: #1a2340;
+  --surface-panel-accent: #243057;
+  --surface-hover: #26335c;
+  --surface-control-muted: #253050;
+  --surface-toggle: #3e4a79;
+  --surface-table-head: rgba(19, 27, 49, 0.92);
+  --primary-active: #9388ff;
+  --primary-soft: #a49aff;
+  --primary-action: #8577ff;
+  --primary-border: #9589ff;
+  --primary-muted: #47467f;
+  --primary-surface: rgba(125, 110, 255, 0.22);
+  --primary-surface-strong: rgba(58, 58, 110, 0.94);
+  --primary-badge: rgba(125, 110, 255, 0.34);
+  --primary-border-soft: rgba(125, 110, 255, 0.46);
+  --success-strong: #46d79a;
+  --success-badge: rgba(70, 215, 154, 0.2);
+  --danger-soft: #ff7d76;
+  --danger-strong: #ff867f;
+  --danger-muted: #ff928c;
+  --danger-badge: rgba(255, 125, 118, 0.2);
+  --danger-surface-accent: rgba(255, 125, 118, 0.14);
+  --danger-border-soft: rgba(255, 134, 127, 0.4);
+  --danger-border-hover: rgba(255, 134, 127, 0.6);
+  --danger-surface-soft: rgba(69, 35, 44, 0.72);
+  --danger-surface-hover: rgba(78, 39, 49, 0.88);
+  --border-strong: #37446f;
+  --border-panel: #455483;
+  --border-panel-soft: rgba(82, 98, 150, 0.66);
+  --border-subtle: #273257;
+  --border-hover: #57679a;
+  --border-menu: rgba(100, 118, 171, 0.36);
+  --border-menu-divider: rgba(103, 121, 177, 0.3);
+  --focus-ring: rgba(125, 110, 255, 0.42);
+  --text-title: #f4f6ff;
+  --text-heading: #f7f8ff;
+  --text-body: #d9dffd;
+  --text-body-alt: #e0e5ff;
+  --text-emphasis: #edf1ff;
+  --text-label: #c8d1f3;
+  --text-soft: #99a6d0;
+  --text-note: #b3bde3;
+  --text-action: #cdd6f7;
+  --text-panel: #dee5ff;
+  --text-table-head: #e8ecff;
+  --text-table-body: #d9dffd;
+  --text-pagination-muted: #9fadd4;
+  --text-menu: #e8ecff;
+  --text-control: #f2f4ff;
+  --text-dark: #f6f8ff;
+  --shadow-floating: 0 24px 48px rgba(0, 0, 0, 0.48);
+  --shadow-soft-strong: 0 14px 30px rgba(0, 0, 0, 0.3);
+  --shadow-soft-hover: 0 16px 34px rgba(0, 0, 0, 0.38);
+  --shadow-primary-soft: 0 14px 26px rgba(78, 78, 196, 0.22);
+  --shadow-primary-selected: 0 12px 22px rgba(113, 101, 255, 0.3);
+  --shadow-danger-soft: 0 16px 30px rgba(132, 42, 58, 0.4);
+  --shadow-modal-strong: 0 34px 84px rgba(0, 0, 0, 0.58);
+  --shadow-button-soft: 0 12px 24px rgba(0, 0, 0, 0.34);
+  --shadow-menu: 0 24px 46px rgba(0, 0, 0, 0.5);
+  --shadow-inset-highlight: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  --gradient-modal-surface: linear-gradient(
+    180deg,
+    rgba(17, 24, 44, 0.98) 0%,
+    rgba(12, 18, 34, 0.98) 100%
+  );
+  --gradient-note-surface: linear-gradient(
+    180deg,
+    rgba(62, 59, 118, 0.9) 0%,
+    rgba(40, 47, 84, 0.92) 100%
+  );
+  --gradient-menu-surface: linear-gradient(
+    180deg,
+    rgba(22, 31, 57, 0.98) 0%,
+    rgba(15, 22, 42, 0.96) 100%
+  );
+}
+
 html,
 body {
   min-height: 100%;
@@ -114,8 +212,8 @@ body {
   background-image:
     linear-gradient(
       180deg,
-      rgba(240, 244, 255, 0.26) 0%,
-      rgba(240, 244, 255, 0.34) 100%
+      var(--bg-main-overlay-start) 0%,
+      var(--bg-main-overlay-end) 100%
     ),
     var(--bg-main-image);
   background-size: cover, cover;

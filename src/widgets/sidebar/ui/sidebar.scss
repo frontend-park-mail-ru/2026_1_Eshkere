@@ -69,3 +69,30 @@
     gap: 20px;
   }
 }
+
+html[data-theme='dark'] {
+  .sidebar {
+    background: rgba(19, 25, 44, 0.88);
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.3);
+
+    &__footer {
+      border-top-color: rgba(116, 129, 176, 0.3);
+    }
+
+    &__link {
+      color: var(--text-body);
+
+      &:hover {
+        background: rgba(139, 133, 255, 0.16);
+      }
+
+      &--muted {
+        background: rgba(139, 133, 255, 0.22);
+      }
+
+      &--disabled {
+        color: rgba(214, 220, 242, 0.45);
+      }
+    }
+  }
+}

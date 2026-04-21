@@ -903,6 +903,17 @@
     @include mixins.focus-ring();
   }
 
+  &__input[type='number'] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+  }
+
+  &__input[type='number']::-webkit-outer-spin-button,
+  &__input[type='number']::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
   &__suffix {
     position: absolute;
     top: 50%;
@@ -1292,6 +1303,308 @@
 
     &__side {
       justify-items: start;
+    }
+  }
+}
+
+html[data-theme='dark'] {
+  .balance-page {
+    color: var(--text-main);
+
+    &__hero,
+    &__grid > .balance-card {
+      background: var(--gradient-menu-surface);
+      box-shadow: var(--shadow-floating), var(--shadow-inset-highlight);
+    }
+
+    &__hero {
+      border: none;
+    }
+
+    &__subtitle {
+      color: var(--text-muted);
+    }
+
+    &__hero-action {
+      box-shadow: var(--shadow-primary-soft);
+    }
+  }
+
+  .balance-stat,
+  .balance-stack__item,
+  .balance-summary__row,
+  .balance-table__row,
+  .balance-actions__item,
+  .balance-log__summary-item,
+  .balance-log__row {
+    border: none;
+    background: rgba(22, 31, 57, 0.9);
+  }
+
+  .balance-stat__label,
+  .balance-amount__label,
+  .balance-stack__text,
+  .balance-summary__label,
+  .balance-table__head,
+  .balance-actions__text,
+  .balance-log__summary-label,
+  .balance-log__meta,
+  .balance-log__details,
+  .balance-modal__subtitle,
+  .balance-modal__label,
+  .balance-modal__hint,
+  .balance-modal__current-label,
+  .balance-modal__current-text {
+    color: var(--text-muted);
+  }
+
+  .balance-stat__value,
+  .balance-amount__value,
+  .balance-stack__title,
+  .balance-summary__value,
+  .balance-actions__title,
+  .balance-table__operation,
+  .balance-modal__title,
+  .balance-modal__current-value,
+  .balance-modal__summary-value,
+  .balance-log__summary-value,
+  .balance-log__title {
+    color: var(--text-main);
+  }
+
+  .balance-amount {
+    border: none;
+    background: rgba(22, 31, 57, 0.88);
+
+    &--active {
+      border: none;
+      background: var(--primary-surface-strong);
+      box-shadow: var(--shadow-primary-soft);
+    }
+  }
+
+  .balance-pill {
+    &--warning {
+      background: rgba(255, 186, 112, 0.2);
+      color: #ffc486;
+    }
+
+    &--info {
+      background: rgba(125, 110, 255, 0.22);
+      color: #d2cdff;
+    }
+
+    &--muted {
+      background: rgba(39, 50, 83, 0.9);
+      color: var(--text-soft);
+    }
+  }
+
+  .balance-table {
+    &__empty,
+    &__row {
+      border: none;
+      background: rgba(22, 31, 57, 0.88);
+    }
+
+    &__empty {
+      border: none;
+    }
+
+    &__empty-title {
+      color: var(--text-main);
+    }
+
+    &__empty-text {
+      color: var(--text-muted);
+    }
+  }
+
+  .balance-card__action {
+    border: none;
+    background: rgba(26, 36, 62, 0.94);
+    color: var(--text-main);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .balance-card__action:hover {
+    background: rgba(38, 49, 82, 0.96);
+    color: #f2f4ff;
+  }
+
+  .balance-actions__item {
+    &:hover {
+      box-shadow: var(--shadow-primary-soft);
+    }
+  }
+
+  .balance-toast {
+    background: rgba(10, 16, 31, 0.96);
+    box-shadow: var(--shadow-floating);
+  }
+
+  .balance-modal {
+    &__inner {
+      background: var(--gradient-modal-surface);
+      box-shadow: var(--shadow-modal-strong), var(--shadow-inset-highlight);
+    }
+
+    &__inline-action,
+    &__quick-button,
+    &__method-action,
+    &__button--secondary,
+    &__toggle,
+    &__summary-item {
+      border: none;
+      background: rgba(22, 31, 57, 0.9);
+      color: var(--text-main);
+    }
+
+    &__method-ui {
+      border: none;
+      background: rgba(18, 26, 48, 0.94);
+      color: var(--text-main);
+      box-shadow: none;
+    }
+
+    &__method-badge {
+      background: rgba(34, 46, 80, 0.92);
+      color: var(--text-muted);
+    }
+
+    &__method input:checked + .balance-modal__method-ui .balance-modal__method-badge {
+      background: rgba(125, 110, 255, 0.22);
+      color: var(--primary-soft);
+    }
+
+    &__group {
+      border: none;
+      background: rgba(12, 18, 34, 0.88);
+      color: var(--text-main);
+      box-shadow: inset 0 0 0 1px rgba(108, 123, 177, 0.12);
+    }
+
+    &__input,
+    &__select-trigger {
+      border: none;
+      background: rgba(34, 46, 80, 0.98);
+      color: var(--text-main);
+      box-shadow: inset 0 0 0 1px rgba(108, 123, 177, 0.18);
+    }
+
+    &__input::placeholder {
+      color: var(--text-soft);
+    }
+
+    &__select-value {
+      color: var(--text-main);
+    }
+
+    &__select-icon {
+      border: none;
+      background: rgba(26, 36, 62, 0.95);
+    }
+
+    &__select-icon::before {
+      border-right-color: var(--primary-soft);
+      border-bottom-color: var(--primary-soft);
+    }
+
+    &__input:focus,
+    &__select-trigger:focus {
+      outline: none;
+      background: rgba(42, 56, 98, 0.99);
+      box-shadow: var(--shadow-primary-soft);
+    }
+
+    &__select.is-open &__select-trigger {
+      background: rgba(42, 56, 98, 0.99);
+      box-shadow: var(--shadow-primary-soft);
+    }
+
+    &__current {
+      background: rgba(18, 25, 45, 0.92);
+    }
+
+    &__quick-button--active,
+    &__method input:checked + .balance-modal__method-ui {
+      border: none;
+      background: var(--primary-surface-strong);
+      box-shadow: var(--shadow-primary-soft);
+      color: var(--text-main);
+    }
+
+    &__select-menu {
+      border: none;
+      background: var(--gradient-menu-surface);
+      box-shadow: var(--shadow-menu), var(--shadow-inset-highlight);
+    }
+
+    &__select-option {
+      background: rgba(22, 31, 57, 0.7);
+      color: var(--text-main);
+    }
+
+    &__select-option:hover {
+      background: rgba(31, 42, 72, 0.92);
+    }
+
+    &__select-option--active {
+      background: var(--primary-surface-strong);
+    }
+
+    &__select-option-meta {
+      color: var(--primary-soft);
+    }
+
+    &__suffix {
+      color: var(--text-soft);
+    }
+
+    &__toggle-ui {
+      background: rgba(60, 73, 115, 0.75);
+    }
+
+    &__toggle-ui::after {
+      background: #dfe5ff;
+      box-shadow: 0 4px 10px rgba(8, 12, 24, 0.34);
+    }
+
+    &__toggle-copy {
+      color: var(--text-muted);
+    }
+
+    &__toggle-copy strong {
+      color: var(--text-main);
+    }
+  }
+
+  .balance-log {
+    &__filter,
+    &__search-input,
+    &__export {
+      border: none;
+      background: rgba(22, 31, 57, 0.9);
+      color: var(--text-main);
+    }
+
+    &__filter.is-active {
+      border: none;
+      background: var(--primary-surface-strong);
+      color: var(--primary-soft);
+    }
+
+    &__empty {
+      border: none;
+      background: rgba(22, 31, 57, 0.88);
+    }
+
+    &__empty-title {
+      color: var(--text-main);
+    }
+
+    &__empty-text {
+      color: var(--text-muted);
     }
   }
 }

@@ -8,7 +8,7 @@
 
   &__label {
     font-size: 14px;
-    color: #2d3345;
+    color: var(--text-label);
 
     span {
       color: t.$color-danger;
@@ -32,7 +32,7 @@
     top: 50%;
     left: 14px;
     transform: translateY(-50%);
-    color: #2d3345;
+    color: var(--text-label);
     font-weight: 600;
     pointer-events: none;
   }
@@ -97,7 +97,8 @@
   padding: 0 14px;
   border: 1px solid var(--border);
   border-radius: t.$radius-sm;
-  background: t.$surface-input;
+  background: var(--surface-panel-alt);
+  color: var(--text-body);
   outline: none;
   transition: 0.2s ease;
 
@@ -110,7 +111,7 @@
   }
 
   &:focus {
-    border-color: #7a74ff;
+    border-color: var(--primary-border);
     box-shadow: 0 0 0 3px rgba(122, 116, 255, 0.12);
   }
 
@@ -120,7 +121,38 @@
   }
 
   &--success {
-    border-color: t.$color-success;
+    border-color: var(--success-strong);
     box-shadow: 0 0 0 3px rgba(52, 199, 89, 0.12);
+  }
+
+  &::placeholder {
+    color: var(--text-soft);
+  }
+}
+
+html[data-theme='dark'] {
+  .ui-field {
+    &__prefix {
+      color: var(--text-soft);
+    }
+
+    &__password-toggle {
+      color: var(--text-soft);
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--text-main);
+      }
+    }
+  }
+
+  .ui-input {
+    border-color: var(--border-panel);
+    background: rgba(25, 33, 56, 0.9);
+    color: var(--text-main);
+
+    &::placeholder {
+      color: var(--text-muted);
+    }
   }
 }

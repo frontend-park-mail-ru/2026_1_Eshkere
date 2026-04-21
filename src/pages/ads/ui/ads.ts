@@ -263,7 +263,7 @@ export function Ads(): void | VoidFunction {
     statusModalConfirm.textContent = isEnabling ? 'Включить' : 'Остановить';
     statusModalImage.src = isEnabling
       ? '/img/News.png'
-      : '/img/Delete Confirmation.png';
+      : '/img/DeleteConfirmation-dark.png';
     statusModal.hidden = false;
   };
 

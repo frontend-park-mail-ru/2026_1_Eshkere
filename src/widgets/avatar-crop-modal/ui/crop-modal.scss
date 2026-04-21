@@ -127,3 +127,26 @@
     }
   }
 }
+
+html[data-theme='dark'] .avatar-crop-modal {
+  &__dialog {
+    background: rgba(23, 30, 53, 0.98);
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.42);
+  }
+
+  &__title {
+    color: var(--text-main);
+  }
+
+  &__subtitle {
+    color: var(--text-muted);
+  }
+
+  &__btn {
+    &--secondary {
+      border: 1px solid var(--border-panel);
+      background: rgba(33, 42, 69, 0.92);
+      color: var(--text-main);
+    }
+  }
+}
