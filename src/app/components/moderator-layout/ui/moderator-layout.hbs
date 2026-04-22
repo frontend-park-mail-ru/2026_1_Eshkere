@@ -1,0 +1,18 @@
+<div class="moderator-layout{{#if isCaseView}} moderator-layout--case-view{{/if}}">
+  <div class="moderator-layout__shell">
+    <div id="app-moderator-navbar-slot">{{{navbar}}}</div>
+
+    <div class="moderator-layout__body">
+      <div class="moderator-layout__sidebar" id="app-moderator-sidebar-slot">
+        {{{sidebar}}}
+      </div>
+
+      <main class="moderator-layout__content" id="app-layout-outlet">
+        {{{content}}}
+      </main>
+    </div>
+  </div>
+
+  <div class="moderator-layout__glow moderator-layout__glow--left"></div>
+  <div class="moderator-layout__glow moderator-layout__glow--right"></div>
+</div>

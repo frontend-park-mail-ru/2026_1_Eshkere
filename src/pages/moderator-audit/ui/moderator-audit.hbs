@@ -1,0 +1,71 @@
+<section class="moderator-audit-page">
+  <div class="moderator-audit-page__topbar">
+    <div class="moderator-audit-page__title-block">
+      <span class="moderator-audit-page__eyebrow">Audit Trail</span>
+      <h1 class="moderator-audit-page__title">Аудит-лог</h1>
+      <p class="moderator-audit-page__subtitle">
+        История действий модераторов, решений по кейсам и системных событий.
+      </p>
+    </div>
+
+    <div class="moderator-audit-page__kpis">
+      <article>
+        <span>Событий сегодня</span>
+        <strong>{{stats.total}}</strong>
+      </article>
+      <article>
+        <span>Модераторов</span>
+        <strong>{{stats.actors}}</strong>
+      </article>
+    </div>
+  </div>
+
+  <div class="moderator-audit-panel">
+    <div class="moderator-audit-toolbar">
+      <input
+        class="moderator-audit-toolbar__search"
+        type="search"
+        placeholder="Поиск по действию, объекту или модератору"
+        data-audit-search
+      />
+      <select class="moderator-audit-toolbar__filter" data-audit-actor-filter>
+        <option value="all">Все модераторы</option>
+        {{#each actors}}
+          <option value="{{this}}">{{this}}</option>
+        {{/each}}
+      </select>
+    </div>
+
+    <div class="moderator-audit-timeline" data-audit-list>
+      {{#each items}}
+        <article
+          class="moderator-audit-entry"
+          data-entry-id="{{id}}"
+          data-actor="{{actor}}"
+          data-searchable="{{actor}} {{action}} {{target}} {{note}}"
+        >
+          <div class="moderator-audit-entry__spine" aria-hidden="true">
+            <div class="moderator-audit-entry__dot"></div>
+            <div class="moderator-audit-entry__line"></div>
+          </div>
+
+          <div class="moderator-audit-entry__body">
+            <div class="moderator-audit-entry__head">
+              <span class="moderator-audit-entry__actor">{{actor}}</span>
+              <span class="moderator-audit-entry__action">{{action}}</span>
+              <span class="moderator-audit-entry__time">{{timestamp}}</span>
+            </div>
+            <p class="moderator-audit-entry__target">{{target}}</p>
+            {{#if note}}
+              <p class="moderator-audit-entry__note">{{note}}</p>
+            {{/if}}
+          </div>
+        </article>
+      {{/each}}
+    </div>
+
+    <div class="moderator-audit-empty" data-audit-empty hidden>
+      Событий не найдено. Попробуйте изменить фильтр или поисковый запрос.
+    </div>
+  </div>
+</section>

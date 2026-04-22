@@ -1,0 +1,108 @@
+﻿@use '../../../../shared/styles/tokens' as t;
+@use '../../../../shared/styles/mixins';
+
+@include mixins.media-max(t.$bp-md) {
+  .navbar {
+    top: 10px;
+    left: 12px;
+    right: 12px;
+    max-width: none;
+    flex-direction: column;
+    align-items: stretch;
+
+    &::before {
+      top: -10px;
+      height: 150px;
+    }
+
+    &__left {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    &__nav {
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    &__actions {
+      justify-content: flex-start;
+    }
+
+    &__profile-menu {
+      right: -6px;
+      width: 260px;
+    }
+
+    &__notifications-menu {
+      right: 56px;
+      width: min(320px, calc(100vw - 48px));
+    }
+
+    &__logout-modal-title {
+      font-size: 18px;
+    }
+
+    &__logout-modal-button {
+      font-size: 15px;
+    }
+  }
+}
+
+@include mixins.media-max(t.$bp-sm) {
+  .navbar {
+    top: 8px;
+    left: 10px;
+    right: 10px;
+    padding: 10px 12px;
+    border-radius: 18px;
+
+    &::before {
+      top: -8px;
+      height: 136px;
+    }
+
+    &__actions {
+      width: 100%;
+      flex-direction: column;
+    }
+
+    &__button {
+      width: 100%;
+    }
+
+    &__profile-menu {
+      width: min(82vw, 280px);
+      right: 0;
+    }
+
+    &__notifications-menu {
+      width: min(82vw, 320px);
+      right: 52px;
+    }
+
+    &__profile-menu-name,
+    &__profile-menu-logout {
+      font-size: 15px;
+    }
+
+    &__logout-modal-dialog {
+      padding: 20px;
+    }
+
+    &__logout-modal-illustration {
+      height: 188px;
+    }
+
+    &__logout-modal-actions {
+      flex-direction: column;
+    }
+
+    &__logout-modal-button {
+      width: 100%;
+      height: 46px;
+      font-size: 15px;
+    }
+  }
+}

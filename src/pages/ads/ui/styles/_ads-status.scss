@@ -1,0 +1,75 @@
+﻿@use '../../../../shared/styles/tokens' as t;
+@use '../../../../shared/styles/mixins';
+
+.status-badge {
+  min-width: 100px;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+
+  &--working {
+    color: var(--success-strong);
+    background: var(--success-badge);
+  }
+
+  &--paused {
+    color: #de4b43;
+    background: rgba(255, 92, 92, 0.12);
+  }
+
+  &--pending {
+    color: var(--primary-active);
+    background: var(--primary-badge);
+  }
+
+  &--draft {
+    color: var(--text-soft);
+    background: rgba(170, 178, 199, 0.18);
+  }
+}
+
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 42px;
+  height: 24px;
+
+  input {
+    width: 0;
+    height: 0;
+    opacity: 0;
+
+    &:checked + .toggle__slider {
+      background: var(--primary-active);
+
+      &::before {
+        transform: translateX(18px);
+      }
+    }
+  }
+
+  &__slider {
+    position: absolute;
+    inset: 0;
+    border-radius: t.$radius-pill;
+    background: var(--surface-toggle);
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--white);
+      transition: 0.2s ease;
+    }
+  }
+}
+

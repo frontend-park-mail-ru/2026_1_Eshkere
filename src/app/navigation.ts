@@ -8,6 +8,12 @@ function normalizePath(pathname: string): string {
   return pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
 }
 
+function normalizeNavigationTarget(target: string): string {
+  const url = new URL(target, window.location.origin);
+  const normalizedPathname = normalizePath(url.pathname);
+  return `${normalizedPathname}${url.search}${url.hash}`;
+}
+
 export function getCurrentPath(): string {
   return normalizePath(window.location.pathname);
 }
@@ -110,9 +116,12 @@ export function initNavigation(onLocationChange: () => void): void {
 }
 
 export function navigateTo(path: string, options?: { replace?: boolean }): void {
-  const normalizedPath = normalizePath(path);
+  const normalizedPath = normalizeNavigationTarget(path);
+  const currentUrl = normalizeNavigationTarget(
+    `${window.location.pathname}${window.location.search}${window.location.hash}`,
+  );
 
-  if (normalizedPath === getCurrentPath()) {
+  if (normalizedPath === currentUrl) {
     return;
   }
 

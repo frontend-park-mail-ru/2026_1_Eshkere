@@ -1,0 +1,92 @@
+<section class="moderator-appeals-page">
+  <div class="moderator-appeals-page__topbar">
+    <div class="moderator-appeals-page__title-block">
+      <span class="moderator-appeals-page__eyebrow">Appeals</span>
+      <h1 class="moderator-appeals-page__title">Апелляции</h1>
+      <p class="moderator-appeals-page__subtitle">
+        Повторные проверки и спорные решения по отклонённым материалам.
+      </p>
+    </div>
+
+    <div class="moderator-appeals-page__kpis">
+      <article>
+        <span>Новых</span>
+        <strong>{{stats.newCount}}</strong>
+      </article>
+      <article>
+        <span>Ждут проверки</span>
+        <strong>{{stats.pendingCount}}</strong>
+      </article>
+      <article>
+        <span>Всего</span>
+        <strong>{{stats.totalCount}}</strong>
+      </article>
+    </div>
+  </div>
+
+  <div class="moderator-appeals-panel">
+    <div class="moderator-appeals-toolbar">
+      <input
+        class="moderator-appeals-toolbar__search"
+        type="search"
+        placeholder="Поиск по рекламодателю или теме"
+        data-appeals-search
+      />
+      <select class="moderator-appeals-toolbar__filter" data-appeals-status-filter>
+        <option value="all">Все статусы</option>
+        <option value="new">Новые</option>
+        <option value="pending">Ждут проверки</option>
+      </select>
+    </div>
+
+    <div class="moderator-appeals-list" data-appeals-list>
+      {{#each items}}
+        <article
+          class="moderator-appeal-card"
+          data-appeal-id="{{id}}"
+          data-status-key="{{statusKey}}"
+          data-searchable="{{advertiser}} {{subject}}"
+        >
+          <div class="moderator-appeal-card__head">
+            <span class="moderator-appeal-card__id">{{id}}</span>
+            <span class="moderator-appeal-card__status moderator-appeal-card__status--{{statusTone}}">
+              {{status}}
+            </span>
+          </div>
+
+          <h3 class="moderator-appeal-card__subject">{{subject}}</h3>
+
+          <div class="moderator-appeal-card__meta">
+            <span class="moderator-appeal-card__meta-item">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                <circle cx="6" cy="4" r="2.5" stroke="currentColor" stroke-width="1.2"/>
+                <path d="M1.5 10.5c0-2.485 2.015-4.5 4.5-4.5s4.5 2.015 4.5 4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+              {{advertiser}}
+            </span>
+            <span class="moderator-appeal-card__meta-sep" aria-hidden="true">·</span>
+            <span class="moderator-appeal-card__meta-item">Кейс #{{caseId}}</span>
+            <span class="moderator-appeal-card__meta-sep" aria-hidden="true">·</span>
+            <span class="moderator-appeal-card__meta-item">{{receivedAt}}</span>
+            <span class="moderator-appeal-card__meta-sep" aria-hidden="true">·</span>
+            <span class="moderator-appeal-card__meta-item">{{owner}}</span>
+          </div>
+
+          <div class="moderator-appeal-card__footer">
+            <button
+              class="moderator-appeal-card__open"
+              type="button"
+              data-appeal-open-case="{{caseId}}"
+            >
+              Открыть кейс →
+            </button>
+          </div>
+        </article>
+      {{/each}}
+    </div>
+
+    <div class="moderator-appeals-empty" data-appeals-empty hidden>
+      Апелляции не найдены. Попробуйте изменить фильтр или поисковый запрос.
+    </div>
+  </div>
+</section>

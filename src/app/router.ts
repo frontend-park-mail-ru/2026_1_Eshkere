@@ -10,9 +10,15 @@ import {
   renderForgotPasswordPage,
   ForgotPassword,
 } from 'pages/forgot-password';
-import { renderHomePage } from 'pages/home';
+import { renderHomePage, Home } from 'pages/home';
 import { renderLoginPage, Login } from 'pages/login';
 import { renderNotFoundPage } from 'pages/not-found';
+import { renderModeratorQueuePage, ModeratorQueuePage } from 'pages/moderator-queue';
+import { renderModeratorCasePage, ModeratorCasePage } from 'pages/moderator-case';
+import { renderModeratorAppealsPage, ModeratorAppealsPage } from 'pages/moderator-appeals';
+import { renderModeratorMessagesPage, ModeratorMessagesPage } from 'pages/moderator-messages';
+import { renderModeratorPoliciesPage, ModeratorPoliciesPage } from 'pages/moderator-policies';
+import { renderModeratorAuditPage, ModeratorAuditPage } from 'pages/moderator-audit';
 import { renderProfilePage, Profile } from 'pages/profile';
 import { renderRegisterPage, Register } from 'pages/register';
 import { Navbar } from 'widgets/navbar';
@@ -20,6 +26,8 @@ import { getCurrentPath, navigateTo } from './navigation';
 import {
   renderLayoutShell,
   updateDashboardLayoutSlots,
+  initModeratorNavbar,
+  updateModeratorLayoutSlots,
   updatePublicNavbarSlot,
   type LayoutKind,
 } from './render-with-layout';
@@ -33,12 +41,14 @@ interface RouteDefinition {
   init?: RouteInit;
   guestOnly?: boolean;
   protected?: boolean;
+  requiresModerator?: boolean;
 }
 
 const routes: Record<string, RouteDefinition> = {
   '/': {
     render: renderHomePage,
     layout: 'public',
+    init: Home,
   },
   '/login': {
     render: renderLoginPage,
@@ -94,6 +104,55 @@ const routes: Record<string, RouteDefinition> = {
     init: Profile,
     protected: true,
   },
+  '/moderator': {
+    render: renderModeratorQueuePage,
+    layout: 'moderator',
+    init: ModeratorQueuePage,
+    protected: true,
+    requiresModerator: true,
+  },
+  '/moderator/queue': {
+    render: renderModeratorQueuePage,
+    layout: 'moderator',
+    init: ModeratorQueuePage,
+    protected: true,
+    requiresModerator: true,
+  },
+  '/moderator/case': {
+    render: renderModeratorCasePage,
+    layout: 'moderator',
+    init: ModeratorCasePage,
+    protected: true,
+    requiresModerator: true,
+  },
+  '/moderator/appeals': {
+    render: renderModeratorAppealsPage,
+    layout: 'moderator',
+    init: ModeratorAppealsPage,
+    protected: true,
+    requiresModerator: true,
+  },
+  '/moderator/messages': {
+    render: renderModeratorMessagesPage,
+    layout: 'moderator',
+    init: ModeratorMessagesPage,
+    protected: true,
+    requiresModerator: true,
+  },
+  '/moderator/policies': {
+    render: renderModeratorPoliciesPage,
+    layout: 'moderator',
+    init: ModeratorPoliciesPage,
+    protected: true,
+    requiresModerator: true,
+  },
+  '/moderator/audit': {
+    render: renderModeratorAuditPage,
+    layout: 'moderator',
+    init: ModeratorAuditPage,
+    protected: true,
+    requiresModerator: true,
+  },
 };
 
 let activeCleanup: RouteCleanup | null = null;
@@ -129,6 +188,11 @@ export async function renderRoute(): Promise<void> {
     }
   }
 
+  if (route.requiresModerator && !authState.canAccessModerator()) {
+    navigateTo('/ads', { replace: true });
+    return;
+  }
+
   if (route.guestOnly && authState.isAuthenticated()) {
     navigateTo('/ads', { replace: true });
     return;
@@ -148,6 +212,8 @@ export async function renderRoute(): Promise<void> {
       await updatePublicNavbarSlot(path);
     } else if (route.layout === 'dashboard') {
       await updateDashboardLayoutSlots(path);
+    } else if (route.layout === 'moderator') {
+      await updateModeratorLayoutSlots(path);
     }
 
     if (currentRequestId !== renderRequestId) {
@@ -171,9 +237,16 @@ export async function renderRoute(): Promise<void> {
       }
     }
 
-    const navbarCleanup = Navbar();
-    if (typeof navbarCleanup === 'function') {
-      cleanups.push(navbarCleanup);
+    if (route.layout !== 'moderator') {
+      const navbarCleanup = Navbar();
+      if (typeof navbarCleanup === 'function') {
+        cleanups.push(navbarCleanup);
+      }
+    } else {
+      const moderatorNavbarCleanup = initModeratorNavbar();
+      if (typeof moderatorNavbarCleanup === 'function') {
+        cleanups.push(moderatorNavbarCleanup);
+      }
     }
 
     if (cleanups.length > 0) {
@@ -184,6 +257,6 @@ export async function renderRoute(): Promise<void> {
   } catch (error) {
     console.error(error);
     currentLayoutKind = null;
-    app.innerHTML = '<h1>Ошибка</h1><p>Не удалось загрузить страницу</p>';
+    app.innerHTML = '<h1>\u041e\u0448\u0438\u0431\u043a\u0430</h1><p>\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0443</p>';
   }
 }

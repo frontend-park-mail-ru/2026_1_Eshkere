@@ -1,0 +1,231 @@
+<section class="moderator-page">
+  <div class="moderator-page__hero">
+    <div class="moderator-page__hero-copy">
+      <span class="moderator-page__eyebrow">Moderation Control Room</span>
+      <h1 class="moderator-page__title">Кабинет модератора</h1>
+      <p class="moderator-page__subtitle">
+        Операционная админка для контроля жалоб, очередей ревью, эскалаций и
+        качества правил. Здесь команда видит реальную нагрузку и принимает
+        решения по кейсам без переключения между разрозненными таблицами.
+      </p>
+    </div>
+
+    <div class="moderator-page__hero-actions">
+      <button class="moderator-page__primary-action" type="button">
+        Открыть критичные кейсы
+      </button>
+      <button class="moderator-page__secondary-action" type="button">
+        Выгрузить сменный отчёт
+      </button>
+    </div>
+
+    <div class="moderator-page__metrics">
+      {{#each overviewMetrics}}
+        <article class="moderator-metric moderator-metric--{{tone}}">
+          <span class="moderator-metric__label">{{label}}</span>
+          <strong class="moderator-metric__value">{{value}}</strong>
+          <span class="moderator-metric__note">{{note}}</span>
+        </article>
+      {{/each}}
+    </div>
+  </div>
+
+  <div class="moderator-page__toolbar">
+    <div class="moderator-filters">
+      <button class="moderator-filters__chip is-active" type="button" data-moderator-filter="all">
+        Все очереди
+      </button>
+      <button class="moderator-filters__chip" type="button" data-moderator-filter="incoming">
+        Новые жалобы
+      </button>
+      <button class="moderator-filters__chip" type="button" data-moderator-filter="review">
+        На разборе
+      </button>
+      <button class="moderator-filters__chip" type="button" data-moderator-filter="decision">
+        Решение
+      </button>
+      <button class="moderator-filters__chip" type="button" data-moderator-filter="escalation">
+        Эскалации
+      </button>
+    </div>
+
+    <label class="moderator-search">
+      <span class="moderator-search__label">Поиск по кейсам и обновлениям</span>
+      <input
+        class="moderator-search__input"
+        type="search"
+        placeholder="Например: апелляция, KYC, clickbait"
+        data-moderator-search
+      />
+    </label>
+  </div>
+
+  <div class="moderator-page__layout">
+    <div class="moderator-page__main">
+      <section class="moderator-section">
+        <div class="moderator-section__head">
+          <div>
+            <h2 class="moderator-section__title">Операционные очереди</h2>
+            <p class="moderator-section__text">
+              Каждая колонка показывает текущую стадию кейсов и помогает быстро
+              перераспределять нагрузку по команде.
+            </p>
+          </div>
+          <span class="moderator-section__badge">Live queue</span>
+        </div>
+
+        <div class="moderator-board">
+          {{#each queueColumns}}
+            <article class="moderator-column" data-queue-stage="{{stage}}">
+              <div class="moderator-column__head">
+                <div>
+                  <h3 class="moderator-column__title">{{title}}</h3>
+                  <p class="moderator-column__description">{{description}}</p>
+                </div>
+                <span class="moderator-column__count">{{count}}</span>
+              </div>
+
+              <div class="moderator-column__stack">
+                {{#each items}}
+                  <article
+                    class="moderator-case"
+                    data-searchable-card="{{title}} {{meta}} {{priority}} {{sla}} {{tags}}"
+                  >
+                    <div class="moderator-case__top">
+                      <strong class="moderator-case__title">{{title}}</strong>
+                      <span class="moderator-case__priority moderator-case__priority--{{priorityTone}}">
+                        {{priority}}
+                      </span>
+                    </div>
+                    <p class="moderator-case__meta">{{meta}}</p>
+                    <div class="moderator-case__footer">
+                      <span class="moderator-case__sla">{{sla}}</span>
+                      <div class="moderator-case__tags">
+                        {{#each tags}}
+                          <span class="moderator-case__tag">{{this}}</span>
+                        {{/each}}
+                      </div>
+                    </div>
+                  </article>
+                {{/each}}
+              </div>
+            </article>
+          {{/each}}
+        </div>
+      </section>
+
+      <section class="moderator-section">
+        <div class="moderator-section__head">
+          <div>
+            <h2 class="moderator-section__title">Лента модерации</h2>
+            <p class="moderator-section__text">
+              Самые важные направления смены: апелляции, автоблокировки,
+              документы и health-check правил.
+            </p>
+          </div>
+          <span class="moderator-section__badge moderator-section__badge--muted">Shift view</span>
+        </div>
+
+        <div class="moderator-feed">
+          {{#each moderationFeed}}
+            <article
+              class="moderator-feed__item"
+              data-searchable-card="{{title}} {{meta}} {{description}} {{status}}"
+            >
+              <div class="moderator-feed__main">
+                <div class="moderator-feed__row">
+                  <h3 class="moderator-feed__title">{{title}}</h3>
+                  <span class="moderator-feed__status moderator-feed__status--{{statusTone}}">
+                    {{status}}
+                  </span>
+                </div>
+                <span class="moderator-feed__meta">{{meta}}</span>
+                <p class="moderator-feed__description">{{description}}</p>
+              </div>
+              <div class="moderator-feed__actions">
+                <button type="button">Открыть</button>
+                <button type="button">Назначить</button>
+              </div>
+            </article>
+          {{/each}}
+        </div>
+      </section>
+    </div>
+
+    <aside class="moderator-page__aside">
+      <section class="moderator-section moderator-section--compact">
+        <div class="moderator-section__head">
+          <div>
+            <h2 class="moderator-section__title">Контур доступа</h2>
+            <p class="moderator-section__text">
+              Модераторка отделена от рекламного кабинета и живёт как backoffice-сущность.
+            </p>
+          </div>
+        </div>
+
+        <div class="moderator-access">
+          <a href="/ads" class="moderator-access__button moderator-access__button--secondary" id="moderator-ads-link">
+            Перейти в рекламный кабинет
+          </a>
+          <button type="button" class="moderator-access__button moderator-access__button--primary" id="moderator-logout-button">
+            Выйти из backoffice
+          </button>
+        </div>
+      </section>
+
+      <section class="moderator-section moderator-section--compact">
+        <div class="moderator-section__head">
+          <div>
+            <h2 class="moderator-section__title">Правила и обновления</h2>
+            <p class="moderator-section__text">
+              Что меняется в policy и где у команды больше всего ручной работы.
+            </p>
+          </div>
+        </div>
+
+        <div class="moderator-rules">
+          {{#each ruleUpdates}}
+            <article
+              class="moderator-rules__item"
+              data-searchable-card="{{title}} {{description}} {{impact}}"
+            >
+              <strong class="moderator-rules__title">{{title}}</strong>
+              <p class="moderator-rules__description">{{description}}</p>
+              <span class="moderator-rules__impact">{{impact}}</span>
+            </article>
+          {{/each}}
+        </div>
+      </section>
+
+      <section class="moderator-section moderator-section--compact">
+        <div class="moderator-section__head">
+          <div>
+            <h2 class="moderator-section__title">Контроль смены</h2>
+            <p class="moderator-section__text">
+              Короткий operational checklist перед передачей очереди.
+            </p>
+          </div>
+        </div>
+
+        <div class="moderator-checklist">
+          <label class="moderator-checklist__item">
+            <input type="checkbox" checked />
+            <span>Закрыть кейсы с SLA меньше 10 минут</span>
+          </label>
+          <label class="moderator-checklist__item">
+            <input type="checkbox" checked />
+            <span>Передать ложные срабатывания в продукт</span>
+          </label>
+          <label class="moderator-checklist__item">
+            <input type="checkbox" />
+            <span>Собрать топ-3 причины отклонений за смену</span>
+          </label>
+          <label class="moderator-checklist__item">
+            <input type="checkbox" />
+            <span>Обновить ответ для enterprise-апелляций</span>
+          </label>
+        </div>
+      </section>
+    </aside>
+  </div>
+</section>

@@ -1,0 +1,107 @@
+@use '../../../../../shared/styles/tokens' as t;
+@use '../../../../../shared/styles/mixins';
+
+.navbar {
+  &__logout-modal {
+    @include mixins.modal-overlay;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  &__logout-modal-dialog {
+    width: min(460px, 100%);
+    padding: 24px;
+    border: 1px solid var(--border-panel-soft);
+    border-radius: 24px;
+    background: var(--gradient-modal-surface);
+    box-shadow: var(--shadow-modal-strong), var(--shadow-inset-highlight);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  &__logout-modal-head {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__logout-modal-title {
+    margin: 0;
+    font-size: 20px;
+    line-height: 1.15;
+    font-weight: 800;
+    color: var(--text-heading);
+  }
+
+  &__logout-modal-text {
+    margin: 0;
+    max-width: 340px;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--text-muted);
+  }
+
+  &__logout-modal-illustration {
+    height: 220px;
+    padding: 8px 0;
+    border-radius: 20px;
+    background: transparent;
+    display: grid;
+    place-items: center;
+  }
+
+  &__logout-modal-blob {
+    display: none;
+  }
+
+  &__logout-modal-image {
+    width: min(320px, 92%);
+    max-width: 100%;
+    margin: 8px auto 0;
+    display: block;
+    object-fit: contain;
+    object-position: center;
+    filter: none;
+  }
+
+  &__logout-modal-note {
+    padding: 16px 18px;
+    border-radius: 16px;
+    background: var(--gradient-note-surface);
+    color: var(--text-note);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  &__logout-modal-actions {
+    display: flex;
+    gap: 12px;
+  }
+
+  &__logout-modal-button {
+    flex: 1;
+    height: 52px;
+    border-radius: 14px;
+    border: 1px solid var(--border-strong);
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    @include mixins.interactive-lift(-1px, var(--shadow-button-soft));
+    @include mixins.focus-ring(var(--focus-ring));
+
+    &--primary {
+      border-color: transparent;
+      background: t.$primary-gradient;
+      color: var(--white);
+      box-shadow: t.$shadow-primary;
+    }
+
+    &--secondary {
+      background: var(--white);
+      color: var(--text-body-alt);
+    }
+  }
+}

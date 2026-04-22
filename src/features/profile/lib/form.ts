@@ -67,6 +67,20 @@ export function validateRequired(value: string, message: string): string {
   return value.trim() ? '' : message;
 }
 
+export function getNamedFormValue(
+  form: HTMLFormElement,
+  fieldName: string,
+): string {
+  const field = form.elements.namedItem(fieldName);
+  if (field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement) {
+    return String(field.value || '').trim();
+  }
+  if (field instanceof RadioNodeList) {
+    return String(field.value || '').trim();
+  }
+  return '';
+}
+
 export function validateConfirmationCode(value: string): string {
   if (!value.trim()) {
     return 'Введите код подтверждения';
@@ -234,4 +248,21 @@ export function watchFormState(
   form.addEventListener('input', refresh, { signal });
   form.addEventListener('change', refresh, { signal });
   refresh();
+}
+
+export function getTwoStepSubmitEnabled(
+  form: HTMLFormElement,
+  computeInputEnabled: () => boolean,
+): boolean {
+  return getModalStep(form) === 'input'
+    ? computeInputEnabled()
+    : Boolean(getNamedFormValue(form, 'code'));
+}
+
+export function watchTwoStepFormState(
+  form: HTMLFormElement,
+  signal: AbortSignal,
+  computeInputEnabled: () => boolean,
+): void {
+  watchFormState(form, signal, () => getTwoStepSubmitEnabled(form, computeInputEnabled));
 }

@@ -1,0 +1,197 @@
+@use '../../../shared/styles/tokens' as t;
+@use '../../../shared/styles/mixins';
+
+.moderator-navbar {
+  margin-bottom: 16px;
+  padding: 14px 18px;
+  border: 1px solid rgba(205, 213, 236, 0.72);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 14px 32px rgba(74, 82, 148, 0.1);
+  backdrop-filter: blur(10px);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+
+  &__brand {
+    display: grid;
+    gap: 2px;
+  }
+
+  &__brand-link {
+    color: inherit;
+    display: inline-grid;
+    gap: 2px;
+  }
+
+  &__eyebrow {
+    color: t.$color-primary;
+    font: 700 10px/1.2 t.$font-family-body;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  &__title {
+    color: #262c40;
+    font: 800 22px/1 t.$font-family-heading;
+  }
+
+  &__section {
+    color: #7a839d;
+    font: 500 12px/1.2 t.$font-family-body;
+  }
+
+  &__spacer {
+    min-width: 24px;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+
+  &__theme-btn {
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    border-radius: 999px;
+    @include mixins.focus-ring;
+  }
+
+  &__theme-btn-track {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 44px;
+    height: 24px;
+    border-radius: 999px;
+    background: rgba(104, 100, 255, 0.1);
+    border: 1.5px solid rgba(104, 100, 255, 0.22);
+    transition:
+      background 0.25s ease,
+      border-color 0.25s ease;
+
+    &::before,
+    &::after {
+      position: absolute;
+      font-size: 11px;
+      line-height: 1;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
+    }
+
+    &::before {
+      content: '☀';
+      left: 5px;
+      color: #655fff;
+      opacity: 1;
+    }
+
+    &::after {
+      content: '☾';
+      right: 5px;
+      color: #655fff;
+      opacity: 0.45;
+    }
+  }
+
+  &__theme-btn-thumb {
+    position: absolute;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #655fff, #514bff);
+    box-shadow: 0 2px 6px rgba(101, 95, 255, 0.4);
+    transition: transform 0.25s ease;
+  }
+
+  &__icon-action {
+    min-height: 38px;
+    padding: 0 14px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font: 700 13px/1 t.$font-family-body;
+    cursor: pointer;
+    @include mixins.focus-ring();
+  }
+
+  &__icon-action--secondary {
+    border: 1px solid rgba(215, 221, 238, 0.92);
+    background: rgba(255, 255, 255, 0.96);
+    color: #4a536a;
+  }
+
+  &__icon-action--primary {
+    border: 0;
+    background: t.$primary-gradient;
+    color: #fff;
+    box-shadow: t.$shadow-primary;
+  }
+
+  @include mixins.media-max(t.$bp-xl) {
+    grid-template-columns: 1fr;
+  }
+
+  @include mixins.media-max(t.$bp-sm) {
+    padding: 14px;
+
+    &__actions {
+      flex-wrap: wrap;
+      justify-content: stretch;
+    }
+
+    &__icon-action {
+      flex: 1 1 0;
+    }
+  }
+}
+
+[data-theme='dark'] .moderator-navbar {
+  border-color: rgba(82, 98, 150, 0.44);
+  background: rgba(14, 20, 38, 0.88);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.38);
+
+  .moderator-navbar__title {
+    color: var(--text-heading);
+  }
+
+  .moderator-navbar__section {
+    color: var(--text-soft);
+  }
+
+  .moderator-navbar__icon-action--secondary {
+    border-color: rgba(82, 98, 150, 0.5);
+    background: rgba(26, 36, 62, 0.92);
+    color: var(--text-body-alt);
+  }
+
+  .moderator-navbar__theme-btn-track {
+    background: rgba(125, 110, 255, 0.18);
+    border-color: rgba(125, 110, 255, 0.38);
+
+    &::before {
+      color: #9388ff;
+      opacity: 0.45;
+    }
+
+    &::after {
+      color: #9388ff;
+      opacity: 1;
+    }
+  }
+
+  .moderator-navbar__theme-btn-thumb {
+    transform: translateX(20px);
+    background: linear-gradient(135deg, #9388ff, #7d6eff);
+    box-shadow: 0 2px 6px rgba(125, 110, 255, 0.5);
+  }
+}

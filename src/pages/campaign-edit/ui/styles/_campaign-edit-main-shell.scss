@@ -1,0 +1,218 @@
+﻿@use '../../../../shared/styles/tokens' as t;
+@use '../../../../shared/styles/mixins';
+
+.campaign-edit {
+  display: grid;
+  gap: 18px;
+  padding-bottom: 32px;
+  color: #26324d;
+
+  &__toolbar,
+  &__hero,
+  &__card {
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(170, 186, 255, 0.42);
+    border-radius: 28px;
+    box-shadow: 0 20px 48px rgba(129, 145, 205, 0.14);
+    backdrop-filter: blur(18px);
+  }
+
+  &__toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 18px;
+  }
+
+  &__toolbar-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    &--actions {
+      justify-content: flex-end;
+    }
+  }
+
+  &__toolbar-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 0 22px;
+    border-radius: 16px;
+    border: 1px solid rgba(174, 188, 255, 0.58);
+    background: rgba(255, 255, 255, 0.82);
+    color: #2e3855;
+    font: 600 15px/1.1 'Roboto', sans-serif;
+    cursor: pointer;
+    transition:
+      transform 0.2s ease,
+      border-color 0.2s ease,
+      background-color 0.2s ease,
+      color 0.2s ease,
+      box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      border-color: rgba(112, 118, 255, 0.45);
+      box-shadow: 0 12px 24px rgba(99, 95, 255, 0.14);
+    }
+
+    &--primary {
+      border-color: transparent;
+      background: linear-gradient(135deg, #5f69ff 0%, #5a46f6 100%);
+      color: #fff;
+      box-shadow: 0 16px 36px rgba(90, 70, 246, 0.28);
+    }
+
+    &--danger {
+      color: #ef6a68;
+      background: rgba(255, 245, 245, 0.96);
+      border-color: rgba(255, 180, 180, 0.7);
+    }
+  }
+
+  &__hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 18px;
+    padding: 24px 24px 22px;
+  }
+
+  &__title,
+  &__card-title,
+  &__history-title,
+  &__modal-title,
+  &__preview-title {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    color: #202b45;
+  }
+
+  &__title {
+    font-size: clamp(36px, 4vw, 50px);
+    line-height: 0.96;
+    letter-spacing: -0.05em;
+  }
+
+  &__lead,
+  &__card-text,
+  &__history-text,
+  &__summary-key,
+  &__field-label,
+  &__stat-label,
+  &__modal-text,
+  &__save-state,
+  &__preview-text,
+  &__history-time,
+  &__toast-text {
+    font-family: 'Roboto', sans-serif;
+  }
+
+  &__lead {
+    max-width: 720px;
+    margin: 12px 0 0;
+    color: #7380a3;
+    font-size: 18px;
+    line-height: 1.55;
+  }
+
+  &__hero-badge,
+  &__save-state {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0 16px;
+    border-radius: 999px;
+    font: 700 13px/1 'Roboto', sans-serif;
+    white-space: nowrap;
+  }
+
+  &__hero-badge {
+    background: rgba(255, 233, 196, 0.92);
+    color: #b9821c;
+    align-self: start;
+  }
+
+  &__stats {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  &__stat {
+    display: grid;
+    gap: 8px;
+    min-height: 96px;
+    padding: 18px 20px;
+    border-radius: 22px;
+    border: 1px solid rgba(191, 204, 255, 0.72);
+    background: rgba(255, 255, 255, 0.88);
+  }
+
+  &__stat-label {
+    color: #8d98b5;
+    font-size: 13px;
+    line-height: 1.2;
+  }
+
+  &__stat-value {
+    font: 700 20px/1.12 'Inter', sans-serif;
+    color: #202b45;
+  }
+
+  &__main-grid,
+  &__bottom-grid {
+    display: grid;
+    gap: 18px;
+  }
+
+  &__main-grid {
+    grid-template-columns: minmax(0, 1.2fr) minmax(340px, 0.78fr);
+  }
+
+  &__bottom-grid {
+    grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+  }
+
+  &__card {
+    display: grid;
+    gap: 18px;
+    padding: 22px;
+  }
+
+  &__card-head {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  &__card-title {
+    font-size: 30px;
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  &__card-text {
+    margin: 6px 0 0;
+    color: #7f8ba8;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  &__save-state {
+    background: rgba(203, 248, 220, 0.94);
+    color: #2b9b62;
+
+    &[data-state='dirty'] {
+      background: rgba(255, 237, 188, 0.96);
+      color: #bf8b1b;
+    }
+  }
+
+}

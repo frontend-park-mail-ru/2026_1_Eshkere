@@ -1,0 +1,124 @@
+﻿@use '../../../../../shared/styles/tokens' as t;
+@use '../../../../../shared/styles/mixins';
+
+.balance-modal {
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  &__methods {
+    display: grid;
+    gap: 12px;
+  }
+
+  &__method {
+    display: block;
+    cursor: pointer;
+  }
+
+  &__method input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  &__method-ui {
+    padding: 16px 18px;
+    border: 1px solid rgba(116, 130, 204, 0.18);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.76);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    transition:
+      border-color 0.2s ease,
+      background 0.2s ease,
+      box-shadow 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  &__method-main {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  &__method-title {
+    font: 700 15px/1.2 t.$font-family-heading;
+    color: t.$color-text-main;
+  }
+
+  &__method-caption {
+    color: t.$color-text-muted;
+    font: 400 13px/1.4 t.$font-family-body;
+  }
+
+  &__method-side {
+    display: grid;
+    justify-items: end;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  &__method-badge {
+    min-height: 34px;
+    padding: 0 14px;
+    border-radius: t.$radius-pill;
+    background: rgba(236, 238, 248, 0.92);
+    color: #6d7288;
+    font: 700 12px/1 t.$font-family-body;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+  }
+
+  &__method-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  &__method-action {
+    min-height: 32px;
+    padding: 0 12px;
+    border: 1px solid rgba(215, 221, 238, 0.92);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.96);
+    color: #4a536a;
+    font: 700 12px/1 t.$font-family-body;
+    cursor: pointer;
+    @include mixins.focus-ring();
+  }
+
+  &__method-action--danger {
+    color: t.$color-danger-strong;
+  }
+
+  &__method:hover &__method-ui {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 24px rgba(44, 55, 112, 0.08);
+  }
+
+  &__method input:checked + &__method-ui {
+    border-color: rgba(90, 84, 255, 0.28);
+    background: rgba(239, 239, 255, 0.98);
+    box-shadow: 0 14px 28px rgba(90, 84, 255, 0.12);
+  }
+
+  &__method input:checked + &__method-ui &__method-badge {
+    background: rgba(90, 84, 255, 0.14);
+    color: t.$color-primary;
+  }
+
+  &__method input:focus-visible + &__method-ui {
+    box-shadow:
+      0 0 0 3px rgba(90, 84, 255, 0.16),
+      0 14px 28px rgba(90, 84, 255, 0.12);
+  }
+
+}

@@ -1,0 +1,73 @@
+<section class="moderator-messages-page">
+  <div class="moderator-messages-page__topbar">
+    <div class="moderator-messages-page__title-block">
+      <span class="moderator-messages-page__eyebrow">Client Threads</span>
+      <h1 class="moderator-messages-page__title">Коммуникации</h1>
+      <p class="moderator-messages-page__subtitle">
+        Диалоги с клиентами по кейсам, запросам правок и апелляциям.
+      </p>
+    </div>
+
+    <div class="moderator-messages-page__kpis">
+      <article>
+        <span>Требуют ответа</span>
+        <strong>{{stats.requiresReply}}</strong>
+      </article>
+      <article>
+        <span>В диалоге</span>
+        <strong>{{stats.inProgress}}</strong>
+      </article>
+    </div>
+  </div>
+
+  <div class="moderator-messages-panel">
+    <div class="moderator-messages-toolbar">
+      <input
+        class="moderator-messages-toolbar__search"
+        type="search"
+        placeholder="Поиск по рекламодателю или теме"
+        data-messages-search
+      />
+      <select class="moderator-messages-toolbar__filter" data-messages-status-filter>
+        <option value="all">Все статусы</option>
+        <option value="reply">Требуют ответа</option>
+        <option value="active">В диалоге</option>
+      </select>
+    </div>
+
+    <div class="moderator-thread-list" data-messages-list>
+      {{#each items}}
+        <article
+          class="moderator-thread-card{{#if isRequiresReply}} moderator-thread-card--urgent{{/if}}"
+          data-thread-id="{{id}}"
+          data-status-key="{{statusKey}}"
+          data-searchable="{{advertiser}} {{subject}}"
+        >
+          <div class="moderator-thread-card__head">
+            <div class="moderator-thread-card__head-left">
+              <span class="moderator-thread-card__advertiser">{{advertiser}}</span>
+              <span class="moderator-thread-card__status moderator-thread-card__status--{{statusTone}}">
+                {{status}}
+              </span>
+            </div>
+            <span class="moderator-thread-card__time">{{updatedAt}}</span>
+          </div>
+
+          <h3 class="moderator-thread-card__subject">{{subject}}</h3>
+
+          <p class="moderator-thread-card__preview">{{lastMessage}}</p>
+
+          {{#if isRequiresReply}}
+            <div class="moderator-thread-card__badge">
+              <span>Ожидает вашего ответа</span>
+            </div>
+          {{/if}}
+        </article>
+      {{/each}}
+    </div>
+
+    <div class="moderator-messages-empty" data-messages-empty hidden>
+      Диалоги не найдены. Попробуйте изменить фильтр или поисковый запрос.
+    </div>
+  </div>
+</section>

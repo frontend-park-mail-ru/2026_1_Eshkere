@@ -1,0 +1,105 @@
+.campaign-statistics {
+  &__hero,
+  &__metric-card,
+  &__card {
+    background: rgba(255, 255, 255, 0.86);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(214, 219, 244, 0.9);
+    box-shadow: var(--shadow-soft);
+  }
+
+  &__hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+    gap: 18px;
+    align-items: end;
+    border-radius: 24px;
+    padding: 24px 28px;
+  }
+
+  &__hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  &__status,
+  &__hero-period,
+  &__metric-delta,
+  &__table-cell--primary span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 0 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  &__status--success,
+  &__insight--positive {
+    background: rgba(24, 160, 107, 0.12);
+    color: #13845a;
+  }
+
+  &__status--warning,
+  &__insight--warning {
+    background: rgba(255, 193, 92, 0.16);
+    color: #b77919;
+  }
+
+  &__status--muted,
+  &__insight--neutral {
+    background: rgba(104, 100, 255, 0.1);
+    color: #5854df;
+  }
+
+  &__hero-period {
+    background: rgba(242, 244, 253, 0.95);
+    color: var(--text-label);
+  }
+
+  &__title {
+    font-size: clamp(28px, 3vw, 38px);
+    line-height: 1.05;
+  }
+
+  &__lead,
+  &__hero-note-text,
+  &__insight-text,
+  &__card-text {
+    color: var(--text-note);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  &__lead {
+    margin-top: 8px;
+    max-width: 760px;
+  }
+
+  &__hero-note {
+    display: grid;
+    gap: 8px;
+    padding: 18px 20px;
+    border-radius: 20px;
+    background: linear-gradient(180deg, rgba(245, 246, 255, 0.96) 0%, #fff 100%);
+    border: 1px solid rgba(198, 204, 241, 0.9);
+
+    strong {
+      font-size: 22px;
+      line-height: 1.1;
+    }
+  }
+
+  &__hero-note-label,
+  &__metric-label,
+  &__detail-label,
+  &__insight-label,
+  &__chart-summary-item span {
+    color: var(--text-soft);
+    font-size: 12px;
+    letter-spacing: 0.01em;
+  }
+}

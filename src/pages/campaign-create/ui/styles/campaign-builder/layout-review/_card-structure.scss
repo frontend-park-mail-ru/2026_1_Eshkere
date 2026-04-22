@@ -1,0 +1,116 @@
+@use '../../../../../../shared/styles/tokens' as t;
+
+.campaign-builder {
+  &__card-head {
+    margin-bottom: 18px;
+
+    &--spread {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+  }
+
+  &__card-head .campaign-builder__card-subtitle {
+    max-width: 38ch;
+  }
+
+  &__card-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1.05;
+  }
+
+  &__form,
+  &__metrics,
+  &__summary-list,
+  &__stack {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  &__stack--tight {
+    gap: 10px;
+  }
+
+  &__summary-list--compact {
+    gap: 10px;
+  }
+
+  &__summary-list--review {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  &__summary-list--review-details {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  &__review-status {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  &__review-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 2px;
+  }
+
+  &__review-copy {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__review-title {
+    display: block;
+    margin-bottom: 0;
+    font-family: t.$font-family-heading;
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.1;
+    color: #1f2740;
+  }
+
+  &__review-text {
+    font-family: t.$font-family-body;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #67708d;
+  }
+
+  &__card--review-status .campaign-builder__summary-list--review {
+    gap: 10px;
+  }
+
+  &__card--review-status .campaign-builder__summary-item {
+    min-width: 0;
+    min-height: 78px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 4px;
+  }
+
+  &__card--review-status .campaign-builder__summary-item strong {
+    margin-top: 0;
+    width: 100%;
+    text-align: left;
+    line-height: 1.35;
+    word-break: normal;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+  }
+}

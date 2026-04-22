@@ -1,0 +1,43 @@
+@use '../../../../../../shared/styles/tokens' as t;
+
+.campaign-builder {
+  &__timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__timeline-item {
+    position: relative;
+    padding-left: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 7px;
+      left: 0;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #356df3 0%, #5c56ff 100%);
+      box-shadow: 0 0 0 5px rgba(92, 86, 255, 0.12);
+    }
+
+    strong {
+      font-family: t.$font-family-heading;
+      font-size: 14px;
+      font-weight: 800;
+      color: #1f2740;
+    }
+
+    span {
+      font-family: t.$font-family-body;
+      font-size: 13px;
+      line-height: 1.55;
+      color: #67708d;
+    }
+  }
+}

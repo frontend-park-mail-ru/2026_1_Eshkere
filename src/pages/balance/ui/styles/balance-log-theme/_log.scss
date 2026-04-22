@@ -1,0 +1,30 @@
+html[data-theme='dark'] {
+  .balance-log {
+    &__filter,
+    &__search-input,
+    &__export {
+      border: none;
+      background: rgba(22, 31, 57, 0.9);
+      color: var(--text-main);
+    }
+
+    &__filter.is-active {
+      border: none;
+      background: var(--primary-surface-strong);
+      color: var(--primary-soft);
+    }
+
+    &__empty {
+      border: none;
+      background: rgba(22, 31, 57, 0.88);
+    }
+
+    &__empty-title {
+      color: var(--text-main);
+    }
+
+    &__empty-text {
+      color: var(--text-muted);
+    }
+  }
+}

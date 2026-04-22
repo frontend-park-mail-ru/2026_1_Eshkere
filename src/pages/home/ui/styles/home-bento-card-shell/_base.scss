@@ -1,0 +1,269 @@
+@use '../../../../../shared/styles/tokens' as t;
+@use '../../../../../shared/styles/mixins';
+
+.bento-card {
+  position: relative;
+  grid-column: span 2;
+  overflow: hidden;
+  min-height: 290px;
+  padding: 28px;
+  border-radius: 30px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(244, 247, 255, 0.88) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 28px 52px -24px rgba(70, 78, 140, 0.34),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  transform: translate3d(0, 0, 0);
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+  will-change: transform, box-shadow;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at top right, rgba(188, 133, 255, 0.18), transparent 34%),
+      radial-gradient(circle at bottom left, rgba(119, 174, 255, 0.14), transparent 32%);
+    pointer-events: none;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(
+      220px circle at var(--gx, 50%) var(--gy, 30%),
+      rgba(255, 255, 255, 0.6),
+      transparent 60%
+    );
+    transition: opacity 0.3s ease;
+  }
+
+  &.is-tilting {
+    border-color: rgba(145, 136, 255, 0.4);
+    box-shadow:
+      0 34px 64px -28px rgba(70, 78, 140, 0.42),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.58);
+  }
+
+  &.is-tilting::after {
+    opacity: 1;
+  }
+
+  &:hover {
+    transform: translate3d(0, -8px, 0);
+    border-color: rgba(145, 136, 255, 0.36);
+    box-shadow:
+      0 38px 72px -30px rgba(70, 78, 140, 0.44),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+  }
+
+  &:hover::after {
+    opacity: 1;
+  }
+
+  &:hover .bento-card__title {
+    color: #121934;
+  }
+
+  &:hover .bento-card__text {
+    color: #56617e;
+  }
+
+  &:hover .bento-card__media img {
+    transform: translateY(-4px) scale(1.04);
+  }
+
+  &:hover .bento-card__platforms span {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 28px -18px rgba(70, 78, 140, 0.48);
+    border-color: rgba(145, 136, 255, 0.3);
+  }
+
+  &:hover .bento-card__chart {
+    border-color: rgba(186, 197, 238, 0.98);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.76),
+      0 18px 30px -24px rgba(90, 101, 170, 0.44);
+  }
+
+  &--wide {
+    grid-column: span 4;
+  }
+
+  &--phone {
+    grid-column: span 2;
+  }
+
+  &--accent {
+    grid-column: span 2;
+  }
+
+  &--stats {
+    grid-column: span 2;
+  }
+
+  &--platforms {
+    grid-column: span 2;
+  }
+
+  &--gift {
+    grid-column: span 2;
+  }
+
+  @include mixins.media-max(t.$bp-md) {
+    &,
+    &--wide,
+    &--phone,
+    &--accent,
+    &--gift {
+      grid-column: span 2;
+    }
+  }
+
+  @include mixins.media-max(t.$bp-sm) {
+    &,
+    &--wide,
+    &--phone,
+    &--accent,
+    &--gift {
+      grid-column: span 1;
+    }
+  }
+
+  &__content {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-self: flex-start;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #5855ff, #b44bff);
+    color: var(--white);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  &__title {
+    max-width: 20ch;
+    font-size: 18px;
+    font-weight: 800;
+    color: #20263a;
+    margin: 0;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  &__text {
+    max-width: 42ch;
+    font-size: 14px;
+    color: #687089;
+    margin: 0;
+    line-height: 1.55;
+  }
+
+  &__media {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    min-height: 132px;
+    margin: 0 -4px -6px;
+
+    img {
+      max-width: 100%;
+      max-height: 180px;
+      object-fit: contain;
+      filter: drop-shadow(0 18px 28px rgba(82, 92, 166, 0.2));
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), filter 0.35s ease;
+    }
+
+    &--phone img {
+      max-height: 210px;
+      transform: translateY(6px) rotate(-7deg) scale(1.06);
+    }
+  }
+
+  &__glow {
+    position: absolute;
+    inset: -30%;
+    background: radial-gradient(circle at 30% 30%, rgba(180, 75, 255, 0.25), transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  &__chart {
+    position: relative;
+    z-index: 1;
+    height: 124px;
+    margin: 0 -4px -6px;
+    padding: 18px 16px 14px;
+    border-radius: 22px;
+    background:
+      linear-gradient(180deg, rgba(242, 245, 255, 0.92) 0%, rgba(255, 255, 255, 0.82) 100%);
+    border: 1px solid rgba(220, 227, 250, 0.95);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+
+    &-line {
+      stroke: url(#bento-chart-grad);
+      stroke-width: 3;
+      fill: none;
+      stroke-linecap: round;
+      stroke-dasharray: 400 0;
+      animation: chart-draw 2.4s ease-out 0.6s forwards;
+    }
+  }
+
+  &__platforms {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 16px 0 0;
+    margin-top: auto;
+    border-top: 1px solid rgba(224, 230, 248, 0.85);
+
+    span {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(243, 246, 255, 0.9) 100%);
+      border: 1px solid rgba(221, 228, 246, 0.98);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 12px 22px -18px rgba(70, 78, 140, 0.42);
+      transition:
+        transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.28s ease,
+        border-color 0.28s ease;
+
+      img {
+        width: 22px;
+        height: 22px;
+        object-fit: contain;
+      }
+    }
+  }
+}

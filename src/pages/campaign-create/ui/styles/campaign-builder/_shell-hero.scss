@@ -1,0 +1,61 @@
+@use '../../../../../shared/styles/tokens' as t;
+@use '../../../../../shared/styles/mixins';
+
+.campaign-builder {
+  &__hero {
+    position: relative;
+    z-index: 1;
+    padding: 24px 26px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  &__hero-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  &__title {
+    margin: 0;
+    font-family: t.$font-family-heading;
+    font-size: clamp(30px, 4vw, 42px);
+    line-height: 0.98;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: #182033;
+  }
+
+  &__subtitle {
+    margin: 0;
+    max-width: 720px;
+    font-family: t.$font-family-body;
+    font-size: 15px;
+    line-height: 1.65;
+    color: #6e758e;
+  }
+
+  &__meta-label,
+  &__hint,
+  &__card-subtitle,
+  &__panel-note,
+  &__summary-item span,
+  &__metric-label,
+  &__stack-text,
+  &__health-text,
+  &__hero-meta-text span {
+    font-size: 13px;
+    line-height: 1.55;
+    color: #7d859b;
+  }
+
+  &__meta-value,
+  &__health-title,
+  &__hero-meta-text strong {
+    font-family: t.$font-family-heading;
+    font-size: 16px;
+    font-weight: 800;
+    color: #1f2740;
+  }
+}

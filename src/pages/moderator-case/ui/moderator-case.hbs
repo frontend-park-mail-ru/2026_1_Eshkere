@@ -1,0 +1,341 @@
+<section class="moderator-case-page">
+  <div class="moderator-case-page__hero">
+    <div class="moderator-case-page__hero-head">
+      <div>
+        <a class="moderator-case-page__back" href="/moderator/queue">← Назад к очереди</a>
+        <span class="moderator-case-page__eyebrow">{{detail.objectType}} · Case #{{detail.id}}</span>
+        <h1 class="moderator-case-page__title">{{detail.title}}</h1>
+        <p class="moderator-case-page__subtitle">{{detail.summary}}</p>
+      </div>
+
+      <div class="moderator-case-page__hero-status">
+        <span class="moderator-case-page__status-badge" data-case-status>{{detail.status}}</span>
+        <p data-case-status-text>Модератор смотрит реальную пользовательскую конфигурацию кампании, проверяет риск-сигналы и фиксирует итоговое решение по policy.</p>
+      </div>
+    </div>
+
+    <div class="moderator-case-page__hero-meta">
+      <article><span>Рекламодатель</span><strong>{{detail.advertiser}}</strong></article>
+      <article><span>Платформа</span><strong>{{detail.platform}}</strong></article>
+      <article><span>SLA</span><strong>{{detail.sla}}</strong></article>
+      <article><span>Исполнитель</span><strong>{{detail.assignedTo}}</strong></article>
+    </div>
+  </div>
+
+  <div class="moderator-case-page__layout">
+    <div class="moderator-case-page__main">
+      <section class="moderator-card moderator-workspace">
+        <div class="moderator-workspace__topline">
+          <div>
+            <h2 class="moderator-card__title">Просмотр отправленной кампании</h2>
+            <p>Экран повторяет логику создания кампании, но без редактирования. Модератор видит, что именно отправил пользователь в модерацию.</p>
+          </div>
+          <div class="moderator-workspace__summary">
+            <article>
+              <span>Следующий шаг</span>
+              <strong data-case-next-step>Сверьте оффер, креативы, аудиторию и бюджет, затем выберите решение и дайте понятный ответ клиенту.</strong>
+            </article>
+          </div>
+        </div>
+
+        <div class="moderator-tabs" role="tablist" aria-label="Сценарий модерации">
+          <button class="moderator-tabs__button is-active" type="button" role="tab" aria-selected="true" data-case-tab="materials">
+            Обзор кампании
+          </button>
+          <button class="moderator-tabs__button" type="button" role="tab" aria-selected="false" data-case-tab="checks">
+            Проверка
+          </button>
+          <button class="moderator-tabs__button" type="button" role="tab" aria-selected="false" data-case-tab="dialog">
+            Диалог
+          </button>
+          <button class="moderator-tabs__button" type="button" role="tab" aria-selected="false" data-case-tab="timeline">
+            История
+          </button>
+        </div>
+
+        <div class="moderator-tab-panel is-active" data-case-panel="materials">
+          <div class="moderator-review-layout">
+            <section class="campaign-builder__card campaign-builder__card--message moderator-review-card">
+              <div class="campaign-builder__card-head">
+                <h3 class="campaign-builder__card-title">Основные данные</h3>
+                <p class="campaign-builder__card-subtitle">То, что пользователь заполнил в шаге с оффером и сообщением.</p>
+              </div>
+
+              <div class="campaign-builder__summary-list campaign-builder__summary-list--compact">
+                <div class="campaign-builder__summary-item"><span>Внутреннее название</span><strong>{{detail.submission.name}}</strong></div>
+                <div class="campaign-builder__summary-item"><span>Формат</span><strong>{{detail.submission.formatLabel}}</strong></div>
+                <div class="campaign-builder__summary-item"><span>Цель</span><strong>{{detail.submission.goalLabel}}</strong></div>
+                <div class="campaign-builder__summary-item"><span>Плейсменты</span><strong>{{detail.submission.placements}}</strong></div>
+              </div>
+
+              <div class="moderator-review-copy">
+                <article>
+                  <span>Заголовок</span>
+                  <strong>{{detail.submission.headline}}</strong>
+                </article>
+                <article>
+                  <span>Текст объявления</span>
+                  <p>{{detail.submission.description}}</p>
+                </article>
+                <article>
+                  <span>Кнопка</span>
+                  <strong>{{detail.submission.cta}}</strong>
+                </article>
+                <article>
+                  <span>Ссылка перехода</span>
+                  <a href="{{detail.submission.link}}" target="_blank" rel="noreferrer">{{detail.submission.link}}</a>
+                </article>
+              </div>
+
+              <div class="moderator-review-note">
+                <span>Контекст модерации</span>
+                <p>{{detail.submission.moderationNote}}</p>
+              </div>
+            </section>
+
+            <section class="campaign-builder__card campaign-builder__card--preview moderator-review-card">
+              <div class="campaign-builder__card-head">
+                <h3 class="campaign-builder__card-title">Предпросмотр объявления</h3>
+                <p class="campaign-builder__card-subtitle">Так модератор видит пользовательскую сборку в компактном виде.</p>
+              </div>
+
+              <div class="campaign-preview">
+                <div class="campaign-preview__frame">
+                  <div class="campaign-preview__visual">
+                    <div class="campaign-preview__visual-copy">
+                      <span class="campaign-preview__visual-badge">{{detail.submission.goalLabel}}</span>
+                      <strong>{{detail.submission.formatLabel}}</strong>
+                    </div>
+                  </div>
+                  <span class="campaign-preview__badge">Реклама</span>
+                  <strong class="campaign-preview__headline">{{detail.submission.headline}}</strong>
+                  <p class="campaign-preview__description">{{detail.submission.description}}</p>
+                  <button class="campaign-preview__cta" type="button">{{detail.submission.cta}}</button>
+                </div>
+              </div>
+            </section>
+
+            <section class="campaign-builder__card campaign-builder__card--wide moderator-review-card">
+              <div class="campaign-builder__card-head">
+                <h3 class="campaign-builder__card-title">Креативы и материалы</h3>
+                <p class="campaign-builder__card-subtitle">{{detail.submission.creativeType}}. Модератор сверяет визуал и текст с фактическим оффером.</p>
+              </div>
+
+              <div class="moderator-review-assets">
+                {{#each detail.submission.creativeAssets}}
+                  <article class="moderator-review-assets__item">
+                    <div class="moderator-review-assets__head">
+                      <div>
+                        <strong>{{title}}</strong>
+                        <span>{{meta}}</span>
+                      </div>
+                      <mark>{{status}}</mark>
+                    </div>
+                    <p>{{note}}</p>
+                  </article>
+                {{/each}}
+              </div>
+            </section>
+
+            <section class="campaign-builder__card moderator-review-card">
+              <div class="campaign-builder__card-head">
+                <h3 class="campaign-builder__card-title">Аудитория</h3>
+                <p class="campaign-builder__card-subtitle">Упрощённый read-only срез таргетинга из шага настройки аудитории.</p>
+              </div>
+
+              <div class="campaign-builder__summary-list campaign-builder__summary-list--compact">
+                <div class="campaign-builder__summary-item"><span>География</span><strong>{{detail.submission.audience.cities}}</strong></div>
+                <div class="campaign-builder__summary-item"><span>Возраст</span><strong>{{detail.submission.audience.ageRange}}</strong></div>
+                <div class="campaign-builder__summary-item"><span>Профиль</span><strong>{{detail.submission.audience.profileTags}}</strong></div>
+                <div class="campaign-builder__summary-item"><span>Интересы</span><strong>{{detail.submission.audience.interests}}</strong></div>
+                <div class="campaign-builder__summary-item"><span>Исключения</span><strong>{{detail.submission.audience.exclusions}}</strong></div>
+                <div class="campaign-builder__summary-item"><span>Режим</span><strong>{{detail.submission.audience.matchingMode}}</strong></div>
+              </div>
+
+              <div class="moderator-review-note moderator-review-note--soft">
+                <span>Расширение</span>
+                <p>{{detail.submission.audience.expansionLabel}}</p>
+              </div>
+            </section>
+
+            <section class="campaign-builder__card moderator-review-card">
+              <div class="campaign-builder__card-head">
+                <h3 class="campaign-builder__card-title">Бюджет и прогноз</h3>
+                <p class="campaign-builder__card-subtitle">Параметры запуска, которые пользователь отправил вместе с кампанией.</p>
+              </div>
+
+              <div class="campaign-builder__summary-list campaign-builder__summary-list--compact">
+                <div class="campaign-builder__summary-item"><span>Дневной бюджет</span><strong>{{detail.submission.budget.dailyBudget}}</strong></div>
+                <div class="campaign-builder__summary-item"><span>Общий лимит</span><strong>{{detail.submission.budget.totalBudget}}</strong></div>
+                <div class="campaign-builder__summary-item"><span>Период</span><strong>{{detail.submission.budget.period}}</strong></div>
+                <div class="campaign-builder__summary-item"><span>Стратегия</span><strong>{{detail.submission.budget.strategy}}</strong></div>
+                <div class="campaign-builder__summary-item"><span>Охват</span><strong>{{detail.submission.budget.forecastReach}}</strong></div>
+                <div class="campaign-builder__summary-item"><span>Клики</span><strong>{{detail.submission.budget.forecastClicks}}</strong></div>
+                <div class="campaign-builder__summary-item"><span>Средний CPC</span><strong>{{detail.submission.budget.forecastCpc}}</strong></div>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <div class="moderator-tab-panel" data-case-panel="checks" hidden>
+          <div class="moderator-panel-grid">
+            <section class="moderator-card moderator-card--inner">
+              <h3 class="moderator-card__title">Проверка по policy</h3>
+              <div class="moderator-checks">
+                {{#each detail.checks}}
+                  <article class="moderator-checks__item moderator-checks__item--{{state}}">
+                    <strong>{{label}}</strong>
+                    <span>{{state}}</span>
+                  </article>
+                {{/each}}
+              </div>
+            </section>
+
+            <section class="moderator-card moderator-card--inner">
+              <h3 class="moderator-card__title">Основание решения</h3>
+              <div class="moderator-policy-links">
+                {{#each detail.policyReferences}}
+                  <button
+                    class="moderator-policy-links__item {{#if @first}}is-active{{/if}}"
+                    type="button"
+                    data-policy-option="{{code}}"
+                    aria-pressed="{{#if @first}}true{{else}}false{{/if}}"
+                  >
+                    <span>{{code}}</span>
+                    <strong>{{title}}</strong>
+                    <p>{{description}}</p>
+                  </button>
+                {{/each}}
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <div class="moderator-tab-panel" data-case-panel="dialog" hidden>
+          <section class="moderator-card moderator-card--inner">
+            <div class="moderator-section-head">
+              <div>
+                <h3 class="moderator-card__title">Диалог с клиентом</h3>
+                <p>Используйте публичный комментарий, когда нужно запросить правки, документы или объяснить решение.</p>
+              </div>
+              <div class="moderator-thread__meta">
+                <span>Case {{detail.id}}</span>
+                <strong>{{detail.advertiser}}</strong>
+              </div>
+            </div>
+
+            <div class="moderator-thread" data-case-thread>
+              {{#each detail.messages}}
+                <article class="moderator-thread__item moderator-thread__item--{{author}}">
+                  <div class="moderator-thread__head">
+                    <strong>{{authorName}}</strong>
+                    <span>{{timestamp}}</span>
+                  </div>
+                  <p>{{text}}</p>
+                </article>
+              {{/each}}
+            </div>
+          </section>
+        </div>
+
+        <div class="moderator-tab-panel" data-case-panel="timeline" hidden>
+          <section class="moderator-card moderator-card--inner">
+            <h3 class="moderator-card__title">История модерации</h3>
+            <div class="moderator-timeline" data-case-timeline>
+              <article class="moderator-timeline__item">
+                <div class="moderator-timeline__dot" aria-hidden="true"></div>
+                <div class="moderator-timeline__content">
+                  <strong>Кейс создан</strong>
+                  <span>{{detail.submittedAt}}</span>
+                  <p>Материал поступил в очередь с приоритетом {{detail.priority}} и этапом {{detail.stage}}.</p>
+                </div>
+              </article>
+              <article class="moderator-timeline__item">
+                <div class="moderator-timeline__dot" aria-hidden="true"></div>
+                <div class="moderator-timeline__content">
+                  <strong>Назначен исполнитель</strong>
+                  <span>{{detail.submittedAt}}</span>
+                  <p>Текущий ответственный: {{detail.assignedTo}}.</p>
+                </div>
+              </article>
+              {{#each detail.internalNotes}}
+                <article class="moderator-timeline__item">
+                  <div class="moderator-timeline__dot" aria-hidden="true"></div>
+                  <div class="moderator-timeline__content">
+                    <strong>Внутренняя заметка</strong>
+                    <span>Черновой контекст</span>
+                    <p>{{this}}</p>
+                  </div>
+                </article>
+              {{/each}}
+            </div>
+          </section>
+        </div>
+      </section>
+    </div>
+
+    <aside class="moderator-case-page__aside">
+      <section class="moderator-card moderator-action-panel">
+        <div class="moderator-section-head">
+          <div>
+            <h2 class="moderator-card__title">Решение по кейсу</h2>
+            <p>Выберите итог, привяжите policy и подготовьте действия для клиента и команды.</p>
+          </div>
+        </div>
+
+        <div class="moderator-action-panel__summary">
+          <article>
+            <span>Решение</span>
+            <strong data-selected-decision>Не выбрано</strong>
+          </article>
+          <article>
+            <span>Основание</span>
+            <strong data-selected-policy>Без ссылки</strong>
+          </article>
+        </div>
+
+        <input type="hidden" value="{{initialDecisionId}}" data-decision-input />
+        <input type="hidden" value="{{initialPolicyCode}}" data-policy-input />
+
+        <div class="moderator-decisions">
+          {{#each detail.decisions}}
+            <button
+              class="moderator-decisions__button moderator-decisions__button--{{tone}} {{#if @first}}is-active{{/if}}"
+              type="button"
+              data-decision-option="{{id}}"
+              aria-pressed="{{#if @first}}true{{else}}false{{/if}}"
+            >
+              <strong>{{label}}</strong>
+              <span>{{note}}</span>
+            </button>
+          {{/each}}
+        </div>
+
+        <label class="moderator-field">
+          <span>Публичный комментарий клиенту</span>
+          <textarea
+            rows="5"
+            placeholder="Например: уберите обещание гарантированного дохода, добавьте дисклеймер и отправьте обновлённый креатив на повторную проверку."
+            data-public-reply
+          ></textarea>
+        </label>
+
+        <label class="moderator-field">
+          <span>Внутренняя заметка</span>
+          <textarea
+            rows="4"
+            placeholder="Зафиксируйте, что важно для следующего модератора, лида или апелляции."
+            data-internal-note
+          ></textarea>
+        </label>
+
+        <div class="moderator-action-panel__controls">
+          <button class="moderator-primary-button" type="button" data-apply-decision>
+            Применить решение
+          </button>
+          <p>После применения экран обновит статус кейса, историю и публичный диалог.</p>
+        </div>
+      </section>
+    </aside>
+  </div>
+</section>

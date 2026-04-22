@@ -1,0 +1,24 @@
+html[data-theme='dark'] {
+  .campaign-preview {
+    &__frame {
+      background:
+        radial-gradient(circle at top left, rgba(120, 152, 255, 0.18), transparent 36%),
+        linear-gradient(160deg, #0f1528 0%, #151d36 55%, #1e2551 100%);
+      box-shadow: var(--shadow-floating);
+    }
+
+    &__badge {
+      color: #cfcaff;
+      background: rgba(125, 110, 255, 0.24);
+    }
+
+    &__description {
+      color: rgba(225, 230, 255, 0.72);
+    }
+
+    &__cta {
+      background: linear-gradient(135deg, #6f63e6 0%, #4f47c9 100%);
+      box-shadow: var(--shadow-primary-soft);
+    }
+  }
+}

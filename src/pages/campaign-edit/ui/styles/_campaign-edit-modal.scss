@@ -1,0 +1,148 @@
+﻿@use '../../../../shared/styles/tokens' as t;
+@use '../../../../shared/styles/mixins';
+
+.campaign-edit {
+  &__modal {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: rgba(16, 20, 34, 0.36);
+    backdrop-filter: blur(8px);
+
+    &[hidden] {
+      display: none !important;
+    }
+  }
+
+  &__modal-dialog {
+    width: min(100%, 460px);
+    display: grid;
+    gap: 20px;
+    padding: 28px;
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.98);
+    border: none;
+    box-shadow: 0 28px 56px rgba(44, 51, 92, 0.24);
+  }
+
+  &__modal-title {
+    font-size: 30px;
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  &__modal-text {
+    margin: 10px 0 0;
+    color: #7985a4;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  &__modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+
+  @include mixins.media-max(t.$bp-xl) {
+    &__main-grid,
+    &__bottom-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @include mixins.media-max(t.$bp-md) {
+    &__toolbar,
+    &__hero,
+    &__card {
+      border-radius: 24px;
+    }
+
+    &__toolbar {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    &__toolbar-group,
+    &__toolbar-group--actions {
+      justify-content: stretch;
+    }
+
+    &__toolbar-button {
+      width: 100%;
+    }
+
+    &__hero {
+      grid-template-columns: 1fr;
+      padding: 22px 18px 18px;
+    }
+
+    &__stats {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    &__card {
+      padding: 18px;
+    }
+
+    &__card-head {
+      flex-direction: column;
+      align-items: start;
+    }
+
+    &__form {
+      grid-template-columns: 1fr;
+    }
+
+    &__history-item {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    &__summary-row {
+      align-items: start;
+      flex-direction: column;
+      justify-content: center;
+      padding: 14px 16px;
+    }
+  }
+
+  @include mixins.media-max(t.$bp-sm) {
+    gap: 14px;
+
+    &__title {
+      font-size: 34px;
+    }
+
+    &__lead {
+      font-size: 16px;
+    }
+
+    &__stats {
+      grid-template-columns: 1fr;
+    }
+
+    &__modal {
+      padding: 16px;
+    }
+
+    &__toast {
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
+      width: auto;
+    }
+
+    &__modal-dialog {
+      padding: 22px;
+    }
+
+    &__modal-actions {
+      flex-direction: column;
+    }
+  }
+}
+}

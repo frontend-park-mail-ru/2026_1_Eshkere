@@ -1,0 +1,122 @@
+﻿@use '../../../../../shared/styles/tokens' as t;
+@use '../../../../../shared/styles/mixins';
+
+.campaign-builder {
+  &__layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+
+  &__main,
+  &__sidebar,
+  &__panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  &__sidebar {
+    position: sticky;
+    top: 20px;
+
+    &[hidden] {
+      display: none !important;
+    }
+  }
+
+  &__panel[hidden] {
+    display: none !important;
+  }
+
+  &__grid {
+    display: grid;
+    gap: 20px;
+    align-items: start;
+
+    &--content {
+      grid-template-columns: minmax(0, 1.6fr) minmax(0, 0.72fr);
+      align-items: stretch;
+    }
+
+    &--audience,
+    &--budget {
+      grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+    }
+
+    &--publication {
+      grid-template-columns: minmax(0, 1.12fr) minmax(360px, 0.88fr);
+      grid-template-areas:
+        'status preview'
+        'summary checks';
+    }
+  }
+
+  &__grid--audience {
+    align-items: stretch;
+  }
+
+  &__grid--audience > .campaign-builder__card {
+    height: 100%;
+  }
+
+  &__grid--publication {
+    align-items: start;
+  }
+
+  &__grid--publication > .campaign-builder__card {
+    display: flex;
+    flex-direction: column;
+    align-self: start;
+  }
+
+  &__card {
+    padding: 22px;
+  }
+
+  &__card--message {
+    min-width: 0;
+    height: 100%;
+    padding-block: 20px 18px;
+    background:
+      radial-gradient(circle at top left, rgba(120, 166, 255, 0.1), transparent 34%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(246, 249, 255, 0.96) 100%);
+  }
+
+  &__card--preview {
+    min-width: 0;
+    align-self: start;
+    padding: 20px 24px 16px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__card--publication-preview {
+    grid-area: preview;
+    align-self: start;
+  }
+
+  &__card--review-status {
+    grid-area: status;
+  }
+
+  &__card--review-summary {
+    grid-area: summary;
+  }
+
+  &__card--review-checks {
+    grid-area: checks;
+  }
+
+  &__card--accent {
+    background:
+      radial-gradient(circle at top left, rgba(120, 181, 255, 0.18), transparent 36%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(242, 247, 255, 0.96) 100%);
+  }
+
+  &__card--wide {
+    grid-column: 1 / -1;
+  }
+
+}

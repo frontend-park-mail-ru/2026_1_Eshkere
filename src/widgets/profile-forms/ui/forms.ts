@@ -1,4 +1,5 @@
 import { normalizePhone } from 'shared/validators';
+import { getNamedFormValue, getTwoStepSubmitEnabled } from 'features/profile/lib/form';
 import type { ProfileState } from 'features/profile/model/types';
 
 interface PopulateProfileFormsParams {
@@ -7,7 +8,6 @@ interface PopulateProfileFormsParams {
 }
 
 interface RefreshProfileFormStatesParams {
-  getModalStep: (form: HTMLFormElement) => 'input' | 'confirm';
   setSubmitEnabled: (form: HTMLFormElement, enabled: boolean) => void;
   state: ProfileState;
 }
@@ -143,7 +143,6 @@ export function populateProfileForms({
 }
 
 export function refreshProfileFormStates({
-  getModalStep,
   setSubmitEnabled,
   state,
 }: RefreshProfileFormStatesParams): void {
@@ -165,40 +164,37 @@ export function refreshProfileFormStates({
 
   const emailForm = document.getElementById('profile-email-form');
   if (emailForm instanceof HTMLFormElement) {
-    const email = String((emailForm.elements.namedItem('email') as HTMLInputElement)?.value || '').trim();
-    const code = String((emailForm.elements.namedItem('code') as HTMLInputElement)?.value || '').trim();
     setSubmitEnabled(
       emailForm,
-      getModalStep(emailForm) === 'input'
-        ? Boolean(email) && email !== state.email
-        : Boolean(code),
+      getTwoStepSubmitEnabled(emailForm, () => {
+        const email = getNamedFormValue(emailForm, 'email');
+        return Boolean(email) && email !== state.email;
+      }),
     );
   }
 
   const phoneForm = document.getElementById('profile-phone-form');
   if (phoneForm instanceof HTMLFormElement) {
-    const phone = String((phoneForm.elements.namedItem('phone') as HTMLInputElement)?.value || '').trim();
-    const code = String((phoneForm.elements.namedItem('code') as HTMLInputElement)?.value || '').trim();
     setSubmitEnabled(
       phoneForm,
-      getModalStep(phoneForm) === 'input'
-        ? Boolean(phone) && normalizePhone(phone) !== normalizePhone(state.phone)
-        : Boolean(code),
+      getTwoStepSubmitEnabled(phoneForm, () => {
+        const phone = getNamedFormValue(phoneForm, 'phone');
+        return Boolean(phone) && normalizePhone(phone) !== normalizePhone(state.phone);
+      }),
     );
   }
 
   const paymentForm = document.getElementById('profile-payment-form');
   if (paymentForm instanceof HTMLFormElement) {
-    const cardNumber = String((paymentForm.elements.namedItem('cardNumber') as HTMLInputElement)?.value || '').trim();
-    const expiryDate = String((paymentForm.elements.namedItem('expiryDate') as HTMLInputElement)?.value || '').trim();
-    const holderName = String((paymentForm.elements.namedItem('holderName') as HTMLInputElement)?.value || '').trim();
-    const cvv = String((paymentForm.elements.namedItem('cvv') as HTMLInputElement)?.value || '').trim();
-    const code = String((paymentForm.elements.namedItem('code') as HTMLInputElement)?.value || '').trim();
     setSubmitEnabled(
       paymentForm,
-      getModalStep(paymentForm) === 'input'
-        ? Boolean(cardNumber || expiryDate || holderName || cvv)
-        : Boolean(code),
+      getTwoStepSubmitEnabled(paymentForm, () => {
+        const cardNumber = getNamedFormValue(paymentForm, 'cardNumber');
+        const expiryDate = getNamedFormValue(paymentForm, 'expiryDate');
+        const holderName = getNamedFormValue(paymentForm, 'holderName');
+        const cvv = getNamedFormValue(paymentForm, 'cvv');
+        return Boolean(cardNumber || expiryDate || holderName || cvv);
+      }),
     );
   }
 

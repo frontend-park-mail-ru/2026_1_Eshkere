@@ -1,0 +1,120 @@
+@use '../../../../../shared/styles/tokens' as t;
+@use '../../../../../shared/styles/mixins';
+
+.campaign-builder {
+  &__segmented,
+  &__chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  &__segmented-button,
+  &__mini-chip,
+  &__text-button {
+    min-height: 40px;
+    padding: 0 16px;
+    border: 1px solid rgba(214, 220, 239, 0.96);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.94);
+    color: #4b5369;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease,
+      color 0.2s ease,
+      transform 0.2s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+    }
+  }
+
+  &__segmented-button--active,
+  &__mini-chip--active {
+    border-color: rgba(105, 97, 255, 0.34);
+    background: rgba(103, 95, 255, 0.1);
+    color: #554eff;
+  }
+
+  &__text-button {
+    min-height: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #7a849d;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    box-shadow: none;
+    opacity: 0.92;
+  }
+
+  &__toggle {
+    position: relative;
+    width: 52px;
+    height: 32px;
+    border-radius: 999px;
+    border: 1px solid rgba(204, 210, 230, 0.94);
+    background: rgba(230, 234, 246, 0.96);
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+
+    &.is-active {
+      background: rgba(103, 95, 255, 0.18);
+      border-color: rgba(103, 95, 255, 0.32);
+    }
+  }
+
+  &__toggle-handle {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 6px 12px rgba(66, 74, 110, 0.14);
+    transition: transform 0.2s ease;
+
+    .campaign-builder__toggle.is-active & {
+      transform: translateX(20px);
+    }
+  }
+
+  &__saved-audiences {
+    display: grid;
+    gap: 12px;
+  }
+
+  &__saved-audience {
+    padding: 16px;
+    border: 1px solid rgba(216, 222, 240, 0.94);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.94);
+    display: grid;
+    gap: 10px;
+  }
+
+  &__saved-audience-title {
+    font-family: t.$font-family-heading;
+    font-size: 15px;
+    font-weight: 800;
+    color: #1f2740;
+  }
+
+  &__saved-audience-text,
+  &__saved-audience-empty {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #7d859b;
+  }
+
+  &__saved-audience-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}

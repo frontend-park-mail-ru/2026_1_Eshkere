@@ -1,0 +1,141 @@
+﻿@use '../../../../shared/styles/tokens' as t;
+@use '../../../../shared/styles/mixins';
+
+html[data-theme='dark'] .campaign-edit {
+  color: var(--text-main);
+
+  &__toolbar,
+  &__hero,
+  &__card {
+    border: none;
+    background: var(--gradient-menu-surface);
+    box-shadow: var(--shadow-floating), var(--shadow-inset-highlight);
+  }
+
+  &__stat {
+    border: none;
+    background: rgba(22, 31, 57, 0.9);
+    box-shadow: none;
+  }
+
+  &__title,
+  &__card-title,
+  &__modal-title,
+  &__history-title,
+  &__summary-value,
+  &__stat-value,
+  &__hero-badge,
+  &__toast-title,
+  &__modal-actions .campaign-edit__toolbar-button,
+  &__select-trigger > span,
+  &__select-option > span:first-child,
+  &__input,
+  &__textarea,
+  &__input-suffix,
+  &__select-option,
+  &__select-meta,
+  &__preview-title {
+    color: var(--text-main);
+  }
+
+  &__lead,
+  &__card-text,
+  &__history-text,
+  &__summary-key,
+  &__field-label,
+  &__stat-label,
+  &__modal-text,
+  &__save-state,
+  &__history-time,
+  &__hero-badge,
+  &__preview-text {
+    color: var(--text-muted);
+  }
+
+  &__input::placeholder,
+  &__textarea::placeholder {
+    color: var(--text-soft);
+  }
+
+  &__toolbar-button,
+  &__input,
+  &__textarea,
+  &__select-trigger,
+  &__select-arrow,
+  &__select-menu,
+  &__select-option,
+  &__history-item,
+  &__summary-row {
+    border: none;
+    background: rgba(22, 31, 57, 0.9);
+    color: var(--text-main);
+    box-shadow: none;
+  }
+
+  &__toolbar-button {
+    background: rgba(36, 48, 84, 0.94);
+  }
+
+  &__toolbar-button:hover,
+  &__select-trigger:hover {
+    border: none;
+    background: rgba(31, 42, 72, 0.86);
+  }
+
+  &__input:focus,
+  &__textarea:focus,
+  &__select-trigger:focus {
+    border: none;
+    box-shadow: var(--shadow-primary-soft);
+    background: rgba(31, 42, 72, 0.95);
+  }
+
+  &__toolbar-button--primary {
+    background: linear-gradient(135deg, #6f63e6 0%, #4f47c9 100%);
+    box-shadow: var(--shadow-primary-soft);
+    color: #fff;
+  }
+
+  &__toolbar-button--danger {
+    background: rgba(78, 39, 49, 0.9);
+    border: none;
+    color: #ffb9b3;
+  }
+
+  &__save-state {
+    background: rgba(31, 42, 72, 0.86);
+  }
+
+  &__hero-badge {
+    background: rgba(47, 61, 104, 0.94);
+    color: #dce4ff;
+  }
+
+  &__preview-shell {
+    background: #11182f;
+    border: none;
+    box-shadow: var(--shadow-floating);
+  }
+
+  &__preview-cta {
+    background: linear-gradient(135deg, #6f63e6 0%, #4f47c9 100%);
+    box-shadow: var(--shadow-primary-soft);
+  }
+
+  &__modal-dialog {
+    background: var(--gradient-modal-surface);
+    border: none;
+    box-shadow: var(--shadow-modal-strong), var(--shadow-inset-highlight);
+  }
+
+  &__modal-actions .campaign-edit__toolbar-button:not(.campaign-edit__toolbar-button--danger) {
+    border: none;
+    background: rgba(26, 36, 62, 0.94);
+    color: var(--text-main);
+  }
+
+  &__modal-actions
+    .campaign-edit__toolbar-button:not(.campaign-edit__toolbar-button--danger):hover {
+    background: rgba(38, 49, 82, 0.96);
+  }
+}

@@ -1,0 +1,75 @@
+@use '../../../../shared/styles/tokens';
+
+.campaign-statistics {
+  &__chart-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  &__chart-summary-item {
+    display: grid;
+    gap: 4px;
+    padding: 12px 14px;
+    min-width: 160px;
+    border-radius: 16px;
+    background: rgba(246, 247, 253, 0.95);
+    border: 1px solid rgba(223, 227, 244, 0.92);
+
+    strong {
+      font-size: 16px;
+      line-height: 1.2;
+    }
+
+    span {
+      color: var(--text-soft);
+      font-size: 12px;
+    }
+  }
+
+  &__chart-shell {
+    padding: 18px;
+    border-radius: 18px;
+    background: rgba(248, 249, 253, 0.95);
+    border: 1px solid rgba(223, 227, 244, 0.92);
+  }
+
+  &__chart {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  &__chart-grid-line {
+    stroke: rgba(214, 219, 235, 0.86);
+    stroke-width: 1;
+  }
+
+  &__chart-area {
+    fill: rgba(108, 99, 255, 0.12);
+  }
+
+  &__chart-line {
+    fill: none;
+    stroke: #6b63ff;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  &__chart-dot {
+    fill: #fff;
+    stroke: #6b63ff;
+    stroke-width: 3;
+  }
+
+  &__chart-labels {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 12px;
+    color: var(--text-soft);
+    font-size: 12px;
+  }
+}

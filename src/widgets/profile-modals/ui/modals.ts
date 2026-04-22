@@ -25,6 +25,51 @@ interface InitProfileModalsParams {
   state: ProfileState;
 }
 
+const TWO_STEP_FORM_IDS = new Set([
+  'profile-email-form',
+  'profile-phone-form',
+  'profile-payment-form',
+]);
+
+function resetProfileModalForm(form: HTMLFormElement): void {
+  clearFormState(form);
+  setSubmitting(form, false);
+
+  if (TWO_STEP_FORM_IDS.has(form.id)) {
+    resetTwoStepForm(form);
+  }
+
+  const emailInput = form.elements.namedItem('email');
+  if (form.id === 'profile-email-form' && emailInput instanceof HTMLInputElement) {
+    emailInput.value = '';
+  }
+
+  const phoneInput = form.elements.namedItem('phone');
+  if (form.id === 'profile-phone-form' && phoneInput instanceof HTMLInputElement) {
+    phoneInput.value = '';
+  }
+}
+
+function bindModalOpenTriggers(
+  openModal: (id: string) => void,
+  signal: AbortSignal,
+): void {
+  const modalButtons: Array<{ selector: string; modalId: string }> = [
+    { selector: '[data-open-profile-edit]', modalId: 'profile-edit-modal' },
+    { selector: '[data-open-avatar-modal]', modalId: 'profile-avatar-modal' },
+    { selector: '[data-open-password-modal]', modalId: 'profile-password-modal' },
+    { selector: '[data-open-email-modal]', modalId: 'profile-email-modal' },
+    { selector: '[data-open-phone-modal]', modalId: 'profile-phone-modal' },
+    { selector: '[data-open-topup-modal]', modalId: 'profile-topup-modal' },
+    { selector: '[data-open-tariff-modal]', modalId: 'profile-tariff-modal' },
+    { selector: '[data-open-confirmation-modal]', modalId: 'profile-confirmation-modal' },
+  ];
+
+  modalButtons.forEach(({ selector, modalId }) => {
+    document.querySelector(selector)?.addEventListener('click', () => openModal(modalId), { signal });
+  });
+}
+
 export function initProfileModals({
   getInitials,
   getTariffMeta,
@@ -46,26 +91,7 @@ export function initProfileModals({
 
     const form = modal.querySelector('form');
     if (form instanceof HTMLFormElement) {
-      clearFormState(form);
-      setSubmitting(form, false);
-
-      if (
-        form.id === 'profile-email-form' ||
-        form.id === 'profile-phone-form' ||
-        form.id === 'profile-payment-form'
-      ) {
-        resetTwoStepForm(form);
-      }
-
-      const emailInput = form.elements.namedItem('email');
-      if (form.id === 'profile-email-form' && emailInput instanceof HTMLInputElement) {
-        emailInput.value = '';
-      }
-
-      const phoneInput = form.elements.namedItem('phone');
-      if (form.id === 'profile-phone-form' && phoneInput instanceof HTMLInputElement) {
-        phoneInput.value = '';
-      }
+      resetProfileModalForm(form);
     }
 
     modal.classList.add('modal--open');
@@ -84,15 +110,8 @@ export function initProfileModals({
     }
   };
 
-  document.querySelector('[data-open-profile-edit]')?.addEventListener('click', () => openModal('profile-edit-modal'), { signal });
-  document.querySelector('[data-open-avatar-modal]')?.addEventListener('click', () => openModal('profile-avatar-modal'), { signal });
-  document.querySelector('[data-open-password-modal]')?.addEventListener('click', () => openModal('profile-password-modal'), { signal });
-  document.querySelector('[data-open-email-modal]')?.addEventListener('click', () => openModal('profile-email-modal'), { signal });
-  document.querySelector('[data-open-phone-modal]')?.addEventListener('click', () => openModal('profile-phone-modal'), { signal });
+  bindModalOpenTriggers(openModal, signal);
   document.querySelector('[data-open-payment-modal]')?.addEventListener('click', () => navigateTo('/balance?payment=open'), { signal });
-  document.querySelector('[data-open-topup-modal]')?.addEventListener('click', () => openModal('profile-topup-modal'), { signal });
-  document.querySelector('[data-open-tariff-modal]')?.addEventListener('click', () => openModal('profile-tariff-modal'), { signal });
-  document.querySelector('[data-open-confirmation-modal]')?.addEventListener('click', () => openModal('profile-confirmation-modal'), { signal });
   document.querySelector('[data-profile-toast-close]')?.addEventListener('click', hideProfileFeedback, { signal });
   PasswordVisibilityToggles(document);
 

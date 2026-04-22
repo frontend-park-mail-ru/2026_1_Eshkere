@@ -1,0 +1,74 @@
+@use '../../../shared/styles/tokens' as t;
+@use '../../../shared/styles/mixins';
+
+.moderator-simple-page {
+  display: grid;
+  gap: 20px;
+
+  &__hero,
+  &__list {
+    @include mixins.glass-card(rgba(255, 255, 255, 0.88), 24px);
+  }
+
+  &__hero {
+    padding: 28px;
+    display: grid;
+    gap: 12px;
+  }
+
+  &__eyebrow {
+    color: t.$color-primary;
+    font: 700 11px/1.2 t.$font-family-body;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  &__title {
+    margin: 0;
+    font: 800 38px/0.95 t.$font-family-heading;
+  }
+
+  &__subtitle {
+    margin: 0;
+    color: t.$color-text-muted;
+    font: 400 16px/1.55 t.$font-family-body;
+  }
+
+  &__list {
+    padding: 24px;
+    display: grid;
+    gap: 12px;
+  }
+
+  &__item {
+    padding: 16px 18px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.76);
+    border: 1px solid rgba(220, 225, 241, 0.92);
+    display: grid;
+    gap: 6px;
+  }
+
+  &__item span,
+  &__item small {
+    color: t.$color-text-muted;
+    font: 500 12px/1.2 t.$font-family-body;
+  }
+
+  &__item p {
+    margin: 0;
+    color: #55607b;
+    font: 400 14px/1.55 t.$font-family-body;
+  }
+
+  @include mixins.media-max(t.$bp-sm) {
+    &__hero,
+    &__list {
+      padding: 18px;
+    }
+
+    &__title {
+      font-size: 30px;
+    }
+  }
+}

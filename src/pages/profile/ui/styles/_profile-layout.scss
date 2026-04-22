@@ -1,0 +1,99 @@
+﻿@use '../../../../shared/styles/tokens' as t;
+@use '../../../../shared/styles/mixins';
+
+.profile-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.profile-toast {
+  position: fixed;
+  right: 28px;
+  bottom: 28px;
+  z-index: 40;
+  width: min(420px, calc(100vw - 32px));
+  min-width: 320px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: rgba(31, 36, 48, 0.94);
+  color: #fff;
+  box-shadow: 0 18px 40px rgba(24, 27, 60, 0.28);
+  backdrop-filter: blur(12px);
+
+  &[hidden] {
+    display: none !important;
+  }
+
+  &--success .profile-toast__icon {
+    background: #66d07d;
+  }
+
+  &--warning .profile-toast__icon {
+    background: #f2b35d;
+  }
+
+  &__icon {
+    width: 10px;
+    height: 10px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    margin-top: 6px;
+  }
+
+  &__content {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  &__title {
+    display: block;
+    margin: 0;
+    font: 700 14px/1.25 t.$font-family-heading;
+    color: #fff;
+  }
+
+  &__text {
+    margin: 0;
+    font: 400 13px/1.45 t.$font-family-body;
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  &__close {
+    margin-left: auto;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    outline: none;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: #fff;
+    }
+
+    &:focus-visible {
+      box-shadow: none;
+    }
+  }
+}
+
+.profile-hero,
+.profile-card {
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 18px 42px rgba(74, 82, 148, 0.14);
+  backdrop-filter: blur(10px);
+}
+

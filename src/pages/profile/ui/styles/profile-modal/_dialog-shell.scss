@@ -1,0 +1,80 @@
+﻿@use '../../../../../shared/styles/tokens' as t;
+@use '../../../../../shared/styles/mixins';
+
+.profile-modal {
+  &__content {
+    width: min(720px, 100%);
+    max-height: calc(100vh - 12px);
+    overflow: visible;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 28px 70px rgba(20, 24, 48, 0.24);
+
+    &--wide {
+      width: min(920px, 100%);
+    }
+  }
+
+  &__inner {
+    padding: 24px 28px;
+  }
+
+  &__head {
+    margin-bottom: 18px;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 24px;
+    line-height: 1.15;
+    font-weight: 800;
+    color: #262c40;
+  }
+
+  &__subtitle {
+    margin: 10px 0 0;
+    max-width: 520px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #8d94ab;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    &--avatar {
+      gap: 18px;
+    }
+
+    &--grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+  }
+
+  &__banner {
+    padding: 12px 14px;
+    border-radius: 14px;
+    font-size: 13px;
+    line-height: 1.45;
+
+    &--error {
+      background: rgba(255, 234, 238, 0.96);
+      border: 1px solid rgba(239, 133, 150, 0.32);
+      color: #b04158;
+    }
+
+    &--success {
+      background: rgba(230, 250, 236, 0.96);
+      border: 1px solid rgba(100, 197, 130, 0.32);
+      color: #25784a;
+    }
+
+    &--grid {
+      grid-column: 1 / -1;
+    }
+  }
+}

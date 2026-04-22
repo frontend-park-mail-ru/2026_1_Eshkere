@@ -1,0 +1,69 @@
+﻿@use '../../../../shared/styles/tokens' as t;
+@use '../../../../shared/styles/mixins';
+
+@include mixins.media-max(t.$bp-xl) {
+  .campaign-builder {
+    &__sidebar {
+      position: static;
+    }
+
+    &__steps {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    &__meta-grid {
+      grid-template-columns: 1fr;
+    }
+
+    &__grid {
+      &--content,
+      &--audience,
+      &--budget,
+      &--publication {
+        grid-template-columns: 1fr;
+      }
+
+      &--publication {
+        grid-template-areas:
+          'status'
+          'preview'
+          'summary'
+          'checks';
+      }
+    }
+
+    &__card--review-summary .campaign-builder__review-sections,
+    &__card--review-summary .campaign-builder__summary-list {
+      grid-template-columns: 1fr;
+    }
+
+    &__card--review-summary .campaign-builder__review-sections {
+      grid-template-areas:
+        'content'
+        'audience'
+        'budget';
+    }
+
+    &__card--review-summary .campaign-builder__review-section--audience {
+      grid-area: audience;
+    }
+
+    &__card--message,
+    &__card--preview {
+      min-width: 0;
+    }
+
+    &__review-overview {
+      grid-template-columns: 1fr;
+    }
+
+    &__creative-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    &__upload-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+

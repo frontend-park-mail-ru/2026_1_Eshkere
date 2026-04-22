@@ -1,0 +1,199 @@
+﻿@use '../../../../shared/styles/tokens' as t;
+@use '../../../../shared/styles/mixins';
+
+@include mixins.media-max(t.$bp-lg) {
+  .campaigns-page {
+    min-height: 0;
+  }
+
+  .campaigns-table {
+    overflow-x: auto;
+    min-height: 0;
+    flex: initial;
+
+    &__header,
+    .campaign-row {
+      min-width: 980px;
+    }
+
+    &__body {
+      flex: initial;
+    }
+
+    &__footer {
+      padding: 16px;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    &__page-nav {
+      min-width: auto;
+    }
+  }
+
+  .campaigns-page__toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .campaigns-date-picker {
+    position: static;
+    grid-template-columns: 1fr;
+  }
+
+  .campaigns-date-picker__presets {
+    border-right: 0;
+    border-bottom: 1px solid var(--border-strong);
+  }
+
+  .campaigns-date-picker__preset {
+    font-size: 15px;
+  }
+
+  .campaigns-date-picker__month-header strong {
+    font-size: 20px;
+  }
+
+  .campaigns-date-picker__weekdays {
+    font-size: 13px;
+  }
+
+  .campaigns-date-picker__day {
+    font-size: 15px;
+    height: 38px;
+  }
+
+  .campaigns-date-picker__range span,
+  .campaigns-date-picker__action {
+    font-size: 14px;
+  }
+
+  .campaign-row__menu {
+    width: 270px;
+    right: 0;
+  }
+
+  .campaign-row__menu-item {
+    min-height: 56px;
+    font-size: 15px;
+  }
+
+  .campaigns-empty__title {
+    font-size: 26px;
+    text-align: center;
+  }
+
+  .campaigns-delete-modal__dialog,
+  .campaigns-status-modal__dialog {
+    width: min(100%, 430px);
+    padding: 20px;
+  }
+
+  .campaigns-status-modal__illustration {
+    height: 220px;
+  }
+
+  .campaigns-status-modal__image {
+    width: min(100%, 280px);
+    height: min(100%, 220px);
+  }
+
+  .campaigns-delete-modal__button,
+  .campaigns-status-modal__button {
+    height: 48px;
+    font-size: 15px;
+  }
+}
+
+@include mixins.media-max(t.$bp-sm) {
+  .campaigns-page__filters {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .campaigns-page__date-filter,
+  .campaigns-page__filter,
+  .campaigns-page__search {
+    width: 100%;
+  }
+
+  .campaigns-date-picker__months {
+    grid-template-columns: 1fr;
+  }
+
+  .campaigns-date-picker__month:nth-child(2) {
+    border-top: 1px solid var(--border-strong);
+  }
+
+  .campaigns-date-picker__footer {
+    height: auto;
+    padding: 10px;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .campaign-row__menu {
+    width: 240px;
+    right: 0;
+  }
+
+  .campaign-row__menu-item {
+    min-height: 48px;
+    font-size: 14px;
+    grid-template-columns: 24px 1fr;
+    gap: 10px;
+  }
+
+  .campaign-row__menu-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .campaigns-empty {
+    min-height: 420px;
+  }
+
+  .campaigns-empty__illustration {
+    width: 240px;
+    height: 240px;
+  }
+
+  .campaigns-empty__title {
+    font-size: 20px;
+  }
+
+  .campaigns-empty__create-button {
+    min-width: 188px;
+    height: 48px;
+    font-size: 16px;
+  }
+
+  .campaigns-delete-modal__dialog,
+  .campaigns-status-modal__dialog {
+    border-radius: 16px;
+    padding: 16px;
+  }
+
+  .campaigns-delete-modal__illustration,
+  .campaigns-status-modal__illustration {
+    height: 188px;
+  }
+
+  .campaigns-status-modal__image {
+    width: min(100%, 240px);
+    height: min(100%, 188px);
+  }
+
+  .campaigns-delete-modal__actions,
+  .campaigns-status-modal__actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .campaigns-delete-modal__button,
+  .campaigns-status-modal__button {
+    width: 100%;
+    height: 46px;
+    font-size: 15px;
+  }
+}

@@ -1,0 +1,28 @@
+﻿@use '../../../../shared/styles/tokens' as t;
+@use '../../../../shared/styles/mixins';
+
+.bento {
+  max-width: 1200px;
+  margin: 0 auto 100px;
+  padding: 0 16px;
+  transform: translate3d(0, calc(var(--bento-progress) * -12px), 0);
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-auto-rows: minmax(260px, auto);
+    gap: 22px;
+  }
+
+  @include mixins.media-max(t.$bp-md) {
+    &__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @include mixins.media-max(t.$bp-sm) {
+    &__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+

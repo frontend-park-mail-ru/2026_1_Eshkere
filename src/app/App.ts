@@ -17,6 +17,7 @@ export async function initApp(): Promise<void> {
   initOfflineModal();
   initRequestErrorModal();
   await registerServiceWorker();
+  authState.syncDevModeratorAccessFromLocation();
   await authState.hasActiveSession();
   await renderRoute();
 }

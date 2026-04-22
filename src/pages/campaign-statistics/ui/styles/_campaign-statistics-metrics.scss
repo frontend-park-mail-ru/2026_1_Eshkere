@@ -1,0 +1,125 @@
+﻿@use '../../../../shared/styles/tokens';
+
+.campaign-statistics {
+  &__metrics {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  &__metric-card,
+  &__card {
+    border-radius: 22px;
+    padding: 22px;
+  }
+
+  &__metric-card {
+    display: grid;
+    gap: 10px;
+  }
+
+  &__metric-value {
+    font-size: clamp(24px, 2.2vw, 32px);
+    line-height: 1;
+  }
+
+  &__metric-delta {
+    width: max-content;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  &__metric-delta--positive {
+    background: rgba(24, 160, 107, 0.12);
+    color: #13845a;
+  }
+
+  &__metric-delta--negative {
+    background: rgba(255, 95, 86, 0.12);
+    color: #d04841;
+  }
+
+  &__metric-delta--neutral {
+    background: rgba(104, 100, 255, 0.1);
+    color: #5854df;
+  }
+
+  &__main-grid {
+    grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.85fr);
+    align-items: start;
+  }
+
+  &__bottom-grid {
+    grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.8fr);
+    align-items: start;
+  }
+
+  &__card--preview,
+  &__card--context-compact {
+    align-self: start;
+  }
+
+  &__card--chart {
+    min-height: 820px;
+  }
+
+  &__card--placements {
+    min-height: 430px;
+    display: grid;
+    align-content: start;
+  }
+
+  &__card-head {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+
+  &__card-head--stack {
+    flex-direction: column;
+  }
+
+  &__card-head-copy {
+    display: grid;
+    gap: 4px;
+  }
+
+  &__chart-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    width: 100%;
+  }
+
+  &__card-title {
+    font-size: 24px;
+    line-height: 1.1;
+  }
+
+  &__details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  &__detail-field {
+    display: grid;
+    gap: 8px;
+    min-height: 88px;
+    padding: 16px 18px;
+    border-radius: 18px;
+    background: rgba(248, 249, 253, 0.95);
+    border: 1px solid rgba(220, 224, 243, 0.9);
+  }
+
+  &__detail-field--wide {
+    grid-column: 1 / -1;
+  }
+
+  &__detail-value,
+  &__insight-value {
+    font-size: 15px;
+    line-height: 1.45;
+  }
+}

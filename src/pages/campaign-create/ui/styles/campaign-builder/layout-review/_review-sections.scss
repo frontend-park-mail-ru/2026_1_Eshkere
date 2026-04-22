@@ -1,0 +1,124 @@
+.campaign-builder {
+  &__review-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  &__review-section {
+    padding: 16px;
+    border: 1px solid rgba(216, 222, 240, 0.94);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.94);
+  }
+
+  &__card--review-summary .campaign-builder__review-sections {
+    display: grid;
+    grid-template-columns: minmax(0, 1.12fr) minmax(260px, 0.88fr);
+    grid-template-areas:
+      'content budget'
+      'audience audience';
+    gap: 12px;
+  }
+
+  &__card--review-summary .campaign-builder__review-section {
+    padding: 14px;
+  }
+
+  &__card--review-summary .campaign-builder__review-section--content {
+    grid-area: content;
+  }
+
+  &__card--review-summary .campaign-builder__review-section--audience {
+    grid-area: audience;
+  }
+
+  &__card--review-summary .campaign-builder__review-section--budget {
+    grid-area: budget;
+  }
+
+  &__card--review-summary .campaign-builder__review-section-title {
+    margin-bottom: 10px;
+  }
+
+  &__card--review-summary .campaign-builder__review-section--content .campaign-builder__summary-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  &__card--review-summary .campaign-builder__review-section--content .campaign-builder__summary-item,
+  &__card--review-summary .campaign-builder__review-section--budget .campaign-builder__summary-item {
+    min-height: 68px;
+  }
+
+  &__card--review-summary .campaign-builder__review-section--audience .campaign-builder__summary-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  &__card--review-summary .campaign-builder__review-section--budget .campaign-builder__summary-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  &__card--review-summary .campaign-builder__summary-item {
+    padding: 10px 12px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 4px;
+  }
+
+  &__card--review-summary .campaign-builder__summary-item strong {
+    margin-top: 0;
+    font-size: 14px;
+    line-height: 1.35;
+    width: 100%;
+    text-align: left;
+    word-break: normal;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+  }
+
+  &__card--review-summary .campaign-builder__review-section--audience .campaign-builder__summary-item:nth-child(n + 3) {
+    grid-column: 1 / -1;
+  }
+
+  &__review-section-title {
+    display: block;
+    margin-bottom: 12px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 800;
+    color: #1f2740;
+  }
+
+  &__review-next {
+    margin-top: 16px;
+    padding: 16px;
+    border: 1px solid rgba(216, 222, 240, 0.94);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.94);
+  }
+
+  &__card--review-checks .campaign-builder__stack {
+    margin-top: 0;
+  }
+
+  &__card--review-checks .campaign-builder__stack-item {
+    min-height: 0;
+  }
+
+  &__card--publication-preview .campaign-preview {
+    margin-top: 4px;
+  }
+
+  &__card--publication-preview .campaign-preview__frame {
+    width: min(100%, 388px);
+  }
+}

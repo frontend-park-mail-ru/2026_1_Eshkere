@@ -1,0 +1,230 @@
+@use '../../../../../shared/styles/tokens' as t;
+@use '../../../../../shared/styles/mixins';
+
+.home-footer {
+  position: relative;
+  margin-top: 88px;
+  width: 100%;
+  background:
+    radial-gradient(circle at top left, rgba(101, 95, 255, 0.18), transparent 26%),
+    radial-gradient(circle at top right, rgba(216, 116, 255, 0.14), transparent 24%),
+    #080b14;
+  color: rgba(255, 255, 255, 0.92);
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, transparent 30%),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03), transparent 28%, transparent 72%, rgba(255, 255, 255, 0.03));
+    pointer-events: none;
+  }
+
+  &__inner {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 64px 24px 72px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(200px, 0.5fr) minmax(240px, 0.6fr);
+    gap: 36px;
+    align-items: start;
+  }
+
+  &__brand {
+    max-width: 640px;
+  }
+
+  &__eyebrow {
+    display: inline-flex;
+    margin-bottom: 16px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.72);
+  }
+
+  &__title {
+    margin: 0 0 16px;
+    font-size: 42px;
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    color: #fff;
+  }
+
+  &__text {
+    max-width: 48ch;
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.6;
+    color: rgba(222, 228, 245, 0.72);
+  }
+
+  &__nav {
+    display: grid;
+    gap: 12px;
+    justify-items: start;
+    padding-top: 10px;
+  }
+
+  &__contacts {
+    display: grid;
+    gap: 12px;
+    justify-items: start;
+    padding-top: 10px;
+  }
+
+  &__caption {
+    display: inline-flex;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.46);
+  }
+
+  &__link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 2px;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.25s ease, transform 0.25s ease;
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 4px;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(120, 125, 255, 0.9), rgba(208, 120, 255, 0.9));
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform 0.25s ease;
+    }
+
+    &:hover,
+    &:focus-visible {
+      color: #fff;
+      transform: translateX(4px);
+    }
+
+    &:hover::after,
+    &:focus-visible::after {
+      transform: scaleX(1);
+    }
+  }
+
+  &__contact {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.25s ease, transform 0.25s ease;
+
+    &:hover,
+    &:focus-visible {
+      color: #fff;
+      transform: translateX(4px);
+    }
+  }
+
+  &__meta {
+    color: rgba(222, 228, 245, 0.62);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  &__bottom {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 24px 28px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  &__copyright {
+    color: rgba(255, 255, 255, 0.44);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  &__bottom-links {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+
+  &__bottom-link {
+    color: rgba(255, 255, 255, 0.68);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.25s ease;
+
+    &:hover,
+    &:focus-visible {
+      color: #fff;
+    }
+  }
+
+  @include mixins.media-max(t.$bp-md) {
+    &__inner {
+      grid-template-columns: 1fr;
+      gap: 28px;
+      padding: 56px 20px 64px;
+    }
+
+    &__title {
+      font-size: 34px;
+    }
+
+    &__bottom {
+      padding: 18px 20px 24px;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  @include mixins.media-max(t.$bp-sm) {
+    margin-top: 64px;
+
+    &__inner {
+      padding: 48px 16px 56px;
+    }
+
+    &__title {
+      font-size: 30px;
+    }
+
+    &__text {
+      font-size: 16px;
+    }
+
+    &__link,
+    &__contact {
+      min-height: 40px;
+      font-size: 15px;
+    }
+  }
+}

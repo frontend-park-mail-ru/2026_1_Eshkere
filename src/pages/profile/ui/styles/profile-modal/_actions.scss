@@ -1,0 +1,60 @@
+﻿@use '../../../../../shared/styles/tokens' as t;
+@use '../../../../../shared/styles/mixins';
+
+
+.profile-hero__notice-button,
+.profile-card__action,
+.profile-contact-item__action,
+.profile-stack__action,
+.profile-security__action,
+.profile-modal__quick-button,
+.profile-modal__button--secondary {
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    border-color: rgba(108, 102, 255, 0.34);
+    color: #3d46bf;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 14px 24px rgba(72, 79, 143, 0.08);
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    border-color: rgba(108, 102, 255, 0.42);
+    box-shadow: 0 0 0 4px rgba(103, 95, 255, 0.12);
+  }
+}
+
+.profile-finance__primary-action,
+.profile-modal__button--primary {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    filter: saturate(1.05) brightness(1.02);
+    box-shadow: 0 16px 30px rgba(93, 87, 255, 0.24);
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    box-shadow:
+      0 0 0 4px rgba(103, 95, 255, 0.14),
+      0 16px 30px rgba(93, 87, 255, 0.24);
+  }
+}
+

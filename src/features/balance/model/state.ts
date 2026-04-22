@@ -63,7 +63,13 @@ function createPaymentMethodFromMasked(
 }
 
 function hasMojibake(value: string): boolean {
-  const markers = ['Р‘', 'Р°', 'РЅ', 'Рє', 'СЂ', 'С‚', 'вЂ', '�'];
+  const markers = [
+    String.fromCharCode(0x420),
+    String.fromCharCode(0x421),
+    String.fromCharCode(0x432, 0x402),
+    String.fromCharCode(0x453),
+    String.fromCharCode(0xfffd),
+  ];
   return markers.some((marker) => value.includes(marker));
 }
 

@@ -1,0 +1,74 @@
+@use '../../../../shared/styles/tokens' as t;
+@use '../../../../shared/styles/mixins';
+
+.moderator-layout {
+  position: relative;
+  min-height: 100vh;
+  overflow: visible;
+  isolation: isolate;
+  @include mixins.page-background('/img/RightFon.png');
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(239, 243, 255, 0.9) 0%, rgba(247, 249, 255, 0.76) 36%, rgba(245, 247, 255, 0.92) 100%);
+    z-index: 0;
+  }
+
+  &__shell {
+    position: relative;
+    z-index: 2;
+    width: min(1360px, calc(100% - 28px));
+    margin: 0 auto;
+    padding: 22px 0 24px;
+  }
+
+  &__body {
+    display: grid;
+    grid-template-columns: 248px 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+
+  &__sidebar {
+    position: sticky;
+    top: 20px;
+    align-self: start;
+  }
+
+  &__content {
+    min-width: 0;
+  }
+
+  &__glow {
+    display: none;
+  }
+
+  &--case-view {
+    .moderator-layout__body {
+      grid-template-columns: 1fr;
+    }
+
+    .moderator-layout__sidebar {
+      display: none;
+    }
+  }
+
+  @include mixins.media-max(t.$bp-xl) {
+    &__body {
+      grid-template-columns: 1fr;
+    }
+
+    &__sidebar {
+      position: static;
+    }
+  }
+
+  @include mixins.media-max(t.$bp-sm) {
+    &__shell {
+      width: min(100% - 16px, 1360px);
+      padding-top: 16px;
+    }
+  }
+}

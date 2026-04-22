@@ -1,7 +1,7 @@
 ﻿import './profile.scss';
 import 'shared/ui/modal/modal';
 import { renderTemplate } from 'shared/lib/render';
-import { getModalStep, setSubmitEnabled } from 'features/profile/lib/form';
+import { getNamedFormValue, setSubmitEnabled } from 'features/profile/lib/form';
 import {
   getAccountActionText,
   getAccountStatusLabel,
@@ -51,8 +51,7 @@ function getFormFieldValue(
     return fallback;
   }
 
-  const field = form.elements.namedItem(fieldName);
-  return field instanceof HTMLInputElement ? field.value.trim() || fallback : fallback;
+  return getNamedFormValue(form, fieldName) || fallback;
 }
 
 function getTariffKeyFromDom(): ProfileState['tariffKey'] {
@@ -111,7 +110,6 @@ function populateForms(state: ProfileState): void {
 
 function refreshModalSubmitStates(state: ProfileState): void {
   refreshProfileFormStates({
-    getModalStep,
     setSubmitEnabled,
     state,
   });

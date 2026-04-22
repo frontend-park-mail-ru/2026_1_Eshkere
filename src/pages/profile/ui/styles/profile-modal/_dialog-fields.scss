@@ -1,0 +1,98 @@
+@use '../../../../../shared/styles/tokens' as t;
+@use '../../../../../shared/styles/mixins';
+
+.profile-modal {
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    &--error .profile-modal__input {
+      border-color: rgba(233, 92, 120, 0.62);
+      background: rgba(255, 247, 249, 0.98);
+    }
+  }
+
+  &__label {
+    font-size: 12px;
+    color: #a1a7b8;
+  }
+
+  &__input {
+    width: 100%;
+    min-height: 48px;
+    padding: 0 16px;
+    border: 1px solid rgba(215, 221, 238, 0.92);
+    border-radius: 12px;
+    background: rgba(246, 248, 255, 0.95);
+    color: #2b3245;
+    font-size: 14px;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+
+    &:focus {
+      border-color: #7a73ff;
+      outline: none;
+      background: #fff;
+    }
+
+    &:disabled {
+      cursor: wait;
+      opacity: 0.75;
+    }
+
+    &--file {
+      padding: 11px 12px;
+      min-height: 50px;
+    }
+
+    &--readonly {
+      color: #737c95;
+      background: rgba(243, 246, 253, 0.9);
+      cursor: default;
+    }
+  }
+
+  &__input-wrap {
+    .profile-modal__input {
+      padding-right: 52px;
+    }
+  }
+
+  &__error {
+    min-height: 16px;
+    font-size: 11px;
+    line-height: 1.3;
+    color: #d14c69;
+  }
+
+  &__hint {
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: rgba(247, 249, 255, 0.96);
+    color: #717b94;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  &__step {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    &[hidden] {
+      display: none !important;
+    }
+  }
+
+  &__link-button {
+    align-self: flex-start;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #5b56ff;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    line-height: 1.2;
+  }
+}
