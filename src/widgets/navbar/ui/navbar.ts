@@ -6,6 +6,7 @@ import { navigateTo } from 'app/navigation';
 import navbarTemplate from './navbar.hbs';
 
 let navbarLifecycleController: AbortController | null = null;
+const themeStorageKey = 'ui-theme';
 
 const navbarNotifications = [
   {
@@ -106,10 +107,37 @@ export function Navbar(): VoidFunction {
   const logoutButton = document.getElementById('navbar-logout-button');
   const sidebarLogoutButton = document.getElementById('logout-button');
   const logoutModal = document.getElementById('navbar-logout-modal');
+  const themeToggle = document.getElementById('navbar-theme-toggle') as HTMLElement | null;
+  const themeToggleTitle = document.getElementById('navbar-theme-toggle-title');
   const logoutConfirmButton = document.getElementById(
     'navbar-logout-confirm',
   ) as HTMLButtonElement | null;
   const logoutCancelButton = document.getElementById('navbar-logout-cancel');
+
+  const applyTheme = (theme: 'light' | 'dark') => {
+    const isDarkTheme = theme === 'dark';
+    document.documentElement.dataset.theme = theme;
+    if (themeToggleTitle) {
+      themeToggleTitle.textContent = isDarkTheme ? 'Светлая тема' : 'Темная тема';
+    }
+    if (themeToggle) {
+      themeToggle.setAttribute(
+        'aria-label',
+        isDarkTheme ? 'Включить светлую тему' : 'Включить тёмную тему',
+      );
+    }
+  };
+
+  const resolveInitialTheme = (): 'light' | 'dark' => {
+    const storedTheme = localStorage.getItem(themeStorageKey);
+    if (storedTheme === 'dark' || storedTheme === 'light') {
+      return storedTheme;
+    }
+
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  };
+
+  applyTheme(resolveInitialTheme());
 
   if (logoutModal && logoutModal.parentElement !== document.body) {
     document.body.appendChild(logoutModal);
@@ -139,6 +167,26 @@ export function Navbar(): VoidFunction {
       controller.abort();
     };
   }
+
+  const toggleTheme = () => {
+    const isDarkTheme = document.documentElement.dataset.theme === 'dark';
+    const nextTheme: 'light' | 'dark' = isDarkTheme ? 'light' : 'dark';
+    localStorage.setItem(themeStorageKey, nextTheme);
+    applyTheme(nextTheme);  
+  };
+
+  themeToggle?.addEventListener('click', toggleTheme, { signal });
+
+  themeToggle?.addEventListener(
+    'keydown',
+    (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        toggleTheme();
+      }
+    },
+    { signal },
+  );
 
   const closeNotifications = () => {
     if (!notificationsMenu || !notificationsToggleButton) {

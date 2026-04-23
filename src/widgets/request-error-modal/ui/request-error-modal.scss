@@ -84,6 +84,19 @@
   }
 }
 
+html[data-theme='dark'] {
+  .request-error-modal {
+    &__button {
+      &--secondary {
+        border: 1px solid var(--border-panel);
+        background: rgba(33, 42, 69, 0.92);
+        color: var(--text-main);
+        box-shadow: none;
+      }
+    }
+  }
+}
+
 @media (max-width: 640px) {
   .request-error-modal {
     &__inner {

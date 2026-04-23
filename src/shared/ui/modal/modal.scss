@@ -31,7 +31,7 @@
     max-width: 90vw;
     max-height: 90vh;
     overflow: auto;
-    background: t.$color-white;
+    background: var(--surface-card-strong);
     border-radius: 16px;
     box-shadow: t.$shadow-modal;
   }

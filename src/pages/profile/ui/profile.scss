@@ -1476,3 +1476,195 @@
     }
   }
 }
+
+html[data-theme='dark'] {
+  .profile-hero,
+  .profile-card {
+    background: var(--gradient-menu-surface);
+    box-shadow: var(--shadow-floating), var(--shadow-inset-highlight);
+  }
+
+  .profile-hero__title,
+  .profile-hero__notice-title,
+  .profile-stat__value,
+  .profile-card__title,
+  .profile-field__value,
+  .profile-contact-item__value,
+  .profile-finance__amount,
+  .profile-stack__title,
+  .profile-security__title,
+  .profile-support__title,
+  .profile-topup-hero__amount,
+  .profile-modal__title,
+  .profile-modal__quick-title,
+  .profile-modal__tariff-label {
+    color: var(--text-main);
+  }
+
+  .profile-hero__subtitle,
+  .profile-hero__notice-label,
+  .profile-hero__notice-text,
+  .profile-stat__label,
+  .profile-card__subtitle,
+  .profile-field__label,
+  .profile-contact-item__label,
+  .profile-finance__label,
+  .profile-finance__meta,
+  .profile-stack__text,
+  .profile-security__text,
+  .profile-support__eyebrow,
+  .profile-support__text,
+  .profile-topup-hero__label,
+  .profile-topup-hero__text,
+  .profile-modal__subtitle,
+  .profile-modal__label,
+  .profile-modal__hint,
+  .profile-modal__quick-text,
+  .profile-modal__tariff-text,
+  .profile-feed-link__desc,
+  .profile-feed-link__empty {
+    color: var(--text-muted);
+  }
+
+  .profile-hero__notice,
+  .profile-stat,
+  .profile-field,
+  .profile-stack__item,
+  .profile-security__item,
+  .profile-support,
+  .profile-contact-item,
+  .profile-finance__hero,
+  .profile-topup-hero,
+  .profile-feed-link__url-input,
+  .profile-feed-link__select,
+  .profile-modal__input,
+  .profile-modal__quick-button,
+  .profile-modal__tariff-card {
+    border: none;
+    background: rgba(22, 31, 57, 0.9);
+    box-shadow: none;
+  }
+
+  .profile-hero__badge {
+    border: none;
+    background: rgba(34, 46, 80, 0.94);
+    color: var(--text-soft);
+  }
+
+  .profile-hero__badge--success {
+    background: rgba(32, 79, 62, 0.88);
+    color: #bdf8d8;
+  }
+
+  .profile-hero__badge--warning {
+    background: rgba(102, 69, 28, 0.86);
+    color: #ffd4a0;
+  }
+
+  .profile-feed-link__url-input,
+  .profile-feed-link__select,
+  .profile-modal__input {
+    color: var(--text-main);
+  }
+
+  .profile-modal__hint {
+    background: rgba(30, 41, 73, 0.9);
+  }
+
+  .profile-modal__banner--error,
+  .profile-feed-link__error {
+    border: none;
+    background: rgba(78, 39, 49, 0.86);
+    color: #ffc5c1;
+  }
+
+  .profile-modal__banner--success {
+    border: none;
+    background: rgba(32, 79, 62, 0.88);
+    color: #bdf8d8;
+  }
+
+  .profile-modal__field--error .profile-modal__input {
+    border: none;
+    background: rgba(78, 39, 49, 0.72);
+  }
+
+  .profile-modal__input--readonly {
+    background: rgba(26, 36, 62, 0.9);
+    color: var(--text-soft);
+  }
+
+  .profile-card__action,
+  .profile-contact-item__action,
+  .profile-stack__action,
+  .profile-security__action,
+  .profile-hero__notice-button,
+  .profile-modal__button--secondary {
+    border: none;
+    background: rgba(36, 48, 84, 0.94);
+    color: var(--text-main);
+    box-shadow: none;
+  }
+
+  .profile-card__action:hover:not(:disabled),
+  .profile-contact-item__action:hover:not(:disabled),
+  .profile-stack__action:hover:not(:disabled),
+  .profile-security__action:hover:not(:disabled),
+  .profile-hero__notice-button:hover:not(:disabled),
+  .profile-modal__button--secondary:hover:not(:disabled) {
+    background: rgba(47, 61, 104, 0.98);
+    color: #f2f4ff;
+  }
+
+  .profile-stack__pill--success,
+  .profile-security__status {
+    color: #bdf8d8;
+    background: rgba(32, 79, 62, 0.88);
+  }
+
+  .profile-security__status--warning {
+    color: #ffd4a0;
+    background: rgba(102, 69, 28, 0.86);
+  }
+
+  .profile-support__link,
+  .profile-feed-link__copy,
+  .profile-modal__link-button,
+  .profile-modal__tariff-price {
+    color: var(--primary-soft);
+  }
+
+  .profile-modal__content {
+    border: none;
+    background: var(--gradient-modal-surface);
+    box-shadow: var(--shadow-modal-strong), var(--shadow-inset-highlight);
+  }
+
+  .profile-modal__button--primary,
+  .profile-finance__primary-action {
+    background: linear-gradient(135deg, #6f63e6 0%, #4f47c9 100%);
+    box-shadow: var(--shadow-primary-soft);
+  }
+
+  .profile-modal__tariff-card:has(.profile-modal__tariff-input:checked) {
+    border: none;
+    background: var(--primary-surface-strong);
+    box-shadow: var(--shadow-primary-soft);
+  }
+
+  .profile-modal {
+    &__button--secondary {
+      border: none;
+      background: rgba(33, 42, 69, 0.92);
+      color: var(--text-main);
+    }
+
+    &__quick-button,
+    &__tariff-card {
+      border: none;
+      background: rgba(31, 40, 66, 0.94);
+      color: var(--text-main);
+      box-shadow: none;
+    }
+  }
+}

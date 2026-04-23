@@ -965,9 +965,17 @@
   &__image {
     margin-top: -10px;
   }
+
+  &__dialog {
+    border: none;
+  }
 }
 
 .campaigns-status-modal {
+  &__dialog {
+    border: none;
+  }
+
   &__illustration {
     height: 320px;
     padding: 0;
@@ -995,6 +1003,30 @@
   &__note {
     margin-top: -4px;
     background: rgba(104, 100, 255, 0.08);
+  }
+}
+
+html[data-theme='dark'] {
+  .campaigns-delete-modal__button--secondary {
+    border: none;
+    background: rgba(26, 36, 62, 0.94);
+    color: var(--text-main);
+  }
+
+  .campaigns-delete-modal__button--secondary:hover {
+    border-color: rgba(125, 110, 255, 0.42);
+    background: rgba(38, 49, 82, 0.96);
+  }
+
+  .campaigns-status-modal__button--secondary {
+    border: none;
+    background: rgba(26, 36, 62, 0.94);
+    color: var(--text-main);
+  }
+
+  .campaigns-status-modal__button--secondary:hover {
+    border-color: rgba(125, 110, 255, 0.42);
+    background: rgba(38, 49, 82, 0.96);
   }
 }
 

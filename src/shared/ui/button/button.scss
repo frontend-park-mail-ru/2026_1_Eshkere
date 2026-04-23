@@ -21,3 +21,11 @@
     color: var(--text-body);
   }
 }
+
+html[data-theme='dark'] {
+  .ui-button--secondary {
+    border: none;
+    background: rgba(33, 42, 69, 0.92);
+    color: var(--text-main);
+  }
+}
