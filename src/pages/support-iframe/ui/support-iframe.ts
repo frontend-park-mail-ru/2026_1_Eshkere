@@ -87,6 +87,10 @@ export function SupportIframe(): void | VoidFunction {
   };
 
   const onMessage = (event: MessageEvent): void => {
+    if (event.origin !== window.location.origin) {
+      return;
+    }
+
     if (!event.data || typeof event.data !== 'object') {
       return;
     }
