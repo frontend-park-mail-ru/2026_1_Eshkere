@@ -1,5 +1,6 @@
 import { authState } from 'features/auth';
 import { renderAdsPage, Ads } from 'pages/ads';
+import { renderAppealsPage, Appeals } from 'pages/appeals';
 import { renderBalancePage, Balance } from 'pages/balance';
 import { renderCampaignCreatePage, CampaignCreate } from 'pages/campaign-create';
 import {
@@ -21,6 +22,7 @@ import { renderModeratorPoliciesPage, ModeratorPoliciesPage } from 'pages/modera
 import { renderModeratorAuditPage, ModeratorAuditPage } from 'pages/moderator-audit';
 import { renderProfilePage, Profile } from 'pages/profile';
 import { renderRegisterPage, Register } from 'pages/register';
+import { renderSupportIframePage, SupportIframe } from 'pages/support-iframe';
 import { Navbar } from 'widgets/navbar';
 import { getCurrentPath, navigateTo } from './navigation';
 import {
@@ -68,6 +70,11 @@ const routes: Record<string, RouteDefinition> = {
     init: Register,
     guestOnly: true,
   },
+  '/support-iframe': {
+    render: renderSupportIframePage,
+    layout: 'iframe',
+    init: SupportIframe,
+  },
   '/ads': {
     render: renderAdsPage,
     layout: 'dashboard',
@@ -96,6 +103,12 @@ const routes: Record<string, RouteDefinition> = {
     render: renderBalancePage,
     layout: 'dashboard',
     init: Balance,
+    protected: true,
+  },
+  '/appeals': {
+    render: renderAppealsPage,
+    layout: 'dashboard',
+    init: Appeals,
     protected: true,
   },
   '/profile': {
@@ -162,11 +175,8 @@ let currentLayoutKind: LayoutKind | null = null;
 export async function renderRoute(): Promise<void> {
   renderRequestId += 1;
   const currentRequestId = renderRequestId;
-
-  if (typeof activeCleanup === 'function') {
-    activeCleanup();
-    activeCleanup = null;
-  }
+  const previousCleanup = activeCleanup;
+  activeCleanup = null;
 
   const app = document.getElementById('app');
   if (!app) {
@@ -199,8 +209,6 @@ export async function renderRoute(): Promise<void> {
   }
 
   try {
-    const content = await route.render();
-
     const needsShell =
       currentLayoutKind !== route.layout ||
       !document.getElementById('app-layout-outlet');
@@ -220,6 +228,12 @@ export async function renderRoute(): Promise<void> {
       return;
     }
 
+    const content = await route.render();
+
+    if (currentRequestId !== renderRequestId) {
+      return;
+    }
+
     const outlet = document.getElementById('app-layout-outlet');
 
     if (!outlet) {
@@ -230,6 +244,10 @@ export async function renderRoute(): Promise<void> {
 
     const cleanups: RouteCleanup[] = [];
 
+    if (typeof previousCleanup === 'function') {
+      previousCleanup();
+    }
+
     if (route.init) {
       const routeCleanup = route.init();
       if (typeof routeCleanup === 'function') {
@@ -237,12 +255,12 @@ export async function renderRoute(): Promise<void> {
       }
     }
 
-    if (route.layout !== 'moderator') {
+    if (route.layout === 'public' || route.layout === 'dashboard') {
       const navbarCleanup = Navbar();
       if (typeof navbarCleanup === 'function') {
         cleanups.push(navbarCleanup);
       }
-    } else {
+    } else if (route.layout === 'moderator') {
       const moderatorNavbarCleanup = initModeratorNavbar();
       if (typeof moderatorNavbarCleanup === 'function') {
         cleanups.push(moderatorNavbarCleanup);

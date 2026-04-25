@@ -1,0 +1,70 @@
+<section class="appeals-page">
+  <div class="appeals-page__toolbar">
+    <h1 class="appeals-page__title">Мои обращения</h1>
+  </div>
+
+  {{#if loadError}}
+    <div class="appeals-page__error" data-appeals-load-error hidden>{{loadError}}</div>
+  {{/if}}
+
+  {{#if hasAppeals}}
+    <div class="appeals-table">
+      <div class="appeals-table__header">
+        <div>ID</div>
+        <div>Категория</div>
+        <div>Тема</div>
+        <div>Статус</div>
+      </div>
+      <div class="appeals-table__body">
+        {{#each appeals}}
+          <article class="appeal-row" data-appeal-id="{{id}}" tabindex="0">
+            <div class="appeal-row__id">#{{id}}</div>
+            <div>{{categoryLabel}}</div>
+            <div class="appeal-row__title">{{title}}</div>
+            <div>
+              <span class="appeal-status appeal-status--{{statusTone}}">
+                {{statusLabel}}
+              </span>
+            </div>
+          </article>
+        {{/each}}
+      </div>
+    </div>
+  {{else}}
+    <div class="appeals-empty" data-appeals-empty>
+      У вас пока нет обращений в поддержку.
+    </div>
+  {{/if}}
+
+  <div class="appeal-modal" data-appeal-modal hidden>
+    <div class="appeal-modal__backdrop" data-appeal-modal-close></div>
+    <section
+      class="appeal-modal__dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="appeal-modal-title"
+    >
+      <header class="appeal-modal__header">
+        <h2 class="appeal-modal__title" id="appeal-modal-title"></h2>
+        <button class="appeal-modal__close" type="button" data-appeal-modal-close aria-label="Закрыть">
+          ×
+        </button>
+      </header>
+
+      <div class="appeal-modal__meta">
+        <span class="appeal-modal__chip" data-appeal-modal-category></span>
+        <span class="appeal-modal__chip appeal-modal__chip--status" data-appeal-modal-status></span>
+      </div>
+
+      <div class="appeal-modal__section">
+        <h3 class="appeal-modal__section-title">Полный текст обращения</h3>
+        <p class="appeal-modal__section-text" data-appeal-modal-description></p>
+      </div>
+
+      <div class="appeal-modal__section" data-appeal-modal-answer-block hidden>
+        <h3 class="appeal-modal__section-title">Ответ поддержки</h3>
+        <p class="appeal-modal__section-text" data-appeal-modal-answer></p>
+      </div>
+    </section>
+  </div>
+</section>

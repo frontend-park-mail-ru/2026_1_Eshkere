@@ -1,4 +1,4 @@
-import { formatCount, motionAllowed } from './home-motion';
+import { motionAllowed } from './home-motion';
 
 export function setupReveal(): VoidFunction {
   const targets = document.querySelectorAll<HTMLElement>('[data-reveal]');
@@ -183,70 +183,6 @@ export function setupTilt(): VoidFunction {
   return () => listeners.forEach((off) => off());
 }
 
-export function setupCounters(): VoidFunction {
-  const counters = document.querySelectorAll<HTMLElement>('[data-counter]');
-  if (counters.length === 0) return () => {};
-
-  if (!motionAllowed() || typeof IntersectionObserver === 'undefined') {
-    counters.forEach((el) => {
-      const target = Number(el.dataset.counter ?? 0);
-      const suffix = el.dataset.suffix ?? '';
-      el.textContent = formatCount(target) + suffix;
-    });
-    return () => {};
-  }
-
-  const duration = 1800;
-  const activeRafs = new Set<number>();
-
-  const runCounter = (el: HTMLElement) => {
-    const target = Number(el.dataset.counter ?? 0);
-    const suffix = el.dataset.suffix ?? '';
-    const start = performance.now();
-    let frameId = 0;
-
-    const tick = (now: number) => {
-      activeRafs.delete(frameId);
-
-      const elapsed = now - start;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      const current = target * eased;
-      el.textContent = formatCount(current) + suffix;
-      if (progress < 1) {
-        frameId = window.requestAnimationFrame(tick);
-        activeRafs.add(frameId);
-      }
-    };
-
-    frameId = window.requestAnimationFrame(tick);
-    activeRafs.add(frameId);
-  };
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          runCounter(entry.target as HTMLElement);
-          observer.unobserve(entry.target);
-        }
-      });
-    },
-    {
-      threshold: 0.2,
-      rootMargin: '0px 0px 12% 0px',
-    },
-  );
-
-  counters.forEach((el) => observer.observe(el));
-
-  return () => {
-    observer.disconnect();
-    activeRafs.forEach((id) => window.cancelAnimationFrame(id));
-    activeRafs.clear();
-  };
-}
-
 export function setupSmoothAnchors(): VoidFunction {
   const anchors = document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]');
   if (anchors.length === 0) return () => {};
@@ -273,30 +209,6 @@ export function setupSmoothAnchors(): VoidFunction {
   return () => listeners.forEach((off) => off());
 }
 
-export function setupMarqueePause(): VoidFunction {
-  const marquees = document.querySelectorAll<HTMLElement>('[data-marquee]');
-  if (marquees.length === 0 || typeof IntersectionObserver === 'undefined') {
-    return () => {};
-  }
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        const el = entry.target as HTMLElement;
-        if (entry.isIntersecting) {
-          el.removeAttribute('data-marquee-paused');
-        } else {
-          el.setAttribute('data-marquee-paused', 'true');
-        }
-      });
-    },
-    { threshold: 0 },
-  );
-
-  marquees.forEach((el) => observer.observe(el));
-  return () => observer.disconnect();
-}
-
 export function setupSectionParallax(): VoidFunction {
   if (!motionAllowed()) return () => {};
 
@@ -305,10 +217,8 @@ export function setupSectionParallax(): VoidFunction {
 
   const sections: Array<[string, string]> = [
     ['.hero', '--hero-progress'],
-    ['.trusted', '--trusted-progress'],
     ['.how', '--how-progress'],
     ['.bento', '--bento-progress'],
-    ['.testimonials', '--testimonials-progress'],
   ];
 
   const tracked = sections
@@ -419,110 +329,3 @@ export function setupAuroraBg(): VoidFunction {
   };
 }
 
-export function setupFirstScrollConfetti(): VoidFunction {
-  if (!motionAllowed() || typeof window === 'undefined') return () => {};
-
-  const anchor =
-    document.querySelector<HTMLElement>('.hero__button--primary') ||
-    document.querySelector<HTMLElement>('.hero');
-  if (!anchor) return () => {};
-
-  const colors = [
-    '#897eff', '#c191ff', '#ff8cd2', '#6eb9ff',
-    '#ffd59a', '#9ee5ff', '#b464ff', '#ffb4ea',
-  ];
-
-  let fired = false;
-  const timeouts: number[] = [];
-
-  const burst = () => {
-    if (fired) return;
-    fired = true;
-
-    const rect = anchor.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-
-    const container = document.createElement('div');
-    container.className = 'home-confetti';
-    container.setAttribute('aria-hidden', 'true');
-    container.style.cssText = [
-      'position:fixed',
-      'inset:0',
-      'pointer-events:none',
-      'z-index:30',
-      'overflow:hidden',
-    ].join(';');
-    document.body.appendChild(container);
-
-    const count = 28;
-    for (let i = 0; i < count; i += 1) {
-      const p = document.createElement('span');
-      const angle = (i / count) * Math.PI * 2 + (Math.random() - 0.5) * 0.4;
-      const radius = 160 + Math.random() * 200;
-      const dx = Math.cos(angle) * radius;
-      const dy = Math.sin(angle) * radius - 80 - Math.random() * 60;
-      const size = 6 + Math.random() * 8;
-      const rot = Math.random() * 360;
-      const color = colors[i % colors.length];
-      const dur = 1100 + Math.random() * 700;
-
-      p.style.cssText = [
-        'position:absolute',
-        `left:${cx}px`,
-        `top:${cy}px`,
-        `width:${size}px`,
-        `height:${size * 0.45}px`,
-        `background:${color}`,
-        `border-radius:${Math.random() > 0.4 ? '2px' : '50%'}`,
-        `box-shadow:0 0 10px ${color}99, 0 0 18px ${color}55`,
-        `transform:translate3d(-50%,-50%,0) rotate(${rot}deg)`,
-        'opacity:1',
-        `transition:transform ${dur}ms cubic-bezier(0.16,1,0.3,1), opacity ${dur}ms ease-out`,
-        'will-change:transform,opacity',
-      ].join(';');
-      container.appendChild(p);
-
-      window.requestAnimationFrame(() => {
-        p.style.transform =
-          `translate3d(calc(-50% + ${dx.toFixed(1)}px), calc(-50% + ${dy.toFixed(1)}px), 0) ` +
-          `rotate(${(rot + 540).toFixed(0)}deg)`;
-        p.style.opacity = '0';
-      });
-
-      timeouts.push(
-        window.setTimeout(() => {
-          p.remove();
-        }, dur + 80),
-      );
-    }
-
-    timeouts.push(
-      window.setTimeout(() => {
-        container.remove();
-      }, 2200),
-    );
-
-    window.removeEventListener('scroll', onScroll);
-    window.removeEventListener('wheel', onScroll);
-    window.removeEventListener('touchmove', onScroll);
-  };
-
-  const onScroll = () => {
-    if (window.scrollY < 6) return;
-    burst();
-  };
-
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('wheel', onScroll, { passive: true });
-  window.addEventListener('touchmove', onScroll, { passive: true });
-
-  return () => {
-    window.removeEventListener('scroll', onScroll);
-    window.removeEventListener('wheel', onScroll);
-    window.removeEventListener('touchmove', onScroll);
-    timeouts.forEach((id) => window.clearTimeout(id));
-    const lingering = document.querySelector('.home-confetti');
-    if (lingering) lingering.remove();
-  };
-}

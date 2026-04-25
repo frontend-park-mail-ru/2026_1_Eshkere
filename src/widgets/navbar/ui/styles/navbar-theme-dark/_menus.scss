@@ -96,17 +96,6 @@ html[data-theme='dark'] {
     background: rgba(38, 49, 82, 0.96);
   }
 
-  .navbar__profile-menu-link--theme {
-    border-color: rgba(125, 110, 255, 0.34);
-    box-shadow: 0 12px 24px rgba(67, 61, 153, 0.22);
-  }
-
-  .navbar__profile-menu-link-icon--theme::before {
-    mask-image: url('/icons/moon.svg');
-    -webkit-mask-image: url('/icons/moon.svg');
-    background-color: #cfcaff;
-  }
-
   .navbar__profile-menu-logout {
     border-color: rgba(255, 134, 127, 0.24);
     background: linear-gradient(

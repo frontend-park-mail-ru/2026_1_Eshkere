@@ -19,7 +19,7 @@
 }
 
 .hero::before {
-  background: url('/img/without.png') center bottom / 1440px auto no-repeat !important;
+  background: url('/img/without.png') center calc(100% + 170px) / 1440px auto no-repeat !important;
   -webkit-mask-image: linear-gradient(
     to top,
     transparent 0%,

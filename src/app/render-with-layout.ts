@@ -11,6 +11,7 @@ import {
   renderModeratorLayout,
   updateModeratorLayoutSlots,
 } from 'app/components/moderator-layout';
+import { renderIframeLayout } from 'app/components/iframe-layout';
 /**
  * @typedef {'public' | 'dashboard'} LayoutKind
  */
@@ -22,7 +23,7 @@ import {
  * @return {Promise<string>} HTML для #app.
  */
 
-export type LayoutKind = 'public' | 'dashboard' | 'moderator';
+export type LayoutKind = 'public' | 'dashboard' | 'moderator' | 'iframe';
 
 export async function renderLayoutShell(
   layout: LayoutKind,
@@ -33,6 +34,9 @@ export async function renderLayoutShell(
   }
   if (layout === 'moderator') {
     return renderModeratorLayout('', pathname);
+  }
+  if (layout === 'iframe') {
+    return renderIframeLayout('');
   }
   return renderPublicLayout('', pathname);
 }

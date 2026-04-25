@@ -1,5 +1,6 @@
 html[data-theme='dark'] {
   .campaign-builder {
+    --campaign-inner-surface: rgba(22, 31, 57, 0.9);
     color: var(--text-main);
 
     &__toolbar,
@@ -115,7 +116,7 @@ html[data-theme='dark'] {
     &__modal-option,
     &__modal-empty {
       border: none;
-      background: rgba(22, 31, 57, 0.9);
+      background: var(--campaign-inner-surface);
       color: var(--text-main);
       box-shadow: none;
     }
@@ -133,18 +134,18 @@ html[data-theme='dark'] {
     }
 
     &__card--review-summary .campaign-builder__review-sections {
-      background: rgba(16, 24, 45, 0.58);
+      background: var(--campaign-inner-surface);
       border-radius: 18px;
       padding: 8px;
     }
 
     &__card--review-summary .campaign-builder__review-section {
-      background: rgba(26, 37, 66, 0.9);
+      background: var(--campaign-inner-surface);
       box-shadow: none;
     }
 
     &__card--review-summary .campaign-builder__summary-item {
-      background: rgba(34, 47, 82, 0.9);
+      background: var(--campaign-inner-surface);
       box-shadow: none;
     }
 

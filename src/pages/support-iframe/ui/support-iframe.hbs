@@ -1,0 +1,76 @@
+<section class="support-iframe-page" data-support-iframe-page>
+  <div class="support-iframe-page__shell">
+    <h1 class="support-iframe-page__title">Расскажите о проблеме</h1>
+    <p class="support-iframe-page__subtitle">
+      Все поля обязательные. Поделитесь подробностями, чтобы мы быстрее помогли.
+    </p>
+
+    <form class="support-iframe-page__form" id="support-iframe-form" novalidate>
+      <label class="support-iframe-page__field support-iframe-page__field--category">
+        <span class="support-iframe-page__label">
+          С чем связано ваше обращение?
+          <span class="support-iframe-page__required">*</span>
+        </span>
+        <select class="support-iframe-page__control" name="category" required>
+          <option value="" selected disabled>Не выбрано</option>
+          <option value="bug">Баг</option>
+          <option value="suggestion">Предложение</option>
+          <option value="complaint">Продуктовая жалоба</option>
+          <option value="question">Вопрос</option>
+        </select>
+      </label>
+
+      {{{topicField}}}
+
+      <label class="support-iframe-page__field">
+        <span class="support-iframe-page__label">
+          Опишите проблему как можно подробнее
+          <span class="support-iframe-page__required">*</span>
+        </span>
+        <textarea
+          class="support-iframe-page__control support-iframe-page__control--textarea"
+          name="description"
+          placeholder="Опишите шаги, что ожидали и что получили."
+          required
+        ></textarea>
+        <p class="support-iframe-page__error" data-error-for="description"></p>
+      </label>
+
+      <div class="support-iframe-page__guest-only" data-support-guest-only>
+        <h2 class="support-iframe-page__section-title">Оставьте свои контакты</h2>
+        <p class="support-iframe-page__section-subtitle">
+          Мы ответим вам в самое ближайшее время.
+        </p>
+
+        {{{nameField}}}
+
+        {{{contactEmailField}}}
+      </div>
+      
+      {{{submitButton}}}
+  
+    </form>
+
+    <section
+      class="support-iframe-page__success"
+      id="support-iframe-success"
+      hidden
+      aria-live="polite"
+    >
+      <div class="support-iframe-page__success-badge" aria-hidden="true">
+        <span>✓</span>
+      </div>
+      <h2 class="support-iframe-page__success-title">Обращение отправлено</h2>
+      <p class="support-iframe-page__success-text">
+        Спасибо! Мы получили ваше обращение и скоро свяжемся с вами.
+      </p>
+      <button
+        type="button"
+        class="support-iframe-page__success-reset"
+        data-support-success-reset
+      >
+        Отправить еще одно
+      </button>
+    </section>
+  </div>
+</section>

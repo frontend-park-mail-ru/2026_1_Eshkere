@@ -3,10 +3,7 @@ import { renderTemplate } from 'shared/lib/render';
 import homePageTemplate from './home.hbs';
 import {
   setupAuroraBg,
-  setupCounters,
-  setupFirstScrollConfetti,
   setupMagnetic,
-  setupMarqueePause,
   setupReveal,
   setupSectionParallax,
   setupSmoothAnchors,
@@ -30,11 +27,8 @@ export function Home(): VoidFunction {
     setupReveal(),
     setupMagnetic(),
     setupTilt(),
-    setupCounters(),
     setupSmoothAnchors(),
-    setupMarqueePause(),
     setupSectionParallax(),
-    setupFirstScrollConfetti(),
   ];
 
   return () => {

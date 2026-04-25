@@ -1,0 +1,272 @@
+.appeals-page {
+  display: grid;
+  gap: 14px;
+}
+
+.appeals-page__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.appeals-page__title {
+  margin: 0;
+  color: #1f2a44;
+  font-size: 26px;
+  line-height: 1.2;
+  font-weight: 800;
+}
+
+.appeals-page__error {
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: #b42318;
+  background: #fff5f5;
+}
+
+.appeals-table {
+  border: 1px solid #d7dfec;
+  border-radius: 12px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.appeals-table__header,
+.appeal-row {
+  display: grid;
+  grid-template-columns: 92px 180px 1fr 140px;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+}
+
+.appeals-table__header {
+  border-bottom: 1px solid #e7edf6;
+  background: #f7f9ff;
+  color: #667085;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.appeal-row {
+  border-bottom: 1px solid #eef2f8;
+  color: #2a364b;
+  font-size: 14px;
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    transform 120ms ease;
+}
+
+.appeal-row:hover {
+  background: #f8faff;
+}
+
+.appeal-row:focus-visible {
+  outline: 2px solid #7a74ff;
+  outline-offset: -2px;
+}
+
+.appeal-row:active {
+  transform: scale(0.998);
+}
+
+.appeals-table__body .appeal-row:last-child {
+  border-bottom: 0;
+}
+
+.appeal-row__id {
+  font-weight: 700;
+}
+
+.appeal-row__title {
+  min-width: 0;
+}
+
+.appeal-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.appeal-status--open {
+  color: #1d4ed8;
+  background: #dbeafe;
+}
+
+.appeal-status--in-progress {
+  color: #92400e;
+  background: #fef3c7;
+}
+
+.appeal-status--closed {
+  color: #065f46;
+  background: #d1fae5;
+}
+
+.appeal-status--unknown {
+  color: #334155;
+  background: #e2e8f0;
+}
+
+.appeals-empty {
+  border: 1px dashed #c7d2e3;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  color: #475569;
+  background: #fff;
+}
+
+.appeal-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.appeal-modal[hidden] {
+  display: none;
+}
+
+.appeal-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.42);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+.appeal-modal__dialog {
+  position: relative;
+  width: min(760px, 100%);
+  max-height: min(82vh, 760px);
+  overflow: auto;
+  border: 1px solid #d7dfec;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 20px 42px rgba(15, 23, 42, 0.18);
+  padding: 16px;
+  opacity: 0;
+  transform: translateY(10px) scale(0.985);
+  transition:
+    opacity 190ms ease,
+    transform 190ms ease;
+}
+
+.appeal-modal.is-open .appeal-modal__backdrop {
+  opacity: 1;
+}
+
+.appeal-modal.is-open .appeal-modal__dialog {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.appeal-modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.appeal-modal__title {
+  margin: 0;
+  color: #1f2a44;
+  font-size: 22px;
+  line-height: 1.25;
+  font-weight: 800;
+}
+
+.appeal-modal__close {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #d7dfec;
+  border-radius: 9px;
+  background: #fff;
+  color: #2a364b;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.appeal-modal__meta {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.appeal-modal__chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #3730a3;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.appeal-modal__chip--status {
+  background: #e8f5ff;
+  color: #075985;
+}
+
+.appeal-modal__section {
+  margin-top: 14px;
+  border: 1px solid #e5eaf3;
+  border-radius: 12px;
+  background: #fbfcff;
+  padding: 12px;
+}
+
+.appeal-modal__section-title {
+  margin: 0;
+  color: #1f2a44;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.appeal-modal__section-text {
+  margin: 8px 0 0;
+  color: #334155;
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 900px) {
+  .appeals-table__header {
+    display: none;
+  }
+
+  .appeal-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .appeal-modal {
+    padding: 12px;
+  }
+
+  .appeal-modal__dialog {
+    max-height: 88vh;
+    padding: 12px;
+  }
+}
