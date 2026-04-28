@@ -26,10 +26,13 @@
       <img class="sidebar__icon" src="/icons/history.svg" alt="" aria-hidden="true" />
       История действий
     </span>
-    <span class="sidebar__link sidebar__link--disabled" aria-disabled="true">
+    <a
+      href="/support"
+      class="sidebar__link {{#if isSupport}}sidebar__link--active{{/if}}"
+    >
       <img class="sidebar__icon" src="/icons/Question.svg" alt="" aria-hidden="true" />
       Поддержка
-    </span>
+    </a>
   </div>
 
   <div class="sidebar__footer">
@@ -49,4 +52,65 @@
       Выйти
     </button>
   </div>
+
+  <nav class="mobile-tabbar" aria-label="Мобильная навигация кабинета">
+    <span class="mobile-tabbar__item mobile-tabbar__item--disabled" aria-disabled="true">
+      <img class="mobile-tabbar__icon" src="/icons/darhboard.svg" alt="" aria-hidden="true" />
+      <span>Обзор</span>
+    </span>
+
+    <a
+      href="/ads"
+      class="mobile-tabbar__item {{#if isCampaigns}}mobile-tabbar__item--active{{/if}}"
+      {{#if isCampaigns}}aria-current="page"{{/if}}
+    >
+      <img class="mobile-tabbar__icon" src="/icons/statistics.svg" alt="" aria-hidden="true" />
+      <span>Кампании</span>
+    </a>
+
+    <a
+      href="/balance"
+      class="mobile-tabbar__item {{#if isBalance}}mobile-tabbar__item--active{{/if}}"
+      {{#if isBalance}}aria-current="page"{{/if}}
+    >
+      <img class="mobile-tabbar__icon" src="/icons/wallet.svg" alt="" aria-hidden="true" />
+      <span>Баланс</span>
+    </a>
+
+    <a
+      href="/profile"
+      class="mobile-tabbar__item {{#if isProfile}}mobile-tabbar__item--active{{/if}}"
+      {{#if isProfile}}aria-current="page"{{/if}}
+    >
+      <img class="mobile-tabbar__icon" src="/icons/User.svg" alt="" aria-hidden="true" />
+      <span>Профиль</span>
+    </a>
+
+    <details class="mobile-tabbar__more">
+      <summary class="mobile-tabbar__item mobile-tabbar__item--more">
+        <img class="mobile-tabbar__icon" src="/icons/Menu.svg" alt="" aria-hidden="true" />
+        <span>Еще</span>
+      </summary>
+
+      <div class="mobile-tabbar__sheet">
+        <span class="mobile-tabbar__sheet-title">Еще разделы</span>
+        <span class="mobile-tabbar__sheet-item mobile-tabbar__sheet-item--disabled">
+          <img class="mobile-tabbar__sheet-icon" src="/icons/Group.svg" alt="" aria-hidden="true" />
+          Аудитории
+        </span>
+        <span class="mobile-tabbar__sheet-item mobile-tabbar__sheet-item--disabled">
+          <img class="mobile-tabbar__sheet-icon" src="/icons/history.svg" alt="" aria-hidden="true" />
+          История действий
+        </span>
+        <a
+          class="mobile-tabbar__sheet-item {{#if isSupport}}mobile-tabbar__sheet-item--active{{/if}}"
+          href="/support"
+          {{#if isSupport}}aria-current="page"{{/if}}
+        >
+          <img class="mobile-tabbar__sheet-icon" src="/icons/Question.svg" alt="" aria-hidden="true" />
+          Поддержка
+        </a>
+      </div>
+    </details>
+  </nav>
 </aside>

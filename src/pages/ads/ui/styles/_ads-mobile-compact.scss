@@ -1,0 +1,165 @@
+@use '../../../../shared/styles/tokens' as t;
+@use '../../../../shared/styles/mixins';
+
+@include mixins.media-max(t.$bp-sm) {
+  .campaigns-table {
+    overflow: visible;
+  }
+
+  .campaigns-table__body {
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .campaigns-table__body .campaign-row {
+    grid-template-columns: minmax(0, 1.1fr) minmax(84px, 0.9fr);
+    grid-template-areas:
+      'title title'
+      'budget status'
+      'goal actions'
+      'date toggle';
+    align-items: start;
+    min-height: 0;
+    padding: 10px;
+    gap: 7px 10px;
+    overflow: visible;
+  }
+
+  .campaign-row > div {
+    gap: 1px;
+    font-size: 15px;
+    line-height: 1.2;
+  }
+
+  .campaign-row > div::before {
+    font-size: 10px;
+    line-height: 1.15;
+  }
+
+  .campaign-row__name {
+    max-width: 100%;
+    font-size: 18px;
+    line-height: 1.15;
+    -webkit-line-clamp: 2;
+  }
+
+  .campaign-row__actions {
+    display: grid;
+    grid-template-columns: repeat(2, 32px);
+    align-items: center;
+    justify-content: start;
+    justify-self: start;
+    gap: 5px;
+    width: max-content;
+    overflow: visible;
+  }
+
+  .campaign-row__actions::before {
+    grid-column: 1 / -1;
+  }
+
+  .campaign-row__actions-trigger,
+  .campaign-row__action-button {
+    width: 32px;
+    min-height: 30px;
+    height: 30px;
+    border-radius: 12px;
+    box-shadow: none;
+  }
+
+  .campaign-row__action-button--edit {
+    display: none;
+  }
+
+  .campaign-row__action-button--delete {
+    display: inline-flex;
+  }
+
+  .campaign-row__actions-trigger-glyph,
+  .campaign-row__actions-trigger-glyph-icon,
+  .campaign-row__action-icon {
+    width: 14px;
+    height: 14px;
+    flex-basis: 14px;
+  }
+
+  .campaign-row__menu {
+    top: auto;
+    bottom: calc(100% + 8px);
+    left: auto;
+    right: 0;
+    width: min(240px, calc(100vw - 32px));
+    z-index: 300;
+  }
+
+  .status-badge {
+    min-height: 24px;
+    padding: 0 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    line-height: 1;
+  }
+
+  .toggle {
+    width: 34px;
+    height: 20px;
+  }
+
+  .toggle input:checked + .toggle__slider::before {
+    transform: translateX(14px);
+  }
+
+  .toggle__slider::before {
+    width: 16px;
+    height: 16px;
+  }
+
+  .campaigns-table__footer {
+    padding: 10px 12px 14px;
+  }
+
+  .campaigns-delete-modal,
+  .campaigns-status-modal {
+    padding: 12px;
+  }
+
+  .campaigns-delete-modal__dialog,
+  .campaigns-status-modal__dialog {
+    max-height: calc(100dvh - 96px);
+    gap: 14px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .campaigns-delete-modal__actions,
+  .campaigns-status-modal__actions {
+    gap: 12px;
+  }
+
+  .campaigns-delete-modal__button,
+  .campaigns-status-modal__button {
+    min-height: 56px;
+    height: auto;
+    padding: 0 18px;
+    border-radius: 16px;
+    font-size: 17px;
+    line-height: 1.15;
+  }
+}
+
+@media (max-width: 480px) {
+  .campaigns-table__body .campaign-row {
+    grid-template-columns: minmax(0, 1fr) minmax(76px, 0.74fr);
+    padding: 9px;
+    gap: 6px 8px;
+  }
+
+  .campaign-row > div {
+    font-size: 14px;
+  }
+
+  .campaign-row__name {
+    font-size: 17px;
+    line-height: 1.12;
+  }
+}

@@ -228,5 +228,149 @@
   &__action-button-label {
     display: none;
   }
+
+  @include mixins.media-max(t.$bp-lg) {
+    > div {
+      min-width: 0;
+      display: grid;
+      gap: 4px;
+      color: var(--text-table-body);
+      word-break: break-word;
+
+      &::before {
+        color: var(--text-soft);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      &:nth-child(2)::before {
+        content: 'Бюджет';
+      }
+
+      &:nth-child(3)::before {
+        content: 'Целевое действие';
+      }
+
+      &:nth-child(4)::before {
+        content: 'Дата последнего действия';
+      }
+
+      &:nth-child(5)::before {
+        content: 'Действия';
+      }
+
+      &:nth-child(6)::before {
+        content: 'Статус';
+      }
+
+      &:nth-child(7)::before {
+        content: 'Вкл/выкл';
+      }
+    }
+
+    &__name {
+      grid-column: 1 / -1;
+      font-size: 17px;
+    }
+
+    &__actions {
+      justify-self: start;
+    }
+
+    &__menu {
+      width: min(310px, calc(100vw - 48px));
+      left: 0;
+      right: auto;
+    }
+  }
+
+  @include mixins.media-max(t.$bp-sm) {
+    > div {
+      gap: 2px;
+      min-width: 0;
+      max-width: 100%;
+
+      &::before {
+        font-size: 10px;
+        line-height: 1.2;
+      }
+
+      &:nth-child(2) {
+        grid-area: budget;
+      }
+
+      &:nth-child(3) {
+        grid-area: goal;
+      }
+
+      &:nth-child(4) {
+        grid-area: date;
+      }
+
+      &:nth-child(5) {
+        grid-area: actions;
+      }
+
+      &:nth-child(6) {
+        grid-area: status;
+      }
+
+      &:nth-child(7) {
+        grid-area: toggle;
+      }
+
+      &:nth-child(5),
+      &:nth-child(7) {
+        align-self: end;
+      }
+    }
+
+    &__name {
+      grid-area: title;
+      display: -webkit-box;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      overflow: hidden;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      font-size: 17px;
+      line-height: 1.22;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      hyphens: auto;
+      white-space: normal;
+    }
+
+    &__actions {
+      width: auto;
+      display: inline-flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 6px;
+      overflow: visible;
+    }
+
+    &__actions-trigger,
+    &__action-button {
+      width: 38px;
+      min-height: 34px;
+      border-radius: 13px;
+    }
+
+    &__action-button--delete {
+      display: inline-flex;
+    }
+
+    &__menu {
+      width: min(260px, calc(100vw - 40px));
+      top: auto;
+      bottom: calc(100% + 8px);
+      left: 0;
+      right: auto;
+      z-index: 220;
+    }
+  }
 }
 

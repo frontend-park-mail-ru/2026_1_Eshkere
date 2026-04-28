@@ -1,0 +1,265 @@
+@use '../../../../shared/styles/tokens' as t;
+@use '../../../../shared/styles/mixins';
+
+@include mixins.media-max(t.$bp-md) {
+  .campaign-statistics {
+    gap: 16px;
+    max-width: 100%;
+    min-width: 0;
+
+    &__toolbar,
+    &__toolbar-actions,
+    &__hero,
+    &__metrics,
+    &__main-grid,
+    &__bottom-grid {
+      grid-template-columns: minmax(0, 1fr);
+      min-width: 0;
+    }
+
+    &__toolbar {
+      gap: 12px;
+    }
+
+    &__toolbar-actions {
+      justify-items: stretch;
+      gap: 12px;
+    }
+
+    &__select {
+      width: 100%;
+    }
+
+    &__ghost-button,
+    &__primary-button,
+    &__select-trigger {
+      width: 100%;
+      min-width: 0;
+      min-height: 52px;
+      justify-content: center;
+    }
+
+    &__hero {
+      align-items: start;
+      padding: 20px;
+    }
+
+    &__title {
+      max-width: 100%;
+      font-size: clamp(28px, 8vw, 34px);
+      line-height: 1.08;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    &__lead {
+      max-width: none;
+    }
+
+    &__metrics {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    &__card--chart {
+      min-height: 0;
+    }
+
+    &__card-head,
+    &__chart-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    &__metric-switch {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      border-radius: 18px;
+    }
+
+    &__switch-button--metric {
+      min-width: 0;
+    }
+
+    &__chart-summary {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    &__chart-summary-item {
+      min-width: 0;
+    }
+
+    &__preview-meta {
+      grid-template-columns: 1fr;
+    }
+
+    &__insights {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+@include mixins.media-max(t.$bp-sm) {
+  .campaign-statistics {
+    gap: 14px;
+
+    &__toolbar {
+      grid-template-columns: 1fr 1fr;
+      align-items: stretch;
+      gap: 10px;
+    }
+
+    &__ghost-button,
+    &__primary-button,
+    &__select-trigger {
+      min-height: 50px;
+      padding: 10px 12px;
+      font-size: 14px;
+      white-space: normal;
+      line-height: 1.15;
+    }
+
+    &__toolbar-actions {
+      display: contents;
+    }
+
+    &__select {
+      width: 100%;
+    }
+
+    &__primary-button {
+      grid-column: 1 / -1;
+    }
+
+    &__select-menu {
+      width: min(100%, calc(100vw - 32px));
+    }
+
+    &__hero,
+    &__metric-card,
+    &__card {
+      border-radius: 20px;
+      padding: 16px;
+    }
+
+    &__hero-meta {
+      gap: 8px;
+    }
+
+    &__status,
+    &__hero-period,
+    &__metric-delta {
+      min-height: 26px;
+      padding: 0 10px;
+      font-size: 11px;
+    }
+
+    &__title {
+      font-size: clamp(26px, 7.6vw, 32px);
+      line-height: 1.1;
+    }
+
+    &__lead,
+    &__hero-note-text,
+    &__insight-text,
+    &__card-text,
+    &__preview-text {
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    &__hero-note {
+      padding: 14px;
+      border-radius: 16px;
+    }
+
+    &__hero-note strong {
+      font-size: 18px;
+    }
+
+    &__metrics {
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    &__metric-card {
+      gap: 8px;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    &__metric-value {
+      font-size: 24px;
+      overflow-wrap: anywhere;
+    }
+
+    &__metric-delta {
+      width: 100%;
+      max-width: 100%;
+      min-height: 24px;
+      padding: 0 8px;
+      justify-content: center;
+      text-align: center;
+      font-size: 10px;
+      line-height: 1.15;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    &__card-title {
+      font-size: 20px;
+    }
+
+    &__metric-switch,
+    &__chart-summary {
+      grid-template-columns: 1fr;
+    }
+
+    &__chart-shell {
+      padding: 10px;
+      border-radius: 14px;
+      overflow-x: auto;
+    }
+
+    &__chart {
+      min-width: 320px;
+    }
+
+    &__chart-labels {
+      min-width: 320px;
+      font-size: 10px;
+    }
+
+    &__preview-creative {
+      min-height: 140px;
+    }
+
+    &__preview-title {
+      font-size: 22px;
+    }
+
+    &__bottom-grid,
+    &__main-grid,
+    &__side-stack {
+      gap: 14px;
+    }
+  }
+}
+
+@include mixins.media-max(t.$bp-sm) {
+  html[data-theme='dark'] {
+    .campaign-statistics {
+      &__table-row {
+        border-color: rgba(100, 118, 171, 0.28);
+        background: rgba(13, 19, 35, 0.72);
+      }
+
+      &__table-row--highlight {
+        border-color: rgba(125, 110, 255, 0.34);
+        background: rgba(22, 31, 57, 0.82);
+      }
+    }
+  }
+}

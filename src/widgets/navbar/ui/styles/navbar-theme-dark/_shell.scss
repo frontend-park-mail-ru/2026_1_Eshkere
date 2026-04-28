@@ -89,4 +89,15 @@ html[data-theme='dark'] {
   .navbar__profile-toggle {
     border: none;
   }
+
+  @media (max-width: 600px) {
+    .navbar::before,
+    .navbar.is-scrolled::before {
+      content: none !important;
+      display: none !important;
+      background: none !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+  }
 }

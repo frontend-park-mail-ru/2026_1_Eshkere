@@ -92,10 +92,23 @@
 
     &__identity {
       align-items: flex-start;
+      gap: 14px;
+    }
+
+    &__avatar {
+      width: 58px;
+      height: 58px;
+      flex-basis: 58px;
+      border-radius: 18px;
+      font-size: 25px;
     }
 
     &__title {
       font-size: 24px;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+      overflow-wrap: anywhere;
     }
 
     &__stats {
@@ -142,6 +155,11 @@
     align-items: flex-start;
   }
 
+  .profile-stack__item {
+    flex-direction: column;
+    gap: 14px;
+  }
+
   .profile-security__main,
   .profile-security__action {
     grid-column: auto;
@@ -157,8 +175,20 @@
 
   .profile-stack__meta {
     width: 100%;
-    justify-content: space-between;
-    align-items: center;
+    min-width: 0;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: stretch;
+  }
+
+  .profile-stack__action {
+    width: 100%;
+    min-width: 0;
+    height: 48px;
+  }
+
+  .profile-stack__pill {
+    width: fit-content;
   }
 
   .profile-finance__primary-action {

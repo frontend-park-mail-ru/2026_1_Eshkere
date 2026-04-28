@@ -7,13 +7,13 @@
   }
 
   .campaigns-table {
-    overflow-x: auto;
+    overflow-x: hidden;
     min-height: 0;
     flex: initial;
 
     &__header,
     .campaign-row {
-      min-width: 980px;
+      min-width: 0;
     }
 
     &__body {
@@ -147,6 +147,56 @@
   .campaign-row__menu-icon {
     width: 20px;
     height: 20px;
+  }
+
+  .campaigns-table {
+    width: 100%;
+    min-width: 0;
+    overflow-x: clip;
+    overflow-y: visible;
+  }
+
+  .campaigns-table__body .campaign-row {
+    overflow: visible;
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      'title title'
+      'budget status'
+      'goal goal'
+      'date date'
+      'actions toggle';
+    padding: 12px;
+    gap: 9px 12px;
+  }
+
+  .campaign-row__name {
+    grid-area: title;
+    display: -webkit-box;
+    max-width: 100%;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    white-space: normal;
+  }
+
+  .campaign-row__actions {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    overflow: visible;
+  }
+
+  .campaign-row__menu {
+    top: auto;
+    bottom: calc(100% + 8px);
+    left: 0;
+    right: auto;
+    z-index: 220;
   }
 
   .campaigns-empty {

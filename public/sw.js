@@ -1,5 +1,5 @@
-const APP_SHELL_CACHE = 'app-shell-v2';
-const STATIC_CACHE = 'static-assets-v2';
+const APP_SHELL_CACHE = 'app-shell-v3';
+const STATIC_CACHE = 'static-assets-v3';
 const API_CACHE = 'api-responses-v1';
 const APP_SHELL_URL = '/index.html';
 const PRECACHE_URLS = [
@@ -95,12 +95,8 @@ self.addEventListener('fetch', (event) => {
   }
 
   event.respondWith(
-    caches.match(request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-
-      return fetch(request).then((response) => {
+    fetch(request)
+      .then((response) => {
         if (!response.ok) {
           return response;
         }
@@ -113,7 +109,7 @@ self.addEventListener('fetch', (event) => {
         );
 
         return response;
-      });
-    }),
+      })
+      .catch(() => caches.match(request)),
   );
 });

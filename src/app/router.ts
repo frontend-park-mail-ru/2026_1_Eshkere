@@ -21,6 +21,7 @@ import { renderModeratorPoliciesPage, ModeratorPoliciesPage } from 'pages/modera
 import { renderModeratorAuditPage, ModeratorAuditPage } from 'pages/moderator-audit';
 import { renderProfilePage, Profile } from 'pages/profile';
 import { renderRegisterPage, Register } from 'pages/register';
+import { renderSupportPage, Support } from 'pages/support';
 import { Navbar } from 'widgets/navbar';
 import { getCurrentPath, navigateTo } from 'shared/lib/navigation';
 import {
@@ -102,6 +103,12 @@ const routes: Record<string, RouteDefinition> = {
     render: renderProfilePage,
     layout: 'dashboard',
     init: Profile,
+    protected: true,
+  },
+  '/support': {
+    render: renderSupportPage,
+    layout: 'dashboard',
+    init: Support,
     protected: true,
   },
   '/moderator': {

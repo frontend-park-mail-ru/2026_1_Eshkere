@@ -1,0 +1,107 @@
+<section class="support-page" data-support-page>
+  <header class="support-hero">
+    <div class="support-hero__copy">
+      <span class="support-hero__eyebrow">Поддержка</span>
+      <h1 class="support-hero__title">Вопросы по кампаниям и модерации</h1>
+      <p class="support-hero__text">
+        Выберите кампанию, посмотрите сообщение модератора и отправьте уточняющий вопрос по запуску, отклонению или настройкам.
+      </p>
+    </div>
+
+    <div class="support-hero__stats" aria-label="Сводка обращений">
+      <article class="support-stat">
+        <span>На проверке</span>
+        <strong>{{pendingCount}}</strong>
+      </article>
+      <article class="support-stat support-stat--danger">
+        <span>Отклонено</span>
+        <strong>{{rejectedCount}}</strong>
+      </article>
+    </div>
+  </header>
+
+  {{#if loadError}}
+    <div class="support-alert">{{loadError}}</div>
+  {{/if}}
+
+  {{#if hasCampaigns}}
+    <div class="support-shell">
+      <aside class="support-list" aria-label="Кампании">
+        <div class="support-list__head">
+          <h2>Кампании</h2>
+          <span>Выберите тему обращения</span>
+        </div>
+
+        <div class="support-list__items">
+          {{#each campaigns}}
+            <button
+              class="support-campaign {{#if isSelected}}is-active{{/if}}"
+              type="button"
+              data-support-campaign="{{id}}"
+              aria-pressed="{{#if isSelected}}true{{else}}false{{/if}}"
+            >
+              <span class="support-campaign__status support-campaign__status--{{statusTone}}">{{statusLabel}}</span>
+              <strong class="support-campaign__title">{{title}}</strong>
+              <span class="support-campaign__subtitle">{{subtitle}}</span>
+            </button>
+          {{/each}}
+        </div>
+      </aside>
+
+      <div class="support-thread-stack">
+        {{#each campaigns}}
+          <section class="support-thread" data-support-thread="{{id}}" {{#unless isSelected}}hidden{{/unless}}>
+            <div class="support-thread__head">
+              <div>
+                <span class="support-thread__kicker">Кампания</span>
+                <h2 class="support-thread__title">{{title}}</h2>
+              </div>
+              <span class="support-thread__status support-thread__status--{{statusTone}}">{{statusLabel}}</span>
+            </div>
+
+            <div class="support-moderator-note">
+              <span class="support-moderator-note__label">Сообщение модератора</span>
+              <p>{{moderatorMessage}}</p>
+            </div>
+
+            <div class="support-messages" data-support-messages>
+              {{#each messages}}
+                <article class="support-message support-message--{{author}}">
+                  <span class="support-message__meta">{{time}}</span>
+                  <p class="support-message__text">{{text}}</p>
+                </article>
+              {{/each}}
+            </div>
+
+            <form class="support-form" data-support-form>
+              <label class="support-form__field">
+                <span>Что хотите уточнить?</span>
+                <textarea
+                  data-support-message
+                  rows="4"
+                  placeholder="Например: какие правки нужны, чтобы кампания прошла модерацию?"
+                ></textarea>
+              </label>
+
+              <div class="support-form__actions">
+                <select class="support-form__select" data-support-topic aria-label="Тема вопроса">
+                  <option>Вопрос по модерации</option>
+                  <option>Креативы и текст</option>
+                  <option>Бюджет и списания</option>
+                  <option>Запуск кампании</option>
+                </select>
+                <button class="support-form__button" type="submit">Отправить вопрос</button>
+              </div>
+            </form>
+          </section>
+        {{/each}}
+      </div>
+    </div>
+  {{else}}
+    <section class="support-empty">
+      <h2>Пока нет кампаний для обращения</h2>
+      <p>Создайте кампанию или дождитесь проверки, чтобы задать вопрос по конкретному запуску.</p>
+      <a href="/ads/create">Создать кампанию</a>
+    </section>
+  {{/if}}
+</section>

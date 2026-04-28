@@ -11,10 +11,15 @@
     border-radius: 14px;
     background: rgba(255, 255, 255, 0.72);
     box-shadow: var(--shadow);
+    min-width: 0;
   }
 
   &__balance {
     margin-inline: 6px 10px;
+    max-width: 92px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     font-size: 12px;
     font-weight: 700;
     color: var(--primary);
@@ -86,15 +91,24 @@
   &__profile-toggle {
     width: 30px;
     height: 30px;
+    padding: 0;
     border-radius: t.$radius-pill;
     border: 1px solid #9aa1ff;
     background: rgba(255, 255, 255, 0.78);
     cursor: pointer;
     @include mixins.flex-center;
-    transition: transform 0.2s ease;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
 
     &:hover {
       transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(88, 85, 255, 0.12);
+    }
+
+    &[aria-expanded='true'] {
+      border-color: rgba(101, 95, 255, 0.5);
     }
 
     &[aria-expanded='true'] img {

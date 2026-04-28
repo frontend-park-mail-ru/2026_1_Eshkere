@@ -17,6 +17,7 @@
     border: 0;
     width: 64px;
     height: 64px;
+    flex: 0 0 64px;
     border-radius: 20px;
     display: grid;
     place-items: center;
@@ -60,6 +61,7 @@
   }
 
   &__identity-content {
+    flex: 1 1 auto;
     min-width: 0;
   }
 

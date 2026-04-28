@@ -3,7 +3,7 @@
 
 .navbar {
   position: fixed;
-  top: 12px;
+  top: 0;
   left: 16px;
   right: 16px;
   width: auto;
@@ -14,7 +14,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  padding: 10px 14px;
+  padding: 6px 12px;
   border-radius: t.$radius-lg;
   background: rgba(238, 240, 255, 0.5);
   backdrop-filter: blur(4px);
@@ -27,7 +27,7 @@
   &::before {
     content: '';
     position: absolute;
-    top: -12px;
+    top: 0;
     left: 50%;
     transform: translateX(-50%);
     width: 100vw;
@@ -69,6 +69,7 @@
   &__actions {
     display: flex;
     align-items: center;
+    min-width: 0;
   }
 
   &__left {
@@ -77,23 +78,28 @@
 
   &__brand {
     gap: 10px;
+    min-width: 0;
   }
 
   &__logo {
-    width: 42px;
-    height: 42px;
+    width: 34px;
+    height: 34px;
     object-fit: contain;
     display: block;
     flex-shrink: 0;
   }
 
   &__brand-text {
+    min-width: 0;
     display: flex;
     flex-direction: column;
     line-height: 1.05;
   }
 
   &__title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     font-size: 15px;
     font-weight: 700;
   }
@@ -118,6 +124,8 @@
 
   &__actions {
     gap: 12px;
+    justify-content: flex-end;
+    min-width: 0;
   }
 
   &__theme-btn {
@@ -181,7 +189,7 @@
 
   &__button {
     min-width: 116px;
-    @include mixins.pill-button(44px);
+    @include mixins.pill-button(36px);
     font-size: 13px;
     font-weight: 600;
     @include mixins.interactive-lift(-2px);

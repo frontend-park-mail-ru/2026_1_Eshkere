@@ -140,5 +140,84 @@
     font-size: 15px;
     font-weight: 700;
   }
+
+  @include mixins.media-max(t.$bp-lg) {
+    min-height: auto;
+    border-radius: 20px;
+
+    &__header {
+      display: none;
+    }
+
+    &__body {
+      gap: 12px;
+      padding: 12px;
+    }
+
+    &__body .campaign-row {
+      padding: 16px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      background: var(--surface-card-strong);
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      align-items: start;
+    }
+
+    &__footer {
+      flex-wrap: wrap;
+      padding: 14px 16px 18px;
+    }
+  }
+
+  @include mixins.media-max(t.$bp-sm) {
+    width: 100%;
+    min-width: 0;
+    overflow-x: clip;
+    overflow-y: visible;
+    border-radius: 18px;
+
+    &__body {
+      padding: 10px;
+      min-width: 0;
+    }
+
+    &__body .campaign-row {
+      overflow: visible;
+      width: 100%;
+      min-width: 0;
+      min-height: 0;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-areas:
+        'title title'
+        'budget status'
+        'goal goal'
+        'date date'
+        'actions toggle';
+      padding: 12px;
+      gap: 9px 12px;
+    }
+
+    &__footer {
+      gap: 8px;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    &__page-nav {
+      min-width: 0;
+      flex: 1 1 130px;
+      height: 38px;
+      font-size: 13px;
+    }
+
+    &__page-list {
+      order: -1;
+      width: 100%;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+  }
 }
 

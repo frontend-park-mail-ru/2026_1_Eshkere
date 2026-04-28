@@ -112,5 +112,45 @@
       background: var(--white);
     }
   }
+
+  @include mixins.media-max(t.$bp-lg) {
+    &__toolbar {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    &__toolbar-primary,
+    &__filters {
+      width: 100%;
+    }
+
+    &__filters {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    &__create-button,
+    &__filter,
+    &__date-filter,
+    &__search {
+      min-width: 0;
+      width: 100%;
+    }
+  }
+
+  @include mixins.media-max(t.$bp-sm) {
+    gap: 14px;
+
+    &__toolbar {
+      padding: 14px;
+      border-radius: 16px;
+    }
+
+    &__toolbar-primary,
+    &__filters {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+  }
 }
 
