@@ -6,7 +6,7 @@ import {
 } from 'shared/lib/local-storage';
 import { renderElement } from 'shared/lib/render';
 import { OPEN_CAMPAIGN_DELETE_MODAL_EVENT } from 'widgets/ads-delete-modal/ui/delete-modal';
-import adsActionMenuTemplate from 'pages/ads/ui/ads-action-menu.hbs';
+import adsActionMenuTemplate from './ads-action-menu.hbs';
 
 export function initCampaignActionMenus(signal: AbortSignal): void {
   const triggerButtons = Array.from(

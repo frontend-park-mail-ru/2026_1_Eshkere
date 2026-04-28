@@ -1,0 +1,16 @@
+{{#if hasAudiences}}
+  {{#each audiences}}
+  <article class='campaign-builder__saved-audience{{#if isActive}} campaign-builder__saved-audience--active{{/if}}' data-audience-preset-id='{{id}}'>
+    <div>
+      <strong class='campaign-builder__saved-audience-title'>{{name}}</strong>
+      <p class='campaign-builder__saved-audience-text'>{{summary}}</p>
+    </div>
+    <div class='campaign-builder__saved-audience-actions'>
+      <button class='campaign-builder__text-button' type='button' data-builder-apply-audience='{{id}}'>Применить</button>
+      <button class='campaign-builder__text-button campaign-builder__text-button--danger' type='button' data-builder-delete-audience='{{id}}'>Удалить</button>
+    </div>
+  </article>
+  {{/each}}
+{{else}}
+  <p class='campaign-builder__saved-audience-empty'>Здесь можно хранить готовые аудитории для повторного запуска похожих кампаний.</p>
+{{/if}}

@@ -1,4 +1,3 @@
-import { getCurrentPath } from 'app/navigation';
 import {
   LocalStorageKey,
   createLocalStorageKey,
@@ -25,7 +24,7 @@ const CAMPAIGN_EDIT_STORAGE_KEY = LocalStorageKey.CampaignEditBuilderState;
 const CAMPAIGN_EDIT_SEED_KEY = LocalStorageKey.CampaignEditSeed;
 
 export function getBuilderMode(): BuilderMode {
-  return getCurrentPath() === '/ads/edit' ? 'edit' : 'create';
+  return window.location.pathname === '/ads/edit' ? 'edit' : 'create';
 }
 
 export function getBuilderModeConfig(

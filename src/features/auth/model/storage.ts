@@ -1,28 +1,8 @@
 import { request } from 'shared/lib/request';
 import { LocalStorageKey, localStorageService } from 'shared/lib/local-storage';
+import type { AuthUser } from 'entities/user';
 
-export interface AuthUser {
-  id: number;
-  email: string;
-  phone: string;
-  name?: string;
-  role?: string;
-  roles?: string[];
-  permissions?: string[];
-  isModerator?: boolean;
-  isAdmin?: boolean;
-  balance?: number;
-  avatar?: string;
-  company?: string;
-  city?: string;
-  inn?: string;
-  tariffKey?: 'basic' | 'pro' | 'business';
-  accountStatus?: 'pending' | 'verified';
-  contactHandle?: string;
-  cardMasked?: string;
-  lastTopUp?: string;
-  passwordStatus?: string;
-}
+export type { AuthUser };
 
 class AuthState {
   private confirmedSession = false;

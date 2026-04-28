@@ -45,18 +45,16 @@
     height: 30px;
     transform: translateY(-50%);
     border: none;
-    border-radius: 8px;
+    border-radius: t.$radius-xs;
     background: transparent;
     cursor: pointer;
     color: t.$color-text-muted;
-    transition:
-      background-color 0.2s ease,
-      color 0.2s ease;
+    transition: t.$transition-color;
     @include mixins.focus-ring(rgba(122, 116, 255, 0.35), 2px, 2px);
 
     &:hover {
       background: rgba(122, 128, 148, 0.1);
-      color: #5c647c;
+      color: var(--text-body);
     }
 
     &.is-visible {
@@ -100,7 +98,7 @@
   background: var(--surface-panel-alt);
   color: var(--text-body);
   outline: none;
-  transition: 0.2s ease;
+  transition: t.$transition-base;
 
   &--with-prefix {
     padding-left: 52px;

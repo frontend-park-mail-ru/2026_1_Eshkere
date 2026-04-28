@@ -12,7 +12,7 @@ html[data-theme='dark'] {
 
   // Dark hero background image — spheres at bottom of image, fade upward to dark
   .hero::before {
-    background: url('/img/without.png') center bottom / 1440px auto no-repeat !important;
+    background: url('/img/without.png') center bottom / max(1440px, 100vw) auto no-repeat !important;
     -webkit-mask-image: linear-gradient(
       to top,
       transparent 0%,

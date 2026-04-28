@@ -1,5 +1,4 @@
-export type TariffKey = 'basic' | 'pro' | 'business';
-export type AccountStatus = 'pending' | 'verified';
+export type { TariffKey, AccountStatus } from 'entities/user';
 
 export interface ProfileField {
   key: string;

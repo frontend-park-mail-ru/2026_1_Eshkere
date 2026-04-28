@@ -1,7 +1,11 @@
+import { renderElement } from 'shared/lib/render';
 import {
   LocalStorageKey,
   localStorageService,
 } from 'shared/lib/local-storage';
+import audienceControlsTemplate from '../ui/audience-controls.hbs';
+import audienceSummaryTemplate from '../ui/audience-summary.hbs';
+import savedAudienceListTemplate from '../ui/saved-audience-list.hbs';
 import type {
   AudienceChipKey,
   AudienceDetailKey,
@@ -430,34 +434,17 @@ export function renderSavedAudiencesList(state: BuilderState): void {
   document
     .querySelectorAll<HTMLElement>('[data-builder-saved-audiences]')
     .forEach((container) => {
-      const items = getSavedAudiences();
-
-      if (!items.length) {
-        container.innerHTML =
-          '<p class="campaign-builder__saved-audience-empty">Здесь можно хранить готовые аудитории для повторного запуска похожих кампаний.</p>';
-        return;
-      }
-
-      container.innerHTML = items
-        .map((item) => {
-          const isActive =
-            JSON.stringify(item.config) ===
-            JSON.stringify(cloneAudienceConfig(state.audienceConfig));
-
-          return `
-          <article class="campaign-builder__saved-audience${isActive ? ' campaign-builder__saved-audience--active' : ''}" data-audience-preset-id="${item.id}">
-            <div>
-              <strong class="campaign-builder__saved-audience-title">${item.name}</strong>
-              <p class="campaign-builder__saved-audience-text">${item.summary}</p>
-            </div>
-            <div class="campaign-builder__saved-audience-actions">
-              <button class="campaign-builder__text-button" type="button" data-builder-apply-audience="${item.id}">Применить</button>
-              <button class="campaign-builder__text-button campaign-builder__text-button--danger" type="button" data-builder-delete-audience="${item.id}">Удалить</button>
-            </div>
-          </article>
-        `;
-        })
-        .join('');
+      const rawItems = getSavedAudiences();
+      const audiences = rawItems.map((item) => ({
+        ...item,
+        isActive:
+          JSON.stringify(item.config) ===
+          JSON.stringify(cloneAudienceConfig(state.audienceConfig)),
+      }));
+      container.innerHTML = savedAudienceListTemplate({
+        audiences,
+        hasAudiences: audiences.length > 0,
+      });
     });
 }
 
@@ -475,118 +462,12 @@ export function ensureAudiencePanelScaffold(state: BuilderState): void {
   const summaryCard = cards[1];
   const stack = settingsCard?.querySelector<HTMLElement>('.campaign-builder__stack');
 
-  if (
-    settingsCard &&
-    stack &&
-    !settingsCard.querySelector('[data-builder-audience-controls]')
-  ) {
-    stack.insertAdjacentHTML(
-      'afterend',
-      `
-        <div class="campaign-builder__audience-controls" data-builder-audience-controls>
-          <section class="campaign-builder__meta-item">
-            <span class="campaign-builder__meta-item-label">Логика совпадения</span>
-            <div class="campaign-builder__segmented">
-              <button class="campaign-builder__segmented-button" type="button" data-builder-audience-setting="matchingMode" data-value="any">Любой сигнал</button>
-              <button class="campaign-builder__segmented-button" type="button" data-builder-audience-setting="matchingMode" data-value="balanced">Сбалансировано</button>
-              <button class="campaign-builder__segmented-button" type="button" data-builder-audience-setting="matchingMode" data-value="strict">Строгое ядро</button>
-            </div>
-            <p class="campaign-builder__meta-item-text" data-audience-matching-note></p>
-          </section>
-
-          <section class="campaign-builder__meta-grid">
-            <article class="campaign-builder__meta-item">
-              <span class="campaign-builder__meta-item-label">Приоритет профиля</span>
-              <div class="campaign-builder__chip-row">
-                <button class="campaign-builder__mini-chip" type="button" data-builder-audience-setting="profilePriority" data-value="primary">Основной</button>
-                <button class="campaign-builder__mini-chip" type="button" data-builder-audience-setting="profilePriority" data-value="secondary">Расширяющий</button>
-              </div>
-              <p class="campaign-builder__meta-item-text" data-audience-profile-priority-note></p>
-            </article>
-
-            <article class="campaign-builder__meta-item">
-              <span class="campaign-builder__meta-item-label">Приоритет интересов</span>
-              <div class="campaign-builder__chip-row">
-                <button class="campaign-builder__mini-chip" type="button" data-builder-audience-setting="interestsPriority" data-value="primary">Основной</button>
-                <button class="campaign-builder__mini-chip" type="button" data-builder-audience-setting="interestsPriority" data-value="secondary">Расширяющий</button>
-              </div>
-              <p class="campaign-builder__meta-item-text" data-audience-interests-priority-note></p>
-            </article>
-          </section>
-
-          <section class="campaign-builder__meta-item campaign-builder__meta-item--toggle">
-            <div>
-              <span class="campaign-builder__meta-item-label">Расширение аудитории</span>
-              <strong class="campaign-builder__meta-item-value" data-audience-expansion-state></strong>
-              <p class="campaign-builder__meta-item-text" data-audience-expansion-note></p>
-            </div>
-            <button class="campaign-builder__toggle" type="button" aria-pressed="false" data-builder-audience-toggle="expansionEnabled">
-              <span class="campaign-builder__toggle-handle"></span>
-            </button>
-          </section>
-
-          <section class="campaign-builder__meta-item">
-            <div class="campaign-builder__meta-item-head">
-              <span class="campaign-builder__meta-item-label">Сохранённые аудитории</span>
-              <button class="campaign-builder__button campaign-builder__button--ghost campaign-builder__button--compact" type="button" data-builder-save-audience>Сохранить текущую</button>
-            </div>
-            <div class="campaign-builder__saved-audiences" data-builder-saved-audiences></div>
-          </section>
-        </div>
-      `,
-    );
+  if (settingsCard && stack && !settingsCard.querySelector('[data-builder-audience-controls]')) {
+    stack.insertAdjacentElement('afterend', renderElement(audienceControlsTemplate));
   }
 
   if (summaryCard) {
-    summaryCard.innerHTML = `
-      <div class="campaign-builder__card-head">
-        <h2 class="campaign-builder__card-title">Сводка охвата</h2>
-        <p class="campaign-builder__card-subtitle">Что получится после текущих фильтров и где есть риск потерять объём.</p>
-      </div>
-
-      <div class="campaign-builder__metrics">
-        <div class="campaign-builder__metric">
-          <span class="campaign-builder__metric-label">Потенциальный охват</span>
-          <strong class="campaign-builder__metric-value" data-audience-reach></strong>
-        </div>
-        <div class="campaign-builder__metric">
-          <span class="campaign-builder__metric-label">Прогноз кликов</span>
-          <strong class="campaign-builder__metric-value" data-audience-clicks></strong>
-        </div>
-        <div class="campaign-builder__metric">
-          <span class="campaign-builder__metric-label">Качество аудитории</span>
-          <strong class="campaign-builder__metric-value" data-audience-quality-text></strong>
-        </div>
-        <div class="campaign-builder__metric">
-          <span class="campaign-builder__metric-label">Прогноз CTR</span>
-          <strong class="campaign-builder__metric-value" data-audience-ctr></strong>
-        </div>
-        <div class="campaign-builder__metric">
-          <span class="campaign-builder__metric-label">Ширина сегмента</span>
-          <strong class="campaign-builder__metric-value" data-audience-breadth></strong>
-        </div>
-        <div class="campaign-builder__metric">
-          <span class="campaign-builder__metric-label">Конкуренция в аукционе</span>
-          <strong class="campaign-builder__metric-value" data-audience-competition></strong>
-        </div>
-      </div>
-
-      <section class="campaign-builder__summary-block">
-        <div class="campaign-builder__summary-block-head">
-          <strong class="campaign-builder__summary-block-title">Почему система даёт такую оценку</strong>
-          <span class="campaign-builder__pill" data-audience-logic-badge></span>
-        </div>
-        <p class="campaign-builder__summary-block-text" data-audience-explanation></p>
-      </section>
-
-      <section class="campaign-builder__summary-block">
-        <div class="campaign-builder__summary-block-head">
-          <strong class="campaign-builder__summary-block-title">Риски запуска</strong>
-          <span class="campaign-builder__pill" data-audience-risk-tone></span>
-        </div>
-        <ul class="campaign-builder__risk-list" data-audience-risk-list></ul>
-      </section>
-    `;
+    summaryCard.innerHTML = audienceSummaryTemplate();
   }
 
   renderSavedAudiencesList(state);
