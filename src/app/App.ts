@@ -3,7 +3,6 @@ import { renderRoute } from './router';
 import { authState } from 'features/auth';
 import { initOfflineModal } from 'widgets/offline-modal';
 import { initRequestErrorModal } from 'widgets/request-error-modal';
-import { initSupportFab } from 'widgets/support-fab';
 import './styles/main.scss';
 
 /**
@@ -17,7 +16,6 @@ export async function initApp(): Promise<void> {
   });
   initOfflineModal();
   initRequestErrorModal();
-  initSupportFab();
   await registerServiceWorker();
   authState.syncDevModeratorAccessFromLocation();
   await authState.hasActiveSession();

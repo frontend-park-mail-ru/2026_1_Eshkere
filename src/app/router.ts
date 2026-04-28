@@ -1,6 +1,5 @@
 import { authState } from 'features/auth';
 import { renderAdsPage, Ads } from 'pages/ads';
-import { renderAppealsPage, Appeals } from 'pages/appeals';
 import { renderBalancePage, Balance } from 'pages/balance';
 import { renderCampaignCreatePage, CampaignCreate } from 'pages/campaign-create';
 import {
@@ -22,7 +21,6 @@ import { renderModeratorPoliciesPage, ModeratorPoliciesPage } from 'pages/modera
 import { renderModeratorAuditPage, ModeratorAuditPage } from 'pages/moderator-audit';
 import { renderProfilePage, Profile } from 'pages/profile';
 import { renderRegisterPage, Register } from 'pages/register';
-import { renderSupportIframePage, SupportIframe } from 'pages/support-iframe';
 import { Navbar } from 'widgets/navbar';
 import { getCurrentPath, navigateTo } from './navigation';
 import {
@@ -70,11 +68,6 @@ const routes: Record<string, RouteDefinition> = {
     init: Register,
     guestOnly: true,
   },
-  '/support-iframe': {
-    render: renderSupportIframePage,
-    layout: 'iframe',
-    init: SupportIframe,
-  },
   '/ads': {
     render: renderAdsPage,
     layout: 'dashboard',
@@ -103,12 +96,6 @@ const routes: Record<string, RouteDefinition> = {
     render: renderBalancePage,
     layout: 'dashboard',
     init: Balance,
-    protected: true,
-  },
-  '/appeals': {
-    render: renderAppealsPage,
-    layout: 'dashboard',
-    init: Appeals,
     protected: true,
   },
   '/profile': {

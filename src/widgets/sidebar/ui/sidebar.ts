@@ -11,7 +11,6 @@ export async function renderSidebar(pathname = '/ads'): Promise<string> {
   return await renderTemplate(sidebarTemplate, {
     isCampaigns: pathname === '/ads',
     isBalance: pathname === '/balance',
-    isAppeals: pathname === '/appeals',
     isProfile: pathname === '/profile',
   });
 }
