@@ -16,17 +16,17 @@ import type {
   FinalReviewCheckKey,
   ToastPayload,
 } from 'features/campaign-builder/model/types';
-import { syncCampaignBuilderAudienceView } from 'widgets/campaign-builder-audience/ui/audience';
-import { syncCampaignBuilderBudgetView } from 'widgets/campaign-builder-budget/ui/budget';
-import { syncCampaignBuilderContentView } from 'widgets/campaign-builder-content/ui/content';
-import { syncCampaignBuilderReviewView } from 'widgets/campaign-builder-review/ui/review';
+import { syncCampaignBuilderAudienceView } from 'widgets/campaign-builder-audience';
+import { syncCampaignBuilderBudgetView } from 'widgets/campaign-builder-budget';
+import { syncCampaignBuilderContentView } from 'widgets/campaign-builder-content';
+import { syncCampaignBuilderReviewView } from 'widgets/campaign-builder-review';
 import {
   syncCampaignBuilderHealthView,
   syncCampaignBuilderModeCopyView,
   syncCampaignBuilderSaveStateView,
   syncCampaignBuilderValidationView,
-} from 'widgets/campaign-builder-status/ui/status';
-import { syncCampaignBuilderStepView } from 'widgets/campaign-builder-step/ui/step';
+} from 'widgets/campaign-builder-status';
+import { syncCampaignBuilderStepView } from 'widgets/campaign-builder-step';
 import {
   getAudienceInsights,
   getAudienceStateSummary,

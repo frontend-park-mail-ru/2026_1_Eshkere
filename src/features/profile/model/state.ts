@@ -1,11 +1,13 @@
-import { authState } from 'features/auth';
-import { getAds } from 'features/ads';
-import { DEFAULT_PAYMENT_METHOD } from 'features/balance/model/state';
+import { authState } from 'entities/user';
 import { formatPhoneInput } from 'features/profile/lib/form';
 import { request } from 'shared/lib/request';
-import { formatDate, formatPrice } from 'shared/lib/format';
+import { formatPrice } from 'shared/lib/format';
+interface CampaignsApiResponse {
+  campaigns?: Array<{ id: number }>;
+}
+
 const LEGACY_DEFAULT_PAYMENT_METHODS = new Set([
-  DEFAULT_PAYMENT_METHOD,
+  'Банковская карта •••• 4481',
   'Корпоративная карта •••• 9024',
   'Безналичный счет компании',
 ]);
@@ -143,15 +145,14 @@ export async function getProfileState(): Promise<ProfileState> {
   const rawName = typeof currentUser.name === 'string' ? currentUser.name.trim() : '';
   const fullName = rawName && !isEmailLike(rawName) ? rawName : '';
   const { firstName, lastName } = splitFullName(fullName);
-  const adsResult = await getAds();
-  const activeCampaigns = adsResult.error ? 0 : adsResult.ads.length;
-  const lastCampaign = adsResult.error
-    ? null
-    : [...adsResult.ads].sort((first, second) => {
-      const firstTimestamp = new Date(first.created_at || 0).getTime();
-      const secondTimestamp = new Date(second.created_at || 0).getTime();
-      return secondTimestamp - firstTimestamp;
-    })[0];
+  let activeCampaigns = 0;
+
+  try {
+    const adsResponse = await request<CampaignsApiResponse>('/ad_campaigns', { method: 'GET' });
+    activeCampaigns = (adsResponse.data.campaigns ?? []).length;
+  } catch {
+    // Используем значение по умолчанию
+  }
 
   return {
     avatar: currentUser.avatar || '',
@@ -166,7 +167,7 @@ export async function getProfileState(): Promise<ProfileState> {
     tariffKey: currentUser.tariffKey || 'basic',
     accountStatus: currentUser.accountStatus || 'pending',
     activeCampaigns,
-    lastAction: lastCampaign?.created_at ? formatDate(lastCampaign.created_at) : '—',
+    lastAction: '—',
     contactHandle: currentUser.contactHandle || '',
     cardMasked:
       currentUser.cardMasked &&

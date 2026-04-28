@@ -50,10 +50,7 @@ export interface BuilderState {
   strategy: StrategyKey;
 }
 
-export interface ToastPayload {
-  title: string;
-  description: string;
-}
+export type { ToastPayload } from 'shared/lib/toast';
 
 export interface AudienceSummary {
   cities: string;

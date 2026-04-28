@@ -1,10 +1,7 @@
 import './moderator-layout.scss';
 import { renderTemplate } from 'shared/lib/render';
-import {
-  renderModeratorNavbar,
-  initModeratorNavbar,
-} from 'widgets/moderator-navbar/ui/moderator-navbar';
-import { renderModeratorSidebar } from 'widgets/moderator-sidebar/ui/moderator-sidebar';
+import { renderModeratorNavbar, initModeratorNavbar } from 'widgets/moderator-navbar';
+import { renderModeratorSidebar } from 'widgets/moderator-sidebar';
 import moderatorLayoutTemplate from './moderator-layout.hbs';
 
 export async function renderModeratorLayout(

@@ -1,7 +1,7 @@
 import { clearFieldError, clearFormState, formatPhoneInput, getModalStep, getNamedFormValue, setFieldError, setFormMessage, setStepState, validateConfirmationCode, watchTwoStepFormState } from 'features/profile/lib/form';
 import { updateProfile } from 'features/profile/api/update-profile';
 import { normalizePhone, validatePhone } from 'shared/validators';
-import { showProfileFeedback } from 'widgets/profile-feedback/ui/toast';
+import { showProfileFeedback } from 'shared/lib/toast';
 
 import type { InitProfileContactSectionParams } from './contact-types';
 

@@ -55,8 +55,4 @@ export interface TemplateContext {
   accountActionText: string;
 }
 
-export interface ToastPayload {
-  title: string;
-  description: string;
-  tone?: 'success' | 'warning';
-}
+export type { ToastPayload } from 'shared/lib/toast';

@@ -1,4 +1,4 @@
-import { initNavigation } from './navigation';
+import { initNavigation } from 'shared/lib/navigation';
 import { renderRoute } from './router';
 import { authState } from 'features/auth';
 import { initOfflineModal } from 'widgets/offline-modal';

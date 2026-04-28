@@ -1,7 +1,7 @@
-import { navigateTo } from 'app/navigation';
+import { navigateTo } from 'shared/lib/navigation';
 import { deleteAdCampaign, updateAdCampaign } from 'features/ads';
 import { LocalStorageKey, localStorageService } from 'shared/lib/local-storage';
-import { createCampaignEditDeleteModalController } from 'widgets/campaign-edit-delete/ui/delete-modal';
+import { createCampaignEditDeleteModalController } from 'widgets/campaign-edit-delete';
 
 import { CAMPAIGN_EDIT_SEED_KEY, getCampaignEditStateStorageKey, getCtaLabel, persistCampaignEditState } from './campaign-edit-state';
 import { buildSaveHistoryItem } from './campaign-edit-view-model';

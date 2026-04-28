@@ -1,5 +1,5 @@
 import { PasswordVisibilityToggles } from 'shared/ui/form-field/form-field';
-import { navigateTo } from 'app/navigation';
+import { navigateTo } from 'shared/lib/navigation';
 import {
   clearFormState,
   resetTwoStepForm,
@@ -10,12 +10,13 @@ import type {
   TariffKey,
   TariffMeta,
 } from 'features/profile/model/types';
-import { hideProfileFeedback } from 'widgets/profile-feedback/ui/toast';
+import { hideProfileFeedback } from 'shared/lib/toast';
 import { initProfileAccountModals } from './account';
 import { initProfileBillingModals } from './billing';
 import { initProfileContactModals } from './contact';
 
 interface InitProfileModalsParams {
+  cropAvatar: (file: File) => Promise<{ blob: Blob; dataUrl: string } | null>;
   getInitials: (firstName: string, lastName: string) => string;
   getTariffMeta: (tariffKey: TariffKey) => TariffMeta;
   onStateChange: (state: ProfileState) => void;
@@ -71,6 +72,7 @@ function bindModalOpenTriggers(
 }
 
 export function initProfileModals({
+  cropAvatar,
   getInitials,
   getTariffMeta,
   onStateChange,
@@ -154,6 +156,7 @@ export function initProfileModals({
   });
   initProfileAccountModals({
     closeModalById,
+    cropAvatar,
     getInitials,
     onStateChange,
     refreshSubmitStates,

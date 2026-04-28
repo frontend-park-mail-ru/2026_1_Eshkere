@@ -431,6 +431,26 @@
   }
 }
 
+.public-layout--auth-static {
+  @include mixins.page-background('/img/RightFon.png');
+  animation: none;
+
+  &::before,
+  &::after {
+    content: none;
+  }
+
+  .public-layout__bg,
+  .public-layout__shimmer,
+  .public-layout__dust,
+  .public-layout__stars,
+  .public-layout__spotlight,
+  .public-layout__grain,
+  .public-layout__scroll-progress {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .public-layout {
     animation: none !important;

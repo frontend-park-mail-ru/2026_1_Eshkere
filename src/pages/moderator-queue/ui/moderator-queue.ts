@@ -1,5 +1,5 @@
 import './moderator-queue.scss';
-import { navigateTo } from 'app/navigation';
+import { navigateTo } from 'shared/lib/navigation';
 import { moderationQueue } from 'features/moderation/model/mock';
 import { renderTemplate } from 'shared/lib/render';
 import queueTemplate from './moderator-queue.hbs';

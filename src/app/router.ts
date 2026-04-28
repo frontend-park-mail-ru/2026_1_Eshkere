@@ -22,7 +22,7 @@ import { renderModeratorAuditPage, ModeratorAuditPage } from 'pages/moderator-au
 import { renderProfilePage, Profile } from 'pages/profile';
 import { renderRegisterPage, Register } from 'pages/register';
 import { Navbar } from 'widgets/navbar';
-import { getCurrentPath, navigateTo } from './navigation';
+import { getCurrentPath, navigateTo } from 'shared/lib/navigation';
 import {
   renderLayoutShell,
   updateDashboardLayoutSlots,
@@ -162,11 +162,8 @@ let currentLayoutKind: LayoutKind | null = null;
 export async function renderRoute(): Promise<void> {
   renderRequestId += 1;
   const currentRequestId = renderRequestId;
-
-  if (typeof activeCleanup === 'function') {
-    activeCleanup();
-    activeCleanup = null;
-  }
+  const previousCleanup = activeCleanup;
+  activeCleanup = null;
 
   const app = document.getElementById('app');
   if (!app) {
@@ -199,8 +196,6 @@ export async function renderRoute(): Promise<void> {
   }
 
   try {
-    const content = await route.render();
-
     const needsShell =
       currentLayoutKind !== route.layout ||
       !document.getElementById('app-layout-outlet');
@@ -220,6 +215,12 @@ export async function renderRoute(): Promise<void> {
       return;
     }
 
+    const content = await route.render();
+
+    if (currentRequestId !== renderRequestId) {
+      return;
+    }
+
     const outlet = document.getElementById('app-layout-outlet');
 
     if (!outlet) {
@@ -230,6 +231,10 @@ export async function renderRoute(): Promise<void> {
 
     const cleanups: RouteCleanup[] = [];
 
+    if (typeof previousCleanup === 'function') {
+      previousCleanup();
+    }
+
     if (route.init) {
       const routeCleanup = route.init();
       if (typeof routeCleanup === 'function') {
@@ -237,12 +242,12 @@ export async function renderRoute(): Promise<void> {
       }
     }
 
-    if (route.layout !== 'moderator') {
+    if (route.layout === 'public' || route.layout === 'dashboard') {
       const navbarCleanup = Navbar();
       if (typeof navbarCleanup === 'function') {
         cleanups.push(navbarCleanup);
       }
-    } else {
+    } else if (route.layout === 'moderator') {
       const moderatorNavbarCleanup = initModeratorNavbar();
       if (typeof moderatorNavbarCleanup === 'function') {
         cleanups.push(moderatorNavbarCleanup);

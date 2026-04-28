@@ -10,7 +10,7 @@ import {
 } from 'features/profile/lib/form';
 import { formatPrice } from 'shared/lib/format';
 import { parseAmountInput, validateAmountRange } from 'shared/validators';
-import { showProfileFeedback } from 'widgets/profile-feedback/ui/toast';
+import { showProfileFeedback } from 'shared/lib/toast';
 
 import type { InitProfileBillingSectionParams } from './billing-types';
 

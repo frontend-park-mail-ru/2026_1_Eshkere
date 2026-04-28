@@ -1,4 +1,4 @@
-import { authState } from 'features/auth';
+import { authState } from 'entities/user';
 import {
   LocalStorageKey,
   createLocalStorageKey,

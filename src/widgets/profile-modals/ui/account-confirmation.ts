@@ -1,6 +1,6 @@
 import { attachMaskedInput, clearFormState, formatPhoneInput, setFieldError, setFormMessage, validateRequired, watchFormState } from 'features/profile/lib/form';
 import { normalizePhone, validateEmail, validateInn, validatePhone } from 'shared/validators';
-import { showProfileFeedback } from 'widgets/profile-feedback/ui/toast';
+import { showProfileFeedback } from 'shared/lib/toast';
 
 import type { InitProfileAccountSectionParams } from './account-types';
 

@@ -1,5 +1,5 @@
-import { syncCampaignEditCtaSelect } from 'widgets/campaign-edit-cta/ui/cta-select';
-import { syncCampaignEditOverview } from 'widgets/campaign-edit-overview/ui/overview';
+import { syncCampaignEditCtaSelect } from 'widgets/campaign-edit-cta';
+import { syncCampaignEditOverview } from 'widgets/campaign-edit-overview';
 import type { CampaignEditState } from './campaign-edit-types';
 import { getCtaLabel } from './campaign-edit-state';
 import { createChangeSummary } from './campaign-edit-view-model';

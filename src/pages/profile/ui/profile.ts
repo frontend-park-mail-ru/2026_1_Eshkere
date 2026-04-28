@@ -12,11 +12,12 @@ import {
   toTemplateContext,
 } from 'features/profile/model/state';
 import type { ProfileState } from 'features/profile/model/types';
-import { hideProfileFeedback } from 'widgets/profile-feedback/ui/toast';
-import { populateProfileForms, refreshProfileFormStates } from 'widgets/profile-forms/ui/forms';
-import { initProfileModals } from 'widgets/profile-modals/ui/modals';
-import { syncProfileView } from 'widgets/profile-view/ui/view';
-import { initProfileFeedLink } from 'widgets/profile-feed-link/ui/feed-link';
+import { hideProfileFeedback } from 'widgets/profile-feedback';
+import { populateProfileForms, refreshProfileFormStates } from 'widgets/profile-forms';
+import { initProfileModals } from 'widgets/profile-modals';
+import { syncProfileView } from 'widgets/profile-view';
+import { initProfileFeedLink } from 'widgets/profile-feed-link';
+import { openAvatarCropModal } from 'widgets/avatar-crop-modal';
 import profileTemplate from './profile.hbs';
 
 export type {
@@ -135,6 +136,7 @@ export function Profile(): VoidFunction | void {
   const state = readProfileStateFromDom();
 
   initProfileModals({
+    cropAvatar: openAvatarCropModal,
     getInitials,
     getTariffMeta,
     onStateChange: (nextState) => {

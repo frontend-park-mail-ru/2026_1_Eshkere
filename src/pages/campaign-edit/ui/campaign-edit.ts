@@ -1,8 +1,8 @@
 import './campaign-edit.scss';
 import { renderTemplate } from 'shared/lib/render';
-import { initCampaignEditCtaSelect } from 'widgets/campaign-edit-cta/ui/cta-select';
-import { createCampaignEditDeleteModalController, initCampaignEditDeleteModal } from 'widgets/campaign-edit-delete/ui/delete-modal';
-import { createCampaignEditToastController } from 'widgets/campaign-edit-toast/ui/toast';
+import { initCampaignEditCtaSelect } from 'widgets/campaign-edit-cta';
+import { createCampaignEditDeleteModalController, initCampaignEditDeleteModal } from 'widgets/campaign-edit-delete';
+import { createCampaignEditToastController } from 'widgets/campaign-edit-toast';
 import campaignEditTemplate from './campaign-edit.hbs';
 import { getCampaignEditState, getCtaLabel } from './campaign-edit-state';
 import { syncCampaignEdit } from './campaign-edit-sync';

@@ -14,9 +14,3 @@ export function motionAllowed(): boolean {
   motionCache = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   return motionCache;
 }
-
-export function formatCount(value: number): string {
-  return Math.round(value)
-    .toString()
-    .replace(/\B(?=(\d{3})+(?!\d))/g, '\u00A0');
-}

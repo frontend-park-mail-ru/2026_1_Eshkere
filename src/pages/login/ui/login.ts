@@ -11,7 +11,7 @@ import {
   setFieldState,
 } from 'shared/validators';
 import { loginUser } from 'features/auth';
-import { navigateTo } from 'app/navigation';
+import { navigateTo } from 'shared/lib/navigation';
 import loginPageTemplate from './login.hbs';
 
 /**

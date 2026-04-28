@@ -1,16 +1,13 @@
 import './ads.scss';
-import { navigateTo } from 'app/navigation';
+import { navigateTo } from 'shared/lib/navigation';
 import { deleteAdCampaign, getAds } from 'features/ads';
 import { isOfflineErrorMessage } from 'shared/lib/request';
 import { renderTemplate } from 'shared/lib/render';
-import type { CampaignDeleteModalDetail } from 'widgets/ads-delete-modal/ui/delete-modal';
-import { initCampaignActionMenus } from 'widgets/ads-action-menu/ui/action-menu';
-import { initAdsDatePicker } from 'widgets/ads-date-picker/ui/date-picker';
-import { initCampaignDeleteModal } from 'widgets/ads-delete-modal/ui/delete-modal';
-import {
-  CAMPAIGNS_PAGINATION_REFRESH_EVENT,
-  initCampaignPagination,
-} from 'widgets/ads-pagination/ui/pagination';
+import type { CampaignDeleteModalDetail } from 'widgets/ads-delete-modal';
+import { initCampaignActionMenus } from 'widgets/ads-action-menu';
+import { initAdsDatePicker } from 'widgets/ads-date-picker';
+import { initCampaignDeleteModal } from 'widgets/ads-delete-modal';
+import { CAMPAIGNS_PAGINATION_REFRESH_EVENT, initCampaignPagination } from 'widgets/ads-pagination';
 import adsPageTemplate from './ads.hbs';
 import { mapAdsToCampaigns } from './ads-mappers';
 import {

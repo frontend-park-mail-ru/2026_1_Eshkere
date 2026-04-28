@@ -15,7 +15,7 @@ import {
 } from 'features/profile/lib/form';
 import { formatCardNumber } from 'shared/lib/payment-format';
 import { validateCardCvv, validateCardExpiry, validateCardNumber } from 'shared/validators';
-import { showProfileFeedback } from 'widgets/profile-feedback/ui/toast';
+import { showProfileFeedback } from 'shared/lib/toast';
 
 import type { InitProfileBillingSectionParams } from './billing-types';
 

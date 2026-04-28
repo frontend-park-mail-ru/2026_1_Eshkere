@@ -12,7 +12,7 @@ html[data-theme='dark'] {
 
   // Dark hero background image — spheres at bottom of image, fade upward to dark
   .hero::before {
-    background: url('/img/without.png') center bottom / max(1440px, 100vw) auto no-repeat !important;
+    background: url('/img/without.png') center calc(100% + 100px) / max(1440px, 100vw) auto no-repeat !important;
     -webkit-mask-image: linear-gradient(
       to top,
       transparent 0%,
@@ -70,10 +70,8 @@ html[data-theme='dark'] {
   }
 
   .hero,
-  .trusted,
   .how,
   .bento,
-  .testimonials,
   .faq,
   .home-footer {
     position: relative;
@@ -93,18 +91,15 @@ html[data-theme='dark'] {
       text-shadow: none;
 
       > span {
-        background: none;
-        color: #b56cff;
-        -webkit-background-clip: border-box;
-        background-clip: border-box;
-        -webkit-text-fill-color: currentColor;
-        animation: none;
-        text-shadow: 0 6px 18px rgba(134, 92, 255, 0.18);
+        text-shadow: none;
       }
     }
 
     &__description {
-      color: #cad2ea;
+      color: #e8eeff;
+      text-shadow:
+        0 2px 10px rgba(0, 0, 0, 0.52),
+        0 1px 2px rgba(0, 0, 0, 0.5);
     }
 
     &__button--primary {
@@ -181,28 +176,6 @@ html[data-theme='dark'] {
 
     &__floating-label {
       color: #9aa6ca;
-    }
-  }
-
-  .trusted {
-    background: transparent;
-
-    &__label {
-      color: #8e9ac0;
-    }
-
-    &__item {
-      color: #aab4d6;
-      text-shadow: none;
-    }
-
-    &__item:hover {
-      color: #dce3ff;
-      text-shadow: 0 0 18px rgba(120, 132, 255, 0.16);
-    }
-
-    &__icon {
-      filter: saturate(0.95) brightness(0.95) drop-shadow(0 4px 10px rgba(0, 0, 0, 0.22));
     }
   }
 

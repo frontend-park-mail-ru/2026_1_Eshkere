@@ -1,6 +1,6 @@
 import { getAds } from 'features/ads';
 import { generateFeedLink } from 'features/feed-link/api/generate';
-import { showProfileFeedback } from 'widgets/profile-feedback/ui/toast';
+import { showProfileFeedback } from 'shared/lib/toast';
 
 export function initProfileFeedLink(signal: AbortSignal): void {
   const section = document.querySelector<HTMLElement>('[data-feed-link-section]');

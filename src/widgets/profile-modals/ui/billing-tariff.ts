@@ -1,6 +1,6 @@
 import { clearFormState, setFormMessage, watchFormState } from 'features/profile/lib/form';
 import type { TariffKey } from 'features/profile/model/types';
-import { showProfileFeedback } from 'widgets/profile-feedback/ui/toast';
+import { showProfileFeedback } from 'shared/lib/toast';
 
 import type { InitProfileBillingSectionParams } from './billing-types';
 

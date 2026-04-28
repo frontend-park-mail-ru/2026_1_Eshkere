@@ -68,7 +68,7 @@
       </p>
 
       <div class="hero__actions" data-reveal style="--reveal-delay: 320ms;">
-        <a href="{{ctaHref}}" class="hero__button hero__button--primary" data-magnetic>
+        <a href="{{ctaHref}}" class="hero__button hero__button--primary">
           {{ctaText}}
           <span class="hero__button-arrow" aria-hidden="true">&rarr;</span>
         </a>
@@ -76,190 +76,6 @@
           Как это работает
         </a>
       </div>
-
-      <ul class="hero__stats" data-reveal style="--reveal-delay: 440ms;">
-        <li class="hero__stat">
-          <span class="hero__stat-value" data-counter="12400" data-suffix="+">0</span>
-          <span class="hero__stat-label">Активных рекламодателей</span>
-        </li>
-        <li class="hero__stat">
-          <span class="hero__stat-value" data-counter="94" data-suffix="%">0</span>
-          <span class="hero__stat-label">Возвращаются запускать снова</span>
-        </li>
-        <li class="hero__stat">
-          <span class="hero__stat-value" data-counter="5" data-suffix=" мин">0</span>
-          <span class="hero__stat-label">На запуск первой кампании</span>
-        </li>
-      </ul>
-    </div>
-  </section>
-
-  <section class="trusted" data-reveal data-scroll-section="trusted">
-    <p class="trusted__label">Ваша реклама показывается на площадках</p>
-    <div class="trusted__marquee" data-marquee>
-      <div class="trusted__track">
-        {{#each platformsLoop}}
-          <div class="trusted__item">
-            <img class="trusted__icon trusted__icon--{{slug}}" src="{{icon}}" alt="" loading="lazy" />
-            <span>{{name}}</span>
-          </div>
-        {{/each}}
-      </div>
-    </div>
-  </section>
-
-  <section class="features" data-scroll-section="features">
-    <header class="section-head" data-reveal>
-      <span class="section-head__eyebrow">Возможности платформы</span>
-      <h2 class="section-head__title">Всё для запуска рекламы<br><span class="section-head__title-accent">без лишних усилий</span></h2>
-      <p class="section-head__subtitle">Умный таргетинг, прозрачный бюджет и аналитика в реальном времени — всё в одном кабинете.</p>
-    </header>
-
-    <div class="features__list">
-
-      <article class="feature-row" data-reveal>
-        <div class="feature-row__text">
-          <span class="feature-row__eyebrow">Аудитория</span>
-          <h3 class="feature-row__title">Умный таргетинг — находим тех, кто купит</h3>
-          <p class="feature-row__desc">Задайте географию, возраст и интересы. Алгоритм анализирует миллионы профилей и подбирает сегменты с максимальной конверсией.</p>
-          <a href="{{ctaHref}}" class="feature-row__link">Попробовать бесплатно &rarr;</a>
-        </div>
-        <div class="feature-row__visual">
-          <div class="feature-mock feature-mock--audience">
-            <div class="feature-mock__head">
-              <span class="feature-mock__title">Аудитория</span>
-              <span class="feature-mock__badge feature-mock__badge--green">320 000 охват</span>
-            </div>
-            <div class="feature-mock__chips">
-              <span class="feature-mock__chip feature-mock__chip--active">Москва</span>
-              <span class="feature-mock__chip feature-mock__chip--active">Санкт-Петербург</span>
-              <span class="feature-mock__chip">Казань</span>
-              <span class="feature-mock__chip">Екатеринбург</span>
-            </div>
-            <div class="feature-mock__row">
-              <span class="feature-mock__label">Возраст</span>
-              <div class="feature-mock__bar-wrap">
-                <div class="feature-mock__bar" style="width: 68%"></div>
-              </div>
-              <span class="feature-mock__val">27–45</span>
-            </div>
-            <div class="feature-mock__row">
-              <span class="feature-mock__label">Интересы</span>
-              <div class="feature-mock__bar-wrap">
-                <div class="feature-mock__bar feature-mock__bar--accent" style="width: 84%"></div>
-              </div>
-              <span class="feature-mock__val">4 тега</span>
-            </div>
-            <div class="feature-mock__row">
-              <span class="feature-mock__label">Исключения</span>
-              <div class="feature-mock__bar-wrap">
-                <div class="feature-mock__bar feature-mock__bar--soft" style="width: 32%"></div>
-              </div>
-              <span class="feature-mock__val">3 сег.</span>
-            </div>
-            <div class="feature-mock__footer">
-              <div class="feature-mock__metric">
-                <strong>2.4%</strong><span>CTR</span>
-              </div>
-              <div class="feature-mock__metric">
-                <strong>Высокое</strong><span>качество</span>
-              </div>
-              <div class="feature-mock__metric">
-                <strong>18 ₽</strong><span>ср. CPC</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      <article class="feature-row feature-row--reverse" data-reveal>
-        <div class="feature-row__text">
-          <span class="feature-row__eyebrow">Бюджет</span>
-          <h3 class="feature-row__title">Прогноз бюджета без сюрпризов</h3>
-          <p class="feature-row__desc">Видите охват, клики и CPC ещё до запуска. Лимиты защищают от перерасхода, а стратегии помогают найти нужный темп показа.</p>
-          <a href="{{ctaHref}}" class="feature-row__link">Запустить кампанию &rarr;</a>
-        </div>
-        <div class="feature-row__visual">
-          <div class="feature-mock feature-mock--budget">
-            <div class="feature-mock__head">
-              <span class="feature-mock__title">Прогноз бюджета</span>
-              <span class="feature-mock__badge">14 дней</span>
-            </div>
-            <div class="feature-mock__budget-bars">
-              <div class="feature-mock__budget-bar" style="height: 40%"></div>
-              <div class="feature-mock__budget-bar" style="height: 55%"></div>
-              <div class="feature-mock__budget-bar" style="height: 48%"></div>
-              <div class="feature-mock__budget-bar feature-mock__budget-bar--hi" style="height: 78%"></div>
-              <div class="feature-mock__budget-bar feature-mock__budget-bar--hi" style="height: 68%"></div>
-              <div class="feature-mock__budget-bar feature-mock__budget-bar--hi" style="height: 90%"></div>
-              <div class="feature-mock__budget-bar feature-mock__budget-bar--hi" style="height: 82%"></div>
-            </div>
-            <div class="feature-mock__footer">
-              <div class="feature-mock__metric">
-                <strong>784К</strong><span>охват</span>
-              </div>
-              <div class="feature-mock__metric">
-                <strong>18 800</strong><span>кликов</span>
-              </div>
-              <div class="feature-mock__metric">
-                <strong>105 000 ₽</strong><span>итого</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      <article class="feature-row" data-reveal>
-        <div class="feature-row__text">
-          <span class="feature-row__eyebrow">Аналитика</span>
-          <h3 class="feature-row__title">Статистика, которая говорит сама за себя</h3>
-          <p class="feature-row__desc">Смотрите охват, CTR, CPC и конверсии в реальном времени. Сравнивайте кампании и принимайте решения на основе данных, а не догадок.</p>
-          <a href="{{ctaHref}}" class="feature-row__link">Посмотреть демо &rarr;</a>
-        </div>
-        <div class="feature-row__visual">
-          <div class="feature-mock feature-mock--stats">
-            <div class="feature-mock__head">
-              <span class="feature-mock__title">Статистика кампании</span>
-              <span class="feature-mock__badge feature-mock__badge--green">Активна</span>
-            </div>
-            <div class="feature-mock__sparklines">
-              <div class="feature-mock__sparkline">
-                <div class="feature-mock__spark-bars">
-                  <span style="height:35%"></span><span style="height:48%"></span>
-                  <span style="height:42%"></span><span style="height:65%"></span>
-                  <span style="height:58%"></span><span style="height:80%"></span>
-                  <span style="height:72%"></span><span style="height:90%"></span>
-                </div>
-                <div class="feature-mock__spark-label">
-                  <strong>CTR</strong><span>2.4% ↑</span>
-                </div>
-              </div>
-              <div class="feature-mock__sparkline feature-mock__sparkline--accent">
-                <div class="feature-mock__spark-bars">
-                  <span style="height:60%"></span><span style="height:72%"></span>
-                  <span style="height:55%"></span><span style="height:80%"></span>
-                  <span style="height:68%"></span><span style="height:75%"></span>
-                  <span style="height:88%"></span><span style="height:95%"></span>
-                </div>
-                <div class="feature-mock__spark-label">
-                  <strong>Охват</strong><span>320К ↑</span>
-                </div>
-              </div>
-            </div>
-            <div class="feature-mock__footer">
-              <div class="feature-mock__metric">
-                <strong>4 800</strong><span>кликов</span>
-              </div>
-              <div class="feature-mock__metric">
-                <strong>18 ₽</strong><span>CPC</span>
-              </div>
-              <div class="feature-mock__metric">
-                <strong>94%</strong><span>ROI</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </article>
 
     </div>
   </section>
@@ -290,7 +106,7 @@
       <li class="how-step" data-reveal style="--reveal-delay: 360ms;">
         <div class="how-step__num">04</div>
         <h3 class="how-step__title">Получайте заявки</h3>
-        <p class="how-step__text">Смотрите статистику в реальном времени, оптимизируйте на ходу.</p>
+        <p class="how-step__text">Запускайте кампанию и получайте обращения от клиентов.</p>
       </li>
     </ol>
   </section>
@@ -321,25 +137,6 @@
         </div>
       </article>
 
-      <article class="bento-card bento-card--platforms" data-reveal data-tilt style="--reveal-delay: 300ms;">
-        <div class="bento-card__content">
-          <h3 class="bento-card__title">Все площадки разом</h3>
-          <p class="bento-card__text">VK, Яндекс, Telegram, OK, Rutube — настраивается один раз, работает везде.</p>
-        </div>
-        <div class="bento-card__platforms" aria-hidden="true">
-          <span><img src="/icons/VK_logo_Blue_40x40.svg" alt="" loading="lazy" /></span>
-          <span><img src="/icons/yandex-id.svg" alt="" loading="lazy" /></span>
-          <span><img src="/icons/platforms/telegram.svg" alt="" loading="lazy" /></span>
-          <span><img src="/icons/platforms/odnoklassniki.svg" alt="" loading="lazy" /></span>
-          <span><img src="/icons/platforms/rutube.svg" alt="" loading="lazy" /></span>
-          <span><img src="/icons/platforms/dzen.svg" alt="" loading="lazy" /></span>
-          <span><img src="/icons/platforms/Avito_logo.svg" alt="" loading="lazy" /></span>
-          <span><img src="/icons/platforms/icons8-озон.svg" alt="" loading="lazy" /></span>
-          <span><img src="/icons/platforms/wildberries-sign-logo.svg" alt="" loading="lazy" /></span>
-          <span><img src="/icons/platforms/Логотип_2ГИС.svg" alt="" loading="lazy" /></span>
-        </div>
-      </article>
-
       <article class="bento-card bento-card--phone" data-reveal data-tilt style="--reveal-delay: 400ms;">
         <div class="bento-card__content">
           <h3 class="bento-card__title">Привлекайте и получайте результат</h3>
@@ -362,81 +159,6 @@
     </div>
   </section>
 
-  <section class="testimonials" data-scroll-section="testimonials">
-    <header class="section-head" data-reveal>
-      <span class="section-head__eyebrow">Отзывы</span>
-      <h2 class="section-head__title">Нам доверяют <span class="section-head__title-accent">12 400+</span> рекламодателей</h2>
-    </header>
-
-    <div class="testimonials__grid">
-      <article class="testimonial" data-reveal style="--reveal-delay: 0ms;">
-        <p class="testimonial__quote">«Запустили первую кампанию в VK за вечер. На следующее утро уже было 14 заявок. Раньше отдавали в агентство — было дороже и медленнее.»</p>
-        <div class="testimonial__author">
-          <div class="testimonial__avatar">А</div>
-          <div>
-            <span class="testimonial__name">Алексей К.</span>
-            <span class="testimonial__role">Магазин товаров для дома</span>
-          </div>
-        </div>
-      </article>
-
-      <article class="testimonial" data-reveal style="--reveal-delay: 120ms;">
-        <p class="testimonial__quote">«Понравилось, что можно выбирать сразу несколько площадок и не возиться с настройками в каждой. Прогноз бюджета совпал с реальностью почти 1-в-1.»</p>
-        <div class="testimonial__author">
-          <div class="testimonial__avatar">М</div>
-          <div>
-            <span class="testimonial__name">Мария В.</span>
-            <span class="testimonial__role">Студия онлайн-курсов</span>
-          </div>
-        </div>
-      </article>
-
-      <article class="testimonial" data-reveal style="--reveal-delay: 240ms;">
-        <p class="testimonial__quote">«Удобный личный кабинет, понятная статистика. Бонусы за рефералов уже окупили первые 3 месяца — рекомендую коллегам.»</p>
-        <div class="testimonial__author">
-          <div class="testimonial__avatar">Д</div>
-          <div>
-            <span class="testimonial__name">Дмитрий П.</span>
-            <span class="testimonial__role">Агентство недвижимости</span>
-          </div>
-        </div>
-      </article>
-
-      <article class="testimonial" data-reveal style="--reveal-delay: 360ms;">
-        <p class="testimonial__quote">«Таргетинг по интересам работает лучше, чем ожидали. За первый месяц стоимость лида снизилась на треть по сравнению с другими площадками.»</p>
-        <div class="testimonial__author">
-          <div class="testimonial__avatar">С</div>
-          <div>
-            <span class="testimonial__name">Светлана О.</span>
-            <span class="testimonial__role">Фитнес-клуб</span>
-          </div>
-        </div>
-      </article>
-
-      <article class="testimonial" data-reveal style="--reveal-delay: 480ms;">
-        <p class="testimonial__quote">«Модерация прошла за 4 часа, кампания сразу пошла в ротацию. Раньше ждали по 2-3 дня в других сервисах.»</p>
-        <div class="testimonial__author">
-          <div class="testimonial__avatar">И</div>
-          <div>
-            <span class="testimonial__name">Игорь Н.</span>
-            <span class="testimonial__role">Интернет-магазин электроники</span>
-          </div>
-        </div>
-      </article>
-
-      <article class="testimonial" data-reveal style="--reveal-delay: 600ms;">
-        <p class="testimonial__quote">«Пробовали всё: ВК, Яндекс Директ, таргет в соцсетях. ЭшкеРеклама — единственное место, где всё в одном кабинете без лишней головной боли.»</p>
-        <div class="testimonial__author">
-          <div class="testimonial__avatar">Е</div>
-          <div>
-            <span class="testimonial__name">Екатерина Л.</span>
-            <span class="testimonial__role">Ресторан доставки</span>
-          </div>
-        </div>
-      </article>
-    </div>
-  </section>
-
   <section class="faq" data-scroll-section="faq">
     <header class="section-head" data-reveal>
       <span class="section-head__eyebrow">FAQ</span>
@@ -452,16 +174,6 @@
         </summary>
         <div class="faq-item__answer">
           <p>Обычно первый запуск занимает около 5 минут. Вы выбираете площадки, задаёте аудиторию, загружаете креатив и сразу видите прогноз по бюджету и охвату.</p>
-        </div>
-      </details>
-
-      <details class="faq-item" data-reveal style="--reveal-delay: 80ms;">
-        <summary class="faq-item__summary">
-          <span class="faq-item__question">Какие площадки доступны внутри ЭшкеРекламы?</span>
-          <span class="faq-item__toggle" aria-hidden="true"></span>
-        </summary>
-        <div class="faq-item__answer">
-          <p>Сейчас можно запускать рекламу в VK, Яндексе, Telegram, Одноклассниках, Rutube и Дзене. Мы постепенно расширяем список площадок и добавляем новые каналы без усложнения интерфейса.</p>
         </div>
       </details>
 
@@ -494,19 +206,6 @@
           <p>Напишите на <a href="mailto:hello@eshkere.ru">hello@eshkere.ru</a> или в Telegram <a href="https://t.me/eshkere_support" target="_blank" rel="noreferrer">@eshkere_support</a>. Поддержка отвечает ежедневно с 10:00 до 19:00 по Москве.</p>
         </div>
       </details>
-    </div>
-  </section>
-
-  <section class="home-cta" data-scroll-section="cta" data-reveal>
-    <div class="home-cta__inner">
-      <div class="home-cta__glow" aria-hidden="true"></div>
-      <span class="home-cta__eyebrow">Начните прямо сейчас</span>
-      <h2 class="home-cta__title">Запустите рекламу,<br><span>которая приносит клиентов</span></h2>
-      <p class="home-cta__text">1000 ₽ бонус при регистрации. Без агентств, без договоров — первая кампания за 5 минут.</p>
-      <a href="{{ctaHref}}" class="home-cta__button">
-        {{ctaText}}
-        <span aria-hidden="true">&rarr;</span>
-      </a>
     </div>
   </section>
 

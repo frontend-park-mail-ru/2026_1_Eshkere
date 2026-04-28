@@ -1,5 +1,5 @@
 import './moderator-appeals.scss';
-import { navigateTo } from 'app/navigation';
+import { navigateTo } from 'shared/lib/navigation';
 import { moderationAppeals } from 'features/moderation/model/mock';
 import { renderTemplate } from 'shared/lib/render';
 import template from './moderator-appeals.hbs';

@@ -1,5 +1,5 @@
 import './campaign-create.scss';
-import { navigateTo } from 'app/navigation';
+import { navigateTo } from 'shared/lib/navigation';
 import { createAdCampaign, updateAdCampaign } from 'features/ads';
 import { renderTemplate } from 'shared/lib/render';
 import {
@@ -24,11 +24,11 @@ import type {
   FinalReviewCheckKey,
   StepKey,
 } from 'features/campaign-builder/model/types';
-import { initCampaignBuilderAudienceControls } from 'widgets/campaign-builder-audience/ui/init';
-import { initCampaignBuilderActions } from 'widgets/campaign-builder-actions/ui/actions';
-import { initCampaignBuilderBudgetControls } from 'widgets/campaign-builder-budget/ui/init';
-import { initCampaignBuilderContentControls } from 'widgets/campaign-builder-content/ui/init';
-import { initCampaignBuilderStepControls } from 'widgets/campaign-builder-step/ui/init';
+import { initCampaignBuilderAudienceControls } from 'widgets/campaign-builder-audience';
+import { initCampaignBuilderActions } from 'widgets/campaign-builder-actions';
+import { initCampaignBuilderBudgetControls } from 'widgets/campaign-builder-budget';
+import { initCampaignBuilderContentControls } from 'widgets/campaign-builder-content';
+import { initCampaignBuilderStepControls } from 'widgets/campaign-builder-step';
 import {
   cloneAudienceConfig,
   ensureAudiencePanelScaffold,

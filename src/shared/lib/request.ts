@@ -134,15 +134,28 @@ export async function request<T = unknown>(
 
   const isFormData = body instanceof FormData;
 
+  const resolvedHeaders = (() => {
+    const normalized = new Headers(customHeaders as HeadersInit | undefined);
+
+    if (isFormData) {
+      normalized.delete('Content-Type');
+    } else if (!normalized.has('Content-Type')) {
+      normalized.set('Content-Type', 'application/json');
+    }
+
+    return normalized;
+  })();
+
   const execute = async (): Promise<Response> => {
     const csrfToken = isUnsafeMethod(method) ? getCookie('csrf_token') : '';
+
+    if (csrfToken && !resolvedHeaders.has('X-CSRF-Token')) {
+      resolvedHeaders.set('X-CSRF-Token', csrfToken);
+    }
+
     return await fetch(url, {
       credentials: 'include',
-      headers: {
-        ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
-        ...(csrfToken ? { 'X-CSRF-Token': csrfToken } : {}),
-        ...(customHeaders || {}),
-      },
+      headers: resolvedHeaders,
       ...rest,
       body: body !== undefined ? (isFormData ? body : JSON.stringify(body)) : undefined,
     });

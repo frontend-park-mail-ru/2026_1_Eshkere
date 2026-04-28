@@ -1,5 +1,5 @@
 import './moderator.scss';
-import { navigateTo } from 'app/navigation';
+import { navigateTo } from 'shared/lib/navigation';
 import { logoutUser } from 'features/auth';
 import { renderTemplate } from 'shared/lib/render';
 import moderatorTemplate from './moderator.hbs';

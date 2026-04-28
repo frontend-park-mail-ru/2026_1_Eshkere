@@ -1,12 +1,12 @@
 import { clearFormState, setFormMessage } from 'features/profile/lib/form';
 import { updateAvatar } from 'features/profile/api/update-avatar';
-import { openAvatarCropModal } from 'widgets/avatar-crop-modal/ui/crop-modal';
-import { showProfileFeedback } from 'widgets/profile-feedback/ui/toast';
+import { showProfileFeedback } from 'shared/lib/toast';
 
 import type { InitProfileAccountSectionParams } from './account-types';
 
 export function initProfileAvatarForm({
   closeModalById,
+  cropAvatar,
   getInitials,
   onStateChange,
   refreshSubmitStates,
@@ -54,7 +54,7 @@ export function initProfileAvatarForm({
         return;
       }
 
-      const result = await openAvatarCropModal(file);
+      const result = await cropAvatar(file);
       if (!result) {
         fileInput.value = '';
         return;

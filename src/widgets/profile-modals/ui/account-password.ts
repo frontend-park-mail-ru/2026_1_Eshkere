@@ -1,6 +1,6 @@
 import { clearFormState, setFieldError, setFormMessage, validateRequired, watchFormState } from 'features/profile/lib/form';
 import { validatePassword, validateRepeatPassword } from 'shared/validators';
-import { showProfileFeedback } from 'widgets/profile-feedback/ui/toast';
+import { showProfileFeedback } from 'shared/lib/toast';
 
 import type { InitProfileAccountSectionParams } from './account-types';
 

@@ -1,9 +1,4 @@
-export type AdCampaignStatus =
-  | 'turned_off'
-  | 'moderation'
-  | 'working'
-  | 'rejected'
-  | 'not_enough_money';
+export type { AdCampaignStatus } from 'entities/campaign';
 
 export interface AdCampaignResponse {
   id: number;

@@ -1,5 +1,5 @@
 import { logoutUser } from 'features/auth';
-import { navigateTo } from 'app/navigation';
+import { navigateTo } from 'shared/lib/navigation';
 
 export function initNavbarProfileMenu(
   signal: AbortSignal,

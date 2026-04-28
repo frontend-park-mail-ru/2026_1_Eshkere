@@ -31,6 +31,7 @@
     position: absolute;
     top: 50%;
     left: 14px;
+    z-index: 1;
     transform: translateY(-50%);
     color: var(--text-label);
     font-weight: 600;
@@ -131,7 +132,7 @@
 html[data-theme='dark'] {
   .ui-field {
     &__prefix {
-      color: var(--text-soft);
+      color: var(--text-main);
     }
 
     &__password-toggle {
