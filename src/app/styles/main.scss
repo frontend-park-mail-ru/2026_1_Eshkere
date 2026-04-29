@@ -296,10 +296,12 @@ button {
   [class*='__modal-actions'] button,
   [class$='-modal__button'],
   [class*='__modal-button'],
-  [class*='modal__button'] {
-    min-height: 54px;
+  [class*='modal__button'],
+  [class*='modal-button'],
+  [class*='modal__btn'] {
+    min-height: 56px;
     height: auto;
-    padding: 0 18px;
+    padding: 0 20px;
     border-radius: 16px;
     font-size: 16px;
     line-height: 1.15;
