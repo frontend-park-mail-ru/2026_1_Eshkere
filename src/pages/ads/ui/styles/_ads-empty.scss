@@ -1,0 +1,65 @@
+﻿@use '../../../../shared/styles/tokens' as t;
+@use '../../../../shared/styles/mixins';
+
+.campaigns-empty {
+  min-height: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 34px 20px 40px;
+
+  &__illustration {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    display: grid;
+    place-items: center;
+
+    picture {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+  }
+
+  &__image {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--text-title);
+  }
+
+  &__create-button {
+    min-width: 216px;
+    height: 54px;
+    padding: 0 30px;
+    border-radius: t.$radius-pill;
+    color: var(--white);
+    font-size: 18px;
+    font-weight: 700;
+    background: t.$primary-gradient;
+    cursor: pointer;
+    @include mixins.interactive-lift(
+      -2px,
+      t.$shadow-primary-hover,
+      brightness(1.03)
+    );
+  }
+}
+
+.campaign-row__name {
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--text-body);
+}
+

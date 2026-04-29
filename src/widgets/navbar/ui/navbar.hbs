@@ -16,6 +16,17 @@
   </div>
 
   <div class="navbar__actions">
+    <button
+      class="navbar__theme-btn"
+      id="navbar-theme-btn"
+      type="button"
+      aria-label="Переключить тему оформления"
+    >
+      <span class="navbar__theme-btn-track" aria-hidden="true">
+        <span class="navbar__theme-btn-thumb"></span>
+      </span>
+    </button>
+
     {{#if isAuthenticated}}
       <div class="navbar__actions-user">
         <div class="navbar__balance">{{user.balanceLabel}}</div>
@@ -92,7 +103,13 @@
           </div>
         </div>
 
-        <img class="navbar__avatar" src="{{user.avatar}}" alt="{{user.name}}" />
+        <div class="navbar__avatar{{#if user.hasAvatar}} navbar__avatar--image{{/if}}" aria-label="{{user.name}}">
+          {{#if user.hasAvatar}}
+            <img class="navbar__avatar-image" src="{{user.avatar}}" alt="{{user.name}}" />
+          {{else}}
+            <span class="navbar__avatar-initials">{{user.initials}}</span>
+          {{/if}}
+        </div>
 
         <button
           class="navbar__profile-toggle"
@@ -106,11 +123,17 @@
 
         <div class="navbar__profile-menu" id="navbar-profile-menu" hidden>
           <a class="navbar__profile-menu-head" href="/profile">
-            <img
-              class="navbar__profile-menu-avatar"
-              src="{{user.avatar}}"
-              alt="{{user.name}}"
-            />
+            <div class="navbar__profile-menu-avatar{{#if user.hasAvatar}} navbar__profile-menu-avatar--image{{/if}}" aria-label="{{user.name}}">
+              {{#if user.hasAvatar}}
+                <img
+                  class="navbar__profile-menu-avatar-image"
+                  src="{{user.avatar}}"
+                  alt="{{user.name}}"
+                />
+              {{else}}
+                <span class="navbar__profile-menu-avatar-initials">{{user.initials}}</span>
+              {{/if}}
+            </div>
             <div class="navbar__profile-menu-copy">
               <span class="navbar__profile-menu-kicker">Аккаунт</span>
               <span class="navbar__profile-menu-name">{{user.name}}</span>
@@ -131,24 +154,6 @@
             </a>
           </div>
 
-          <div class="navbar__profile-menu-body">
-            <div
-              class="navbar__profile-menu-link navbar__profile-menu-link--theme"
-              role="button"
-              tabindex="0"
-              id="navbar-theme-toggle"
-              aria-label="Переключить тему оформления"
-            >
-              <span
-                class="navbar__profile-menu-link-icon navbar__profile-menu-link-icon--theme"
-                aria-hidden="true"
-              ></span>
-              <span class="navbar__profile-menu-link-copy">
-                <strong id="navbar-theme-toggle-title">Темная тема</strong>
-              </span>
-            </div>
-          </div>
-          
           <button
             class="navbar__profile-menu-logout"
             type="button"

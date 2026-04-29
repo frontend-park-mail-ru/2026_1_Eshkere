@@ -1,0 +1,112 @@
+@use '../../../../../shared/styles/tokens' as t;
+@use '../../../../../shared/styles/mixins';
+
+.navbar {
+  &__actions-user {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: var(--shadow);
+  }
+
+  &__balance {
+    margin-inline: 6px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--primary);
+  }
+
+  &__actions-user-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(104, 100, 255, 0.08);
+    border: 1px solid rgba(104, 100, 255, 0.16);
+    cursor: pointer;
+    @include mixins.flex-center;
+    @include mixins.interactive-lift;
+  }
+
+  &__actions-user-glyph {
+    display: block;
+    width: 18px;
+    height: 18px;
+    background-color: #655fff;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-mask-size: contain;
+
+    &--wallet {
+      mask-image: url('/icons/wallet.svg');
+      -webkit-mask-image: url('/icons/wallet.svg');
+    }
+
+    &--notification {
+      mask-image: url('/icons/notification.svg');
+      -webkit-mask-image: url('/icons/notification.svg');
+    }
+  }
+
+  &__avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    background: t.$avatar-gradient;
+    overflow: hidden;
+
+    &--image {
+      background: rgba(255, 255, 255, 0.88);
+    }
+  }
+
+  &__avatar-image {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+
+  &__avatar-initials {
+    display: block;
+    line-height: 1;
+  }
+
+  &__profile-toggle {
+    width: 30px;
+    height: 30px;
+    border-radius: t.$radius-pill;
+    border: 1px solid #9aa1ff;
+    background: rgba(255, 255, 255, 0.78);
+    cursor: pointer;
+    @include mixins.flex-center;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+    }
+
+    &[aria-expanded='true'] img {
+      transform: rotate(180deg);
+    }
+
+    img {
+      display: block;
+      width: 18px;
+      height: 18px;
+      object-fit: contain;
+      transition: transform 0.2s ease;
+    }
+  }
+}

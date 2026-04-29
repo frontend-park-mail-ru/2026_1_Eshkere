@@ -1,0 +1,58 @@
+﻿@use '../../../../../shared/styles/tokens' as t;
+@use '../../../../../shared/styles/mixins';
+
+
+.balance-toast {
+  position: fixed;
+  right: 28px;
+  bottom: 28px;
+  z-index: 30;
+  min-width: 320px;
+  max-width: 420px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: rgba(31, 36, 48, 0.94);
+  color: #fff;
+  box-shadow: 0 18px 40px rgba(24, 27, 60, 0.28);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+
+  &__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-top: 6px;
+    background: #66d07d;
+    flex-shrink: 0;
+  }
+
+  &__copy {
+    display: grid;
+    gap: 4px;
+  }
+
+  &__title {
+    font: 700 14px/1.25 t.$font-family-heading;
+  }
+
+  &__text {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.8);
+    font: 400 13px/1.45 t.$font-family-body;
+  }
+
+  &__close {
+    margin-left: auto;
+    border: 0;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 20px;
+    cursor: pointer;
+  }
+}
+
+.balance-toast[hidden] {
+  display: none !important;
+}
+

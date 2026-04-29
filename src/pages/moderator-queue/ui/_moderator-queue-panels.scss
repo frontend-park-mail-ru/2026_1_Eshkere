@@ -1,0 +1,118 @@
+﻿@use '../../../shared/styles/tokens' as t;
+@use '../../../shared/styles/mixins';
+
+.moderator-queue-panel {
+  padding: 18px;
+  display: grid;
+  gap: 16px;
+
+  &__head {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  &__head h2 {
+    margin: 0;
+    font: 800 20px/1.1 t.$font-family-heading;
+    color: #2a3148;
+  }
+
+  &__head p {
+    margin: 8px 0 0;
+    color: #68728d;
+    font: 400 14px/1.5 t.$font-family-body;
+  }
+}
+
+.moderator-queue-list {
+  display: grid;
+  gap: 12px;
+}
+
+.moderator-queue-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 180px 180px;
+  gap: 10px;
+}
+
+.moderator-queue-toolbar__search,
+.moderator-queue-toolbar__filter {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid rgba(215, 221, 238, 0.92);
+  border-radius: 14px;
+  background: rgba(246, 248, 255, 0.95);
+  color: #4b556f;
+  font: 500 14px/1 t.$font-family-body;
+  outline: none;
+}
+
+.moderator-queue-toolbar__search::placeholder {
+  color: #8f97ae;
+}
+
+.moderator-queue-empty {
+  padding: 18px;
+  border-radius: 16px;
+  background: rgba(247, 249, 255, 0.92);
+  color: #6a7490;
+  font: 500 14px/1.5 t.$font-family-body;
+  text-align: center;
+}
+
+.moderator-queue-pagination {
+  padding-top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.moderator-queue-pagination__nav {
+  min-width: 120px;
+  height: 40px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #4d5a7c;
+  font: 700 14px/1 t.$font-family-body;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+}
+
+.moderator-queue-pagination__pages {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.moderator-queue-pagination__page {
+  width: 36px;
+  height: 36px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  color: #4d5a7c;
+  font: 700 14px/1 t.$font-family-body;
+  cursor: pointer;
+
+  &.is-active {
+    background: t.$primary-gradient;
+    color: #fff;
+    box-shadow: t.$shadow-primary;
+  }
+}
+
+.moderator-queue-toolbar {
+  @include mixins.media-max(t.$bp-lg) {
+    grid-template-columns: 1fr;
+  }
+}
+

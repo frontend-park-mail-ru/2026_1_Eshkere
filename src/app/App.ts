@@ -1,4 +1,4 @@
-import { initNavigation } from './navigation';
+import { initNavigation } from 'shared/lib/navigation';
 import { renderRoute } from './router';
 import { authState } from 'features/auth';
 import { initOfflineModal } from 'widgets/offline-modal';
@@ -17,6 +17,7 @@ export async function initApp(): Promise<void> {
   initOfflineModal();
   initRequestErrorModal();
   await registerServiceWorker();
+  authState.syncDevModeratorAccessFromLocation();
   await authState.hasActiveSession();
   await renderRoute();
 }

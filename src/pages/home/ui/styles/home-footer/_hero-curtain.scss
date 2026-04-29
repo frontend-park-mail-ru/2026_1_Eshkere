@@ -1,0 +1,65 @@
+@keyframes curtain-shift-a {
+  0% { transform: translate3d(0, 0, 0) scaleY(1); opacity: 0.55; }
+  40% { transform: translate3d(-18px, 12px, 0) scaleY(1.04); opacity: 0.8; }
+  70% { transform: translate3d(14px, -8px, 0) scaleY(0.97); opacity: 0.65; }
+  100% { transform: translate3d(0, 0, 0) scaleY(1); opacity: 0.55; }
+}
+
+@keyframes curtain-shift-b {
+  0% { transform: translate3d(0, 0, 0) scaleY(1); opacity: 0.6; }
+  45% { transform: translate3d(22px, -14px, 0) scaleY(1.06); opacity: 0.85; }
+  80% { transform: translate3d(-10px, 10px, 0) scaleY(0.95); opacity: 0.55; }
+  100% { transform: translate3d(0, 0, 0) scaleY(1); opacity: 0.6; }
+}
+
+@keyframes curtain-shift-c {
+  0% { transform: translate3d(0, 0, 0) scaleY(1); opacity: 0.5; }
+  35% { transform: translate3d(-24px, -6px, 0) scaleY(1.03); opacity: 0.78; }
+  75% { transform: translate3d(18px, 14px, 0) scaleY(0.98); opacity: 0.6; }
+  100% { transform: translate3d(0, 0, 0) scaleY(1); opacity: 0.5; }
+}
+
+@keyframes curtain-shift-d {
+  0% { transform: translate3d(0, 0, 0) scaleY(1); opacity: 0.55; }
+  50% { transform: translate3d(16px, 18px, 0) scaleY(1.05); opacity: 0.82; }
+  100% { transform: translate3d(0, 0, 0) scaleY(1); opacity: 0.55; }
+}
+
+.hero {
+  position: relative;
+
+  .hero__curtain {
+    position: absolute;
+    inset: -8% -4% -20% -4%;
+    width: 108%;
+    height: 128%;
+    z-index: 0;
+    pointer-events: none;
+    mix-blend-mode: plus-lighter;
+    opacity: 0.85;
+    will-change: transform, opacity;
+  }
+
+  .hero__curtain-band {
+    transform-origin: 50% 50%;
+    will-change: transform, opacity;
+
+    &--a { animation: curtain-shift-a 18s ease-in-out infinite; }
+    &--b { animation: curtain-shift-b 22s ease-in-out infinite; animation-delay: -3s; }
+    &--c { animation: curtain-shift-c 20s ease-in-out infinite; animation-delay: -7s; }
+    &--d { animation: curtain-shift-d 24s ease-in-out infinite; animation-delay: -5s; }
+  }
+
+  .hero__content {
+    position: relative;
+    z-index: 2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__curtain-band {
+    animation: none !important;
+    transform: none !important;
+    opacity: 0.55 !important;
+  }
+}

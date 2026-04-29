@@ -1,0 +1,223 @@
+@use '../../../../../shared/styles/tokens' as t;
+@use '../../../../../shared/styles/mixins';
+
+.faq {
+  max-width: 1120px;
+  margin: 0 auto 96px;
+  padding: 0 16px;
+
+  &__list {
+    display: grid;
+    gap: 14px;
+  }
+}
+
+.faq-item {
+  position: relative;
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(247, 249, 255, 0.9) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  box-shadow:
+    0 22px 44px -26px rgba(70, 78, 140, 0.24),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.44);
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at top right, rgba(193, 145, 255, 0.12), transparent 28%),
+      radial-gradient(circle at bottom left, rgba(132, 175, 255, 0.1), transparent 26%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  &[open] {
+    border-color: rgba(144, 136, 255, 0.3);
+    box-shadow:
+      0 28px 56px -28px rgba(70, 78, 140, 0.32),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.54);
+  }
+
+  &[open]::before,
+  &:hover::before {
+    opacity: 1;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: rgba(144, 136, 255, 0.24);
+    box-shadow:
+      0 26px 52px -28px rgba(70, 78, 140, 0.28),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  }
+
+  &__summary {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 28px 30px;
+    cursor: pointer;
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+  }
+
+  &__question {
+    font-size: 27px;
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #1d2235;
+  }
+
+  &__toggle {
+    position: relative;
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(101, 95, 255, 0.16);
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow:
+      0 12px 20px -16px rgba(77, 86, 145, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    transition:
+      transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+      background 0.28s ease,
+      border-color 0.28s ease,
+      box-shadow 0.28s ease;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 16px;
+      height: 2px;
+      border-radius: 999px;
+      background: #1f2333;
+      transform: translate(-50%, -50%);
+      transition: transform 0.28s ease, opacity 0.28s ease, background 0.28s ease;
+    }
+
+    &::after {
+      transform: translate(-50%, -50%) rotate(90deg);
+    }
+  }
+
+  &[open] &__toggle {
+    background: linear-gradient(135deg, rgba(92, 89, 255, 0.12), rgba(195, 82, 255, 0.14));
+    border-color: rgba(101, 95, 255, 0.3);
+    box-shadow:
+      0 16px 24px -18px rgba(89, 83, 255, 0.56),
+      inset 0 1px 0 rgba(255, 255, 255, 0.92);
+  }
+
+  &[open] &__toggle::after {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(90deg) scaleX(0.2);
+  }
+
+  &[open] &__toggle::before {
+    background: #5855ff;
+  }
+
+  &__answer {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-rows: 0fr;
+    padding: 0 30px;
+    transition: grid-template-rows 0.32s cubic-bezier(0.22, 1, 0.36, 1), padding-bottom 0.32s ease;
+
+    > * {
+      overflow: hidden;
+    }
+
+    p {
+      margin: 0;
+      max-width: 78ch;
+      padding-bottom: 0;
+      font-size: 17px;
+      line-height: 1.7;
+      color: #656e86;
+    }
+
+    a {
+      color: #5a56ff;
+      font-weight: 600;
+      text-decoration: none;
+
+      &:hover,
+      &:focus-visible {
+        color: #7a40ff;
+      }
+    }
+  }
+
+  &[open] &__answer {
+    grid-template-rows: 1fr;
+    padding-bottom: 28px;
+  }
+
+  @include mixins.media-max(t.$bp-md) {
+    &__summary {
+      padding: 24px 24px;
+    }
+
+    &__answer {
+      padding-inline: 24px;
+    }
+
+    &__question {
+      font-size: 22px;
+    }
+  }
+
+  @include mixins.media-max(t.$bp-sm) {
+    border-radius: 20px;
+
+    &__summary {
+      gap: 16px;
+      padding: 20px 20px;
+    }
+
+    &__answer {
+      padding-inline: 20px;
+    }
+
+    &[open] &__answer {
+      padding-bottom: 22px;
+    }
+
+    &__question {
+      font-size: 18px;
+      line-height: 1.3;
+    }
+
+    &__answer p {
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    &__toggle {
+      width: 38px;
+      height: 38px;
+    }
+  }
+}

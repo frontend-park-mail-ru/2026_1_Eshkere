@@ -1,0 +1,47 @@
+@use '../../../../../shared/styles/tokens' as t;
+@use '../../../../../shared/styles/mixins';
+
+.campaign-builder {
+  &__summary-block {
+    margin-top: 14px;
+    padding: 16px;
+    border: 1px solid rgba(216, 222, 240, 0.94);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.94);
+  }
+
+  &__summary-block-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  &__summary-block-title {
+    font-family: t.$font-family-heading;
+    font-size: 16px;
+    font-weight: 800;
+    color: #1f2740;
+  }
+
+  &__summary-block-text {
+    font-size: 13px;
+    line-height: 1.55;
+    color: #7d859b;
+  }
+
+  &__risk-list {
+    display: grid;
+    gap: 10px;
+  }
+
+  &__risk-item {
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: rgba(255, 245, 230, 0.84);
+    color: #8b5a15;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+}

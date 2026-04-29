@@ -161,6 +161,8 @@ export function initCampaignPagination(signal: AbortSignal): void {
   nextButton.addEventListener(
     'click',
     () => {
+      const totalPages = getTotalPages();
+
       if (currentPage === totalPages) {
         return;
       }

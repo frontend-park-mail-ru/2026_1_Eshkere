@@ -1,3 +1,5 @@
+import riskListItemsTemplate from 'features/campaign-builder/ui/risk-list-items.hbs';
+
 interface BudgetForecastView {
   clicks: string;
   cpc: string;
@@ -142,9 +144,7 @@ export function syncCampaignBuilderBudgetView({
   document
     .querySelectorAll<HTMLElement>('[data-budget-warning-list]')
     .forEach((list) => {
-      list.innerHTML = insights.warnings
-        .map((item) => `<li class="campaign-builder__risk-item">${item}</li>`)
-        .join('');
+      list.innerHTML = riskListItemsTemplate({ items: insights.warnings });
     });
 
   document

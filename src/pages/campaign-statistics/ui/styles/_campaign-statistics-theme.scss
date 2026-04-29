@@ -1,0 +1,161 @@
+﻿@use '../../../../shared/styles/tokens';
+
+html[data-theme='dark'] {
+  .campaign-statistics {
+    color: var(--text-main);
+
+    &__metric-switch {
+      background: rgba(18, 25, 45, 0.88);
+      border-color: var(--border-panel-soft);
+      box-shadow: var(--shadow-soft-strong);
+    }
+
+    &__ghost-button,
+    &__link-button,
+    &__select-trigger {
+      border-color: var(--border-panel-soft);
+      background: rgba(22, 31, 57, 0.9);
+      color: var(--text-main);
+      box-shadow: var(--shadow-button-soft);
+    }
+
+    &__link-button:hover,
+    &__ghost-button:hover,
+    &__select-trigger:hover {
+      background: rgba(32, 43, 73, 0.94);
+    }
+
+    &__primary-button,
+    &__preview-button {
+      background: linear-gradient(135deg, #6f63e6 0%, #4f47c9 100%);
+      box-shadow: var(--shadow-primary-soft);
+    }
+
+    &__switch-button {
+      color: var(--text-muted);
+    }
+
+    &__switch-button.is-active {
+      background: linear-gradient(135deg, #6f63e6 0%, #4f47c9 100%);
+      box-shadow: var(--shadow-primary-soft);
+    }
+
+    &__hero,
+    &__metric-card,
+    &__card {
+      background: var(--gradient-menu-surface);
+      border: none;
+      box-shadow: var(--shadow-floating), var(--shadow-inset-highlight);
+    }
+
+    &__hero-period {
+      background: rgba(22, 31, 57, 0.9);
+      color: var(--text-muted);
+    }
+
+    &__lead,
+    &__hero-note-text,
+    &__insight-text,
+    &__card-text,
+    &__hero-note-label,
+    &__metric-label,
+    &__detail-label,
+    &__insight-label,
+    &__chart-summary-item span,
+    &__select-meta {
+      color: var(--text-muted);
+    }
+
+    &__hero-note,
+    &__detail-field,
+    &__preview-meta-item,
+    &__chart-summary-item,
+    &__chart-shell,
+    &__insight {
+      background: rgba(22, 31, 57, 0.9);
+      border: none;
+    }
+
+    &__preview-shell {
+      background:
+        linear-gradient(140deg, rgba(125, 110, 255, 0.16) 0%, rgba(255, 98, 149, 0.1) 100%),
+        rgba(12, 18, 34, 0.98);
+      border-color: rgba(125, 110, 255, 0.4);
+      box-shadow: var(--shadow-primary-soft);
+    }
+
+    &__preview-creative {
+      background:
+        linear-gradient(135deg, rgba(125, 110, 255, 0.4) 0%, rgba(224, 114, 162, 0.42) 100%);
+    }
+
+    &__preview-meta-label,
+    &__chart-labels {
+      color: var(--text-soft);
+    }
+
+    &__preview-note {
+      background: var(--primary-surface);
+      color: var(--primary-soft);
+    }
+
+    &__chart-grid-line {
+      stroke: rgba(69, 84, 131, 0.72);
+    }
+
+    &__chart-line {
+      stroke: #8f84ff;
+    }
+
+    &__chart-dot {
+      fill: rgba(12, 18, 34, 0.98);
+      stroke: #8f84ff;
+    }
+
+    &__table {
+      border: none;
+    }
+
+    &__table-head {
+      background: rgba(18, 25, 45, 0.94);
+      color: var(--text-soft);
+    }
+
+    &__table-body {
+      background: rgba(12, 18, 34, 0.84);
+    }
+
+    &__table-row {
+      border-top-color: rgba(69, 84, 131, 0.54);
+      color: var(--text-main);
+    }
+
+    &__table-row--highlight {
+      background: rgba(31, 42, 72, 0.66);
+    }
+
+    &__table-cell--primary span {
+      background: var(--primary-surface);
+      color: var(--primary-soft);
+    }
+
+    &__select-menu {
+      background: var(--gradient-menu-surface);
+      border-color: var(--border-menu);
+      box-shadow: var(--shadow-menu), var(--shadow-inset-highlight);
+    }
+
+    &__select-option {
+      color: var(--text-main);
+    }
+
+    &__select-option:hover {
+      background: rgba(31, 42, 72, 0.86);
+    }
+
+    &__select-option.is-selected {
+      background: var(--primary-surface-strong);
+      color: var(--primary-soft);
+    }
+  }
+}

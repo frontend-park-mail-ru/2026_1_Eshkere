@@ -1,0 +1,76 @@
+@use '../../../shared/styles/tokens' as t;
+@use '../../../shared/styles/mixins';
+
+.moderator-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-height: calc(100vh - 108px);
+  padding: 14px;
+  border: 1px solid rgba(205, 213, 236, 0.72);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 14px 32px rgba(74, 82, 148, 0.1);
+  backdrop-filter: blur(10px);
+
+  &__section {
+    display: grid;
+    gap: 8px;
+  }
+
+  &__section--note {
+    padding-top: 12px;
+    border-top: 1px solid rgba(116, 130, 204, 0.14);
+  }
+
+  &__caption {
+    padding: 0 8px;
+    color: #8f97ae;
+    font: 700 11px/1.2 t.$font-family-body;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  &__link {
+    min-height: 64px;
+    padding: 12px;
+    border: 1px solid rgba(220, 225, 241, 0.92);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.78);
+    display: grid;
+    gap: 4px;
+    color: inherit;
+  }
+
+  &__link--compact {
+    min-height: 56px;
+  }
+
+  &__link--active {
+    color: #fff;
+    background: t.$primary-gradient;
+    border-color: transparent;
+    pointer-events: none;
+    box-shadow: t.$shadow-primary;
+  }
+
+  &__link-title {
+    font: 700 14px/1.2 t.$font-family-heading;
+  }
+
+  &__link-text,
+  &__note {
+    color: #7f879d;
+    font: 400 13px/1.45 t.$font-family-body;
+  }
+
+  &__link--active &__link-title,
+  &__link--active &__link-text {
+    color: #fff;
+  }
+
+  &__note {
+    margin: 0;
+    padding: 0 8px;
+  }
+}

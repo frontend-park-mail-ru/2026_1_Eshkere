@@ -1,5 +1,4 @@
-export type TariffKey = 'basic' | 'pro' | 'business';
-export type AccountStatus = 'pending' | 'verified';
+export type { TariffKey, AccountStatus } from 'entities/user';
 
 export interface ProfileField {
   key: string;
@@ -56,8 +55,4 @@ export interface TemplateContext {
   accountActionText: string;
 }
 
-export interface ToastPayload {
-  title: string;
-  description: string;
-  tone?: 'success' | 'warning';
-}
+export type { ToastPayload } from 'shared/lib/toast';

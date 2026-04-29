@@ -1,5 +1,6 @@
 export enum LocalStorageKey {
   AdsAuth = 'ads_auth',
+  DevModeratorAccess = 'dev_moderator_access',
   BalanceDashboardState = 'balance_dashboard_state',
   CampaignBuilderDraft = 'campaign_builder_draft',
   CampaignBuilderSavedAudiences = 'campaign_builder_saved_audiences',

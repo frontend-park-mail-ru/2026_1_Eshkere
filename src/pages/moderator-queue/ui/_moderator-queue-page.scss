@@ -1,0 +1,95 @@
+﻿@use '../../../shared/styles/tokens' as t;
+@use '../../../shared/styles/mixins';
+
+.moderator-queue-page {
+  display: grid;
+  gap: 16px;
+
+  &__topbar,
+  .moderator-queue-panel {
+    border: 1px solid rgba(205, 213, 236, 0.72);
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 14px 32px rgba(74, 82, 148, 0.1);
+    backdrop-filter: blur(10px);
+  }
+
+  &__topbar {
+    padding: 20px 22px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 16px;
+  }
+
+  &__eyebrow {
+    color: t.$color-primary;
+    font: 700 11px/1.2 t.$font-family-body;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  &__title {
+    margin: 8px 0 0;
+    font: 800 34px/0.95 t.$font-family-heading;
+    letter-spacing: -0.04em;
+  }
+
+  &__subtitle {
+    margin: 10px 0 0;
+    max-width: 760px;
+    color: t.$color-text-muted;
+    font: 400 15px/1.55 t.$font-family-body;
+  }
+
+  &__kpis {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(120px, 1fr));
+    gap: 10px;
+  }
+
+  &__kpis article {
+    min-height: 88px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    border: 1px solid rgba(220, 225, 241, 0.92);
+    background: rgba(255, 255, 255, 0.76);
+    display: grid;
+    gap: 6px;
+  }
+
+  &__kpis span {
+    color: t.$color-text-muted;
+    font: 500 12px/1.2 t.$font-family-body;
+  }
+
+  &__kpis strong {
+    font: 800 28px/1 t.$font-family-heading;
+    color: #2d3448;
+  }
+
+  &__layout {
+    display: block;
+  }
+
+  @include mixins.media-max(t.$bp-xl) {
+    &__topbar {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @include mixins.media-max(t.$bp-sm) {
+    &__topbar,
+    .moderator-queue-panel {
+      padding: 16px;
+    }
+
+    &__title {
+      font-size: 28px;
+    }
+
+    &__kpis {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+

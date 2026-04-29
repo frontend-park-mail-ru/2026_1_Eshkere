@@ -1,0 +1,232 @@
+html[data-theme='dark'] {
+  .campaign-builder {
+    --campaign-inner-surface: rgba(22, 31, 57, 0.9);
+    color: var(--text-main);
+
+    &__toolbar,
+    &__hero,
+    &__card,
+    &__panel-actions {
+      border: none;
+      background: var(--gradient-menu-surface);
+      box-shadow: var(--shadow-floating), var(--shadow-inset-highlight);
+    }
+
+    &__title,
+    &__card-title,
+    &__step-title,
+    &__stack-title,
+    &__creative-title,
+    &__upload-slot-title,
+    &__upload-slot-status,
+    &__profile-section-title,
+    &__meta-item-value,
+    &__saved-audience-actions .campaign-builder__text-button,
+    &__review-section-title,
+    &__select-value,
+    &__select-option-label,
+    &__modal-option-title,
+    &__modal-empty-title,
+    &__timeline-item strong,
+    &__profile-range-copy,
+    &__input-suffix,
+    &__meta-value,
+    &__slot-title,
+    &__metric-value,
+    &__summary-item strong,
+    &__review-title,
+    &__summary-block-title,
+    &__saved-audience-title,
+    &__hero-meta-text strong {
+      color: var(--text-main);
+    }
+
+    &__subtitle,
+    &__meta-label,
+    &__label,
+    &__hint,
+    &__card-subtitle,
+    &__panel-note,
+    &__stack-text,
+    &__hero-meta-text span,
+    &__meta-item-label,
+    &__meta-item-text,
+    &__slot-text,
+    &__note,
+    &__metric-note,
+    &__risk-item,
+    &__upload-slot-text,
+    &__creative-text,
+    &__saved-audience-text,
+    &__saved-audience-empty,
+    &__profile-section-text,
+    &__profile-selection-note,
+    &__profile-empty,
+    &__save-indicator span,
+    &__select-option-meta,
+    &__timeline-item span,
+    &__review-text,
+    &__toast-text,
+    &__modal-text,
+    &__modal-option-text,
+    &__modal-empty-text {
+      color: var(--text-muted);
+    }
+
+    &__select-option--active .campaign-builder__select-option-meta {
+      color: var(--text-main);
+    }
+
+    &__input::placeholder {
+      color: var(--text-soft);
+    }
+
+    &__input.campaign-builder__input--example,
+    &__input--textarea.campaign-builder__input--example {
+      color: rgba(153, 166, 208, 0.72);
+    }
+
+    &__button--secondary,
+    &__button--ghost,
+    &__button--locked,
+    &__save-indicator,
+    &__more-menu,
+    &__more-item,
+    &__input,
+    &__select-trigger,
+    &__select-icon,
+    &__select-menu,
+    &__select-option,
+    &__meta-item,
+    &__slot-item,
+    &__summary-item,
+    &__stack-item,
+    &__metric,
+    &__summary-block,
+    &__review-section,
+    &__review-next,
+    &__saved-audience,
+    &__upload-slot,
+    &__creative,
+    &__chip,
+    &__segmented-button,
+    &__mini-chip,
+    &__toggle,
+    &__modal-dialog,
+    &__modal-option,
+    &__modal-empty {
+      border: none;
+      background: var(--campaign-inner-surface);
+      color: var(--text-main);
+      box-shadow: none;
+    }
+
+    &__button--secondary,
+    &__button--ghost {
+      background: rgba(36, 48, 84, 0.94);
+      color: var(--text-main);
+    }
+
+    &__button--secondary:hover,
+    &__button--ghost:hover {
+      background: rgba(47, 61, 104, 0.98);
+      box-shadow: var(--shadow-soft-hover);
+    }
+
+    &__card--review-summary .campaign-builder__review-sections {
+      background: var(--campaign-inner-surface);
+      border-radius: 18px;
+      padding: 8px;
+    }
+
+    &__card--review-summary .campaign-builder__review-section {
+      background: var(--campaign-inner-surface);
+      box-shadow: none;
+    }
+
+    &__card--review-summary .campaign-builder__summary-item {
+      background: var(--campaign-inner-surface);
+      box-shadow: none;
+    }
+
+    &__card--review-summary .campaign-builder__summary-item strong {
+      color: #eef2ff;
+    }
+
+    &__toggle {
+      border: none;
+      background: var(--surface-toggle);
+      box-shadow: none;
+    }
+
+    &__toggle-handle {
+      border: none;
+      background: #f3f6ff;
+      box-shadow: 0 6px 14px rgba(8, 14, 32, 0.36);
+    }
+
+    &__button--primary,
+    &__segmented-button--active,
+    &__mini-chip--active,
+    &__toggle--active {
+      background: linear-gradient(135deg, #6f63e6 0%, #4f47c9 100%);
+      box-shadow: var(--shadow-primary-soft);
+    }
+
+    &__step-index {
+      background: linear-gradient(135deg, #6f63e6 0%, #4f47c9 100%);
+      box-shadow: var(--shadow-primary-soft);
+    }
+
+    &__step--complete .campaign-builder__step-index {
+      background: linear-gradient(135deg, #34c77a 0%, #21935d 100%);
+      box-shadow: 0 10px 20px rgba(46, 182, 112, 0.28);
+    }
+
+    &__toggle--active {
+      border-color: transparent;
+    }
+
+    &__steps {
+      border: none;
+      background: rgba(25, 35, 64, 0.9);
+    }
+
+    &__step {
+      border: 1px solid transparent;
+      background: rgba(29, 40, 71, 0.5);
+    }
+
+    &__step-title {
+      color: #dbe2ff;
+    }
+
+    &__step--active {
+      border: none;
+      background: rgba(52, 66, 112, 0.82);
+      box-shadow: var(--shadow-primary-soft);
+    }
+
+    &__step:hover {
+      border-color: transparent;
+      background: rgba(43, 57, 97, 0.72);
+      box-shadow: 0 10px 20px rgba(10, 16, 33, 0.26);
+    }
+
+    &__step--active:hover {
+      border: none;
+      background: rgba(52, 66, 112, 0.82);
+      box-shadow: var(--shadow-primary-soft);
+    }
+
+    &__note {
+      border: none;
+      background: rgba(31, 42, 72, 0.86);
+      color: var(--text-note);
+    }
+
+    &__upload-slot-footer {
+      border-top: none;
+    }
+  }
+}

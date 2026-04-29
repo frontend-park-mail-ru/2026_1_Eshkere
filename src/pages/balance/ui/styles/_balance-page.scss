@@ -1,0 +1,137 @@
+﻿@use '../../../../shared/styles/tokens' as t;
+@use '../../../../shared/styles/mixins';
+
+.balance-page {
+  display: grid;
+  gap: 20px;
+  color: t.$color-text-main;
+
+  &__hero,
+  &__grid > .balance-card {
+    @include mixins.glass-card(rgba(255, 255, 255, 0.9), 24px);
+  }
+
+  &__hero {
+    padding: 28px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: start;
+  }
+
+  &__hero-copy {
+    max-width: 760px;
+  }
+
+  &__title {
+    margin: 0;
+    font-family: t.$font-family-heading;
+    font-size: clamp(42px, 3vw, 54px);
+    line-height: 0.96;
+    letter-spacing: -0.04em;
+  }
+
+  &__subtitle {
+    margin: 12px 0 0;
+    max-width: 720px;
+    color: t.$color-text-muted;
+    font: 400 18px/1.5 t.$font-family-body;
+  }
+
+  &__hero-action {
+    min-width: 188px;
+    height: 56px;
+    padding: 0 24px;
+    border: 0;
+    border-radius: t.$radius-md;
+    background: t.$primary-gradient;
+    color: #fff;
+    font: 700 15px/1 t.$font-family-body;
+    box-shadow: t.$shadow-primary;
+    cursor: pointer;
+    justify-self: end;
+    @include mixins.interactive-lift(-1px, t.$shadow-primary-hover);
+    @include mixins.focus-ring();
+  }
+
+  &__stats {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(300px, 0.95fr);
+    gap: 20px;
+    align-items: stretch;
+  }
+
+  &__amounts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  @include mixins.media-max(t.$bp-xl) {
+    &__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @include mixins.media-max(t.$bp-lg) {
+    &__hero {
+      grid-template-columns: 1fr;
+    }
+
+    &__hero-action {
+      justify-self: start;
+    }
+
+    &__stats,
+    &__amounts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @include mixins.media-max(t.$bp-sm) {
+    &__hero {
+      padding: 22px 18px;
+    }
+
+    &__title {
+      font-size: 34px;
+    }
+
+    &__subtitle {
+      font-size: 16px;
+    }
+
+    &__stats,
+    &__amounts {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+.balance-stat {
+  padding: 18px 20px;
+  border: 1px solid rgba(116, 130, 204, 0.18);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+  display: grid;
+  gap: 8px;
+
+  &__label {
+    color: t.$color-text-muted;
+    font: 500 13px/1.2 t.$font-family-body;
+  }
+
+  &__value {
+    font: 800 22px/1.05 t.$font-family-heading;
+    color: t.$color-text-main;
+  }
+}
+

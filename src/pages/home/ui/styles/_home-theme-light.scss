@@ -1,0 +1,41 @@
+.public-layout--home {
+  --home-light-bg: #efedff;
+  background-color: var(--home-light-bg);
+  background-image: none;
+  animation: none;
+}
+
+.public-layout--home .public-layout__bg {
+  display: none;
+}
+
+.public-layout--home::before,
+.public-layout--home::after {
+  opacity: 0;
+}
+
+.home {
+  background: transparent;
+}
+
+.hero::before {
+  background: url('/img/without.png') center calc(100% + 100px) / max(1440px, 100vw) auto no-repeat !important;
+  -webkit-mask-image: linear-gradient(
+    to top,
+    transparent 0%,
+    rgba(0, 0, 0, 0.12) 8%,
+    rgba(0, 0, 0, 0.34) 16%,
+    rgba(0, 0, 0, 0.62) 24%,
+    rgba(0, 0, 0, 0.88) 34%,
+    #000 100%
+  );
+  mask-image: linear-gradient(
+    to top,
+    transparent 0%,
+    rgba(0, 0, 0, 0.12) 8%,
+    rgba(0, 0, 0, 0.34) 16%,
+    rgba(0, 0, 0, 0.62) 24%,
+    rgba(0, 0, 0, 0.88) 34%,
+    #000 100%
+  );
+}

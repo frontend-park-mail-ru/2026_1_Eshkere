@@ -1,0 +1,71 @@
+﻿@use '../../../../../shared/styles/tokens' as t;
+@use '../../../../../shared/styles/mixins';
+
+.balance-modal {
+  &__content--wide {
+    width: min(760px, calc(100vw - 32px));
+  }
+
+  &__content--history {
+    width: min(920px, calc(100vw - 32px));
+    max-height: calc(100vh - 32px);
+    overflow: hidden;
+  }
+
+  &__inner--history {
+    max-height: calc(100vh - 32px);
+    overflow: hidden;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+
+  @include mixins.media-max(t.$bp-sm) {
+    &__inner {
+      padding: 22px 18px;
+    }
+
+    &__head-row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    &__title {
+      font-size: 24px;
+    }
+
+    &__quick,
+    &__grid {
+      grid-template-columns: 1fr;
+    }
+
+    &__summary,
+    &__current-row {
+      grid-template-columns: 1fr;
+    }
+
+    &__content--history,
+    &__inner--history {
+      max-height: calc(100vh - 20px);
+    }
+
+    &__method-ui {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    &__method-side {
+      justify-items: start;
+    }
+
+    &__method-actions {
+      justify-content: flex-start;
+    }
+
+    &__actions {
+      flex-direction: column;
+    }
+
+    &__button {
+      width: 100%;
+    }
+  }
+}

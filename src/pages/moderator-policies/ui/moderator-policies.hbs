@@ -1,0 +1,76 @@
+<section class="moderator-policies-page">
+  <div class="moderator-policies-page__topbar">
+    <div class="moderator-policies-page__title-block">
+      <span class="moderator-policies-page__eyebrow">Policy</span>
+      <h1 class="moderator-policies-page__title">Policy и rules</h1>
+      <p class="moderator-policies-page__subtitle">
+        Справочник причин отклонения, рабочих кодов policy и критериев решения.
+      </p>
+    </div>
+
+    <div class="moderator-policies-page__kpis">
+      <article>
+        <span>Critical</span>
+        <strong>{{stats.critical}}</strong>
+      </article>
+      <article>
+        <span>High</span>
+        <strong>{{stats.high}}</strong>
+      </article>
+      <article>
+        <span>Medium</span>
+        <strong>{{stats.medium}}</strong>
+      </article>
+    </div>
+  </div>
+
+  <div class="moderator-policies-panel">
+    <div class="moderator-policies-toolbar">
+      <input
+        class="moderator-policies-toolbar__search"
+        type="search"
+        placeholder="Поиск по коду, категории или описанию"
+        data-policies-search
+      />
+      <select class="moderator-policies-toolbar__filter" data-policies-severity-filter>
+        <option value="all">Все уровни</option>
+        <option value="Critical">Critical</option>
+        <option value="High">High</option>
+        <option value="Medium">Medium</option>
+      </select>
+      <select class="moderator-policies-toolbar__filter" data-policies-category-filter>
+        <option value="all">Все категории</option>
+        {{#each categories}}
+          <option value="{{this}}">{{this}}</option>
+        {{/each}}
+      </select>
+    </div>
+
+    <div class="moderator-policies-list" data-policies-list>
+      {{#each items}}
+        <article
+          class="moderator-policy-card"
+          data-policy-code="{{code}}"
+          data-severity="{{severity}}"
+          data-category="{{category}}"
+          data-searchable="{{code}} {{category}} {{title}} {{summary}}"
+        >
+          <div class="moderator-policy-card__head">
+            <code class="moderator-policy-card__code">{{code}}</code>
+            <span class="moderator-policy-card__severity moderator-policy-card__severity--{{severityTone}}">
+              {{severity}}
+            </span>
+            <span class="moderator-policy-card__category">{{category}}</span>
+          </div>
+
+          <h3 class="moderator-policy-card__title">{{title}}</h3>
+          <p class="moderator-policy-card__summary">{{summary}}</p>
+        </article>
+      {{/each}}
+    </div>
+
+    <div class="moderator-policies-empty" data-policies-empty hidden>
+      Policy не найдены. Попробуйте изменить фильтр или поисковый запрос.
+    </div>
+  </div>
+</section>

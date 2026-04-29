@@ -1,0 +1,31 @@
+<header class="moderator-navbar">
+  <div class="moderator-navbar__brand">
+    <a href="/moderator/queue" class="moderator-navbar__brand-link">
+      <span class="moderator-navbar__eyebrow">Модерация</span>
+      <strong class="moderator-navbar__title">Рабочий контур</strong>
+    </a>
+    <span class="moderator-navbar__section">{{currentSection}}</span>
+  </div>
+
+  <div class="moderator-navbar__spacer" aria-hidden="true"></div>
+
+  <div class="moderator-navbar__actions">
+    <button
+      class="moderator-navbar__theme-btn"
+      id="moderator-navbar-theme-btn"
+      type="button"
+      aria-label="Переключить тему оформления"
+    >
+      <span class="moderator-navbar__theme-btn-track" aria-hidden="true">
+        <span class="moderator-navbar__theme-btn-thumb"></span>
+      </span>
+    </button>
+
+    <a href="/ads" class="moderator-navbar__icon-action moderator-navbar__icon-action--secondary" id="moderator-navbar-ads-link">
+      В продукт
+    </a>
+    <button type="button" class="moderator-navbar__icon-action moderator-navbar__icon-action--primary" id="moderator-navbar-logout">
+      Выйти
+    </button>
+  </div>
+</header>

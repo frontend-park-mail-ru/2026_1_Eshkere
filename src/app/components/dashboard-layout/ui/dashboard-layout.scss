@@ -2,17 +2,21 @@
 @use '../../../../shared/styles/mixins';
 
 .dashboard-layout {
+  position: relative;
   @include mixins.page-background('/img/RightFon.png');
   overflow: visible;
+  isolation: isolate;
 
   &__container {
     position: relative;
+    z-index: 2;
     width: min(1400px, calc(100% - 32px));
     margin: 0 auto;
     padding: 96px 0 32px;
   }
 
   &__body {
+    position: relative;
     display: grid;
     grid-template-columns: 240px 1fr;
     gap: 20px;
@@ -26,6 +30,7 @@
   &__sidebar {
     position: sticky;
     top: 96px;
+    z-index: 2;
     align-self: start;
 
     &[hidden] {
@@ -34,7 +39,17 @@
   }
 
   &__content {
+    position: relative;
     min-width: 0;
+  }
+
+  #app-navbar-slot {
+    position: relative;
+    z-index: 180;
+  }
+
+  .public-layout__bg {
+    z-index: -1;
   }
 
   @include mixins.media-max(t.$bp-xl) {

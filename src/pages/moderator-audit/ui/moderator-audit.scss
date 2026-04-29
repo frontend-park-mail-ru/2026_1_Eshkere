@@ -1,0 +1,206 @@
+@use '../../../shared/styles/tokens' as t;
+@use '../../../shared/styles/mixins';
+
+.moderator-audit-page {
+  display: grid;
+  gap: 20px;
+
+  &__topbar {
+    @include mixins.glass-card(rgba(255, 255, 255, 0.88), 24px);
+    padding: 28px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  &__title-block {
+    display: grid;
+    gap: 8px;
+  }
+
+  &__eyebrow {
+    color: t.$color-primary;
+    font: 700 11px/1.2 t.$font-family-body;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  &__title {
+    margin: 0;
+    font: 800 38px/0.95 t.$font-family-heading;
+  }
+
+  &__subtitle {
+    margin: 0;
+    color: t.$color-text-muted;
+    font: 400 16px/1.55 t.$font-family-body;
+    max-width: 52ch;
+  }
+
+  &__kpis {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+
+    article {
+      @include mixins.glass-card(rgba(255, 255, 255, 0.72), 16px);
+      padding: 14px 20px;
+      display: grid;
+      gap: 4px;
+      min-width: 100px;
+      text-align: center;
+
+      span {
+        color: t.$color-text-muted;
+        font: 500 11px/1.2 t.$font-family-body;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      strong {
+        font: 700 28px/1 t.$font-family-heading;
+        color: t.$color-text-primary;
+      }
+    }
+  }
+}
+
+.moderator-audit-panel {
+  @include mixins.glass-card(rgba(255, 255, 255, 0.88), 24px);
+  padding: 24px;
+  display: grid;
+  gap: 20px;
+}
+
+.moderator-audit-toolbar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+
+  &__search {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1.5px solid rgba(180, 190, 220, 0.7);
+    background: rgba(255, 255, 255, 0.72);
+    font: 400 14px/1.4 t.$font-family-body;
+    color: t.$color-text-primary;
+    outline: none;
+    transition: border-color 0.18s;
+
+    &:focus {
+      border-color: t.$color-primary;
+    }
+  }
+
+  &__filter {
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1.5px solid rgba(180, 190, 220, 0.7);
+    background: rgba(255, 255, 255, 0.72);
+    font: 400 14px/1.4 t.$font-family-body;
+    color: t.$color-text-primary;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.18s;
+
+    &:focus {
+      border-color: t.$color-primary;
+    }
+  }
+}
+
+.moderator-audit-timeline {
+  display: grid;
+  gap: 0;
+}
+
+.moderator-audit-entry {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 0 14px;
+
+  &:last-child &__line {
+    display: none;
+  }
+
+  &__spine {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 3px;
+  }
+
+  &__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: t.$color-primary;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 0 2px rgba(t.$color-primary, 0.25);
+    flex-shrink: 0;
+  }
+
+  &__line {
+    flex: 1;
+    width: 2px;
+    background: rgba(t.$color-primary, 0.15);
+    margin: 4px 0;
+    min-height: 20px;
+  }
+
+  &__body {
+    padding-bottom: 20px;
+    display: grid;
+    gap: 6px;
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  &__actor {
+    font: 600 13px/1.2 t.$font-family-body;
+    color: t.$color-text-primary;
+  }
+
+  &__action {
+    font: 500 13px/1.2 t.$font-family-body;
+    color: t.$color-text-muted;
+  }
+
+  &__time {
+    font: 400 12px/1.2 t.$font-family-body;
+    color: rgba(t.$color-text-muted, 0.7);
+    margin-left: auto;
+  }
+
+  &__target {
+    margin: 0;
+    font: 600 14px/1.4 t.$font-family-body;
+    color: t.$color-primary;
+  }
+
+  &__note {
+    margin: 0;
+    font: 400 13px/1.55 t.$font-family-body;
+    color: t.$color-text-muted;
+    padding: 8px 12px;
+    background: rgba(t.$color-primary, 0.04);
+    border-radius: 10px;
+    border-left: 3px solid rgba(t.$color-primary, 0.2);
+  }
+}
+
+.moderator-audit-empty {
+  text-align: center;
+  padding: 32px 16px;
+  color: t.$color-text-muted;
+  font: 400 15px/1.55 t.$font-family-body;
+}

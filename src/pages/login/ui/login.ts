@@ -11,7 +11,7 @@ import {
   setFieldState,
 } from 'shared/validators';
 import { loginUser } from 'features/auth';
-import { navigateTo } from 'app/navigation';
+import { navigateTo } from 'shared/lib/navigation';
 import loginPageTemplate from './login.hbs';
 
 /**
@@ -106,9 +106,14 @@ export async function renderLoginPage(): Promise<string> {
  * @return {void}
  */
 export function Login(): void | VoidFunction {
+  const publicLayout = document.querySelector('.public-layout');
+  publicLayout?.classList.add('public-layout--auth');
+
   const el = document.getElementById('login-form');
   if (!(el instanceof HTMLFormElement)) {
-    return;
+    return () => {
+      publicLayout?.classList.remove('public-layout--auth');
+    };
   }
   const form = el as LoginFormElement;
 
@@ -167,4 +172,8 @@ export function Login(): void | VoidFunction {
 
     navigateTo('/ads', { replace: true });
   });
+
+  return () => {
+    publicLayout?.classList.remove('public-layout--auth');
+  };
 }

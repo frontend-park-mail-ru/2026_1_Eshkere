@@ -19,13 +19,14 @@
     border: 1px solid var(--border);
     background: var(--surface-button-secondary);
     color: var(--text-body);
+    transition: t.$transition-color;
   }
 }
 
 html[data-theme='dark'] {
   .ui-button--secondary {
     border: none;
-    background: rgba(33, 42, 69, 0.92);
+    background: var(--surface-button-secondary);
     color: var(--text-main);
   }
 }

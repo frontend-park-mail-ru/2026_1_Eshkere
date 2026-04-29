@@ -1,0 +1,147 @@
+<section class="moderator-queue-page">
+  <div class="moderator-queue-page__topbar">
+    <div class="moderator-queue-page__title-block">
+      <span class="moderator-queue-page__eyebrow">Moderation Desk</span>
+      <h1 class="moderator-queue-page__title">Очередь модерации</h1>
+      <p class="moderator-queue-page__subtitle">
+        Здесь только входящие материалы, которые пользователь отправил на модерацию. Модератор видит, что это за кампания, кто её создал, на каком этапе она находится и какое действие требуется.
+      </p>
+    </div>
+
+    <div class="moderator-queue-page__kpis">
+      <article>
+        <span>Новые</span>
+        <strong>{{stats.incoming}}</strong>
+      </article>
+      <article>
+        <span>В review</span>
+        <strong>{{stats.review}}</strong>
+      </article>
+      <article>
+        <span>Просрочка SLA</span>
+        <strong>{{stats.overdue}}</strong>
+      </article>
+    </div>
+  </div>
+
+  <section class="moderator-queue-panel moderator-queue-panel--main">
+    <div class="moderator-queue-panel__head">
+      <div>
+        <h2>Активные кейсы</h2>
+        <p>Клик по карточке открывает полный просмотр кампании. Кнопка "Подробнее" оставляет быстрый контекст прямо в очереди.</p>
+      </div>
+    </div>
+
+    <div class="moderator-queue-toolbar">
+      <input
+        class="moderator-queue-toolbar__search"
+        type="search"
+        placeholder="Поиск по кейсу или рекламодателю"
+        data-moderator-queue-search
+      />
+
+      <select class="moderator-queue-toolbar__filter" data-moderator-stage-filter>
+        <option value="all">Все этапы</option>
+        <option value="incoming">Новые</option>
+        <option value="review">В review</option>
+        <option value="decision">Нужно решение</option>
+        <option value="escalation">Эскалация</option>
+      </select>
+
+      <select class="moderator-queue-toolbar__filter" data-moderator-priority-filter>
+        <option value="all">Все приоритеты</option>
+        <option value="critical">Critical</option>
+        <option value="high">High</option>
+        <option value="medium">Medium</option>
+      </select>
+    </div>
+
+    <div class="moderator-queue-list">
+      {{#each priorityItems}}
+        <article
+          class="moderator-work-item"
+          data-open-moderation-case="{{id}}"
+          data-stage="{{stage}}"
+          data-priority="{{priority}}"
+          data-searchable="{{title}} {{advertiser}} {{summary}} {{reason}} {{platform}}"
+        >
+          <div class="moderator-work-item__meta">
+            <span class="moderator-work-item__type">{{objectType}}</span>
+            <span class="moderator-work-item__priority{{#if isCritical}} moderator-work-item__priority--critical{{/if}}{{#if isHigh}} moderator-work-item__priority--high{{/if}}{{#if isMedium}} moderator-work-item__priority--medium{{/if}}">
+              {{priorityLabel}}
+            </span>
+          </div>
+
+          <div class="moderator-work-item__summary-row">
+            <div class="moderator-work-item__summary-main">
+              <h3 class="moderator-work-item__title">{{title}}</h3>
+              <p class="moderator-work-item__creator">Создал: {{advertiser}}</p>
+              <p class="moderator-work-item__task">Что сделать: {{actionLabel}}</p>
+              <p class="moderator-work-item__reason">Причина: {{reason}}</p>
+            </div>
+
+            <div class="moderator-work-item__summary-side">
+              <div class="moderator-work-item__status moderator-work-item__status--{{stageTone}}">
+                {{stageLabel}}
+              </div>
+              <div class="moderator-work-item__fact">
+                <span class="moderator-work-item__fact-label">Платформа</span>
+                <strong class="moderator-work-item__fact-value">{{platform}}</strong>
+              </div>
+              <div class="moderator-work-item__fact">
+                <span class="moderator-work-item__fact-label">В очереди</span>
+                <strong class="moderator-work-item__fact-value">{{queueAgeLabel}}</strong>
+              </div>
+              <div class="moderator-work-item__fact moderator-work-item__fact--{{slaTone}}">
+                <span class="moderator-work-item__fact-label">SLA</span>
+                <strong class="moderator-work-item__fact-value">{{slaMinutes}} мин</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="moderator-work-item__footer">
+            <button class="moderator-work-item__toggle" type="button" data-toggle-case-details>
+              Подробнее
+            </button>
+            <button class="moderator-work-item__open" type="button" data-open-case-button>
+              Перейти к кейсу
+            </button>
+          </div>
+
+          <div class="moderator-work-item__details" hidden>
+            <div class="moderator-work-item__details-grid">
+              <article>
+                <span>Что произошло</span>
+                <p>{{summary}}</p>
+              </article>
+              <article>
+                <span>Причина проверки</span>
+                <p>{{reason}}</p>
+              </article>
+              <article>
+                <span>Тэги</span>
+                <p>{{tagsLabel}}</p>
+              </article>
+            </div>
+          </div>
+        </article>
+      {{/each}}
+    </div>
+
+    <div class="moderator-queue-empty" data-moderator-queue-empty hidden>
+      Ничего не найдено. Попробуйте изменить поиск или фильтры.
+    </div>
+
+    <div class="moderator-queue-pagination" data-moderator-queue-pagination>
+      <button class="moderator-queue-pagination__nav" type="button" data-pagination-prev>
+        ← Предыдущая
+      </button>
+
+      <div class="moderator-queue-pagination__pages" data-pagination-pages></div>
+
+      <button class="moderator-queue-pagination__nav" type="button" data-pagination-next>
+        Следующая →
+      </button>
+    </div>
+  </section>
+</section>

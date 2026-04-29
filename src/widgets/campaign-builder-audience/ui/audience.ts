@@ -1,3 +1,5 @@
+import riskListItemsTemplate from 'features/campaign-builder/ui/risk-list-items.hbs';
+
 interface AudienceSummaryView {
   ageRange: string;
   cities: string;
@@ -204,8 +206,6 @@ export function syncCampaignBuilderAudienceView({
   document
     .querySelectorAll<HTMLElement>('[data-audience-risk-list]')
     .forEach((list) => {
-      list.innerHTML = insights.risks
-        .map((risk) => `<li class="campaign-builder__risk-item">${risk}</li>`)
-        .join('');
+      list.innerHTML = riskListItemsTemplate({ items: insights.risks });
     });
 }

@@ -1,0 +1,73 @@
+﻿@use '../../../../../shared/styles/tokens' as t;
+@use '../../../../../shared/styles/mixins';
+
+
+.hero {
+  &__floating {
+    position: absolute;
+    padding: 16px 18px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.74);
+    box-shadow: 0 18px 36px rgba(63, 73, 129, 0.16);
+    backdrop-filter: blur(18px);
+
+    strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 20px;
+      line-height: 1.15;
+      color: #1b213b;
+    }
+
+    p {
+      font-size: 13px;
+      color: #6f7791;
+    }
+
+    &--audience {
+      top: -12px;
+      left: -8px;
+      width: 272px;
+      animation: hero-card-drift 7.4s ease-in-out infinite;
+    }
+
+    &--budget {
+      right: -8px;
+      bottom: 18px;
+      width: 256px;
+      animation: hero-card-drift 8.6s ease-in-out infinite reverse;
+    }
+
+    &--status {
+      left: 18px;
+      bottom: -18px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #2a3046;
+      animation: hero-card-drift 6.4s ease-in-out infinite;
+    }
+  }
+
+  &__floating-label {
+    display: inline-flex;
+    margin-bottom: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #8a91a8;
+  }
+
+  &__signal {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #34c876;
+    box-shadow: 0 0 0 8px rgba(52, 200, 118, 0.12);
+    animation: pulse-dot 2.4s ease-in-out infinite;
+  }
+}

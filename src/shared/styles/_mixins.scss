@@ -25,11 +25,7 @@
 }
 
 @mixin interactive-lift($distance: -1px, $shadow: null, $filter: null) {
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    filter 0.2s ease,
-    opacity 0.2s ease;
+  transition: t.$transition-lift;
 
   &:hover {
     transform: translateY($distance);
@@ -82,7 +78,7 @@
   justify-content: center;
 }
 
-@mixin modal-overlay($z-index: 100, $background: rgba(16, 19, 39, 0.56)) {
+@mixin modal-overlay($z-index: t.$z-modal, $background: rgba(16, 19, 39, 0.56)) {
   position: fixed;
   inset: 0;
   z-index: $z-index;

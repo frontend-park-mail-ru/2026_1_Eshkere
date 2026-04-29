@@ -1,0 +1,27 @@
+﻿@use '../../../../shared/styles/tokens' as t;
+@use '../../../../shared/styles/mixins';
+
+html[data-theme='dark'] {
+  .campaigns-delete-modal__button--secondary {
+    border: none;
+    background: rgba(26, 36, 62, 0.94);
+    color: var(--text-main);
+  }
+
+  .campaigns-delete-modal__button--secondary:hover {
+    border-color: rgba(125, 110, 255, 0.42);
+    background: rgba(38, 49, 82, 0.96);
+  }
+
+  .campaigns-status-modal__button--secondary {
+    border: none;
+    background: rgba(26, 36, 62, 0.94);
+    color: var(--text-main);
+  }
+
+  .campaigns-status-modal__button--secondary:hover {
+    border-color: rgba(125, 110, 255, 0.42);
+    background: rgba(38, 49, 82, 0.96);
+  }
+}
+

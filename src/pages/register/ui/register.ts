@@ -14,7 +14,7 @@ import {
   setFieldState,
 } from 'shared/validators';
 import { registerUser } from 'features/auth';
-import { navigateTo } from 'app/navigation';
+import { navigateTo } from 'shared/lib/navigation';
 import registerPageTemplate from './register.hbs';
 
 /**
@@ -196,11 +196,16 @@ export async function renderRegisterPage(): Promise<string> {
  *
  * @return {void}
  */
-export function Register(): void {
+export function Register(): void | VoidFunction {
+  const publicLayout = document.querySelector('.public-layout');
+  publicLayout?.classList.add('public-layout--auth');
+
   const el = document.getElementById('register-form');
 
   if (!(el instanceof HTMLFormElement)) {
-    return;
+    return () => {
+      publicLayout?.classList.remove('public-layout--auth');
+    };
   }
   const form = el as RegisterFormElement;
 
@@ -352,4 +357,8 @@ export function Register(): void {
       handleRegisterSubmit();
     }, submitDebounceMs);
   });
+
+  return () => {
+    publicLayout?.classList.remove('public-layout--auth');
+  };
 }

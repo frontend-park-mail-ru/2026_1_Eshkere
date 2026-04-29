@@ -1,0 +1,44 @@
+<aside class="moderator-sidebar">
+  <div class="moderator-sidebar__section">
+    <span class="moderator-sidebar__caption">Навигация</span>
+
+    <a
+      href="/moderator/queue"
+      class="moderator-sidebar__link {{#if isQueue}}moderator-sidebar__link--active{{/if}}"
+    >
+      <span class="moderator-sidebar__link-title">Очередь</span>
+      <span class="moderator-sidebar__link-text">Все входящие кейсы и triage.</span>
+    </a>
+
+    <a href="/moderator/messages" class="moderator-sidebar__link {{#if isMessages}}moderator-sidebar__link--active{{/if}}">
+      <span class="moderator-sidebar__link-title">Inbox клиента</span>
+      <span class="moderator-sidebar__link-text">Ответы, правки, документы.</span>
+    </a>
+
+    <a href="/moderator/appeals" class="moderator-sidebar__link {{#if isAppeals}}moderator-sidebar__link--active{{/if}}">
+      <span class="moderator-sidebar__link-title">Апелляции</span>
+      <span class="moderator-sidebar__link-text">Спорные решения и пересмотры.</span>
+    </a>
+  </div>
+
+  <div class="moderator-sidebar__section">
+    <span class="moderator-sidebar__caption">Служебное</span>
+
+    <a href="/moderator/policies" class="moderator-sidebar__link moderator-sidebar__link--compact {{#if isPolicies}}moderator-sidebar__link--active{{/if}}">
+      <span class="moderator-sidebar__link-title">Policy</span>
+      <span class="moderator-sidebar__link-text">Основания и правила.</span>
+    </a>
+
+    <a href="/moderator/audit" class="moderator-sidebar__link moderator-sidebar__link--compact {{#if isAudit}}moderator-sidebar__link--active{{/if}}">
+      <span class="moderator-sidebar__link-title">Аудит</span>
+      <span class="moderator-sidebar__link-text">Лог действий команды.</span>
+    </a>
+  </div>
+
+  <div class="moderator-sidebar__section moderator-sidebar__section--note">
+    <span class="moderator-sidebar__caption">Роль модератора</span>
+    <p class="moderator-sidebar__note">
+      Не “управлять продуктом”, а быстро принять решение по рекламе, объяснить его клиенту и оставить прозрачный след для команды.
+    </p>
+  </div>
+</aside>

@@ -1,0 +1,134 @@
+@use '../../../../../shared/styles/tokens' as t;
+
+.profile-feed-link {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  &__desc {
+    margin: 0;
+    font: 400 13px/1.55 t.$font-family-body;
+    color: t.$color-text-muted;
+  }
+
+  &__result {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    &[hidden] {
+      display: none !important;
+    }
+  }
+
+  &__url-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__url-input {
+    flex: 1;
+    min-width: 0;
+    padding: 9px 12px;
+    border: 1px solid t.$color-border;
+    border-radius: t.$radius-sm;
+    background: t.$surface-input;
+    font: 400 13px/1.4 t.$font-family-body;
+    color: t.$color-text-main;
+    outline: none;
+    cursor: text;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &:focus-visible {
+      border-color: rgba(t.$color-primary, 0.5);
+      box-shadow: 0 0 0 3px rgba(90, 84, 255, 0.1);
+    }
+  }
+
+  &__copy {
+    flex-shrink: 0;
+    padding: 9px 16px;
+    border: 0;
+    border-radius: t.$radius-sm;
+    background: t.$primary-gradient;
+    color: #fff;
+    font: 500 13px/1 t.$font-family-body;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.18s ease, box-shadow 0.18s ease;
+    box-shadow: t.$shadow-primary;
+
+    &:hover {
+      opacity: 0.88;
+      box-shadow: t.$shadow-primary-hover;
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(90, 84, 255, 0.22), t.$shadow-primary;
+    }
+  }
+
+  &__copied {
+    margin: 0;
+    font: 400 12px/1 t.$font-family-body;
+    color: t.$color-success;
+
+    &[hidden] {
+      display: none !important;
+    }
+  }
+
+  &__empty {
+    margin: 0;
+    font: 400 13px/1.45 t.$font-family-body;
+    color: t.$color-text-muted;
+
+    &[hidden] {
+      display: none !important;
+    }
+  }
+
+  &__select {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid t.$color-border;
+    border-radius: t.$radius-sm;
+    background: t.$surface-input;
+    font: 400 13px/1.4 t.$font-family-body;
+    color: t.$color-text-main;
+    outline: none;
+    cursor: pointer;
+    appearance: auto;
+
+    &:focus-visible {
+      border-color: rgba(t.$color-primary, 0.5);
+      box-shadow: 0 0 0 3px rgba(90, 84, 255, 0.1);
+    }
+
+    &[hidden] {
+      display: none !important;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  &__error {
+    padding: 10px 12px;
+    border-radius: t.$radius-sm;
+    background: rgba(255, 95, 86, 0.08);
+    border: 1px solid rgba(255, 95, 86, 0.22);
+    font: 400 13px/1.4 t.$font-family-body;
+    color: t.$color-danger-strong;
+
+    &[hidden] {
+      display: none !important;
+    }
+  }
+}

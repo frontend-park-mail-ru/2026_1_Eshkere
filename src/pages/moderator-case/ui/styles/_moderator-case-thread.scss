@@ -1,0 +1,131 @@
+﻿@use '../../../../shared/styles/tokens' as t;
+@use '../../../../shared/styles/mixins';
+
+.moderator-thread {
+  display: grid;
+  gap: 12px;
+
+  &__meta {
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: rgba(247, 249, 255, 0.94);
+    display: grid;
+    gap: 4px;
+  }
+
+  &__meta span {
+    color: t.$color-text-muted;
+    font: 600 11px/1.2 t.$font-family-body;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  &__meta strong {
+    color: #444d67;
+    font: 700 14px/1.2 t.$font-family-body;
+  }
+
+  &__item {
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.76);
+    border: 1px solid rgba(220, 225, 241, 0.92);
+    display: grid;
+    gap: 8px;
+
+    &--moderator {
+      background: rgba(239, 239, 255, 0.92);
+    }
+
+    &--client {
+      background: rgba(247, 249, 255, 0.94);
+    }
+
+    &--system {
+      background: rgba(249, 245, 236, 0.94);
+    }
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font: 600 12px/1.2 t.$font-family-body;
+    color: t.$color-text-muted;
+  }
+
+  &__item p {
+    margin: 0;
+    color: #4f5973;
+    font: 400 14px/1.55 t.$font-family-body;
+  }
+}
+
+.moderator-timeline {
+  position: relative;
+}
+
+.moderator-timeline__item {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.moderator-timeline__dot {
+  width: 12px;
+  height: 12px;
+  margin-top: 6px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #6f53d7 0%, #7e6bf0 100%);
+  box-shadow: 0 0 0 4px rgba(111, 83, 215, 0.1);
+}
+
+.moderator-timeline__content {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(220, 225, 241, 0.92);
+  display: grid;
+  gap: 6px;
+}
+
+.moderator-timeline__content strong {
+  color: #414a65;
+  font: 800 14px/1.25 t.$font-family-heading;
+}
+
+.moderator-timeline__content span {
+  color: t.$color-text-muted;
+  font: 500 12px/1.2 t.$font-family-body;
+}
+
+.moderator-timeline__content p {
+  margin: 0;
+  color: #59627e;
+  font: 400 14px/1.55 t.$font-family-body;
+}
+
+.moderator-timeline__item--draft .moderator-timeline__dot {
+  background: linear-gradient(135deg, #f0ae3b 0%, #f57f3a 100%);
+  box-shadow: 0 0 0 4px rgba(240, 174, 59, 0.12);
+}
+
+@include mixins.media-max(t.$bp-xl) {
+  .moderator-workspace__topline {
+    grid-template-columns: 1fr;
+  }
+
+  .moderator-review-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@include mixins.media-max(t.$bp-sm) {
+  .moderator-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+

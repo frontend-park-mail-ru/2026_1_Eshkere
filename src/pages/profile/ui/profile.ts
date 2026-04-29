@@ -1,7 +1,7 @@
 ﻿import './profile.scss';
 import 'shared/ui/modal/modal';
 import { renderTemplate } from 'shared/lib/render';
-import { getModalStep, setSubmitEnabled } from 'features/profile/lib/form';
+import { getNamedFormValue, setSubmitEnabled } from 'features/profile/lib/form';
 import {
   getAccountActionText,
   getAccountStatusLabel,
@@ -12,11 +12,12 @@ import {
   toTemplateContext,
 } from 'features/profile/model/state';
 import type { ProfileState } from 'features/profile/model/types';
-import { hideProfileFeedback } from 'widgets/profile-feedback/ui/toast';
-import { populateProfileForms, refreshProfileFormStates } from 'widgets/profile-forms/ui/forms';
-import { initProfileModals } from 'widgets/profile-modals/ui/modals';
-import { syncProfileView } from 'widgets/profile-view/ui/view';
-import { initProfileFeedLink } from 'widgets/profile-feed-link/ui/feed-link';
+import { hideProfileFeedback } from 'widgets/profile-feedback';
+import { populateProfileForms, refreshProfileFormStates } from 'widgets/profile-forms';
+import { initProfileModals } from 'widgets/profile-modals';
+import { syncProfileView } from 'widgets/profile-view';
+import { initProfileFeedLink } from 'widgets/profile-feed-link';
+import { openAvatarCropModal } from 'widgets/avatar-crop-modal';
 import profileTemplate from './profile.hbs';
 
 export type {
@@ -51,8 +52,7 @@ function getFormFieldValue(
     return fallback;
   }
 
-  const field = form.elements.namedItem(fieldName);
-  return field instanceof HTMLInputElement ? field.value.trim() || fallback : fallback;
+  return getNamedFormValue(form, fieldName) || fallback;
 }
 
 function getTariffKeyFromDom(): ProfileState['tariffKey'] {
@@ -111,7 +111,6 @@ function populateForms(state: ProfileState): void {
 
 function refreshModalSubmitStates(state: ProfileState): void {
   refreshProfileFormStates({
-    getModalStep,
     setSubmitEnabled,
     state,
   });
@@ -137,6 +136,7 @@ export function Profile(): VoidFunction | void {
   const state = readProfileStateFromDom();
 
   initProfileModals({
+    cropAvatar: openAvatarCropModal,
     getInitials,
     getTariffMeta,
     onStateChange: (nextState) => {

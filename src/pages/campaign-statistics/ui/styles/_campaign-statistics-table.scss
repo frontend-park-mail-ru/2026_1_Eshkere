@@ -1,0 +1,70 @@
+@use '../../../../shared/styles/tokens';
+
+.campaign-statistics {
+  &__insights {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  &__insights--stack {
+    grid-template-columns: 1fr;
+  }
+
+  &__insight {
+    display: grid;
+    gap: 8px;
+    padding: 18px;
+    border-radius: 18px;
+    border: 1px solid rgba(221, 225, 242, 0.9);
+  }
+
+  &__table {
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid rgba(223, 227, 244, 0.92);
+  }
+
+  &__table-head,
+  &__table-row {
+    display: grid;
+    grid-template-columns: 1.2fr 0.9fr 0.9fr 0.8fr 0.8fr;
+    gap: 14px;
+    align-items: center;
+  }
+
+  &__table-head {
+    padding: 14px 18px;
+    background: rgba(245, 247, 255, 0.96);
+    color: var(--text-soft);
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  &__table-body {
+    background: #fff;
+  }
+
+  &__table-row {
+    padding: 16px 18px;
+    border-top: 1px solid rgba(231, 235, 247, 0.92);
+  }
+
+  &__table-row--highlight {
+    background: rgba(245, 247, 255, 0.86);
+  }
+
+  &__table-cell--primary {
+    font-weight: 600;
+
+    span {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: rgba(108, 99, 255, 0.1);
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 700;
+    }
+  }
+}

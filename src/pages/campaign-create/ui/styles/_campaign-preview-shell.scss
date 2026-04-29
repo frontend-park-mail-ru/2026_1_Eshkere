@@ -1,0 +1,97 @@
+﻿@use '../../../../shared/styles/tokens' as t;
+@use '../../../../shared/styles/mixins';
+
+.campaign-preview {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 12px;
+
+  &__frame {
+    width: min(100%, 300px);
+    padding: 14px;
+    border-radius: 30px;
+    background:
+      radial-gradient(circle at top left, rgba(120, 152, 255, 0.24), transparent 36%),
+      linear-gradient(160deg, #12182d 0%, #1d2340 55%, #232959 100%);
+    box-shadow: 0 24px 42px rgba(25, 31, 73, 0.22);
+  }
+
+  &__visual {
+    aspect-ratio: 1.9 / 1;
+    border-radius: 24px;
+    padding: 18px;
+    display: flex;
+    align-items: flex-end;
+    background:
+      radial-gradient(circle at top left, rgba(255, 255, 255, 0.78), transparent 28%),
+      linear-gradient(135deg, rgba(71, 129, 255, 0.94) 0%, rgba(113, 90, 255, 0.94) 52%, rgba(255, 126, 176, 0.9) 100%);
+  }
+
+  &__visual-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: #fff;
+    font-family: t.$font-family-heading;
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.1;
+  }
+
+  &__visual-badge,
+  &__badge {
+    display: inline-flex;
+    align-self: flex-start;
+    min-height: 30px;
+    padding: 0 12px;
+    border-radius: 999px;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  &__visual-badge {
+    color: #203785;
+    background: rgba(255, 255, 255, 0.9);
+  }
+
+  &__badge {
+    margin-top: 14px;
+    color: #5d56ff;
+    background: rgba(235, 233, 255, 0.96);
+  }
+
+  &__headline {
+    display: block;
+    margin-top: 14px;
+    font-family: t.$font-family-heading;
+    font-size: 19px;
+    line-height: 1.16;
+    font-weight: 800;
+    color: #fff;
+  }
+
+  &__description {
+    margin: 10px 0 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.74);
+  }
+
+  &__cta {
+    width: 100%;
+    min-height: 48px;
+    margin-top: 18px;
+    border: 0;
+    border-radius: 16px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #2d6df6 0%, #5755ff 100%);
+    box-shadow: 0 14px 24px rgba(90, 84, 255, 0.24);
+  }
+}
+

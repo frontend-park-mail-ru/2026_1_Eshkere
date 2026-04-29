@@ -1,0 +1,116 @@
+﻿@use '../../../../shared/styles/tokens' as t;
+@use '../../../../shared/styles/mixins';
+
+.campaigns-page {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-height: calc(100vh - 144px);
+
+  &__toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px;
+    border-radius: 18px;
+    background: var(--surface-glass);
+    box-shadow: var(--shadow);
+  }
+
+  &__toolbar-primary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  &__create-button {
+    min-width: 170px;
+    @include mixins.pill-button(44px);
+    color: var(--white);
+    font-weight: 600;
+    background: t.$primary-gradient;
+    cursor: pointer;
+    @include mixins.interactive-lift(
+      -2px,
+      t.$shadow-primary-hover,
+      brightness(1.03)
+    );
+  }
+
+  &__filters {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  &__filter,
+  &__search {
+    min-width: 170px;
+    height: 42px;
+    padding: 0 14px;
+    border: 1px solid var(--border);
+    border-radius: t.$radius-pill;
+    display: flex;
+    align-items: center;
+    color: var(--text-soft);
+    background: var(--surface-muted);
+  }
+
+  &__date-filter {
+    min-width: 210px;
+    height: 42px;
+    padding: 0 14px;
+    border: 1px solid var(--border);
+    border-radius: t.$radius-pill;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-label);
+    background: var(--surface-muted);
+    cursor: pointer;
+
+    &:hover {
+      border-color: var(--border-hover);
+    }
+
+    &.is-open {
+      border-color: var(--primary-border);
+    }
+
+    &:disabled,
+    &[aria-disabled='true'] {
+      color: var(--text-soft);
+      background: var(--surface-muted);
+      border-color: var(--border);
+      opacity: 0.62;
+      cursor: not-allowed;
+    }
+
+    &:disabled:hover,
+    &[aria-disabled='true']:hover {
+      border-color: var(--border);
+    }
+  }
+
+  &__search {
+    min-width: 240px;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+    color: var(--text-body);
+    caret-color: var(--primary-active);
+
+    &::placeholder {
+      color: var(--text-soft);
+    }
+
+    &:focus {
+      border-color: var(--primary-border);
+      background: var(--white);
+    }
+  }
+}
+

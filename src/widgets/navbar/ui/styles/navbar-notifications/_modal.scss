@@ -1,0 +1,101 @@
+@use '../../../../../shared/styles/mixins';
+
+.navbar {
+  &__notifications-modal {
+    @include mixins.modal-overlay;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  &__notifications-modal-dialog {
+    width: min(560px, 100%);
+    min-height: 620px;
+    height: min(78vh, 620px);
+    padding: 24px;
+    border: 1px solid var(--border-panel-soft);
+    border-radius: 24px;
+    background: var(--gradient-modal-surface);
+    box-shadow: var(--shadow-modal-strong), var(--shadow-inset-highlight);
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 18px;
+    overflow: hidden;
+  }
+
+  &__notifications-modal-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  &__notifications-modal-title {
+    margin: 0;
+    font-size: 24px;
+    line-height: 1.1;
+    color: var(--text-heading);
+  }
+
+  &__notifications-modal-close {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 auto;
+    border: 1px solid rgba(214, 219, 244, 0.96);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #8b92ad;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    @include mixins.flex-center;
+    @include mixins.interactive-lift(-1px, var(--shadow-button-soft));
+  }
+
+  &__notifications-modal-list {
+    display: grid;
+    align-content: start;
+    gap: 12px;
+    overflow: auto;
+    padding-right: 4px;
+  }
+
+  &__notifications-empty {
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: 10px;
+    min-height: 100%;
+    padding: 12px 12px 6px;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  &__notifications-empty-image {
+    width: min(100%, 340px);
+    display: block;
+    object-fit: contain;
+  }
+
+  &__notifications-empty-title {
+    font-size: 18px;
+    line-height: 1.2;
+    color: #1f2438;
+  }
+
+  &__notifications-empty-text {
+    margin: 0;
+    max-width: 320px;
+    font-size: 13px;
+    line-height: 1.45;
+    text-align: center;
+    color: #7d849c;
+  }
+
+  &__notifications-modal.is-empty &__notifications-modal-list {
+    display: none;
+  }
+}

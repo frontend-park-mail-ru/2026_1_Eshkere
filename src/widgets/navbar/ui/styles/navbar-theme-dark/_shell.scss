@@ -1,0 +1,92 @@
+html[data-theme='dark'] {
+  .navbar {
+    border: 1px solid rgba(103, 121, 177, 0.24);
+    background: rgba(13, 19, 35, 0.72);
+    box-shadow: var(--shadow-floating);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    &::before {
+      content: '';
+      background: linear-gradient(
+        180deg,
+        rgba(66, 78, 125, 0.16) 0%,
+        rgba(40, 51, 88, 0.08) 44%,
+        rgba(16, 22, 42, 0) 100%
+      );
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    &.is-scrolled {
+      background: rgba(11, 17, 31, 0.84);
+      border-color: rgba(103, 121, 177, 0.32);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+
+      &::before {
+        content: '';
+        background: linear-gradient(
+          180deg,
+          rgba(74, 88, 140, 0.2) 0%,
+          rgba(41, 53, 93, 0.1) 42%,
+          rgba(16, 22, 42, 0) 100%
+        );
+        backdrop-filter: blur(7px);
+        -webkit-backdrop-filter: blur(7px);
+      }
+    }
+  }
+
+  .navbar__title {
+    color: var(--text-main);
+  }
+
+  .navbar__subtitle,
+  .navbar__link {
+    color: var(--text-muted);
+  }
+
+  .navbar__button--ghost {
+    border: 1px solid rgba(100, 118, 171, 0.4);
+    background: rgba(24, 34, 60, 0.92);
+    color: var(--text-main);
+    box-shadow: 0 10px 18px rgba(0, 0, 0, 0.26);
+  }
+
+  .navbar__button--ghost:hover {
+    border-color: rgba(125, 110, 255, 0.46);
+    background: rgba(30, 42, 72, 0.96);
+    color: #f2f4ff;
+  }
+
+  .navbar__link:hover {
+    color: var(--primary-soft);
+  }
+
+  .navbar__actions-user {
+    background: rgba(16, 24, 42, 0.88);
+    border: 1px solid rgba(103, 121, 177, 0.24);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.34);
+  }
+
+  .navbar__actions-user-icon {
+    background: rgba(125, 110, 255, 0.2);
+    border-color: rgba(125, 110, 255, 0.34);
+  }
+
+  .navbar__profile-toggle {
+    border-color: var(--border-panel);
+    background: rgba(26, 36, 62, 0.92);
+  }
+
+  .navbar__profile-toggle img {
+    filter: brightness(1.6) contrast(0.9);
+  }
+
+  .navbar,
+  .navbar__actions-user,
+  .navbar__actions-user-icon,
+  .navbar__profile-toggle {
+    border: none;
+  }
+}

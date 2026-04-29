@@ -1,0 +1,16 @@
+﻿@use '../../../../shared/styles/tokens' as t;
+@use '../../../../shared/styles/mixins';
+
+@media (max-width: 760px) {
+  .campaign-builder {
+    &__profile-range-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    &__profile-section-head {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+}
+

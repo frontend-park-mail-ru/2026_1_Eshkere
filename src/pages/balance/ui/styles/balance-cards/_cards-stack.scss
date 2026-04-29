@@ -1,0 +1,187 @@
+@use '../../../../../shared/styles/tokens' as t;
+@use '../../../../../shared/styles/mixins';
+
+.balance-card {
+  padding: 24px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  &--topup {
+    min-height: 300px;
+  }
+
+  &--history {
+    min-height: 360px;
+  }
+
+  &__head {
+    display: grid;
+    gap: 6px;
+  }
+
+  &__head--with-action {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 16px;
+  }
+
+  &__title {
+    margin: 0;
+    font: 800 18px/1.15 t.$font-family-heading;
+  }
+
+  &__subtitle {
+    margin: 0;
+    color: t.$color-text-muted;
+    font: 400 13px/1.45 t.$font-family-body;
+  }
+
+  &__action {
+    min-width: 164px;
+    height: 42px;
+    padding: 0 16px;
+    border: 1px solid rgba(215, 221, 238, 0.92);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.96);
+    color: #4a536a;
+    font: 700 13px/1 t.$font-family-body;
+    cursor: pointer;
+    @include mixins.interactive-lift(-1px);
+    @include mixins.focus-ring();
+  }
+}
+
+.balance-amount {
+  min-height: 86px;
+  padding: 16px;
+  border: 1px solid rgba(112, 126, 207, 0.2);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.76);
+  text-align: left;
+  display: grid;
+  gap: 8px;
+  cursor: pointer;
+  @include mixins.interactive-lift(-1px);
+  @include mixins.focus-ring();
+
+  &--active {
+    border-color: rgba(90, 84, 255, 0.28);
+    background: rgba(239, 239, 255, 0.98);
+    box-shadow: 0 8px 20px rgba(90, 84, 255, 0.1);
+  }
+
+  &--custom {
+    border-style: dashed;
+  }
+
+  &__value {
+    font: 800 18px/1 t.$font-family-heading;
+    color: t.$color-text-main;
+  }
+
+  &__label {
+    color: t.$color-text-muted;
+    font: 500 13px/1.2 t.$font-family-body;
+  }
+}
+
+.balance-stack {
+  display: grid;
+  gap: 12px;
+
+  &__item {
+    padding: 18px 20px;
+    border: 1px solid rgba(116, 130, 204, 0.18);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.74);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  &__item--button {
+    width: 100%;
+    color: inherit;
+    cursor: pointer;
+    text-align: left;
+    @include mixins.interactive-lift(-1px);
+    @include mixins.focus-ring();
+  }
+
+  &__main {
+    display: grid;
+    gap: 6px;
+  }
+
+  &__title {
+    font: 700 15px/1.2 t.$font-family-heading;
+  }
+
+  &__text {
+    margin: 0;
+    color: t.$color-text-muted;
+    font: 400 13px/1.45 t.$font-family-body;
+  }
+}
+
+.balance-pill {
+  min-width: 92px;
+  min-height: 36px;
+  padding: 0 16px;
+  border-radius: t.$radius-pill;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: 700 13px/1 t.$font-family-body;
+  white-space: nowrap;
+
+  &--success {
+    background: rgba(113, 216, 130, 0.2);
+    color: #319850;
+  }
+
+  &--warning {
+    background: rgba(255, 218, 160, 0.26);
+    color: #c5841f;
+  }
+
+  &--info {
+    background: rgba(228, 231, 255, 0.92);
+    color: t.$color-primary;
+  }
+
+  &--muted {
+    background: rgba(236, 238, 248, 0.92);
+    color: #6d7288;
+  }
+}
+
+.balance-summary {
+  display: grid;
+  gap: 12px;
+
+  &__row {
+    min-height: 58px;
+    padding: 0 18px;
+    border: 1px solid rgba(116, 130, 204, 0.18);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.72);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+  }
+
+  &__label {
+    color: t.$color-text-muted;
+    font: 400 14px/1.35 t.$font-family-body;
+  }
+
+  &__value {
+    text-align: right;
+    font: 700 14px/1.25 t.$font-family-heading;
+  }
+}

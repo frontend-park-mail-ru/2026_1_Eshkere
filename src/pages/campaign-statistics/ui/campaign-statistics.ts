@@ -1,5 +1,5 @@
 import './campaign-statistics.scss';
-import { navigateTo } from 'app/navigation';
+import { navigateTo } from 'shared/lib/navigation';
 import { LocalStorageKey, localStorageService } from 'shared/lib/local-storage';
 import { renderTemplate } from 'shared/lib/render';
 import {

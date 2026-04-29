@@ -1,0 +1,211 @@
+@use '../../../../../shared/styles/tokens' as t;
+@use '../../../../../shared/styles/mixins';
+
+.navbar {
+  &__profile-menu {
+    right: 0;
+    width: 280px;
+  }
+
+  &__profile-menu-head {
+    width: 100%;
+    min-height: 58px;
+    padding: 10px 14px;
+    border: 0;
+    border-bottom: 1px solid rgba(38, 43, 61, 0.18);
+    background: rgba(255, 255, 255, 0.68);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+
+  &__profile-menu-copy {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  &__profile-menu-kicker {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #7f86a1;
+  }
+
+  &__profile-menu-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    background: t.$avatar-gradient;
+
+    &--image {
+      background: rgba(255, 255, 255, 0.88);
+    }
+  }
+
+  &__profile-menu-avatar-image {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+
+  &__profile-menu-avatar-initials {
+    display: block;
+  }
+
+  &__profile-menu-name {
+    overflow: hidden;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 15px;
+    font-weight: 700;
+    color: #202538;
+  }
+
+  &__profile-menu-arrow {
+    font-size: 24px;
+    line-height: 1;
+    color: #666c85;
+    transform: translateY(-1px);
+  }
+
+  &__profile-menu-body {
+    display: grid;
+    gap: 8px;
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(38, 43, 61, 0.12);
+    background: rgba(255, 255, 255, 0.52);
+  }
+
+  &__profile-menu-link {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 12px;
+    border-radius: 16px;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.74);
+    border: 1px solid rgba(214, 219, 244, 0.8);
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      border-color: rgba(104, 100, 255, 0.24);
+      box-shadow: 0 12px 20px rgba(104, 100, 255, 0.08);
+    }
+
+    &--theme {
+      width: 100%;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+      align-items: center;
+      outline: none;
+
+      .navbar__profile-menu-link-copy {
+        justify-content: center;
+      }
+
+      &:focus-visible {
+        box-shadow: 0 0 0 3px rgba(103, 95, 255, 0.22);
+      }
+    }
+  }
+
+  &__profile-menu-link-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    flex: 0 0 auto;
+    background: linear-gradient(
+      135deg,
+      rgba(104, 100, 255, 0.14) 0%,
+      rgba(255, 161, 199, 0.14) 100%
+    );
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 9px;
+      background-color: #655fff;
+      mask-repeat: no-repeat;
+      mask-position: center;
+      mask-size: contain;
+      -webkit-mask-repeat: no-repeat;
+      -webkit-mask-position: center;
+      -webkit-mask-size: contain;
+    }
+
+    &--wallet::before {
+      mask-image: url('/icons/wallet.svg');
+      -webkit-mask-image: url('/icons/wallet.svg');
+    }
+
+    &--profile::before {
+      mask-image: url('/icons/User.svg');
+      -webkit-mask-image: url('/icons/User.svg');
+    }
+
+    &--theme::before {
+      mask-image: url('/icons/sun.svg');
+      -webkit-mask-image: url('/icons/sun.svg');
+      background-color: #f0a030;
+    }
+  }
+
+  &__profile-menu-link-copy {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    flex-direction: column;
+    gap: 4px;
+
+    strong {
+      font-size: 14px;
+      line-height: 1.2;
+      color: #1f2438;
+    }
+
+    span {
+      font-size: 12px;
+      line-height: 1.4;
+      color: #7d849c;
+    }
+  }
+
+  &__profile-menu-logout {
+    width: calc(100% - 44px);
+    margin: 14px 22px 16px;
+    @include mixins.pill-button(42px);
+    border: 1px solid rgba(255, 74, 74, 0.12);
+    background: t.$danger-gradient;
+    color: t.$color-danger-strong;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 10px 18px rgba(255, 77, 77, 0.12);
+    @include mixins.interactive-lift(
+      -1px,
+      0 14px 22px rgba(255, 77, 77, 0.16),
+      brightness(1.01)
+    );
+  }
+}

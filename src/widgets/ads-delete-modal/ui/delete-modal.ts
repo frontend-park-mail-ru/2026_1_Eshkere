@@ -1,4 +1,5 @@
-export const OPEN_CAMPAIGN_DELETE_MODAL_EVENT = 'campaigns:open-delete-modal';
+import { OPEN_CAMPAIGN_DELETE_MODAL_EVENT } from 'shared/lib/events';
+export { OPEN_CAMPAIGN_DELETE_MODAL_EVENT };
 
 export interface CampaignDeleteModalDetail {
   id: number;

@@ -1,0 +1,32 @@
+﻿@use '../../../../shared/styles/tokens' as t;
+@use '../../../../shared/styles/mixins';
+
+@include mixins.media-max(t.$bp-sm) {
+  .campaign-builder {
+    gap: 16px;
+
+    &__toolbar,
+    &__hero,
+    &__card,
+    &__panel-actions {
+      padding: 16px;
+      border-radius: 22px;
+    }
+
+    &__title {
+      font-size: 28px;
+    }
+
+    &__toast {
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
+      width: auto;
+    }
+  }
+
+  .campaign-preview__frame {
+    width: 100%;
+  }
+}
+

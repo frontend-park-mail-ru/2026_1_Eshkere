@@ -6,6 +6,11 @@ import {
   renderDashboardLayout,
   updateDashboardLayoutSlots,
 } from 'app/components/dashboard-layout';
+import {
+  initModeratorNavbar,
+  renderModeratorLayout,
+  updateModeratorLayoutSlots,
+} from 'app/components/moderator-layout';
 /**
  * @typedef {'public' | 'dashboard'} LayoutKind
  */
@@ -17,7 +22,7 @@ import {
  * @return {Promise<string>} HTML для #app.
  */
 
-export type LayoutKind = 'public' | 'dashboard';
+export type LayoutKind = 'public' | 'dashboard' | 'moderator';
 
 export async function renderLayoutShell(
   layout: LayoutKind,
@@ -26,7 +31,12 @@ export async function renderLayoutShell(
   if (layout === 'dashboard') {
     return renderDashboardLayout('', pathname);
   }
+  if (layout === 'moderator') {
+    return renderModeratorLayout('', pathname);
+  }
   return renderPublicLayout('', pathname);
 }
 export { updatePublicNavbarSlot };
 export { updateDashboardLayoutSlots };
+export { updateModeratorLayoutSlots };
+export { initModeratorNavbar };

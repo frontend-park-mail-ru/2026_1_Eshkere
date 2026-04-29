@@ -1,0 +1,133 @@
+@use '../../../../../shared/styles/tokens' as t;
+@use '../../../../../shared/styles/mixins';
+
+.campaign-builder {
+  &__steps {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    padding: 8px;
+    border: 1px solid rgba(220, 225, 243, 0.88);
+    border-radius: 22px;
+    background: rgba(247, 249, 255, 0.82);
+  }
+
+  &__step {
+    min-height: 58px;
+    padding: 0 16px;
+    border: 1px solid transparent;
+    border-radius: 16px;
+    background: transparent;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    text-align: left;
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+
+    &--active {
+      border-color: rgba(100, 96, 255, 0.22);
+      background: rgba(255, 255, 255, 0.98);
+      box-shadow: 0 14px 28px rgba(86, 95, 160, 0.08);
+    }
+
+    &--done {
+      background: rgba(214, 245, 223, 0.98);
+    }
+  }
+
+  &__step-index,
+  &__pill,
+  &__status {
+    min-width: 28px;
+    min-height: 28px;
+    padding: 0 10px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  &__pill-button {
+    min-height: 42px;
+    padding-inline: 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(210, 216, 236, 0.95);
+    background: rgba(255, 255, 255, 0.94);
+    color: #43506c;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  &__step-index {
+    background: rgba(229, 233, 247, 0.96);
+    color: #4c5674;
+  }
+
+  &__step-title,
+  &__card-title,
+  &__creative-title,
+  &__stack-title {
+    font-family: t.$font-family-heading;
+    font-weight: 800;
+  }
+
+  &__step-title {
+    font-size: 14px;
+    line-height: 1.25;
+    color: #1e2740;
+  }
+
+  &__label,
+  &__hint,
+  &__card-subtitle,
+  &__stack-text,
+  &__summary-item span,
+  &__metric-label,
+  &__note,
+  &__panel-note,
+  &__toast-text,
+  &__save-indicator,
+  &__more-item {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #7d859b;
+  }
+
+  &__hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+  }
+
+  &__hero-meta-badge {
+    min-height: 36px;
+    padding: 0 14px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    background: rgba(102, 95, 255, 0.08);
+    color: #5b56ff;
+    font-size: 13px;
+    font-weight: 700;
+
+    &--success {
+      background: rgba(214, 245, 223, 0.98);
+    }
+  }
+
+  &__hero-meta-text {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+}
