@@ -18,6 +18,24 @@
   background: transparent;
 }
 
+.hero__description {
+  color: #f4f7ff;
+  text-shadow:
+    0 2px 10px rgba(14, 18, 36, 0.55),
+    0 1px 2px rgba(14, 18, 36, 0.5);
+}
+
+.hero__title {
+  color: #f7f8ff;
+  text-shadow:
+    0 2px 12px rgba(0, 0, 0, 0.42),
+    0 1px 2px rgba(0, 0, 0, 0.5);
+
+  > span {
+    text-shadow: none;
+  }
+}
+
 .hero::before {
   background: url('/img/without.png') center calc(100% + 100px) / max(1440px, 100vw) auto no-repeat !important;
   -webkit-mask-image: linear-gradient(

@@ -204,10 +204,12 @@ body {
   min-height: 100%;
   margin: 0;
   padding: 0;
+  max-width: 100%;
 }
 
 html {
   scroll-behavior: smooth;
+  overflow-x: clip;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -233,6 +235,8 @@ body {
   background-repeat: no-repeat, no-repeat;
   background-attachment: scroll, scroll;
   color: var(--text-main);
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
 }
 
 a {
@@ -243,6 +247,65 @@ a {
 button,
 input {
   font: inherit;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+input,
+select,
+textarea,
+button {
+  max-width: 100%;
+}
+
+@supports not (overflow-x: clip) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+}
+
+@media (max-width: 600px) {
+  body {
+    background-position:
+      center top,
+      center top;
+  }
+
+  .modal__content,
+  [class$='-modal__dialog'],
+  [class*='__modal-dialog'] {
+    max-height: calc(100dvh - 96px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal__actions,
+  [class$='-modal__actions'],
+  [class*='__modal-actions'] {
+    gap: 12px;
+  }
+
+  .modal__actions button,
+  [class$='-modal__actions'] button,
+  [class*='__modal-actions'] button,
+  [class$='-modal__button'],
+  [class*='__modal-button'],
+  [class*='modal__button'],
+  [class*='modal-button'],
+  [class*='modal__btn'] {
+    min-height: 56px;
+    height: auto;
+    padding: 0 20px;
+    border-radius: 16px;
+    font-size: 16px;
+    line-height: 1.15;
+  }
 }
 
 button {

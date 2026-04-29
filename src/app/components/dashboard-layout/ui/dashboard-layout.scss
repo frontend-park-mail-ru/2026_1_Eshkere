@@ -55,6 +55,7 @@
   @include mixins.media-max(t.$bp-xl) {
     &__sidebar {
       position: static;
+      min-width: 0;
     }
 
     &__body {
@@ -65,7 +66,20 @@
   @include mixins.media-max(t.$bp-sm) {
     &__container {
       width: min(100% - 20px, 1400px);
-      padding-top: 144px;
+      padding-top: 76px;
+      padding-bottom: 104px;
+    }
+
+    &__body {
+      gap: 14px;
+    }
+  }
+
+  @media (max-width: 420px) {
+    &__container {
+      width: min(100% - 12px, 1400px);
+      padding-top: 74px;
+      padding-bottom: 104px;
     }
   }
 }

@@ -12,5 +12,6 @@ export async function renderSidebar(pathname = '/ads'): Promise<string> {
     isCampaigns: pathname === '/ads',
     isBalance: pathname === '/balance',
     isProfile: pathname === '/profile',
+    isSupport: pathname === '/support',
   });
 }

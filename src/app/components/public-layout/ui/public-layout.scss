@@ -201,7 +201,7 @@
 .public-layout {
   position: relative;
   min-height: 100vh;
-  overflow: hidden;
+  overflow-x: hidden;
   background-color: t.$color-bg-main;
   background-image:
     radial-gradient(ellipse 72% 58% at 0% 0%, rgba(174, 157, 255, 0.54) 0%, transparent 58%),
@@ -387,6 +387,7 @@
     .public-layout__container {
       width: 100%;
       max-width: none;
+      padding-top: 0;
       padding-bottom: 0;
     }
 
@@ -398,6 +399,12 @@
     .public-layout__content {
       width: 100%;
     }
+
+    .navbar::before,
+    .navbar.is-scrolled::before {
+      content: none !important;
+      display: none !important;
+    }
   }
 
   &__bg-main {
@@ -407,26 +414,38 @@
   @include mixins.media-max(t.$bp-md) {
     &__container {
       width: min(100% - 24px, 1280px);
-      padding-top: 128px;
+      padding-top: 92px;
     }
 
-    &--home #app-navbar-slot {
-      width: min(100% - 24px, 1280px);
+    &--home {
+      .public-layout__container {
+        padding-top: 0;
+      }
+
+      #app-navbar-slot {
+        width: min(100% - 24px, 1280px);
+      }
     }
   }
 
   @include mixins.media-max(t.$bp-sm) {
     &__container {
       width: min(100% - 20px, 1280px);
-      padding-top: 144px;
+      padding-top: 82px;
       padding-bottom: 28px;
     }
     &__bg-blob {
       filter: blur(60px);
     }
 
-    &--home #app-navbar-slot {
-      width: min(100% - 20px, 1280px);
+    &--home {
+      .public-layout__container {
+        padding-top: 0;
+      }
+
+      #app-navbar-slot {
+        width: min(100% - 20px, 1280px);
+      }
     }
   }
 }

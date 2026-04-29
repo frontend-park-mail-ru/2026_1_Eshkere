@@ -72,6 +72,30 @@
   &__amount {
     font: 700 14px/1.25 t.$font-family-heading;
   }
+
+  @include mixins.media-max(t.$bp-sm) {
+    &__head {
+      display: none;
+    }
+
+    &__row {
+      min-height: 0;
+      padding: 14px;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 12px;
+    }
+
+    &__row > span,
+    &__operation,
+    &__amount {
+      min-width: 0;
+      word-break: break-word;
+    }
+
+    &__operation {
+      grid-column: 1 / -1;
+    }
+  }
 }
 
 .balance-actions {

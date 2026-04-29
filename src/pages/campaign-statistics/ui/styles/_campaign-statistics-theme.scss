@@ -36,8 +36,9 @@ html[data-theme='dark'] {
     }
 
     &__switch-button.is-active {
-      background: linear-gradient(135deg, #6f63e6 0%, #4f47c9 100%);
-      box-shadow: var(--shadow-primary-soft);
+      background: linear-gradient(135deg, #756dff 0%, #5b4dff 100%);
+      color: #fff;
+      box-shadow: 0 14px 28px rgba(91, 77, 255, 0.34);
     }
 
     &__hero,

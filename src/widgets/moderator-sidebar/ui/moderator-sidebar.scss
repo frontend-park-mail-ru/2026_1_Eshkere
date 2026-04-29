@@ -73,4 +73,52 @@
     margin: 0;
     padding: 0 8px;
   }
+
+  @include mixins.media-max(t.$bp-xl) {
+    min-height: auto;
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
+    display: grid;
+    overflow-x: auto;
+    padding: 12px;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+
+    &__section {
+      display: flex;
+      min-width: max-content;
+      gap: 8px;
+    }
+
+    &__section--note {
+      display: none;
+    }
+
+    &__caption {
+      display: none;
+    }
+
+    &__link {
+      min-height: 48px;
+      min-width: 180px;
+      scroll-snap-align: start;
+    }
+  }
+
+  @include mixins.media-max(t.$bp-sm) {
+    border-radius: 18px;
+
+    &__link {
+      min-width: 156px;
+      padding: 10px;
+    }
+
+    &__link-title {
+      font-size: 13px;
+    }
+
+    &__link-text {
+      display: none;
+    }
+  }
 }

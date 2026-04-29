@@ -190,9 +190,14 @@
 
   @include mixins.media-max(t.$bp-md) {
     &__inner {
-      grid-template-columns: 1fr;
-      gap: 28px;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 28px 36px;
       padding: 56px 20px 64px;
+    }
+
+    &__brand {
+      grid-column: 1 / -1;
     }
 
     &__title {
