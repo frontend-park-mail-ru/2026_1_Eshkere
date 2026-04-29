@@ -201,7 +201,7 @@
 .public-layout {
   position: relative;
   min-height: 100vh;
-  overflow: hidden;
+  overflow-x: hidden;
   background-color: t.$color-bg-main;
   background-image:
     radial-gradient(ellipse 72% 58% at 0% 0%, rgba(174, 157, 255, 0.54) 0%, transparent 58%),

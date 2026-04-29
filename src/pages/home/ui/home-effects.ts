@@ -49,6 +49,18 @@ export function setupReveal(): VoidFunction {
     }
   });
 
+  // Second pass in RAF — catches elements whose layout wasn't ready at init time
+  let initRafId = window.requestAnimationFrame(() => {
+    initRafId = 0;
+    for (let index = pendingTargets.length - 1; index >= 0; index -= 1) {
+      const el = pendingTargets[index];
+      if (revealIfNearViewport(el)) {
+        observer.unobserve(el);
+        pendingTargets.splice(index, 1);
+      }
+    }
+  });
+
   let scrollRafId = 0;
   const flushPending = () => {
     scrollRafId = 0;
@@ -77,6 +89,7 @@ export function setupReveal(): VoidFunction {
   window.addEventListener('scrollend', handleScrollEnd, { passive: true });
 
   return () => {
+    if (initRafId !== 0) window.cancelAnimationFrame(initRafId);
     observer.disconnect();
     window.removeEventListener('scroll', handleScroll);
     window.removeEventListener('resize', handleScroll);
