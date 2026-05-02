@@ -50,10 +50,17 @@ export async function createAdInGroup(
   campaignId: number,
   groupId: number,
   payload: CreateAdRequest,
+  imageFile?: File,
 ): Promise<CreateAdResponse> {
+  const formData = new FormData();
+  formData.append('title', payload.title);
+  formData.append('short_desc', payload.short_desc);
+  formData.append('target_url', payload.target_url);
+  if (imageFile) formData.append('image', imageFile);
+
   const response = await request<CreateAdResponse>(
     `/ad_campaigns/${campaignId}/ad_groups/${groupId}/ads`,
-    { method: 'POST', body: payload },
+    { method: 'POST', body: formData },
   );
   return response.data;
 }

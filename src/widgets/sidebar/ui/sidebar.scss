@@ -109,6 +109,39 @@
     }
   }
 
+  @media (max-width: 1180px) and (min-width: 601px) {
+    gap: 12px;
+    padding: 10px;
+    border-radius: 20px;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    &__section,
+    &__footer {
+      gap: 6px;
+    }
+
+    &__footer {
+      padding-left: 8px;
+    }
+
+    &__link {
+      min-height: 38px;
+      padding: 0 10px;
+      gap: 8px;
+      border-radius: 12px;
+      font-size: 13px;
+    }
+
+    &__icon {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
   @include mixins.media-max(t.$bp-sm) {
     gap: 10px;
     margin-inline: -2px;

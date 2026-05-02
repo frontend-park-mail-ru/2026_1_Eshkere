@@ -53,20 +53,20 @@ export function getBuilderModeConfig(
   }
 
   return {
-    title: 'Создание объявления',
-    subtitle: 'Четыре шага: контент, аудитория, бюджет и финальная проверка перед запуском.',
+    title: 'Создание кампании',
+    subtitle: 'Четыре шага: кампания и объявление, аудитория, бюджет и финальная проверка перед запуском.',
     closeLabel: 'Закрыть',
     duplicateLabel: 'Создать копию',
     resetLabel: 'Очистить форму',
-    primaryActionLabel: 'Отправить на модерацию',
+    primaryActionLabel: 'Создать кампанию',
     saveStateFallback: 'Черновик сохранён',
-    reviewTitle: 'Финальная сверка перед отправкой',
+    reviewTitle: 'Финальная сверка перед созданием',
     reviewReadyText:
       'Все обязательные блоки заполнены. Сверьте ключевые параметры ниже.',
     reviewPendingPrefix: 'Исправьте:',
     lockedTitle: 'Перейдите к проверке',
-    lockedDescription: 'Финальная отправка доступна на шаге «Проверка».',
-    submitSuccessTitle: 'Отправлено на модерацию',
+    lockedDescription: 'Создание кампании доступно на шаге «Проверка».',
+    submitSuccessTitle: 'Кампания создана',
     submitSuccessDescription:
       'Кампания собрана корректно. Проверьте финальную сводку и дождитесь проверки.',
     submitValidationTitle: 'Проверьте форму',
@@ -233,6 +233,16 @@ export function getBuilderState(): BuilderState {
   return {
     ...fallbackState,
     ...parsed,
+    groupName:
+      typeof parsed.groupName === 'string'
+        ? parsed.groupName
+        : fallbackState.groupName,
+    gender:
+      parsed.gender === 'male' ||
+      parsed.gender === 'female' ||
+      parsed.gender === 'any'
+        ? parsed.gender
+        : fallbackState.gender,
     audienceConfig: {
       cities: Array.isArray(storedAudience.cities)
         ? storedAudience.cities

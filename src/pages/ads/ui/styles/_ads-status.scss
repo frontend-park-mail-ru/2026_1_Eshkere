@@ -31,6 +31,16 @@
     color: var(--text-soft);
     background: rgba(170, 178, 199, 0.18);
   }
+
+  &--danger {
+    color: #ff7a7a;
+    background: rgba(255, 92, 92, 0.14);
+  }
+
+  &--warning {
+    color: #f5c36a;
+    background: rgba(245, 195, 106, 0.15);
+  }
 }
 
 .toggle {

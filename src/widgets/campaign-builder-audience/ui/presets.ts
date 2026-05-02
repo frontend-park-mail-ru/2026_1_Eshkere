@@ -108,6 +108,20 @@ export function initCampaignBuilderAudiencePresets({
     });
 
   document
+    .querySelectorAll<HTMLSelectElement>('[data-builder-audience-gender]')
+    .forEach((field) => {
+      field.addEventListener(
+        'change',
+        () => {
+          state.gender = field.value as BuilderState['gender'];
+          persistState(state);
+          syncBuilder(state);
+        },
+        { signal },
+      );
+    });
+
+  document
     .querySelectorAll<HTMLElement>('[data-builder-save-audience]')
     .forEach((button) => {
       button.addEventListener(

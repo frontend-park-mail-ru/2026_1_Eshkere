@@ -10,9 +10,13 @@ export interface AdItem {
   id?: number;
   title?: string;
   price?: number;
+  main_action?: string;
   target_action?: string;
   created_at?: string;
   status?: AdCampaignStatus;
+  groupCount?: number;
+  adCount?: number;
+  compositionLoaded?: boolean;
 }
 
 export interface GetAdsSuccess {
@@ -34,6 +38,7 @@ function mapCampaignToAdItem(campaign: AdCampaignResponse): AdItem {
     id: campaign.id,
     title: campaign.name,
     price: campaign.daily_budget,
+    main_action: campaign.main_action,
     status: campaign.status,
   };
 }

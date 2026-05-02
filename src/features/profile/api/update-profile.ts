@@ -29,7 +29,7 @@ export async function updateProfile(params: UpdateProfileParams): Promise<Advert
     formData.append('phone', params.phone);
   }
 
-  const response = await request<AdvertiserProfileResponse>('/advertiser/me', {
+  const response = await request<AdvertiserProfileResponse>('/advertisers/me', {
     method: 'PUT',
     body: formData,
   });

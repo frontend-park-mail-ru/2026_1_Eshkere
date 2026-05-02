@@ -117,7 +117,7 @@ export async function getProfileState(): Promise<ProfileState> {
       balance?: number;
       avatar_url?: string;
       created_at?: string;
-    }>('/advertiser/me', { method: 'GET' });
+    }>('/advertisers/me', { method: 'GET' });
     const profile = response.data;
 
     currentUser = {

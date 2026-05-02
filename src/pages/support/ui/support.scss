@@ -341,20 +341,7 @@
   }
 
   &__button {
-    min-height: 50px;
-    padding: 0 18px;
-    border: none;
-    border-radius: 16px;
-    background: t.$primary-gradient;
-    color: #fff;
-    font-weight: 800;
-    cursor: pointer;
-    box-shadow: var(--shadow-primary-soft);
-    transition: opacity 0.15s;
-
-    &:hover {
-      opacity: 0.88;
-    }
+    @include mixins.shimmer-button(50px, 0 18px);
 
     &:focus-visible {
       outline: 2px solid var(--primary-active);
@@ -379,15 +366,8 @@
   }
 
   a {
-    min-height: 52px;
+    @include mixins.shimmer-button(52px, 0 20px);
     margin-top: 20px;
-    padding: 0 20px;
-    border-radius: 999px;
-    display: inline-flex;
-    align-items: center;
-    background: t.$primary-gradient;
-    color: #fff;
-    font-weight: 800;
   }
 }
 

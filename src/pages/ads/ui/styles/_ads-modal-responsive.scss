@@ -163,10 +163,9 @@
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     grid-template-areas:
       'title title'
-      'budget status'
+      'composition status'
       'goal goal'
-      'date date'
-      'actions toggle';
+      'actions actions';
     padding: 12px;
     gap: 9px 12px;
   }

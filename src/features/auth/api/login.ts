@@ -15,7 +15,7 @@ export async function loginUser({ identifier, password }: LoginUserParams) {
     const normalizedIdentifier =
       normalizePhone(identifier) || identifier.trim();
 
-    const response = await request<AuthUser>('/advertiser/login', {
+    const response = await request<AuthUser>('/advertisers/login', {
       method: 'POST',
       body: {
         identifier: normalizedIdentifier,

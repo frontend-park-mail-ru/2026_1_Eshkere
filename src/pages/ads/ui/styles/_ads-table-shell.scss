@@ -14,7 +14,7 @@
   &__header,
   .campaign-row {
     display: grid;
-    grid-template-columns: 2fr 1fr 1.4fr 1.4fr 1fr 1fr 0.8fr;
+    grid-template-columns: minmax(200px, 2fr) minmax(150px, 1.2fr) minmax(100px, 0.8fr) minmax(110px, 0.8fr) minmax(120px, 0.8fr) minmax(160px, 1fr);
     gap: 16px;
     align-items: center;
   }
@@ -61,6 +61,29 @@
     justify-content: center;
     gap: 12px;
     background: var(--surface-card-strong);
+  }
+
+  @media (max-width: 1180px) and (min-width: 981px) {
+    min-height: clamp(460px, calc(100vh - 220px), 680px);
+
+    &__header,
+    .campaign-row {
+      grid-template-columns: minmax(140px, 1.5fr) minmax(120px, 1fr) minmax(90px, 0.7fr) minmax(100px, 0.7fr) minmax(110px, 0.7fr) minmax(140px, 1fr);
+      gap: 10px;
+    }
+
+    &__header {
+      padding: 14px 16px;
+      font-size: 12px;
+    }
+
+    &__body .campaign-row {
+      padding: 14px 16px;
+    }
+
+    &__footer {
+      padding: 14px 16px 18px;
+    }
   }
 
   &__page-nav {
@@ -191,10 +214,9 @@
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       grid-template-areas:
         'title title'
-        'budget status'
+        'composition status'
         'goal goal'
-        'date date'
-        'actions toggle';
+        'actions actions';
       padding: 12px;
       gap: 9px 12px;
     }

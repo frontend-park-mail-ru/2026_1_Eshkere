@@ -1,4 +1,6 @@
-export type { TariffKey, AccountStatus } from 'entities/user';
+import type { AccountStatus, TariffKey } from 'entities/user';
+
+export type { AccountStatus, TariffKey };
 
 export interface ProfileField {
   key: string;

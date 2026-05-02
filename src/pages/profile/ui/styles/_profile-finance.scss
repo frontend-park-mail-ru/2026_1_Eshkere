@@ -50,12 +50,10 @@
     height: 46px;
     padding: 0 18px;
     border-radius: 16px;
-    color: #fff;
     font-size: 14px;
     font-weight: 700;
-    background: t.$primary-gradient;
-    box-shadow: t.$shadow-primary;
     cursor: pointer;
+    @include mixins.shimmer-accent;
   }
 }
 

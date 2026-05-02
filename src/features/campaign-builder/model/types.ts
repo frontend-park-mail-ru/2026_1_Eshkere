@@ -14,6 +14,7 @@ export type AudienceChipKey = 'geo' | 'retail' | 'b2b' | 'lookalike';
 export type StrategyKey = 'even' | 'aggressive' | 'smart';
 export type GoalKey = 'website' | 'leads' | 'awareness';
 export type FormatKey = 'feed-card' | 'stories' | 'video-15';
+export type GenderKey = 'male' | 'female' | 'any';
 
 export interface BuilderAudienceConfig {
   cities: string[];
@@ -42,6 +43,8 @@ export interface BuilderState {
   link: string;
   creative: CreativeKey;
   creativeAssets: Partial<Record<CreativeAssetKey, string>>;
+  groupName: string;
+  gender: GenderKey;
   audienceChip: AudienceChipKey;
   audienceConfig: BuilderAudienceConfig;
   dailyBudget: number;

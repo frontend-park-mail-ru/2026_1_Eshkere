@@ -141,6 +141,31 @@
     grid-template-columns: 1fr;
   }
 
+  @media (max-width: 1180px) and (min-width: 601px) {
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 12px 14px;
+    gap: 10px;
+
+    &__spacer {
+      display: none;
+    }
+
+    &__title {
+      font-size: 20px;
+    }
+
+    &__actions {
+      min-width: 0;
+      flex-wrap: nowrap;
+    }
+
+    &__icon-action {
+      min-height: 36px;
+      padding-inline: 12px;
+      font-size: 12px;
+    }
+  }
+
   @include mixins.media-max(t.$bp-sm) {
     padding: 14px;
 

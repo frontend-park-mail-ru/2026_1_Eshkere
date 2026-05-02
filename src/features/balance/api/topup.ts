@@ -5,7 +5,7 @@ export interface TopUpResponse {
 }
 
 export async function topUpBalance(amount: number): Promise<TopUpResponse> {
-  const response = await request<TopUpResponse>('/advertiser/balance/topup', {
+  const response = await request<TopUpResponse>('/advertisers/balance/topup', {
     method: 'POST',
     body: { amount },
   });

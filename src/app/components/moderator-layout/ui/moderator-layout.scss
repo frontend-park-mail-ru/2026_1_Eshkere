@@ -66,6 +66,23 @@
     }
   }
 
+  @media (max-width: 1180px) and (min-width: 601px) {
+    &__shell {
+      width: min(100% - 28px, 1360px);
+      padding-top: 18px;
+    }
+
+    &__body {
+      gap: 14px;
+    }
+
+    &__sidebar {
+      position: sticky;
+      top: 12px;
+      z-index: 80;
+    }
+  }
+
   @include mixins.media-max(t.$bp-sm) {
     &__shell {
       width: min(100% - 16px, 1360px);

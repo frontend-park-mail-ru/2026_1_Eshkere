@@ -1,6 +1,11 @@
 import './campaign-create.scss';
 import { navigateTo } from 'shared/lib/navigation';
-import { createAdCampaign, updateAdCampaign } from 'features/ads';
+import {
+  createAdCampaign,
+  createAdGroup,
+  createAdInGroup,
+  updateAdCampaign,
+} from 'features/ads';
 import { renderTemplate } from 'shared/lib/render';
 import {
   LocalStorageKey,
@@ -11,6 +16,11 @@ import campaignCreateTemplate from './campaign-create.hbs';
 import {
   FINAL_REVIEW_JUMP_TARGETS,
 } from 'features/campaign-builder/model/config';
+import {
+  toAdPayload,
+  toCampaignPayload,
+  toGroupPayload,
+} from 'features/campaign-builder/lib/api-mapping';
 import {
   getBuilderMode,
   getBuilderModeConfig,
@@ -57,6 +67,50 @@ import {
 
 let campaignCreateLifecycleController: AbortController | null = null;
 
+type SubmitStage = 'campaign' | 'group' | 'ad';
+
+function showCreateError(
+  stage: SubmitStage,
+  campaignId?: number,
+  groupId?: number,
+): void {
+  const detailByStage: Record<
+    SubmitStage,
+    { title: string; message: string; note: string }
+  > = {
+    campaign: {
+      title: 'Не удалось создать кампанию',
+      message:
+        'Сейчас мы временно не можем сохранить новую кампанию. Попробуйте создать её немного позже.',
+      note:
+        'Черновик мастера сохранён локально. После восстановления сервиса можно повторить отправку без повторного заполнения формы.',
+    },
+    group: {
+      title: 'Кампания создана, группа не создана',
+      message:
+        'Базовая кампания уже появилась в системе, но создать первую группу объявлений не удалось.',
+      note: campaignId
+        ? `Откройте /ads/campaign?id=${campaignId} и добавьте группу через упрощённую форму, либо повторите создание из мастера.`
+        : 'Повторите создание из мастера после восстановления сервиса.',
+    },
+    ad: {
+      title: 'Кампания и группа созданы, объявление не создано',
+      message:
+        'Первая группа создана, но объявление внутри неё не удалось сохранить.',
+      note:
+        campaignId && groupId
+          ? `Откройте /ads/ad/create?campaignId=${campaignId}&groupId=${groupId} и добавьте объявление через упрощённую форму.`
+          : 'Повторите создание объявления после восстановления сервиса.',
+    },
+  };
+
+  window.dispatchEvent(
+    new CustomEvent(REQUEST_ERROR_EVENT_NAME, {
+      detail: detailByStage[stage],
+    }),
+  );
+}
+
 function enhanceAudienceSummaryCard(state: BuilderState): void {
   const combinedAudienceButton = document.querySelector<HTMLElement>(
     '[data-builder-audience-detail="profile"]',
@@ -87,12 +141,12 @@ function enhanceAudienceSummaryCard(state: BuilderState): void {
 
 function createSubmitBuilder() {
   return async (currentState: BuilderState): Promise<void> => {
+    let stage: SubmitStage = 'campaign';
+    let campaignId: number | undefined;
+    let groupId: number | undefined;
+
     try {
       const mode = getBuilderMode();
-      const payload = {
-        name: currentState.name.trim(),
-        daily_budget: Math.max(1000, Math.round(currentState.dailyBudget)),
-      };
 
       if (mode === 'edit') {
         const seed = localStorageService.getJson<{ id?: string }>(
@@ -104,25 +158,36 @@ function createSubmitBuilder() {
           throw new Error('campaign id is required for edit mode');
         }
 
-        await updateAdCampaign(campaignId, payload);
+        await updateAdCampaign(campaignId, {
+          ...toCampaignPayload(currentState),
+          daily_budget: Math.max(1000, Math.round(currentState.dailyBudget)),
+        });
+        localStorageService.removeItem(LocalStorageKey.CampaignBuilderDraft);
+        navigateTo('/ads');
+        return;
       } else {
-        await createAdCampaign(payload);
+        const campaign = await createAdCampaign(toCampaignPayload(currentState));
+        campaignId = campaign.id;
+
+        stage = 'group';
+        const group = await createAdGroup(
+          campaignId,
+          toGroupPayload(currentState),
+        );
+        groupId = group.id;
+
+        stage = 'ad';
+        await createAdInGroup(
+          campaignId,
+          groupId,
+          toAdPayload(currentState),
+        );
       }
 
       localStorageService.removeItem(LocalStorageKey.CampaignBuilderDraft);
-      navigateTo('/ads');
+      navigateTo(`/ads/campaign?id=${campaignId}`);
     } catch {
-      window.dispatchEvent(
-        new CustomEvent(REQUEST_ERROR_EVENT_NAME, {
-          detail: {
-            title: 'Не удалось создать кампанию',
-            message:
-              'Сейчас мы временно не можем сохранить новую кампанию. Попробуйте отправить ее немного позже.',
-            note:
-              'В этом разделе могут идти технические работы. После восстановления сервиса создание кампаний снова станет доступно.',
-          },
-        }),
-      );
+      showCreateError(stage, campaignId, groupId);
     }
   };
 }

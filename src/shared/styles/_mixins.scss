@@ -78,6 +78,33 @@
   justify-content: center;
 }
 
+// Переливающаяся кнопка — фиолетово-малиновый градиент с блеском
+$_shimmer-gradient:
+  linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 52%),
+  linear-gradient(135deg, #5855ff 0%, #9342ff 55%, #b44bff 100%);
+$_shimmer-shadow:        0 10px 24px rgba(90, 84, 255, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+$_shimmer-shadow-hover:  0 14px 30px rgba(90, 84, 255, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+
+@mixin shimmer-button($height: 50px, $padding: 0 24px) {
+  @include pill-button($height, $padding);
+  border: none;
+  background: $_shimmer-gradient;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: $_shimmer-shadow;
+  @include interactive-lift(-2px, $_shimmer-shadow-hover, brightness(1.05));
+}
+
+// Только цвет/тень/ховер — для модификаторов кнопок где размер задан выше
+@mixin shimmer-accent {
+  border-color: transparent;
+  background: $_shimmer-gradient;
+  color: #fff;
+  box-shadow: $_shimmer-shadow;
+  @include interactive-lift(-2px, $_shimmer-shadow-hover, brightness(1.05));
+}
+
 @mixin modal-overlay($z-index: t.$z-modal, $background: rgba(16, 19, 39, 0.56)) {
   position: fixed;
   inset: 0;

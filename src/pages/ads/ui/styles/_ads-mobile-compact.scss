@@ -15,9 +15,9 @@
     grid-template-columns: minmax(0, 1.1fr) minmax(84px, 0.9fr);
     grid-template-areas:
       'title title'
-      'budget status'
-      'goal actions'
-      'date toggle';
+      'composition status'
+      'goal goal'
+      'actions actions';
     align-items: start;
     min-height: 0;
     padding: 10px;
@@ -45,7 +45,7 @@
 
   .campaign-row__actions {
     display: grid;
-    grid-template-columns: repeat(2, 32px);
+    grid-template-columns: repeat(3, 32px);
     align-items: center;
     justify-content: start;
     justify-self: start;

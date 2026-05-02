@@ -170,7 +170,7 @@ export function Login(): void | VoidFunction {
       return;
     }
 
-    navigateTo('/ads', { replace: true });
+    navigateTo('/overview', { replace: true });
   });
 
   return () => {

@@ -71,8 +71,7 @@
     min-width: 232px;
     text-decoration: none;
     @include mixins.pill-button(52px, 0 24px);
-    background: t.$primary-gradient;
-    color: #fff;
+    @include mixins.shimmer-accent;
     font-size: 15px;
     font-weight: 700;
     box-shadow: 0 16px 30px rgba(90, 84, 255, 0.24);
@@ -112,6 +111,31 @@
     object-fit: contain;
     transform: translateX(10px);
     filter: drop-shadow(0 18px 28px rgba(71, 83, 151, 0.1));
+  }
+}
+
+html[data-theme='dark'] {
+  .not-found-page__card {
+    background: rgba(18, 24, 46, 0.92);
+    border-color: rgba(68, 84, 130, 0.35);
+    box-shadow: 0 26px 60px rgba(0, 0, 0, 0.32);
+  }
+
+  .not-found-page__kicker {
+    background: rgba(101, 95, 255, 0.18);
+    color: #a89fff;
+  }
+
+  .not-found-page__text {
+    color: #7d89b0;
+  }
+
+  .not-found-page__visual::before {
+    background: radial-gradient(circle, rgba(101, 95, 255, 0.12) 0%, rgba(101, 95, 255, 0.04) 42%, transparent 74%);
+  }
+
+  .not-found-page__image {
+    filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.4)) brightness(0.92);
   }
 }
 

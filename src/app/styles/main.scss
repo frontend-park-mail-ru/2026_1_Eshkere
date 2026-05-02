@@ -308,9 +308,31 @@ button {
   }
 }
 
+@media (min-width: 601px) and (max-width: 1180px) {
+  .modal {
+    padding: 20px;
+  }
+
+  .modal__content,
+  [class$='-modal__dialog'],
+  [class*='__modal-dialog'] {
+    max-width: min(92vw, 720px);
+    max-height: calc(100dvh - 80px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal__actions,
+  [class$='-modal__actions'],
+  [class*='__modal-actions'] {
+    gap: 12px;
+  }
+}
+
 button {
   border: none;
 }
+
 
 #app {
   min-height: 100vh;

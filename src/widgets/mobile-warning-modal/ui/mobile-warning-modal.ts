@@ -3,7 +3,7 @@ import { closeModal, openModal } from 'shared/ui/modal/modal';
 
 const MODAL_ID = 'mobile-warning-modal';
 const SESSION_KEY = 'mobile_warning_dismissed';
-const MOBILE_BREAKPOINT = 1024;
+const MOBILE_BREAKPOINT = 600;
 
 function isMobileOrTablet(): boolean {
   return window.innerWidth <= MOBILE_BREAKPOINT;

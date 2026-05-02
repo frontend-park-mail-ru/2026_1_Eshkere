@@ -1,12 +1,17 @@
 <aside class="sidebar">
   <div class="sidebar__section">
-    <span class="sidebar__link sidebar__link--disabled" aria-disabled="true">
+    <a
+      href="/overview"
+      class="sidebar__link {{#if isOverview}}sidebar__link--active{{/if}}"
+      {{#if isOverview}}aria-current="page"{{/if}}
+    >
       <img class="sidebar__icon" src="/icons/darhboard.svg" alt="" aria-hidden="true" />
       Обзор
-    </span>
+    </a>
     <a
       href="/ads"
       class="sidebar__link {{#if isCampaigns}}sidebar__link--active{{/if}}"
+      {{#if isCampaigns}}aria-current="page"{{/if}}
     >
       <img class="sidebar__icon" src="/icons/statistics.svg" alt="" aria-hidden="true" />
       Кампании
@@ -18,6 +23,7 @@
     <a
       href="/balance"
       class="sidebar__link {{#if isBalance}}sidebar__link--active{{/if}}"
+      {{#if isBalance}}aria-current="page"{{/if}}
     >
       <img class="sidebar__icon" src="/icons/wallet.svg" alt="" aria-hidden="true" />
       Баланс
@@ -29,6 +35,7 @@
     <a
       href="/support"
       class="sidebar__link {{#if isSupport}}sidebar__link--active{{/if}}"
+      {{#if isSupport}}aria-current="page"{{/if}}
     >
       <img class="sidebar__icon" src="/icons/Question.svg" alt="" aria-hidden="true" />
       Поддержка
@@ -39,6 +46,7 @@
     <a
       href="/profile"
       class="sidebar__link {{#if isProfile}}sidebar__link--active{{/if}}"
+      {{#if isProfile}}aria-current="page"{{/if}}
     >
       <img class="sidebar__icon" src="/icons/User.svg" alt="" aria-hidden="true" />
       Профиль
@@ -54,10 +62,14 @@
   </div>
 
   <nav class="mobile-tabbar" aria-label="Мобильная навигация кабинета">
-    <span class="mobile-tabbar__item mobile-tabbar__item--disabled" aria-disabled="true">
+    <a
+      href="/overview"
+      class="mobile-tabbar__item {{#if isOverview}}mobile-tabbar__item--active{{/if}}"
+      {{#if isOverview}}aria-current="page"{{/if}}
+    >
       <img class="mobile-tabbar__icon" src="/icons/darhboard.svg" alt="" aria-hidden="true" />
       <span>Обзор</span>
-    </span>
+    </a>
 
     <a
       href="/ads"

@@ -97,6 +97,8 @@ export const DEFAULT_STATE: BuilderState = {
   link: 'https://eshke.ru/promo/spring',
   creative: 'feed',
   creativeAssets: {},
+  groupName: '',
+  gender: 'any',
   audienceChip: 'geo',
   audienceConfig: AUDIENCE_PRESET_CONFIGS.geo,
   dailyBudget: 7500,

@@ -1,0 +1,181 @@
+<section class="cnew" data-cnew>
+  <form class="cnew__form" data-cnew-form novalidate>
+
+    <div class="cnew__toolbar">
+      <div class="cnew__toolbar-left">
+        <button class="cnew__back" type="button" data-cnew-back>← Кампании</button>
+        <div>
+          <h1 class="cnew__title">Новая кампания</h1>
+          <p class="cnew__sub">Задайте название и цель — группы и объявления добавите внутри.</p>
+        </div>
+      </div>
+      <button class="cnew__submit" type="submit" data-cnew-submit>
+        Создать кампанию
+      </button>
+    </div>
+
+    <div class="cnew__layout">
+
+      {{!-- Левая колонка — форма --}}
+      <div class="cnew__fields">
+
+        <div class="cnew__card">
+          <h2 class="cnew__section-title">Основное</h2>
+          <div class="cnew__field">
+            <label class="cnew__label" for="cnew-name">Название кампании</label>
+            <input
+              class="cnew__input"
+              id="cnew-name"
+              name="name"
+              type="text"
+              placeholder="Например: Весенняя акция 2026"
+              required
+            />
+            <span class="cnew__error" data-cnew-error="name"></span>
+          </div>
+        </div>
+
+        <div class="cnew__card">
+          <h2 class="cnew__section-title">Цель кампании</h2>
+          <p class="cnew__section-hint">Выберите что важнее — охват или переходы. Это влияет на алгоритм оптимизации.</p>
+          <div class="cnew__goals" data-cnew-goals>
+            <button class="cnew__goal cnew__goal--active" type="button" data-goal="click">
+              <div class="cnew__goal-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M15 3l6 6-6 6M9 21l-6-6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M21 9H9a6 6 0 0 0 0 12h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div>
+                <strong class="cnew__goal-name">Переходы на сайт</strong>
+                <p class="cnew__goal-desc">Оплата за клики (CPC). Подходит для трафика и конверсий.</p>
+              </div>
+            </button>
+            <button class="cnew__goal" type="button" data-goal="look">
+              <div class="cnew__goal-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/>
+                  <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" stroke="currentColor" stroke-width="1.8"/>
+                </svg>
+              </div>
+              <div>
+                <strong class="cnew__goal-name">Охват и узнаваемость</strong>
+                <p class="cnew__goal-desc">Оплата за показы (CPM). Подходит для брендинга.</p>
+              </div>
+            </button>
+          </div>
+          <input type="hidden" name="main_action" value="click" data-cnew-goal-value />
+        </div>
+
+        <div class="cnew__card">
+          <h2 class="cnew__section-title">Бюджет</h2>
+
+          <div class="cnew__row cnew__row--2">
+            <div class="cnew__field">
+              <label class="cnew__label" for="cnew-daily">Дневной бюджет</label>
+              <div class="cnew__budget-wrap">
+                <input
+                  class="cnew__input cnew__input--budget"
+                  id="cnew-daily"
+                  name="daily_budget"
+                  type="number"
+                  placeholder="1 000"
+                  min="100"
+                  step="100"
+                />
+                <span class="cnew__budget-sign">₽</span>
+              </div>
+              <span class="cnew__error" data-cnew-error="daily_budget"></span>
+              <span class="cnew__field-note">Минимум 100 ₽ в день</span>
+            </div>
+            <div class="cnew__field">
+              <label class="cnew__label">
+                Общий бюджет
+                <span class="cnew__optional">необязательно</span>
+                <span class="cnew__soon-badge">Скоро</span>
+              </label>
+              <div class="cnew__budget-wrap">
+                <input
+                  class="cnew__input cnew__input--budget"
+                  type="number"
+                  placeholder="30 000"
+                  disabled
+                />
+                <span class="cnew__budget-sign">₽</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="cnew__period" data-stub>
+            <div class="cnew__period-head">
+              <span class="cnew__label">
+                Период кампании
+                <span class="cnew__soon-badge">Скоро</span>
+              </span>
+            </div>
+            <div class="cnew__period-inputs">
+              <div class="cnew__stub-date">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.6"/>
+                  <path d="M3 9h18M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                </svg>
+                <span>Начало</span>
+              </div>
+              <span class="cnew__period-sep">—</span>
+              <div class="cnew__stub-date">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.6"/>
+                  <path d="M3 9h18M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                </svg>
+                <span>Конец</span>
+              </div>
+              <span class="cnew__period-note">или без ограничений</span>
+            </div>
+          </div>
+        </div>
+
+        <p class="cnew__form-error" data-cnew-form-error hidden></p>
+      </div>
+
+      {{!-- Правая колонка — как это работает --}}
+      <aside class="cnew__sidebar">
+        <div class="cnew__info-card">
+          <h3 class="cnew__info-title">Как это устроено</h3>
+          <p class="cnew__info-sub">После создания кампании вы добавите группы и объявления внутри неё.</p>
+
+          <div class="cnew__steps">
+            <div class="cnew__step cnew__step--current">
+              <div class="cnew__step-num">1</div>
+              <div class="cnew__step-body">
+                <strong>Кампания</strong>
+                <span>Название, цель, бюджет</span>
+              </div>
+            </div>
+            <div class="cnew__step-connector"></div>
+            <div class="cnew__step">
+              <div class="cnew__step-num">2</div>
+              <div class="cnew__step-body">
+                <strong>Группа объявлений</strong>
+                <span>Аудитория, площадки, расписание</span>
+              </div>
+            </div>
+            <div class="cnew__step-connector"></div>
+            <div class="cnew__step">
+              <div class="cnew__step-num">3</div>
+              <div class="cnew__step-body">
+                <strong>Объявление</strong>
+                <span>Изображение, текст, ссылка</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cnew__tip-card">
+          <span class="cnew__tip-icon">💡</span>
+          <p class="cnew__tip-text">В одну кампанию можно добавить несколько групп с разными аудиториями и тестировать, что работает лучше.</p>
+        </div>
+      </aside>
+
+    </div>
+  </form>
+</section>

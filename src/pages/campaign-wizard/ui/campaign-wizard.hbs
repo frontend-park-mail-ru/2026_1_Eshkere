@@ -1,0 +1,471 @@
+<section class="campaign-builder" data-cw>
+
+  {{!-- Toolbar --}}
+  <div class="campaign-builder__toolbar">
+    <div class="campaign-builder__toolbar-group">
+      <button class="campaign-builder__button campaign-builder__button--secondary" type="button" data-cw-close>
+        ← Кампании
+      </button>
+    </div>
+    <div class="campaign-builder__toolbar-group">
+      <button class="campaign-builder__button campaign-builder__button--ghost" type="button" data-cw-prev>
+        Назад
+      </button>
+      <button class="campaign-builder__button campaign-builder__button--primary" type="button" data-cw-next>
+        Далее →
+      </button>
+    </div>
+  </div>
+
+  {{!-- Hero: прогресс --}}
+  <section class="campaign-builder__hero">
+    <div class="campaign-builder__hero-copy">
+      <h1 class="campaign-builder__title">Новая рекламная кампания</h1>
+      <p class="campaign-builder__subtitle" data-cw-step-subtitle>Задайте базовые параметры кампании.</p>
+    </div>
+    <div class="campaign-builder__steps">
+      <button class="campaign-builder__step campaign-builder__step--active" type="button" data-cw-step-btn="1">
+        <span class="campaign-builder__step-index">1</span>
+        <strong class="campaign-builder__step-title">Кампания</strong>
+      </button>
+      <button class="campaign-builder__step" type="button" data-cw-step-btn="2">
+        <span class="campaign-builder__step-index">2</span>
+        <strong class="campaign-builder__step-title">Аудитория</strong>
+      </button>
+      <button class="campaign-builder__step" type="button" data-cw-step-btn="3">
+        <span class="campaign-builder__step-index">3</span>
+        <strong class="campaign-builder__step-title">Объявление</strong>
+      </button>
+      <button class="campaign-builder__step" type="button" data-cw-step-btn="4">
+        <span class="campaign-builder__step-index">4</span>
+        <strong class="campaign-builder__step-title">Итог</strong>
+      </button>
+    </div>
+  </section>
+
+  <div class="campaign-builder__layout">
+    <div class="campaign-builder__main">
+
+      {{!-- Шаг 1: Кампания --}}
+      <section class="campaign-builder__panel" data-cw-panel="1">
+        <div class="campaign-builder__card">
+          <div class="campaign-builder__card-head">
+            <h2 class="campaign-builder__card-title">Основное</h2>
+            <p class="campaign-builder__card-subtitle">Название и цель определяют логику оптимизации кампании.</p>
+          </div>
+          <div class="campaign-builder__form">
+            <label class="campaign-builder__field">
+              <span class="campaign-builder__label">Название кампании</span>
+              <input class="campaign-builder__input" type="text" maxlength="80"
+                placeholder="Например: Весенняя акция 2026" data-cw-field="name" />
+              <span class="campaign-builder__hint">Это название видно только вам. Укажите оффер, сезон или сегмент.</span>
+              <span class="campaign-builder__error" data-cw-error="name"></span>
+            </label>
+
+            <div>
+              <span class="campaign-builder__label">Бизнес-цель</span>
+              <div class="cw-objectives" data-cw-goals>
+                <button class="cw-objective cw-objective--active" type="button" data-goal="click" data-objective="leads">
+                  <div class="cw-objective__icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                      <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
+                      <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                  </div>
+                  <div class="cw-objective__body">
+                    <strong>Заявки и лиды</strong>
+                    <span>Получите обращения от заинтересованных клиентов</span>
+                  </div>
+                </button>
+                <button class="cw-objective" type="button" data-goal="click" data-objective="traffic">
+                  <div class="cw-objective__icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                      <path d="M15 3h6v6M10 14 21 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                  <div class="cw-objective__body">
+                    <strong>Трафик на сайт</strong>
+                    <span>Привлеките посетителей на страницу или лендинг</span>
+                  </div>
+                </button>
+                <button class="cw-objective" type="button" data-goal="look" data-objective="awareness">
+                  <div class="cw-objective__icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/>
+                      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" stroke="currentColor" stroke-width="1.8"/>
+                    </svg>
+                  </div>
+                  <div class="cw-objective__body">
+                    <strong>Узнаваемость бренда</strong>
+                    <span>Максимальный охват — как можно больше людей увидят рекламу</span>
+                  </div>
+                </button>
+                <button class="cw-objective" type="button" data-goal="click" data-objective="installs">
+                  <div class="cw-objective__icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <rect x="5" y="2" width="14" height="20" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                      <path d="M12 7v6M9 10l3 3 3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                  <div class="cw-objective__body">
+                    <strong>Установки приложения</strong>
+                    <span>Направьте пользователей в App Store или Google Play</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="campaign-builder__card">
+          <div class="campaign-builder__card-head">
+            <h2 class="campaign-builder__card-title">Бюджет</h2>
+
+            <p class="campaign-builder__card-subtitle">Задайте дневной лимит расходов.</p>
+          </div>
+          <div class="campaign-builder__form">
+            <div class="campaign-builder__row campaign-builder__row--double">
+              <label class="campaign-builder__field">
+                <span class="campaign-builder__label">Дневной бюджет, ₽</span>
+                <input class="campaign-builder__input" type="number" min="100" step="100"
+                  placeholder="1 000" data-cw-field="daily_budget" />
+                <span class="campaign-builder__hint">Минимум 100 ₽ в день.</span>
+                <span class="campaign-builder__error" data-cw-error="daily_budget"></span>
+              </label>
+              <label class="campaign-builder__field">
+                <span class="campaign-builder__label">Общий бюджет, ₽ <span class="cw-soon">Скоро</span></span>
+                <input class="campaign-builder__input" type="number" placeholder="30 000" disabled />
+                <span class="campaign-builder__hint">Кампания остановится при достижении лимита.</span>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="cw-step-footer">
+          <button class="campaign-builder__button campaign-builder__button--primary" type="button" data-cw-next>
+            Аудитория →
+          </button>
+        </div>
+      </section>
+
+      {{!-- Шаг 2: Аудитория --}}
+      <section class="campaign-builder__panel" data-cw-panel="2" hidden>
+        <div class="campaign-builder__card">
+          <div class="campaign-builder__card-head">
+            <h2 class="campaign-builder__card-title">Группа объявлений</h2>
+            <p class="campaign-builder__card-subtitle">Первая группа создаётся вместе с кампанией. Дополнительные группы добавите позже.</p>
+          </div>
+          <div class="campaign-builder__form">
+            <label class="campaign-builder__field">
+              <span class="campaign-builder__label">Название группы</span>
+              <input class="campaign-builder__input" type="text"
+                placeholder="Например: Женщины 25–34, Москва" data-cw-field="group_name" />
+              <span class="campaign-builder__hint">Помогает различать группы с разными аудиториями.</span>
+            </label>
+
+            <div class="campaign-builder__row campaign-builder__row--triple">
+              <label class="campaign-builder__field">
+                <span class="campaign-builder__label">Возраст от</span>
+                <select class="campaign-builder__input" data-cw-field="age_from">
+                  <option value="13">13</option>
+                  <option value="18" selected>18</option>
+                  <option value="25">25</option>
+                  <option value="35">35</option>
+                  <option value="45">45</option>
+                  <option value="55">55</option>
+                </select>
+              </label>
+              <label class="campaign-builder__field">
+                <span class="campaign-builder__label">Возраст до</span>
+                <select class="campaign-builder__input" data-cw-field="age_to">
+                  <option value="24">24</option>
+                  <option value="34" selected>34</option>
+                  <option value="44">44</option>
+                  <option value="54">54</option>
+                  <option value="64">64</option>
+                  <option value="99">65+</option>
+                </select>
+              </label>
+              <label class="campaign-builder__field">
+                <span class="campaign-builder__label">Пол</span>
+                <select class="campaign-builder__input" data-cw-field="gender">
+                  <option value="any" selected>Все</option>
+                  <option value="male">Мужчины</option>
+                  <option value="female">Женщины</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="campaign-builder__row campaign-builder__row--double">
+              <label class="campaign-builder__field">
+                <span class="campaign-builder__label">Регион</span>
+                <select class="campaign-builder__input" data-cw-field="region_id">
+                  <option value="1" selected>Москва</option>
+                  <option value="2">Санкт-Петербург</option>
+                  <option value="3">Казань</option>
+                  <option value="4">Екатеринбург</option>
+                  <option value="5">Новосибирск</option>
+                  <option value="6">Краснодар</option>
+                  <option value="7">Нижний Новгород</option>
+                  <option value="8">Самара</option>
+                  <option value="9">Ростов-на-Дону</option>
+                  <option value="10">Весь РФ</option>
+                </select>
+              </label>
+              <label class="campaign-builder__field">
+                <span class="campaign-builder__label">Тематика</span>
+                <select class="campaign-builder__input" data-cw-field="topic_id">
+                  <option value="1" selected>Технологии</option>
+                  <option value="2">Бизнес</option>
+                  <option value="3">Красота и здоровье</option>
+                  <option value="4">Авто</option>
+                  <option value="5">Недвижимость</option>
+                  <option value="6">Еда и рестораны</option>
+                  <option value="7">Путешествия</option>
+                  <option value="8">Спорт</option>
+                  <option value="9">Мода</option>
+                  <option value="10">Образование</option>
+                </select>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="campaign-builder__card cw-card--muted">
+          <div class="campaign-builder__card-head">
+            <h2 class="campaign-builder__card-title">Дополнительный таргетинг <span class="cw-soon">Скоро</span></h2>
+            <p class="campaign-builder__card-subtitle">Площадки, устройства, расписание и профильные теги — добавите в настройках группы после создания кампании.</p>
+          </div>
+          <div class="cw-locked-features">
+            <span>Площадки размещения</span>
+            <span>Расписание показов</span>
+            <span>Устройства</span>
+            <span>Профильные теги</span>
+            <span>Интересы</span>
+            <span>Режим сопоставления</span>
+          </div>
+        </div>
+        <div class="cw-step-footer">
+          <button class="campaign-builder__button campaign-builder__button--secondary" type="button" data-cw-prev>
+            ← Кампания
+          </button>
+          <button class="campaign-builder__button campaign-builder__button--primary" type="button" data-cw-next>
+            Объявление →
+          </button>
+        </div>
+      </section>
+
+      {{!-- Шаг 3: Объявление --}}
+      <section class="campaign-builder__panel cw-panel-with-preview" data-cw-panel="3" hidden>
+        <div class="cw-preview-panel" data-cw-preview-panel>
+          <div class="cw-preview-card">
+            <div class="cw-preview-header">
+              <span class="cw-preview-title">Предпросмотр</span>
+              <span class="cw-preview-badge" data-cw-preview-badge>Лента</span>
+            </div>
+            <div class="cw-preview-ad" data-cw-preview-ad>
+              <div class="cw-preview-image" data-cw-preview-image>
+                <span class="cw-preview-placeholder">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/>
+                    <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
+                    <path d="m3 15 5-5 4 4 3-3 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                  <span>Изображение</span>
+                </span>
+              </div>
+              <div class="cw-preview-body">
+                <div class="cw-preview-meta">
+                  <span class="cw-preview-domain" data-cw-preview-domain>example.com</span>
+                  <span class="cw-preview-tag">Реклама</span>
+                </div>
+                <p class="cw-preview-headline" data-cw-preview-title>Заголовок объявления</p>
+                <p class="cw-preview-desc" data-cw-preview-desc>Описание появится здесь.</p>
+                <button class="cw-preview-cta" type="button" data-cw-preview-cta>Узнать подробнее</button>
+              </div>
+            </div>
+            <p class="cw-preview-note">Обновляется по мере заполнения полей.</p>
+          </div>
+        </div>
+        <div class="cw-panel-form">
+        <div class="campaign-builder__card">
+          <div class="campaign-builder__card-head">
+            <h2 class="campaign-builder__card-title">Формат и изображение</h2>
+            <p class="campaign-builder__card-subtitle">Выберите формат и загрузите креатив.</p>
+          </div>
+          <div class="campaign-builder__form">
+            <div>
+              <span class="campaign-builder__label">Формат</span>
+              <div class="cw-formats" data-cw-formats>
+                <button class="cw-format cw-format--active" type="button" data-format="feed">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/>
+                    <path d="M3 9h18" stroke="currentColor" stroke-width="1.6"/>
+                  </svg>
+                  Лента <span class="cw-format__size">1200×628</span>
+                </button>
+                <button class="cw-format" type="button" data-format="stories">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <rect x="6" y="2" width="12" height="20" rx="2" stroke="currentColor" stroke-width="1.6"/>
+                  </svg>
+                  Stories <span class="cw-format__size">1080×1920</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="campaign-builder__field">
+              <span class="campaign-builder__label">Изображение</span>
+              <div class="cw-upload" data-cw-upload>
+                <input class="cw-upload__input" type="file" accept="image/jpeg,image/png,image/webp" data-cw-file />
+                <div class="cw-upload__placeholder" data-cw-upload-placeholder>
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"
+                      stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <p>Перетащите или <span>выберите файл</span></p>
+                  <p class="cw-upload__hint">JPG, PNG, WebP · до 5 МБ</p>
+                </div>
+                <div class="cw-upload__preview" data-cw-upload-preview hidden>
+                  <img data-cw-upload-img alt="" />
+                  <button class="cw-upload__remove" type="button" data-cw-upload-remove aria-label="Удалить">✕</button>
+                  <span data-cw-upload-name></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="campaign-builder__card">
+          <div class="campaign-builder__card-head">
+            <h2 class="campaign-builder__card-title">Текст объявления</h2>
+          </div>
+          <div class="campaign-builder__form">
+            <label class="campaign-builder__field">
+              <span class="campaign-builder__label">Заголовок <span class="cw-counter" data-cw-counter="ad_title">0/60</span></span>
+              <input class="campaign-builder__input" type="text" maxlength="60"
+                placeholder="Краткий и цепляющий заголовок" data-cw-field="ad_title" />
+              <span class="campaign-builder__error" data-cw-error="ad_title"></span>
+            </label>
+            <label class="campaign-builder__field">
+              <span class="campaign-builder__label">Описание <span class="cw-counter" data-cw-counter="ad_desc">0/150</span></span>
+              <textarea class="campaign-builder__textarea" maxlength="150" rows="3"
+                placeholder="Расскажите о предложении коротко и по делу" data-cw-field="ad_desc"></textarea>
+              <span class="campaign-builder__error" data-cw-error="ad_desc"></span>
+            </label>
+            <label class="campaign-builder__field">
+              <span class="campaign-builder__label">Целевая ссылка</span>
+              <input class="campaign-builder__input" type="url"
+                placeholder="https://example.com" data-cw-field="ad_url" />
+              <span class="campaign-builder__error" data-cw-error="ad_url"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="campaign-builder__card">
+          <div class="campaign-builder__card-head">
+            <h2 class="campaign-builder__card-title">Призыв к действию</h2>
+          </div>
+          <div class="cw-cta-chips" data-cw-cta>
+            <button class="cw-cta-chip cw-cta-chip--active" type="button">Узнать подробнее</button>
+            <button class="cw-cta-chip" type="button">Перейти на сайт</button>
+            <button class="cw-cta-chip" type="button">Купить</button>
+            <button class="cw-cta-chip" type="button">Записаться</button>
+            <button class="cw-cta-chip" type="button">Скачать</button>
+            <button class="cw-cta-chip" type="button">Получить предложение</button>
+          </div>
+          <div class="campaign-builder__field" style="margin-top:4px">
+            <span class="campaign-builder__label">Или введите свой текст</span>
+            <input
+              class="campaign-builder__input"
+              type="text"
+              placeholder="Текст кнопки"
+              maxlength="40"
+              data-cw-cta-input
+            />
+          </div>
+        </div>
+        <div class="cw-step-footer">
+          <button class="campaign-builder__button campaign-builder__button--secondary" type="button" data-cw-prev>
+            ← Аудитория
+          </button>
+          <button class="campaign-builder__button campaign-builder__button--primary" type="button" data-cw-next>
+            Проверить →
+          </button>
+        </div>
+        </div>{{!-- /cw-panel-form --}}
+      </section>
+
+      {{!-- Шаг 4: Итог --}}
+      <section class="campaign-builder__panel cw-panel-with-preview" data-cw-panel="4" hidden>
+        <div class="cw-preview-panel">
+          <div class="cw-preview-card">
+            <div class="cw-preview-header">
+              <span class="cw-preview-title">Предпросмотр</span>
+              <span class="cw-preview-badge">Лента</span>
+            </div>
+            <div class="cw-preview-ad">
+              <div class="cw-preview-image" data-cw-review-image>
+                <span class="cw-preview-placeholder">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/>
+                    <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
+                    <path d="m3 15 5-5 4 4 3-3 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                  <span>Изображение</span>
+                </span>
+              </div>
+              <div class="cw-preview-body">
+                <div class="cw-preview-meta">
+                  <span class="cw-preview-domain" data-cw-review-domain>example.com</span>
+                  <span class="cw-preview-tag">Реклама</span>
+                </div>
+                <p class="cw-preview-headline" data-cw-review-ad-title>Заголовок объявления</p>
+                <p class="cw-preview-desc" data-cw-review-ad-desc>Описание появится здесь.</p>
+                <button class="cw-preview-cta" type="button" data-cw-review-cta>Узнать подробнее</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cw-panel-form">
+        <div class="campaign-builder__card">
+          <div class="campaign-builder__card-head">
+            <h2 class="campaign-builder__card-title">Проверьте перед запуском</h2>
+            <p class="campaign-builder__card-subtitle">После создания кампания уйдёт на модерацию. Вернитесь назад чтобы изменить параметры.</p>
+          </div>
+          <div class="cw-review" data-cw-review>
+            <div class="cw-review-section">
+              <span class="cw-review-label">Кампания</span>
+              <div class="cw-review-row"><span>Название</span><strong data-cw-review="name">—</strong></div>
+              <div class="cw-review-row"><span>Цель</span><strong data-cw-review="goal">—</strong></div>
+              <div class="cw-review-row"><span>Дневной бюджет</span><strong data-cw-review="budget">—</strong></div>
+            </div>
+            <div class="cw-review-section">
+              <span class="cw-review-label">Группа объявлений</span>
+              <div class="cw-review-row"><span>Название</span><strong data-cw-review="group_name">—</strong></div>
+              <div class="cw-review-row"><span>Аудитория</span><strong data-cw-review="audience">—</strong></div>
+              <div class="cw-review-row"><span>Регион</span><strong data-cw-review="region">—</strong></div>
+            </div>
+            <div class="cw-review-section">
+              <span class="cw-review-label">Объявление</span>
+              <div class="cw-review-row"><span>Заголовок</span><strong data-cw-review="ad_title">—</strong></div>
+              <div class="cw-review-row"><span>Ссылка</span><strong data-cw-review="ad_url">—</strong></div>
+              <div class="cw-review-row"><span>Изображение</span><strong data-cw-review="ad_image">—</strong></div>
+            </div>
+          </div>
+          <p class="campaign-builder__error" data-cw-error="submit" hidden></p>
+        </div>
+        <div class="cw-step-footer">
+          <button class="campaign-builder__button campaign-builder__button--secondary" type="button" data-cw-prev>
+            ← Объявление
+          </button>
+          <button class="campaign-builder__button campaign-builder__button--primary" type="button" data-cw-next>
+            Создать кампанию
+          </button>
+        </div>
+        </div>{{!-- /cw-panel-form --}}
+      </section>
+
+    </div>
+  </div>
+</section>

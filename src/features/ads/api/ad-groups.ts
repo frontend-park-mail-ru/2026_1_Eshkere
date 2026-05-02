@@ -1,6 +1,6 @@
 import { request } from 'shared/lib/request';
 
-export type GenderType = 'man' | 'woman' | 'any';
+export type GenderType = 'male' | 'female' | 'any';
 
 export interface AdGroupResponse {
   id: number;

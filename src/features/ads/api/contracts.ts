@@ -1,9 +1,12 @@
-export type { AdCampaignStatus } from 'entities/campaign';
+import type { AdCampaignStatus } from 'entities/campaign';
+
+export type { AdCampaignStatus };
 
 export interface AdCampaignResponse {
   id: number;
   name: string;
-  daily_budget: number;
+  daily_budget?: number;
+  main_action?: 'look' | 'click' | string;
   status: AdCampaignStatus;
 }
 
@@ -14,7 +17,8 @@ export interface ListAdCampaignsResponse {
 
 export interface CreateAdCampaignRequest {
   name: string;
-  daily_budget: number;
+  main_action?: 'look' | 'click';
+  daily_budget?: number;
 }
 
 export interface CreateAdCampaignResponse {
@@ -23,6 +27,7 @@ export interface CreateAdCampaignResponse {
 
 export interface UpdateAdCampaignRequest {
   name?: string;
+  main_action?: 'look' | 'click';
   daily_budget?: number;
   status?: AdCampaignStatus;
 }

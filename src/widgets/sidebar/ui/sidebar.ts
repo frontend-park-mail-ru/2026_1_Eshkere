@@ -9,7 +9,8 @@ import sidebarTemplate from './sidebar.hbs';
  */
 export async function renderSidebar(pathname = '/ads'): Promise<string> {
   return await renderTemplate(sidebarTemplate, {
-    isCampaigns: pathname === '/ads',
+    isOverview: pathname === '/overview',
+    isCampaigns: pathname === '/ads' || pathname.startsWith('/ads/'),
     isBalance: pathname === '/balance',
     isProfile: pathname === '/profile',
     isSupport: pathname === '/support',

@@ -123,4 +123,28 @@
       transition: transform 0.2s ease;
     }
   }
+
+  @media (max-width: 1180px) and (min-width: 601px) {
+    &__actions-user {
+      gap: 5px;
+      padding: 5px 8px;
+    }
+
+    &__balance {
+      max-width: 76px;
+      margin-inline: 4px 6px;
+      font-size: 11px;
+    }
+
+    &__actions-user-icon {
+      width: 28px;
+      height: 28px;
+    }
+
+    &__avatar,
+    &__profile-toggle {
+      width: 28px;
+      height: 28px;
+    }
+  }
 }

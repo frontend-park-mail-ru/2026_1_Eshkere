@@ -105,6 +105,32 @@
     }
   }
 
+  @media (max-width: 1180px) and (min-width: 601px) {
+    padding: 10px;
+    border-radius: 20px;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    &__link {
+      min-height: 46px;
+      min-width: 168px;
+      padding: 10px 12px;
+      border-radius: 14px;
+    }
+
+    &__link-title {
+      font-size: 13px;
+    }
+
+    &__link-text {
+      font-size: 12px;
+      line-height: 1.25;
+    }
+  }
+
   @include mixins.media-max(t.$bp-sm) {
     border-radius: 18px;
 

@@ -24,6 +24,18 @@ import type {
   FinalReviewData,
   StepKey,
 } from 'features/campaign-builder/model/types';
+import {
+  CITY_REGION_ID,
+  buildGroupName,
+  getGenderLabel,
+  getPrimaryCity,
+  getPrimaryCreativeImageUrl,
+  getRegionId,
+  getResolvedGroupName,
+  getTopicId,
+  getTopicLabel,
+  parseAgeRange,
+} from 'features/campaign-builder/lib/api-mapping';
 import { getAudienceStateSummary } from './campaign-create-audience';
 
 export function clampText(value: string, limit: number): string {
@@ -229,10 +241,21 @@ export function getMissingCreativeSlots(
 function getAudienceGaps(state: BuilderState): string[] {
   const gaps: string[] = [];
 
-  if (!state.audienceConfig.cities.length) gaps.push('географию');
-  if (!state.audienceConfig.ageRange.trim()) gaps.push('возрастной диапазон');
-  if (!state.audienceConfig.profileTags.length) gaps.push('профиль аудитории');
-  if (!state.audienceConfig.interests.length) gaps.push('интересы');
+  try {
+    getRegionId(state);
+  } catch {
+    gaps.push('основной регион');
+  }
+
+  try {
+    parseAgeRange(state.audienceConfig.ageRange);
+  } catch {
+    gaps.push('возрастной диапазон');
+  }
+
+  if (!state.gender) gaps.push('пол');
+  if (!state.audienceConfig.profileTags.length) gaps.push('тематику профиля');
+  if (!getTopicId(state)) gaps.push('тематику');
 
   return gaps;
 }
@@ -254,26 +277,24 @@ export function validateStep(
       errors.headline ||
       errors.description ||
       errors.cta ||
-      errors.link
+      errors.link ||
+      errors.dailyBudget
     ) {
       return {
         ok: false,
         step: 'content',
         title: 'Проверьте основные данные',
         description:
-          'Заполните название, заголовок, текст, кнопку и ссылку перед переходом дальше.',
+          'Заполните название кампании, дневной бюджет, заголовок, текст, кнопку и ссылку перед переходом дальше.',
       };
     }
 
-    const missingCreativeSlots = getMissingCreativeSlots(state);
-    if (missingCreativeSlots.length) {
+    if (!getPrimaryCreativeImageUrl(state)) {
       return {
         ok: false,
         step: 'content',
-        title: 'Добавьте креативы',
-        description: `Загрузите: ${missingCreativeSlots
-          .map((slot) => slot.title.toLowerCase())
-          .join(', ')}.`,
+        title: 'Добавьте креатив',
+        description: 'Загрузите хотя бы один материал для первого объявления.',
       };
     }
   }
@@ -409,8 +430,8 @@ export function getBuilderHealth(state: BuilderState): BuilderHealth {
   if (state.step === 'publication') {
     return {
       badge: 'Готово',
-      title: 'Кампания готова к публикации',
-      text: 'Параметры объявления выглядят согласованно. Можно отправлять в модерацию.',
+      title: 'Кампания готова к созданию',
+      text: 'Кампания, первая группа и объявление выглядят согласованно. Можно создавать структуру.',
       isPositive: true,
     };
   }
@@ -426,48 +447,48 @@ export function getBuilderHealth(state: BuilderState): BuilderHealth {
 export function getFinalReviewData(state: BuilderState): FinalReviewData {
   const mode = getBuilderModeConfig();
   const errors = getFieldErrors(state);
-  const creativeSummary = getCreativeSummary(state.creative);
 
   const contentMissing: string[] = [];
-  if (errors.name) contentMissing.push('внутреннее название');
-  if (errors.headline) contentMissing.push('заголовок');
-  if (errors.description) contentMissing.push('текст');
-  if (errors.cta) contentMissing.push('кнопку');
-  if (errors.link) contentMissing.push('ссылку');
+  if (errors.name) contentMissing.push('название кампании');
+  if (errors.dailyBudget) contentMissing.push('дневной бюджет');
 
   const contentCheck: FinalReviewCheck = {
-    title: 'Контент и ссылка',
+    title: 'Кампания',
     text:
       contentMissing.length === 0
-        ? `${FORMAT_LABELS[state.format]}, цель «${GOAL_LABELS[state.goal]}», CTA «${state.cta.trim()}».`
+        ? `${state.name.trim()}, цель «${GOAL_LABELS[state.goal]}», дневной бюджет ${formatRubles(state.dailyBudget)}.`
         : `Нужно заполнить: ${contentMissing.join(', ')}.`,
     status: contentMissing.length === 0 ? 'ОК' : 'Дополнить',
     success: contentMissing.length === 0,
   };
 
-  const creativeSlots = getCreativeSlots(state.creative, state.creativeAssets);
-  const missingCreativeSlots = getMissingCreativeSlots(state);
-  const uploadedAssetsCount = creativeSlots.filter((slot) =>
-    Boolean(state.creativeAssets[slot.key]),
-  ).length;
+  const adMissing: string[] = [];
+  if (errors.headline) adMissing.push('заголовок');
+  if (errors.description) adMissing.push('описание');
+  if (errors.cta) adMissing.push('CTA');
+  if (errors.link) adMissing.push('ссылку');
+
+  if (!getPrimaryCreativeImageUrl(state)) {
+    adMissing.push('креатив');
+  }
 
   const creativeCheck: FinalReviewCheck = {
-    title: 'Креативы и площадки',
+    title: 'Объявление',
     text:
-      missingCreativeSlots.length === 0
-        ? `Готово ${uploadedAssetsCount} материалов. Сценарий показа: ${creativeSummary.placements}.`
-        : `Не хватает материалов: ${missingCreativeSlots.map((slot) => slot.title.toLowerCase()).join(', ')}.`,
-    status: missingCreativeSlots.length === 0 ? 'ОК' : 'Добавить',
-    success: missingCreativeSlots.length === 0,
+      adMissing.length === 0
+        ? `«${state.headline.trim()}», ссылка ${state.link.trim()}, креатив ${getPrimaryCreativeImageUrl(state)}.`
+        : `Нужно заполнить: ${adMissing.join(', ')}.`,
+    status: adMissing.length === 0 ? 'ОК' : 'Добавить',
+    success: adMissing.length === 0,
   };
 
   const audienceGaps = getAudienceGaps(state);
 
   const audienceCheck: FinalReviewCheck = {
-    title: 'Аудитория и таргетинг',
+    title: 'Группа объявлений',
     text:
       audienceGaps.length === 0
-        ? `${state.audienceConfig.cities.length} региона, ${state.audienceConfig.profileTags.length} профиля и ${state.audienceConfig.interests.length} интереса в сегменте.`
+        ? `${getResolvedGroupName(state)}: ${getPrimaryCity(state)}, ${state.audienceConfig.ageRange}, ${getGenderLabel(state.gender)}, ${getTopicLabel(state)}.`
         : `Нужно уточнить: ${audienceGaps.join(', ')}.`,
     status: audienceGaps.length === 0 ? 'ОК' : 'Проверить',
     success: audienceGaps.length === 0,
@@ -631,6 +652,20 @@ export function getTemplateContext(state: BuilderState) {
     ],
     creativeSlots: getCreativeSlots(state.creative, state.creativeAssets),
     audience,
+    group: {
+      name: state.groupName,
+      generatedName: buildGroupName(state),
+      resolvedName: getResolvedGroupName(state),
+      gender: state.gender,
+      genderAny: state.gender === 'any',
+      genderMale: state.gender === 'male',
+      genderFemale: state.gender === 'female',
+      genderLabel: getGenderLabel(state.gender),
+      primaryCity: getPrimaryCity(state),
+      regionId: getPrimaryCity(state) ? CITY_REGION_ID[getPrimaryCity(state)] : '',
+      topicId: getTopicId(state),
+      topicLabel: getTopicLabel(state),
+    },
     audienceChips: [
       {
         key: 'geo',
