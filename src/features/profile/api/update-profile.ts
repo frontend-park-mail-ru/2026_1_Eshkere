@@ -9,29 +9,29 @@ export interface UpdateProfileParams {
 export interface AdvertiserProfileResponse {
   id: number;
   name?: string;
+  surname?: string;
   email?: string;
   phone?: string;
   avatar_url?: string;
   balance?: number;
+  company?: string;
+  city?: string;
+  tariff?: string;
   created_at?: string;
 }
 
+export async function getMe(): Promise<AdvertiserProfileResponse> {
+  const response = await request<AdvertiserProfileResponse>('/advertisers/me', {
+    method: 'GET',
+  });
+
+  return response.data;
+}
+
 export async function updateProfile(params: UpdateProfileParams): Promise<AdvertiserProfileResponse> {
-  const formData = new FormData();
-
-  if (params.name !== undefined) {
-    formData.append('name', params.name);
-  }
-  if (params.email !== undefined) {
-    formData.append('email', params.email);
-  }
-  if (params.phone !== undefined) {
-    formData.append('phone', params.phone);
-  }
-
   const response = await request<AdvertiserProfileResponse>('/advertisers/me', {
     method: 'PUT',
-    body: formData,
+    body: params,
   });
 
   return response.data;

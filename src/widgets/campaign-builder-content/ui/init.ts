@@ -250,6 +250,7 @@ export function initCampaignBuilderContentControls({
             files.length === 1
               ? firstFile.name
               : `${files.length} файла, первый: ${firstFile.name}`;
+          state.creativeFiles[key] = firstFile;
 
           persistState(state);
           syncBuilder(state);

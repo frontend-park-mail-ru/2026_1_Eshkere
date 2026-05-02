@@ -92,6 +92,7 @@ function createBuilderBaseState(): BuilderState {
   return {
     ...DEFAULT_STATE,
     creativeAssets: { ...DEFAULT_STATE.creativeAssets },
+    creativeFiles: {},
     audienceConfig: {
       ...DEFAULT_STATE.audienceConfig,
       cities: [...DEFAULT_STATE.audienceConfig.cities],
@@ -295,7 +296,8 @@ export function getBuilderState(): BuilderState {
 }
 
 export function persistBuilderState(state: BuilderState): void {
-  localStorageService.setJson(getBuilderStorageKey(), state);
+  const { creativeFiles: _, ...persistable } = state;
+  localStorageService.setJson(getBuilderStorageKey(), persistable);
   builderSavedAt = Date.now();
 }
 

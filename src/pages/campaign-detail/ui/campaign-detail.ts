@@ -257,6 +257,26 @@ export function CampaignDetail(): VoidFunction {
 
   initGroupPagination(root, signal);
 
+  root.querySelector<HTMLElement>('[data-edit-campaign]')?.addEventListener('click', () => {
+    navigateTo(`/ads/campaign/edit?id=${campaignId}`);
+  }, { signal });
+
+  root.querySelectorAll<HTMLElement>('[data-edit-group]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const groupId = btn.dataset.editGroup;
+      if (groupId) navigateTo(`/ads/group/edit?campaignId=${campaignId}&groupId=${groupId}`);
+    }, { signal });
+  });
+
+  root.querySelectorAll<HTMLElement>('[data-edit-ad]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const parts = (btn.dataset.editAd ?? '').split(':');
+      const groupId = parts[0];
+      const adId = parts[1];
+      if (groupId && adId) navigateTo(`/ads/ad/edit?campaignId=${campaignId}&groupId=${groupId}&adId=${adId}`);
+    }, { signal });
+  });
+
   // Статистика по группе
   root.querySelectorAll<HTMLElement>('[data-stats-group]').forEach((btn) => {
     btn.addEventListener('click', () => {

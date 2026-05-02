@@ -11,8 +11,8 @@ export function showToast({ title, description }: ToastPayload): void {
     return;
   }
 
-  titleNode.textContent = title;
-  textNode.textContent = description;
+  titleNode.textContent = title ?? null;
+  textNode.textContent = description ?? null;
   toast.hidden = false;
 
   if (builderToastTimer) {

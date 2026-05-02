@@ -238,7 +238,7 @@ export function AdCreate(): VoidFunction {
 
     if (Object.keys(errors).length > 0) return;
 
-    const payload: CreateAdRequest = { title, short_desc, target_url, image_url: '' };
+    const payload: CreateAdRequest = { title, short_desc, target_url };
 
     if (submitBtn) submitBtn.disabled = true;
     if (formError) formError.hidden = true;

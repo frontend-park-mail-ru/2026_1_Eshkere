@@ -27,7 +27,10 @@ import { renderGroupStatsPage, GroupStats } from 'pages/group-stats';
 import { renderAdStatsPage, AdStats } from 'pages/ad-stats';
 import { renderCampaignDetailPage, CampaignDetail } from 'pages/campaign-detail';
 import { renderAdGroupCreatePage, AdGroupCreate } from 'pages/ad-group-create';
+import { renderAdGroupEditPage, AdGroupEdit } from 'pages/ad-group-edit';
 import { renderAdCreatePage, AdCreate } from 'pages/ad-create';
+import { renderAdEditPage, AdEdit } from 'pages/ad-edit';
+import { renderCampaignEditFormPage, CampaignEditForm } from 'pages/campaign-edit-form';
 import { renderRegisterPage, Register } from 'pages/register';
 import { renderSupportPage, Support } from 'pages/support';
 import { Navbar } from 'widgets/navbar';
@@ -125,16 +128,34 @@ const routes: Record<string, RouteDefinition> = {
     init: CampaignDetail,
     protected: true,
   },
+  '/ads/campaign/edit': {
+    render: renderCampaignEditFormPage,
+    layout: 'dashboard',
+    init: CampaignEditForm,
+    protected: true,
+  },
   '/ads/group/create': {
     render: renderAdGroupCreatePage,
     layout: 'dashboard',
     init: AdGroupCreate,
     protected: true,
   },
+  '/ads/group/edit': {
+    render: renderAdGroupEditPage,
+    layout: 'dashboard',
+    init: AdGroupEdit,
+    protected: true,
+  },
   '/ads/ad/create': {
     render: renderAdCreatePage,
     layout: 'dashboard',
     init: AdCreate,
+    protected: true,
+  },
+  '/ads/ad/edit': {
+    render: renderAdEditPage,
+    layout: 'dashboard',
+    init: AdEdit,
     protected: true,
   },
   '/ads/statistics': {

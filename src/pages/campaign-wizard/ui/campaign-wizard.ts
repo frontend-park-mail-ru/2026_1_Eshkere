@@ -29,8 +29,9 @@ export async function renderCampaignWizardPage(): Promise<string> {
 }
 
 export function CampaignWizard(): VoidFunction {
-  const root = document.querySelector<HTMLElement>('[data-cw]');
-  if (!root) return () => {};
+  const rootEl = document.querySelector<HTMLElement>('[data-cw]');
+  if (!rootEl) return () => {};
+  const root: HTMLElement = rootEl;
 
   const controller = new AbortController();
   const { signal } = controller;
@@ -224,7 +225,7 @@ export function CampaignWizard(): VoidFunction {
       await createAdInGroup(
         campaignId,
         groupId,
-        { title: state.ad_title, short_desc: state.ad_desc, target_url: state.ad_url, image_url: '' },
+        { title: state.ad_title, short_desc: state.ad_desc, target_url: state.ad_url },
         state.ad_image ?? undefined,
       );
 

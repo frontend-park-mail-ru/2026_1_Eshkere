@@ -17,6 +17,7 @@ import {
   FINAL_REVIEW_JUMP_TARGETS,
 } from 'features/campaign-builder/model/config';
 import {
+  getPrimaryCreativeFile,
   toAdPayload,
   toCampaignPayload,
   toGroupPayload,
@@ -181,6 +182,7 @@ function createSubmitBuilder() {
           campaignId,
           groupId,
           toAdPayload(currentState),
+          getPrimaryCreativeFile(currentState),
         );
       }
 

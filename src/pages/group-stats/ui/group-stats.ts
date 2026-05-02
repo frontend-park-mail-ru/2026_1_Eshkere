@@ -47,8 +47,9 @@ export async function renderGroupStatsPage(): Promise<string> {
 
 export function GroupStats(): VoidFunction {
   const { campaignId, groupId } = getParams();
-  const root = document.querySelector<HTMLElement>('[data-group-stats]');
-  if (!root || !campaignId || !groupId) return () => {};
+  const rootEl = document.querySelector<HTMLElement>('[data-group-stats]');
+  if (!rootEl || !campaignId || !groupId) return () => {};
+  const root: HTMLElement = rootEl;
 
   const controller = new AbortController();
   const { signal } = controller;

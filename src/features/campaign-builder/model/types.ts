@@ -43,6 +43,7 @@ export interface BuilderState {
   link: string;
   creative: CreativeKey;
   creativeAssets: Partial<Record<CreativeAssetKey, string>>;
+  creativeFiles: Partial<Record<CreativeAssetKey, File>>;
   groupName: string;
   gender: GenderKey;
   audienceChip: AudienceChipKey;

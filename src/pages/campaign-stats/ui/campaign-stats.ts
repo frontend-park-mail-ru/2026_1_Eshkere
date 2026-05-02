@@ -67,8 +67,9 @@ export async function renderCampaignStatsPage(): Promise<string> {
 
 export function CampaignStats(): VoidFunction {
   const campaignId = getParams();
-  const root = document.querySelector<HTMLElement>('[data-campaign-stats]');
-  if (!root || !campaignId) return () => {};
+  const rootEl = document.querySelector<HTMLElement>('[data-campaign-stats]');
+  if (!rootEl || !campaignId) return () => {};
+  const root: HTMLElement = rootEl;
 
   const controller = new AbortController();
   const { signal } = controller;

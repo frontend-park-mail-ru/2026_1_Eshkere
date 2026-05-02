@@ -62,6 +62,29 @@
   font-weight: 600;
 }
 
+.campaign-detail__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.campaign-detail__btn-edit {
+  padding: 0 20px;
+  min-height: 44px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--bg-panel);
+  color: var(--text-body);
+  border: 1.5px solid var(--border-panel);
+  transition: background 0.15s;
+  flex-shrink: 0;
+
+  &:hover { background: var(--bg-panel-hover); }
+}
+
 .campaign-detail__add-group {
   @include mixins.shimmer-button(44px, 0 20px);
   font-size: 14px;

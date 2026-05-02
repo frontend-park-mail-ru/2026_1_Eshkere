@@ -172,6 +172,16 @@ export function getPrimaryCreativeImageUrl(state: BuilderState): string {
   );
 }
 
+export function getPrimaryCreativeFile(state: BuilderState): File | undefined {
+  return (
+    state.creativeFiles.feedVisual ||
+    state.creativeFiles.storyVisual ||
+    state.creativeFiles.videoCover ||
+    state.creativeFiles.mainVideo ||
+    state.creativeFiles.verticalVideo
+  );
+}
+
 export function toCampaignPayload(state: BuilderState): CreateAdCampaignRequest {
   return {
     name: state.name.trim(),
@@ -197,6 +207,5 @@ export function toAdPayload(state: BuilderState): CreateAdRequest {
     title: state.headline.trim(),
     short_desc: state.description.trim(),
     target_url: state.link.trim(),
-    image_url: getPrimaryCreativeImageUrl(state),
   };
 }

@@ -1,0 +1,378 @@
+<section class="agc" data-age>
+  <form class="agc__form" data-age-form novalidate>
+
+  <div class="agc__toolbar">
+    <div class="agc__toolbar-left">
+      <button class="agc__back" type="button" data-age-back>← Назад</button>
+      <div>
+        <h1 class="agc__title">Редактирование группы</h1>
+        <p class="agc__sub">Обновите параметры аудитории и сохраните изменения.</p>
+      </div>
+    </div>
+    <button class="agc__submit" type="submit" data-age-submit>
+      Сохранить изменения
+    </button>
+  </div>
+
+    <div class="agc__layout">
+
+      {{!-- Левая колонка — форма --}}
+      <div class="agc__fields">
+
+        <div class="agc__card">
+          <h2 class="agc__section-title">Основное</h2>
+          <div class="agc__field">
+            <label class="agc__label" for="age-name">Название группы</label>
+            <input
+              class="agc__input"
+              id="age-name"
+              name="name"
+              type="text"
+              value="{{name}}"
+              placeholder="Например: Женщины 25–34, Москва"
+              required
+            />
+            <span class="agc__error" data-age-field-error="name"></span>
+          </div>
+        </div>
+
+        <div class="agc__card">
+          <h2 class="agc__section-title">Демография</h2>
+          <div class="agc__row agc__row--3">
+            <div class="agc__field">
+              <label class="agc__label" for="age-from">Возраст от</label>
+              <select class="agc__select" id="age-from" name="age_from" required>
+                <option value="13">13</option>
+                <option value="18">18</option>
+                <option value="25">25</option>
+                <option value="35">35</option>
+                <option value="45">45</option>
+                <option value="55">55</option>
+              </select>
+            </div>
+            <div class="agc__field">
+              <label class="agc__label" for="age-to">Возраст до</label>
+              <select class="agc__select" id="age-to" name="age_to" required>
+                <option value="24">24</option>
+                <option value="34">34</option>
+                <option value="44">44</option>
+                <option value="54">54</option>
+                <option value="64">64</option>
+                <option value="99">65+</option>
+              </select>
+            </div>
+            <div class="agc__field">
+              <label class="agc__label" for="age-gender">Пол</label>
+              <select class="agc__select" id="age-gender" name="gender" required>
+                <option value="any">Все</option>
+                <option value="male">Мужчины</option>
+                <option value="female">Женщины</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {{!-- Устройства (заглушка) --}}
+        <div class="agc__card">
+          <div class="agc__section-head">
+            <h2 class="agc__section-title">Устройства</h2>
+            <span class="agc__soon-badge">Скоро</span>
+          </div>
+          <p class="agc__section-hint">Выберите на каких устройствах показывать объявления.</p>
+          <div class="agc__devices" data-agc-devices>
+            <button class="agc__device agc__device--active" type="button" data-stub>
+              <svg class="agc__device-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect x="2" y="4" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M8 22h8M12 18v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+              <span class="agc__device-name">Десктоп</span>
+              <span class="agc__device-share">38%</span>
+            </button>
+            <button class="agc__device agc__device--active" type="button" data-stub>
+              <svg class="agc__device-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect x="7" y="2" width="10" height="20" rx="2" stroke="currentColor" stroke-width="1.6"/>
+                <circle cx="12" cy="18.5" r="1" fill="currentColor"/>
+              </svg>
+              <span class="agc__device-name">Мобильные</span>
+              <span class="agc__device-share">56%</span>
+            </button>
+            <button class="agc__device" type="button" data-stub>
+              <svg class="agc__device-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect x="2" y="5" width="20" height="15" rx="2" stroke="currentColor" stroke-width="1.6"/>
+                <circle cx="12" cy="20" r="0.5" stroke="currentColor" stroke-width="1.6"/>
+              </svg>
+              <span class="agc__device-name">Планшеты</span>
+              <span class="agc__device-share">6%</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="agc__card">
+          <h2 class="agc__section-title">Геотаргетинг</h2>
+          <div class="agc__row agc__row--2">
+            <div class="agc__field">
+              <label class="agc__label" for="age-region">Регион</label>
+              <select class="agc__select" id="age-region" name="region_id" required>
+                <option value="1">Москва</option>
+                <option value="2">Санкт-Петербург</option>
+                <option value="3">Казань</option>
+                <option value="4">Екатеринбург</option>
+                <option value="5">Новосибирск</option>
+                <option value="6">Краснодар</option>
+                <option value="7">Нижний Новгород</option>
+                <option value="8">Самара</option>
+                <option value="9">Ростов-на-Дону</option>
+                <option value="10">Весь РФ</option>
+              </select>
+            </div>
+            <div class="agc__field">
+              <label class="agc__label" for="age-topic">Тематика</label>
+              <select class="agc__select" id="age-topic" name="topic_id" required>
+                <option value="1">Технологии</option>
+                <option value="2">Бизнес</option>
+                <option value="3">Красота и здоровье</option>
+                <option value="4">Авто</option>
+                <option value="5">Недвижимость</option>
+                <option value="6">Еда и рестораны</option>
+                <option value="7">Путешествия</option>
+                <option value="8">Спорт</option>
+                <option value="9">Мода</option>
+                <option value="10">Образование</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {{!-- Площадки (заглушка) --}}
+        <div class="agc__card">
+          <div class="agc__section-head">
+            <h2 class="agc__section-title">Площадки размещения</h2>
+            <span class="agc__soon-badge">Скоро</span>
+          </div>
+          <p class="agc__section-hint">Выберите где будут показываться объявления этой группы.</p>
+          <div class="agc__platforms" data-agc-platforms>
+            <button class="agc__platform agc__platform--active" type="button" data-stub>
+              <span class="agc__platform-icon agc__platform-icon--vk">VK</span>
+              <span class="agc__platform-name">ВКонтакте</span>
+              <span class="agc__platform-reach">~48 млн</span>
+            </button>
+            <button class="agc__platform agc__platform--active" type="button" data-stub>
+              <span class="agc__platform-icon agc__platform-icon--tg">TG</span>
+              <span class="agc__platform-name">Telegram</span>
+              <span class="agc__platform-reach">~30 млн</span>
+            </button>
+            <button class="agc__platform" type="button" data-stub>
+              <span class="agc__platform-icon agc__platform-icon--ok">OK</span>
+              <span class="agc__platform-name">Одноклассники</span>
+              <span class="agc__platform-reach">~22 млн</span>
+            </button>
+            <button class="agc__platform" type="button" data-stub>
+              <span class="agc__platform-icon agc__platform-icon--rt">RT</span>
+              <span class="agc__platform-name">Rutube</span>
+              <span class="agc__platform-reach">~15 млн</span>
+            </button>
+            <button class="agc__platform" type="button" data-stub>
+              <span class="agc__platform-icon agc__platform-icon--ya">Я</span>
+              <span class="agc__platform-name">Яндекс</span>
+              <span class="agc__platform-reach">~50 млн</span>
+            </button>
+          </div>
+        </div>
+
+        {{!-- Расписание (заглушка) --}}
+        <div class="agc__card">
+          <div class="agc__section-head">
+            <h2 class="agc__section-title">Расписание показов</h2>
+            <span class="agc__soon-badge">Скоро</span>
+          </div>
+          <p class="agc__section-hint">Укажите в какие дни и часы показывать объявления.</p>
+          <div class="agc__schedule">
+            <div class="agc__schedule-days" data-agc-days>
+              <button class="agc__day agc__day--active" type="button" data-stub>Пн</button>
+              <button class="agc__day agc__day--active" type="button" data-stub>Вт</button>
+              <button class="agc__day agc__day--active" type="button" data-stub>Ср</button>
+              <button class="agc__day agc__day--active" type="button" data-stub>Чт</button>
+              <button class="agc__day agc__day--active" type="button" data-stub>Пт</button>
+              <button class="agc__day" type="button" data-stub>Сб</button>
+              <button class="agc__day" type="button" data-stub>Вс</button>
+            </div>
+            <div class="agc__schedule-time">
+              <div class="agc__schedule-time-row">
+                <span class="agc__schedule-time-label">Начало</span>
+                <div class="agc__stub-select" data-stub>09:00</div>
+              </div>
+              <span class="agc__schedule-time-sep">—</span>
+              <div class="agc__schedule-time-row">
+                <span class="agc__schedule-time-label">Конец</span>
+                <div class="agc__stub-select" data-stub>21:00</div>
+              </div>
+              <span class="agc__schedule-allday" data-stub>
+                <span class="agc__toggle agc__toggle--sm" role="switch" aria-checked="false" data-stub>
+                  <span class="agc__toggle-thumb"></span>
+                </span>
+                Круглосуточно
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {{!-- Бюджет и стратегия (заглушка) --}}
+        <div class="agc__card">
+          <div class="agc__section-head">
+            <h2 class="agc__section-title">Бюджет и стратегия</h2>
+            <span class="agc__soon-badge">Скоро</span>
+          </div>
+          <p class="agc__section-hint">Задайте лимит расходов и способ оплаты для этой группы.</p>
+          <div class="agc__row agc__row--2">
+            <div class="agc__field">
+              <label class="agc__label">Дневной лимит группы</label>
+              <div class="agc__budget-input" data-stub>
+                <input class="agc__budget-field" type="number" placeholder="1 000" min="100" step="100" disabled />
+                <span class="agc__budget-currency">₽</span>
+              </div>
+              <span class="agc__field-note">Минимум 100 ₽ в день</span>
+            </div>
+            <div class="agc__field">
+              <label class="agc__label">Общий лимит группы</label>
+              <div class="agc__budget-input" data-stub>
+                <input class="agc__budget-field" type="number" placeholder="30 000" min="1000" step="500" disabled />
+                <span class="agc__budget-currency">₽</span>
+              </div>
+              <span class="agc__field-note">Необязательно</span>
+            </div>
+          </div>
+          <div class="agc__bidding" data-agc-bidding>
+            <button class="agc__bid-option agc__bid-option--active" type="button" data-stub>
+              <div class="agc__bid-head">
+                <span class="agc__bid-name">CPM</span>
+                <span class="agc__bid-badge">За показы</span>
+              </div>
+              <p class="agc__bid-desc">Платите за 1000 показов. Подходит для охвата и узнаваемости.</p>
+            </button>
+            <button class="agc__bid-option" type="button" data-stub>
+              <div class="agc__bid-head">
+                <span class="agc__bid-name">CPC</span>
+                <span class="agc__bid-badge">За клики</span>
+              </div>
+              <p class="agc__bid-desc">Платите только за переходы. Подходит для трафика и конверсий.</p>
+            </button>
+          </div>
+        </div>
+
+        <div class="agc__card">
+          <div class="agc__section-head">
+            <h2 class="agc__section-title">Профильные теги</h2>
+            <span class="agc__soon-badge">Скоро</span>
+          </div>
+          <p class="agc__section-hint">Выберите сегменты аудитории по интересам и профессии.</p>
+          <div class="agc__chips" data-agc-tags>
+            <button class="agc__chip" type="button" data-stub>Предприниматели</button>
+            <button class="agc__chip" type="button" data-stub>B2B decision makers</button>
+            <button class="agc__chip" type="button" data-stub>Маркетологи</button>
+            <button class="agc__chip" type="button" data-stub>Владельцы SMB</button>
+            <button class="agc__chip" type="button" data-stub>Digital / product</button>
+            <button class="agc__chip" type="button" data-stub>Фрилансеры</button>
+            <button class="agc__chip" type="button" data-stub>Premium-сегмент</button>
+            <button class="agc__chip" type="button" data-stub>Молодая аудитория</button>
+            <button class="agc__chip" type="button" data-stub>Семейная аудитория</button>
+            <button class="agc__chip" type="button" data-stub>Retail / e-com</button>
+            <button class="agc__chip" type="button" data-stub>Покупатели маркетплейсов</button>
+            <button class="agc__chip" type="button" data-stub>Средний доход</button>
+            <button class="agc__chip" type="button" data-stub>Look-alike</button>
+            <button class="agc__chip" type="button" data-stub>Sales ops</button>
+            <button class="agc__chip" type="button" data-stub>Активная городская</button>
+          </div>
+        </div>
+
+        <div class="agc__card">
+          <div class="agc__section-head">
+            <h2 class="agc__section-title">Интересы</h2>
+            <span class="agc__soon-badge">Скоро</span>
+          </div>
+          <p class="agc__section-hint">Добавьте интересы которые уточняют аудиторию.</p>
+          <div class="agc__stub-input" data-stub>
+            <span>Начните вводить интерес…</span>
+          </div>
+          <div class="agc__chips agc__chips--sm">
+            <span class="agc__chip agc__chip--active" data-stub>Технологии</span>
+            <span class="agc__chip agc__chip--active" data-stub>Стартапы</span>
+            <span class="agc__chip agc__chip--active" data-stub>SaaS</span>
+          </div>
+        </div>
+
+        <div class="agc__card">
+          <div class="agc__section-head">
+            <h2 class="agc__section-title">Режим сопоставления</h2>
+            <span class="agc__soon-badge">Скоро</span>
+          </div>
+          <p class="agc__section-hint">Насколько точно аудитория должна совпадать с тегами.</p>
+          <div class="agc__match-modes" data-stub>
+            <label class="agc__match-mode agc__match-mode--active">
+              <input type="radio" name="_matchMode" value="balanced" checked aria-label="Сбалансированный" />
+              <strong>Сбалансированный</strong>
+              <span>Хороший охват при точном таргетинге</span>
+            </label>
+            <label class="agc__match-mode">
+              <input type="radio" name="_matchMode" value="strict" aria-label="Строгий" />
+              <strong>Строгий</strong>
+              <span>Точное совпадение, меньший охват</span>
+            </label>
+            <label class="agc__match-mode">
+              <input type="radio" name="_matchMode" value="any" aria-label="Широкий" />
+              <strong>Широкий</strong>
+              <span>Максимальный охват, менее точный</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="agc__card agc__card--row">
+          <div>
+            <div class="agc__section-head">
+              <h2 class="agc__section-title">Расширение аудитории</h2>
+              <span class="agc__soon-badge">Скоро</span>
+            </div>
+            <p class="agc__section-hint agc__section-hint--no-mt">Алгоритм найдёт похожих пользователей за пределами заданных параметров.</p>
+          </div>
+          <button class="agc__toggle" type="button" role="switch" aria-checked="false" data-stub aria-label="Расширение аудитории">
+            <span class="agc__toggle-thumb"></span>
+          </button>
+        </div>
+
+        <p class="agc__form-error" data-age-form-error hidden></p>
+      </div>
+
+      {{!-- Правая колонка --}}
+      <aside class="agc__sidebar">
+        <div class="agc__reach-card">
+          <div class="agc__reach-header">
+            <span class="agc__reach-title">Прогноз аудитории</span>
+            <span class="agc__soon-badge">Скоро</span>
+          </div>
+          <div class="agc__reach-stats">
+            <div class="agc__reach-stat">
+              <span class="agc__reach-label">Примерный охват</span>
+              <strong class="agc__reach-value">120 000 – 280 000</strong>
+            </div>
+            <div class="agc__reach-stat">
+              <span class="agc__reach-label">Прогноз кликов</span>
+              <strong class="agc__reach-value">2 400 – 5 600</strong>
+            </div>
+            <div class="agc__reach-stat">
+              <span class="agc__reach-label">Ширина аудитории</span>
+              <strong class="agc__reach-value">Сбалансированная</strong>
+            </div>
+            <div class="agc__reach-stat">
+              <span class="agc__reach-label">Качество</span>
+              <strong class="agc__reach-value agc__reach-value--good">Высокое</strong>
+            </div>
+          </div>
+          <div class="agc__reach-bar">
+            <div class="agc__reach-bar-fill" style="width: 62%"></div>
+          </div>
+          <p class="agc__reach-note">Охват рассчитывается на основе демографии, региона и тематики.</p>
+        </div>
+      </aside>
+
+    </div>
+  </form>
+</section>

@@ -1,0 +1,150 @@
+<section class="adc" data-ade>
+  <form class="adc__form" data-ade-form novalidate>
+
+    <div class="adc__toolbar">
+      <div class="adc__toolbar-left">
+        <button class="adc__back" type="button" data-ade-back>← Назад</button>
+        <div>
+          <h1 class="adc__title">Редактирование объявления</h1>
+          <p class="adc__sub">Обновите креатив — изменения уйдут на повторную модерацию.</p>
+        </div>
+      </div>
+      <button class="adc__submit" type="submit" data-ade-submit>
+        Сохранить изменения
+      </button>
+    </div>
+
+    <div class="adc__layout">
+
+      <div class="adc__fields">
+
+        <div class="adc__card">
+          <h2 class="adc__section-title">Изображение</h2>
+          <div class="adc__upload-zone" data-ade-upload-zone>
+            <input
+              class="adc__upload-input"
+              id="ade-image-file"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              data-ade-file-input
+              aria-label="Загрузить новое изображение"
+            />
+            <div class="adc__upload-placeholder" data-ade-upload-placeholder>
+              <svg class="adc__upload-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"
+                  stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <p class="adc__upload-label">
+                {{#if currentImageUrl}}Заменить изображение{{else}}Перетащите файл или <span>нажмите для выбора</span>{{/if}}
+              </p>
+              <p class="adc__upload-hint">JPG, PNG, WebP · до 5 МБ</p>
+            </div>
+            <div class="adc__upload-preview" data-ade-upload-preview hidden>
+              <img data-ade-upload-img alt="" />
+              <button class="adc__upload-remove" type="button" data-ade-upload-remove aria-label="Удалить изображение">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </button>
+              <span class="adc__upload-filename" data-ade-upload-filename></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="adc__card">
+          <h2 class="adc__section-title">Текст объявления</h2>
+          <div class="adc__field">
+            <label class="adc__label" for="ade-title">
+              Заголовок
+              <span class="adc__counter" data-ade-counter="title">0/60</span>
+            </label>
+            <input
+              class="adc__input"
+              id="ade-title"
+              name="title"
+              type="text"
+              value="{{title}}"
+              placeholder="Краткий и цепляющий заголовок"
+              maxlength="60"
+              required
+            />
+            <span class="adc__error" data-ade-error="title"></span>
+          </div>
+          <div class="adc__field">
+            <label class="adc__label" for="ade-desc">
+              Описание
+              <span class="adc__counter" data-ade-counter="short_desc">0/150</span>
+            </label>
+            <textarea
+              class="adc__textarea"
+              id="ade-desc"
+              name="short_desc"
+              placeholder="Расскажите о предложении коротко и по делу"
+              maxlength="150"
+              rows="4"
+              required
+            >{{short_desc}}</textarea>
+            <span class="adc__error" data-ade-error="short_desc"></span>
+          </div>
+        </div>
+
+        <div class="adc__card">
+          <h2 class="adc__section-title">Целевая ссылка</h2>
+          <div class="adc__field">
+            <label class="adc__label" for="ade-url">URL страницы</label>
+            <input
+              class="adc__input"
+              id="ade-url"
+              name="target_url"
+              type="url"
+              value="{{target_url}}"
+              placeholder="https://example.com"
+              required
+            />
+            <span class="adc__error" data-ade-error="target_url"></span>
+          </div>
+        </div>
+
+        <p class="adc__form-error" data-ade-form-error hidden></p>
+      </div>
+
+      <aside class="adc__sidebar">
+        <div class="adc__preview-card">
+          <div class="adc__preview-header">
+            <span class="adc__preview-title">Предпросмотр</span>
+            <span class="adc__preview-badge">Лента</span>
+          </div>
+
+          <div class="adc__preview-ad adc__preview-ad--feed" data-ade-preview-ad>
+            <div class="adc__preview-image" data-ade-preview-image>
+              {{#if currentImageUrl}}
+                <img src="{{currentImageUrl}}" alt="" />
+              {{else}}
+                <span class="adc__preview-image-placeholder">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/>
+                    <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
+                    <path d="m3 15 5-5 4 4 3-3 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span>Изображение</span>
+                </span>
+              {{/if}}
+            </div>
+            <div class="adc__preview-body">
+              <div class="adc__preview-meta">
+                <span class="adc__preview-domain" data-ade-preview-domain>example.com</span>
+                <span class="adc__preview-tag">Реклама</span>
+              </div>
+              <p class="adc__preview-headline" data-ade-preview-title>{{title}}</p>
+              <p class="adc__preview-desc" data-ade-preview-desc>{{short_desc}}</p>
+              <button class="adc__preview-cta" type="button">Узнать подробнее</button>
+            </div>
+          </div>
+
+          <p class="adc__preview-note">Предпросмотр обновляется по мере заполнения полей.</p>
+        </div>
+      </aside>
+
+    </div>
+  </form>
+</section>

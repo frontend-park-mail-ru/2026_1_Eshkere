@@ -18,7 +18,6 @@ export interface ListAdsResponse {
 export interface CreateAdRequest {
   title: string;
   short_desc: string;
-  image_url: string;
   target_url: string;
 }
 
@@ -27,10 +26,8 @@ export interface CreateAdResponse {
 }
 
 export interface UpdateAdRequest {
-  id?: number;
   title?: string;
   short_desc?: string;
-  image_url?: string;
   target_url?: string;
   status?: AdCampaignStatus;
 }
@@ -70,10 +67,18 @@ export async function updateAdInGroup(
   groupId: number,
   adId: number,
   payload: UpdateAdRequest,
+  imageFile?: File,
 ): Promise<void> {
+  const formData = new FormData();
+  if (payload.title !== undefined) formData.append('title', payload.title);
+  if (payload.short_desc !== undefined) formData.append('short_desc', payload.short_desc);
+  if (payload.target_url !== undefined) formData.append('target_url', payload.target_url);
+  if (payload.status !== undefined) formData.append('status', payload.status);
+  if (imageFile) formData.append('image', imageFile);
+
   await request(`/ad_campaigns/${campaignId}/ad_groups/${groupId}/ads/${adId}`, {
     method: 'PUT',
-    body: payload,
+    body: formData,
   });
 }
 

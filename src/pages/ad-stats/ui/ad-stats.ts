@@ -79,8 +79,9 @@ export async function renderAdStatsPage(): Promise<string> {
 
 export function AdStats(): VoidFunction {
   const { campaignId, groupId, adId } = getParams();
-  const root = document.querySelector<HTMLElement>('[data-ad-stats]');
-  if (!root || !campaignId || !groupId || !adId) return () => {};
+  const rootEl = document.querySelector<HTMLElement>('[data-ad-stats]');
+  if (!rootEl || !campaignId || !groupId || !adId) return () => {};
+  const root: HTMLElement = rootEl;
 
   const controller = new AbortController();
   const { signal } = controller;

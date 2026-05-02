@@ -13,9 +13,14 @@
       </div>
     </div>
 
-    <button class="campaign-detail__add-group" type="button" data-add-group>
-      + Добавить группу
-    </button>
+    <div class="campaign-detail__header-actions">
+      <button class="campaign-detail__btn-edit" type="button" data-edit-campaign>
+        Редактировать
+      </button>
+      <button class="campaign-detail__add-group" type="button" data-add-group>
+        + Добавить группу
+      </button>
+    </div>
   </header>
 
   <section class="campaign-detail__summary" aria-label="Сводка кампании">
@@ -79,6 +84,9 @@
                 <button class="ad-group-card__btn ad-group-card__btn--add" type="button" data-add-ad="{{id}}">
                   + Объявление
                 </button>
+                <button class="ad-group-card__btn" type="button" data-edit-group="{{id}}">
+                  Редактировать
+                </button>
                 <button class="ad-group-card__btn ad-group-card__btn--stats" type="button" data-stats-group="{{id}}">
                   Статистика
                 </button>
@@ -100,6 +108,7 @@
                     <div class="ad-card__meta">
                       <span class="ad-card__status ad-card__status--{{statusTone}}">{{statusLabel}}</span>
                       <div class="ad-card__actions">
+                        <button class="ad-card__action" type="button" data-edit-ad="{{../id}}:{{id}}">Редактировать</button>
                         <button class="ad-card__action" type="button" data-stats-ad="{{../id}}:{{id}}">Статистика</button>
                         <button class="ad-card__action" type="button" data-feed-ad="{{../id}}:{{id}}">Получить фид</button>
                         <button class="ad-card__action ad-card__action--danger" type="button" data-delete-ad="{{../id}}:{{id}}">Удалить</button>
