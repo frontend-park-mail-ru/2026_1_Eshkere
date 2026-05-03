@@ -332,6 +332,7 @@
     color: var(--primary-active);
   }
 
+  &--edit,
   &--stats {
     border: 1px solid var(--border);
     background: transparent;
@@ -496,6 +497,32 @@
   .campaign-detail__summary {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .campaign-detail__header {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .campaign-detail__header-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+@include mixins.media-max(t.$bp-md) {
+  .ad-group-card__actions {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .ad-group-card__btn {
+    flex: 1 1 auto;
+    min-width: 120px;
+  }
+
+  .campaign-detail__groups {
+    overflow-x: hidden;
+  }
 }
 
 @include mixins.media-max(t.$bp-sm) {
@@ -517,13 +544,22 @@
     min-height: 74px;
   }
 
+  .campaign-detail__header-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .campaign-detail__btn-edit,
   .campaign-detail__add-group,
   .ad-group-card__btn {
     width: 100%;
+    text-align: center;
   }
 
   .ad-group-card__actions {
     width: 100%;
+    flex-direction: column;
+    gap: 8px;
   }
 
   .ad-group-card__ads {
@@ -540,5 +576,31 @@
 
   .ad-card__meta {
     align-items: flex-start;
+  }
+
+  .ad-card__actions {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .ad-card__action {
+    flex: 1 1 auto;
+    min-height: 40px;
+    text-align: center;
+  }
+}
+
+@include mixins.media-max(t.$bp-xs) {
+  .campaign-detail__info {
+    min-width: 0;
+  }
+
+  .campaign-detail__title {
+    font-size: 19px;
+    word-break: break-word;
+  }
+
+  .ad-group-card__name {
+    font-size: 15px;
   }
 }

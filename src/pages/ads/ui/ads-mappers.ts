@@ -24,18 +24,18 @@ export const campaignStatusMap: Record<CampaignStatusKey, CampaignStatusMeta> = 
     enabled: false,
   },
   moderation: {
-    label: 'На модерации',
-    tone: 'pending',
-    enabled: true,
+    label: 'Черновик',
+    tone: 'draft',
+    enabled: false,
   },
   rejected: {
-    label: 'Отклонено',
-    tone: 'danger',
+    label: 'Черновик',
+    tone: 'draft',
     enabled: false,
   },
   notEnoughMoney: {
-    label: 'Нет средств',
-    tone: 'warning',
+    label: 'Остановлено',
+    tone: 'paused',
     enabled: false,
   },
 };

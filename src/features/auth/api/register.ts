@@ -41,13 +41,12 @@ export async function registerUser({ name, email, phone, password }: RegisterUse
 
     const profile = await getMe().catch(() => null);
     if (profile) {
-      const enriched: AuthUser = {
+      authState.setAuthenticatedUser({
         ...base,
         name: profile.name ?? normalizedName,
         balance: profile.balance,
         avatar: profile.avatar_url,
-      };
-      authState.setAuthenticatedUser(enriched);
+      });
     }
 
     return { user: authState.getCurrentUser()! };

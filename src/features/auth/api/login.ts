@@ -33,13 +33,12 @@ export async function loginUser({ identifier, password }: LoginUserParams) {
 
     const profile = await getMe().catch(() => null);
     if (profile) {
-      const enriched: AuthUser = {
+      authState.setAuthenticatedUser({
         ...base,
         name: profile.name,
         balance: profile.balance,
         avatar: profile.avatar_url,
-      };
-      authState.setAuthenticatedUser(enriched);
+      });
     }
 
     return { user: authState.getCurrentUser()! };

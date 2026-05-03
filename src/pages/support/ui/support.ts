@@ -1,5 +1,7 @@
 import './support.scss';
 import { getAds, type AdItem } from 'features/ads/api/get-ads';
+import { listAppeals, createAppeal, getAppeal, type AppealResponse, type AppealCategory } from 'features/appeals';
+import { authState } from 'entities/user';
 import { LocalStorageKey, localStorageService } from 'shared/lib/local-storage';
 import { renderTemplate } from 'shared/lib/render';
 import supportTemplate from './support.hbs';
@@ -23,6 +25,33 @@ interface SupportCampaign {
 
 interface SupportStorage {
   [campaignId: string]: SupportThreadMessage[];
+}
+
+const TOPIC_TO_CATEGORY: Record<string, AppealCategory> = {
+  'Вопрос по модерации': 'question',
+  'Креативы и текст': 'complaint',
+  'Бюджет и списания': 'complaint',
+  'Запуск кампании': 'question',
+};
+
+const APPEAL_STATUS_LABELS: Record<string, string> = {
+  new: 'Новое',
+  in_progress: 'В работе',
+  resolved: 'Решено',
+  closed: 'Закрыто',
+};
+
+function formatAppealDate(iso: string): string {
+  try {
+    return new Date(iso).toLocaleString('ru-RU', {
+      day: 'numeric',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch {
+    return iso;
+  }
 }
 
 let supportController: AbortController | null = null;
@@ -124,9 +153,19 @@ function mapCampaigns(ads: AdItem[]): SupportCampaign[] {
 }
 
 export async function renderSupportPage(): Promise<string> {
-  const result = await getAds();
-  const campaigns = mapCampaigns(result.ads);
+  const [adsResult, appealsResult] = await Promise.all([
+    getAds(),
+    listAppeals().catch(() => ({ advertiser_id: 0, appeals: [] as AppealResponse[] })),
+  ]);
+
+  const campaigns = mapCampaigns(adsResult.ads);
   const selectedCampaign = campaigns.find((campaign) => campaign.isSelected) ?? campaigns[0] ?? null;
+
+  const backendAppeals = appealsResult.appeals.map((a) => ({
+    ...a,
+    statusLabel: APPEAL_STATUS_LABELS[a.status] ?? a.status,
+    createdAtFormatted: formatAppealDate(a.created_at),
+  }));
 
   return renderTemplate(supportTemplate, {
     campaigns,
@@ -134,7 +173,9 @@ export async function renderSupportPage(): Promise<string> {
     hasCampaigns: campaigns.length > 0,
     pendingCount: campaigns.filter((campaign) => campaign.statusTone === 'warning').length,
     rejectedCount: campaigns.filter((campaign) => campaign.statusTone === 'danger').length,
-    loadError: result.error ? result.message : '',
+    loadError: adsResult.error ? adsResult.message : '',
+    backendAppeals,
+    hasBackendAppeals: backendAppeals.length > 0,
   });
 }
 
@@ -203,13 +244,14 @@ export function Support(): void | VoidFunction {
   root.querySelectorAll<HTMLFormElement>('[data-support-form]').forEach((form) => {
     form.addEventListener(
       'submit',
-      (event) => {
+      async (event) => {
         event.preventDefault();
 
         const thread = form.closest<HTMLElement>('[data-support-thread]');
         const campaignId = thread?.dataset.supportThread;
         const textarea = form.querySelector<HTMLTextAreaElement>('[data-support-message]');
         const select = form.querySelector<HTMLSelectElement>('[data-support-topic]');
+        const submitBtn = form.querySelector<HTMLButtonElement>('[type="submit"]');
         const value = textarea?.value.trim() ?? '';
 
         if (!thread || !campaignId || !textarea || !value) {
@@ -223,10 +265,57 @@ export function Support(): void | VoidFunction {
           time: formatNow(topic),
         };
 
+        // Показываем сообщение в UI и сохраняем в localStorage
         persistMessage(campaignId, message);
         appendUserMessage(thread, message);
         textarea.value = '';
         textarea.focus();
+
+        // Отправляем реальное обращение на бек
+        const user = authState.getCurrentUser();
+        if (!user) return;
+
+        const category: AppealCategory = TOPIC_TO_CATEGORY[topic] ?? 'question';
+        const title = `${topic}`.slice(0, 100);
+
+        if (submitBtn) submitBtn.disabled = true;
+
+        try {
+          await createAppeal({
+            category,
+            title,
+            description: value,
+            name: user.name || user.email || 'Рекламодатель',
+            email: user.email,
+          });
+        } catch {
+          // Сообщение уже показано в UI — молча игнорируем ошибку отправки
+        } finally {
+          if (submitBtn) submitBtn.disabled = false;
+        }
+      },
+      { signal },
+    );
+  });
+
+  // Раскрытие деталей обращения по клику
+  root.querySelectorAll<HTMLElement>('[data-appeal-id]').forEach((card) => {
+    card.addEventListener(
+      'click',
+      async () => {
+        const id = Number(card.dataset.appealId);
+        if (!id) return;
+
+        const descEl = card.querySelector<HTMLElement>('[data-appeal-desc]');
+        if (!descEl || descEl.dataset.loaded) return;
+
+        try {
+          const appeal = await getAppeal(id);
+          descEl.textContent = appeal.description;
+          descEl.dataset.loaded = 'true';
+        } catch {
+          // игнорируем
+        }
       },
       { signal },
     );

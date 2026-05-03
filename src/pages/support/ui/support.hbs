@@ -24,6 +24,24 @@
     <div class="support-alert">{{loadError}}</div>
   {{/if}}
 
+  {{#if hasBackendAppeals}}
+    <section class="support-appeals">
+      <h2 class="support-appeals__title">Мои обращения</h2>
+      <div class="support-appeals__list">
+        {{#each backendAppeals}}
+          <article class="support-appeal" data-appeal-id="{{id}}">
+            <div class="support-appeal__head">
+              <strong class="support-appeal__name">{{title}}</strong>
+              <span class="support-appeal__status">{{statusLabel}}</span>
+            </div>
+            <p class="support-appeal__desc" data-appeal-desc>{{description}}</p>
+            <span class="support-appeal__date">{{createdAtFormatted}}</span>
+          </article>
+        {{/each}}
+      </div>
+    </section>
+  {{/if}}
+
   {{#if hasCampaigns}}
     <div class="support-shell">
       <aside class="support-list" aria-label="Кампании">

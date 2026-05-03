@@ -3,6 +3,7 @@ import { getAds } from 'features/ads/api/get-ads';
 import { getAdGroups, deleteAdGroup, type AdGroupResponse } from 'features/ads/api/ad-groups';
 import { getAdsInGroup, deleteAdInGroup, type AdResponse } from 'features/ads/api/ads';
 import { generateFeedLink } from 'features/feed-link/api/generate';
+import { openFeedLinkModal } from 'widgets/feed-link-modal';
 import { showToast } from 'shared/lib/toast';
 import { renderTemplate } from 'shared/lib/render';
 import { navigateTo } from 'shared/lib/navigation';
@@ -304,10 +305,9 @@ export function CampaignDetail(): VoidFunction {
       (btn as HTMLButtonElement).disabled = true;
       try {
         const { url } = await generateFeedLink(campaignId);
-        await navigator.clipboard.writeText(url);
-        showToast('Фид-ссылка скопирована', url.length > 60 ? url.slice(0, 60) + '…' : url, 'success');
+        openFeedLinkModal(url);
       } catch {
-        showToast('Ошибка', 'Не удалось получить фид-ссылку', 'error');
+        showToast('Ошибка', 'Не удалось получить код интеграции', 'error');
       } finally {
         btn.textContent = 'Получить фид';
         (btn as HTMLButtonElement).disabled = false;

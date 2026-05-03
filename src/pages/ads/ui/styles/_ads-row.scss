@@ -303,8 +303,8 @@
         line-height: 1.2;
       }
 
-      &:nth-child(2) {
-        grid-area: composition;
+        &:nth-child(2) {
+        grid-area: comp;
       }
 
       &:nth-child(3) {
@@ -312,15 +312,20 @@
       }
 
       &:nth-child(4) {
+        grid-area: budget;
+
+        &::before {
+          content: 'Бюджет';
+        }
+      }
+
+      &:nth-child(5) {
         grid-area: status;
-      }
+        align-self: start;
 
-      &:nth-child(5) {
-        grid-area: actions;
-      }
-
-      &:nth-child(5) {
-        align-self: end;
+        &::before {
+          content: 'Статус';
+        }
       }
     }
 
@@ -333,6 +338,7 @@
       overflow: hidden;
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 2;
+      line-clamp: 2;
       font-size: 17px;
       line-height: 1.22;
       overflow-wrap: anywhere;
@@ -342,6 +348,7 @@
     }
 
     &__actions {
+      grid-area: btns;
       width: auto;
       display: inline-flex;
       flex-direction: row;

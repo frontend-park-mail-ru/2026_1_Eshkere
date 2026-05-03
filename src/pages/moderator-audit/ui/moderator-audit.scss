@@ -204,3 +204,41 @@
   color: t.$color-text-muted;
   font: 400 15px/1.55 t.$font-family-body;
 }
+
+@include mixins.media-max(t.$bp-md) {
+  .moderator-audit-page__topbar {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .moderator-audit-page__kpis {
+    width: 100%;
+
+    article { flex: 1; min-width: 80px; }
+  }
+}
+
+@include mixins.media-max(t.$bp-sm) {
+  .moderator-audit-page__title {
+    font-size: 26px;
+  }
+
+  .moderator-audit-page__topbar {
+    padding: 16px;
+  }
+
+  .moderator-audit-panel {
+    padding: 16px;
+  }
+
+  .moderator-audit-entry__time {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .moderator-audit-entry__head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}

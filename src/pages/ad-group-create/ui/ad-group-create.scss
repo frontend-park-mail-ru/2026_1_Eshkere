@@ -787,6 +787,24 @@
   }
 }
 
+@include mixins.media-max(t.$bp-md) {
+  .agc__row--3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .agc__card {
+    padding: 20px;
+  }
+
+  .agc__devices {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .agc__bidding {
+    grid-template-columns: 1fr;
+  }
+}
+
 @include mixins.media-max(t.$bp-sm) {
   .agc__toolbar {
     gap: 12px;
@@ -824,5 +842,43 @@
 
     &:last-child { border-bottom: none; }
     &:nth-last-child(-n+2) { border-top: none; }
+  }
+}
+
+@include mixins.media-max(t.$bp-xs) {
+  .agc__card {
+    padding: 16px;
+  }
+
+  .agc__section-title {
+    font-size: 15px;
+  }
+
+  .agc__devices {
+    grid-template-columns: 1fr;
+  }
+
+  .agc__chips {
+    gap: 8px;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .agc__toggle {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .agc__chip {
+    min-height: 44px;
+  }
+
+  .agc__day,
+  .agc__device,
+  .agc__platform {
+    min-height: 44px;
   }
 }

@@ -244,4 +244,99 @@
     font-weight: 700;
   }
 
+  &__format-picker {
+    grid-column: 1 / -1;
+  }
+
+  &__format-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 16px;
+
+    @include mixins.media-max(t.$bp-md) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__format-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 18px;
+    border: 1.5px solid rgba(209, 217, 239, 0.96);
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(249, 251, 255, 0.96) 100%);
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+
+    &:hover {
+      border-color: rgba(78, 103, 255, 0.4);
+      box-shadow: 0 4px 16px rgba(79, 92, 150, 0.1);
+    }
+
+    &--active {
+      border-color: rgba(78, 103, 255, 0.7);
+      background: linear-gradient(180deg, rgba(243, 245, 255, 0.98) 0%, rgba(236, 240, 255, 0.96) 100%);
+      box-shadow: 0 0 0 3px rgba(90, 84, 255, 0.08), 0 4px 16px rgba(79, 92, 150, 0.1);
+    }
+  }
+
+  &__format-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  &__format-card-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #2b334b;
+  }
+
+  &__format-card-dot {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid rgba(180, 190, 220, 0.9);
+    background: #fff;
+    transition: border-color 0.18s, background 0.18s;
+
+    &--active {
+      border-color: #4e67ff;
+      background: radial-gradient(circle at center, #4e67ff 40%, #fff 41%);
+    }
+  }
+
+  &__format-card-desc {
+    font-size: 13px;
+    line-height: 1.55;
+    color: #66708c;
+    margin: 0;
+    flex: 1;
+  }
+
+  &__format-card-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: auto;
+    padding-top: 2px;
+  }
+
+  &__format-card-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(209, 217, 239, 0.96);
+    background: rgba(247, 249, 255, 0.9);
+    font-size: 12px;
+    font-weight: 600;
+    color: #66708c;
+  }
+
 }

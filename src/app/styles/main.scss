@@ -331,6 +331,14 @@ button {
 
 button {
   border: none;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  background: none;
+
+  &:focus-visible {
+    outline: revert;
+  }
 }
 
 

@@ -88,11 +88,14 @@ $_shimmer-shadow-hover:  0 14px 30px rgba(90, 84, 255, 0.38), inset 0 1px 0 rgba
 @mixin shimmer-button($height: 50px, $padding: 0 24px) {
   @include pill-button($height, $padding);
   border: none;
+  outline: none;
   background: $_shimmer-gradient;
+  background-clip: padding-box;
   color: #fff;
   font-weight: 700;
   cursor: pointer;
   box-shadow: $_shimmer-shadow;
+  isolation: isolate;
   @include interactive-lift(-2px, $_shimmer-shadow-hover, brightness(1.05));
 }
 

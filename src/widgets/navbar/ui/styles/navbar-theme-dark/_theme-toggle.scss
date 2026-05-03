@@ -22,7 +22,7 @@ html[data-theme='dark'] {
 
   @media (max-width: 600px) {
     .navbar__theme-btn-thumb {
-      transform: translateX(12px);
+      transform: translateY(-50%) translateX(15px);
     }
   }
 }

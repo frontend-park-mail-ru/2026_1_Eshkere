@@ -138,6 +138,17 @@ export function syncCampaignBuilderContentView({
       }
     });
 
+  document
+    .querySelectorAll<HTMLElement>('.campaign-builder__format-card')
+    .forEach((card) => {
+      const isActive = card.dataset.value === selectedValues.format;
+      card.classList.toggle('campaign-builder__format-card--active', isActive);
+      const dot = card.querySelector<HTMLElement>('.campaign-builder__format-card-dot');
+      if (dot) {
+        dot.classList.toggle('campaign-builder__format-card-dot--active', isActive);
+      }
+    });
+
   setTextAll('[data-summary-creatives]', creativeCount);
   setText('[data-summary-creatives-aside]', creativeCount);
   setTextAll('[data-summary-placement]', creativePlacements);

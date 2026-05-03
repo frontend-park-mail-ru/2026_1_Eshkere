@@ -39,7 +39,7 @@ function createModal(): HTMLElement {
         <div class="modal__inner mobile-warning-modal__inner">
           <img
             class="mobile-warning-modal__illustration"
-            src="/img/Bored.png"
+            src="/img/Work From Home.png"
             alt=""
             aria-hidden="true"
           />

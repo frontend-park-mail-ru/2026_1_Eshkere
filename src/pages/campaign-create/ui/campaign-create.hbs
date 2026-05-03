@@ -49,6 +49,35 @@
   <div class="campaign-builder__layout">
     <div class="campaign-builder__main">
       <section class="campaign-builder__panel campaign-builder__panel--content" data-step-panel="content">
+        <div class="campaign-builder__card campaign-builder__format-picker">
+          <div class="campaign-builder__card-head">
+            <h2 class="campaign-builder__card-title">Выберите тип рекламного блока</h2>
+            <p class="campaign-builder__card-subtitle">Формат определяет где и как появится ваше объявление.</p>
+          </div>
+          <div class="campaign-builder__format-grid">
+            {{#each formats}}
+              <button
+                class="campaign-builder__format-card{{#if selected}} campaign-builder__format-card--active{{/if}}"
+                type="button"
+                data-builder-select-option
+                data-select-key="format"
+                data-value="{{value}}"
+              >
+                <div class="campaign-builder__format-card-head">
+                  <strong class="campaign-builder__format-card-name">{{label}}</strong>
+                  <span class="campaign-builder__format-card-dot{{#if selected}} campaign-builder__format-card-dot--active{{/if}}"></span>
+                </div>
+                <p class="campaign-builder__format-card-desc">{{description}}</p>
+                <div class="campaign-builder__format-card-badges">
+                  {{#each platforms}}
+                    <span class="campaign-builder__format-card-badge">{{this}}</span>
+                  {{/each}}
+                </div>
+              </button>
+            {{/each}}
+          </div>
+        </div>
+
         <div class="campaign-builder__grid campaign-builder__grid--content">
           <div class="campaign-builder__card campaign-builder__card--message">
             <div class="campaign-builder__card-head">
@@ -70,26 +99,6 @@
                   <input class="campaign-builder__input" type="number" min="1000" step="100" value="{{budget.dailyBudget}}" data-builder-budget="dailyBudget" />
                   <span class="campaign-builder__hint">Минимум 1 000 ₽. Бюджет пока хранится в мастере и не влияет на API кампании.</span>
                   <span class="campaign-builder__error" data-builder-error="dailyBudget"></span>
-                </label>
-
-                <label class="campaign-builder__field">
-                  <span class="campaign-builder__label">Формат размещения</span>
-                  <div class="campaign-builder__select" data-builder-select="format">
-                    <button class="campaign-builder__select-trigger" type="button" data-builder-select-trigger aria-expanded="false">
-                      <span class="campaign-builder__select-trigger-content">
-                        <strong class="campaign-builder__select-value" data-builder-select-value="format">{{content.formatLabel}}</strong>
-                      </span>
-                      <span class="campaign-builder__select-icon"></span>
-                    </button>
-                    <div class="campaign-builder__select-menu" data-builder-select-menu hidden>
-                      {{#each formats}}
-                        <button class="campaign-builder__select-option{{#if selected}} campaign-builder__select-option--active{{/if}}" type="button" data-builder-select-option data-select-key="format" data-value="{{value}}">
-                          <span class="campaign-builder__select-option-label">{{label}}</span>
-                          <span class="campaign-builder__select-option-meta">{{#if selected}}Выбрано{{else}}{{meta}}{{/if}}</span>
-                        </button>
-                      {{/each}}
-                    </div>
-                  </div>
                 </label>
 
                 <label class="campaign-builder__field">

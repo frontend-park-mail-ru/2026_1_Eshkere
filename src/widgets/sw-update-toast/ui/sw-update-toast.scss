@@ -51,9 +51,15 @@
   }
 }
 
-@media (max-width: 480px) {
+@include mixins.media-max(t.$bp-sm) {
   .sw-update-toast {
-    bottom: 16px;
+    bottom: calc(64px + 16px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@include mixins.media-max(t.$bp-xs) {
+  .sw-update-toast {
+    bottom: calc(64px + 12px + env(safe-area-inset-bottom, 0px));
 
     &__body {
       flex-direction: column;

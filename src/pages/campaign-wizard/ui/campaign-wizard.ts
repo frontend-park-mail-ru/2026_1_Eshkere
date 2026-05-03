@@ -55,7 +55,7 @@ export function CampaignWizard(): VoidFunction {
     ad_desc: '',
     ad_url: '',
     ad_cta: 'Узнать подробнее',
-    ad_format: 'feed' as 'feed' | 'stories',
+    ad_format: 'feed' as 'feed' | 'stories' | 'banner' | 'fullscreen',
     ad_image: null as File | null,
   };
 
@@ -285,13 +285,65 @@ export function CampaignWizard(): VoidFunction {
     }, { signal });
   });
 
+  // ── Контейнер превью ──────────────────────────────────────────
+  const containerWInput = root.querySelector<HTMLInputElement>('[data-cw-container-w]');
+  const containerHInput = root.querySelector<HTMLInputElement>('[data-cw-container-h]');
+  const presetSelect    = root.querySelector<HTMLSelectElement>('[data-cw-container-preset]');
+  const adGrid          = root.querySelector<HTMLElement>('[data-cw-adgrid]');
+
+  function getGridClass(w: number, h: number): string {
+    const ratio = w / Math.max(h, 1);
+    if (ratio >= 4) return 'cw-adgrid cw-adgrid--row';
+    if (ratio < 1)  return 'cw-adgrid cw-adgrid--single';
+    if (ratio < 2)  return 'cw-adgrid cw-adgrid--grid2';
+    return 'cw-adgrid';
+  }
+
+  function syncGridLayout(): void {
+    if (!adGrid) return;
+    const w = parseInt(containerWInput?.value ?? '1000', 10);
+    const h = parseInt(containerHInput?.value ?? '400', 10);
+    adGrid.className = getGridClass(w, h);
+  }
+
+  containerWInput?.addEventListener('input', syncGridLayout, { signal });
+  containerHInput?.addEventListener('input', syncGridLayout, { signal });
+
+  presetSelect?.addEventListener('change', () => {
+    const [w, h] = (presetSelect.value ?? '').split(':').map(Number);
+    if (w && h) {
+      if (containerWInput) containerWInput.value = String(w);
+      if (containerHInput) containerHInput.value = String(h);
+      syncGridLayout();
+    }
+  }, { signal });
+
+  root.querySelectorAll<HTMLButtonElement>('[data-cw-device]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      root.querySelectorAll('[data-cw-device]').forEach((b) =>
+        b.classList.remove('cw-preview-device--active'),
+      );
+      btn.classList.add('cw-preview-device--active');
+    }, { signal });
+  });
+
+  const FORMAT_BADGE_LABELS: Record<string, string> = {
+    feed:    'Лента',
+    stories: 'Stories',
+  };
+
   root.querySelectorAll<HTMLButtonElement>('[data-cw-formats] [data-format]').forEach((btn) => {
     btn.addEventListener('click', () => {
       root.querySelectorAll('[data-cw-formats] [data-format]').forEach((b) =>
         b.classList.remove('cw-format--active'),
       );
       btn.classList.add('cw-format--active');
-      state.ad_format = btn.dataset.format as 'feed' | 'stories';
+      state.ad_format = btn.dataset.format as typeof state.ad_format;
+
+      const badgeEl = root.querySelector<HTMLElement>('.cw-preview-badge');
+      if (badgeEl) badgeEl.textContent = FORMAT_BADGE_LABELS[state.ad_format] ?? state.ad_format;
+
+      updateAdPreview();
     }, { signal });
   });
 
@@ -351,6 +403,13 @@ export function CampaignWizard(): VoidFunction {
     const domainEl = root.querySelector<HTMLElement>('[data-cw-preview-domain]');
     const ctaEl    = root.querySelector<HTMLElement>('[data-cw-preview-cta]');
     const imgEl    = root.querySelector<HTMLElement>('[data-cw-preview-image]');
+
+    // Переключаем класс-модификатор на контейнере превью при смене формата
+    const previewAdEl = root.querySelector<HTMLElement>('[data-cw-panel="3"] .cw-preview-ad');
+    if (previewAdEl) {
+      previewAdEl.classList.remove('cw-preview-ad--feed', 'cw-preview-ad--stories');
+      previewAdEl.classList.add(`cw-preview-ad--${state.ad_format}`);
+    }
 
     const title = getFieldValue('ad_title') || 'Заголовок объявления';
     const desc  = getFieldValue('ad_desc')  || 'Описание появится здесь.';
@@ -434,6 +493,7 @@ export function CampaignWizard(): VoidFunction {
   }, { signal });
 
   // Инициализация
+  updateAdPreview();
   goToStep(1);
 
   return () => controller.abort();
