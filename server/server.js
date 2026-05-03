@@ -26,6 +26,13 @@ if (isDevelopment) {
   app.use(express.static(distRoot));
 }
 
+/**
+ * Проксирует запрос к backend API на localhost:8000.
+ * Убирает префикс /api из пути и пробрасывает заголовки и тело запроса.
+ * @param {Object} req - Входящий запрос.
+ * @param {Object} res - Объект ответа.
+ * @return {void}
+ */
 function proxyApiRequest(req, res) {
   const target = new URL(`http://localhost:8000${req.originalUrl.replace(/^\/api/, '')}`);
   const headers = {...req.headers};
@@ -56,6 +63,13 @@ function proxyApiRequest(req, res) {
 
 app.use('/api', proxyApiRequest);
 
+/**
+ * Проксирует запрос к MinIO S3 на localhost:9000.
+ * Убирает префикс /s3 из пути и пробрасывает метод запроса.
+ * @param {Object} req - Входящий запрос.
+ * @param {Object} res - Объект ответа.
+ * @return {void}
+ */
 function proxyS3Request(req, res) {
   const target = new URL(`http://localhost:9000${req.originalUrl.replace(/^\/s3/, '')}`);
   const proxyRequest = http.request(
@@ -72,6 +86,13 @@ function proxyS3Request(req, res) {
 
 app.use('/s3', proxyS3Request);
 
+/**
+ * Отдаёт index.html для SPA-роутинга.
+ * В режиме разработки читает файл из памяти webpack, в продакшне — с диска.
+ * @param {Object} req - Входящий запрос.
+ * @param {Object} res - Объект ответа.
+ * @return {void}
+ */
 function sendIndexHtml(req, res) {
   if (isDevelopment && compiler) {
     const outputFileSystem = compiler.outputFileSystem;
@@ -103,3 +124,4 @@ app.listen(PORT, () => {
       `in ${isDevelopment ? 'development' : 'production'} mode`,
   );
 });
+app.get(/^\/(?!api|s3|fonts|icons|img|js|css|sw\.js).*/, sendIndexHtml);

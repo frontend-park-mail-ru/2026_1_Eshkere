@@ -207,7 +207,16 @@ html[data-theme='dark'] {
   }
 
   .how__steps::before {
-    background: linear-gradient(90deg, rgba(108, 120, 255, 0.18) 0%, rgba(199, 113, 255, 0.2) 100%);
+    background: linear-gradient(
+      90deg,
+      rgba(130, 145, 255, 0.55) 0%,
+      rgba(95, 205, 255, 0.42) 44%,
+      rgba(200, 140, 255, 0.5) 72%,
+      rgba(215, 120, 255, 0.44) 100%
+    );
+    box-shadow:
+      0 0 14px rgba(100, 160, 255, 0.18),
+      0 1px 0 rgba(255, 255, 255, 0.06) inset;
   }
 
   .how-step {

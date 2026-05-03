@@ -9,10 +9,20 @@ const PRECACHE_URLS = [
   '/img/logo.png',
 ];
 
+/**
+ * Проверяет, принадлежит ли URL текущему источнику (origin).
+ * @param {URL} url - Проверяемый URL.
+ * @return {boolean} true, если URL совпадает с origin сервис-воркера.
+ */
 function isSameOrigin(url) {
   return url.origin === self.location.origin;
 }
 
+/**
+ * Определяет, является ли запрос запросом статического ресурса (скрипт, стиль, шрифт, изображение, манифест).
+ * @param {Request} request - Проверяемый запрос.
+ * @return {boolean} true, если запрос относится к статическим ресурсам того же origin.
+ */
 function isStaticAssetRequest(request) {
   const url = new URL(request.url);
 

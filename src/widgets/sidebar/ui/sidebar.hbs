@@ -28,6 +28,14 @@
       <img class="sidebar__icon" src="/icons/wallet.svg" alt="" aria-hidden="true" />
       Баланс
     </a>
+    <a
+      href="/add-sites"
+      class="sidebar__link {{#if isAddSites}}sidebar__link--active{{/if}}"
+      {{#if isAddSites}}aria-current="page"{{/if}}
+    >
+      <img class="sidebar__icon" src="/icons/Img_box.svg" alt="" aria-hidden="true" />
+      Добавить сайты
+    </a>
     <span class="sidebar__link sidebar__link--disabled" aria-disabled="true">
       <img class="sidebar__icon" src="/icons/history.svg" alt="" aria-hidden="true" />
       История действий
@@ -114,6 +122,14 @@
           <img class="mobile-tabbar__sheet-icon" src="/icons/history.svg" alt="" aria-hidden="true" />
           История действий
         </span>
+        <a
+          class="mobile-tabbar__sheet-item {{#if isAddSites}}mobile-tabbar__sheet-item--active{{/if}}"
+          href="/add-sites"
+          {{#if isAddSites}}aria-current="page"{{/if}}
+        >
+          <img class="mobile-tabbar__sheet-icon" src="/icons/Img_box.svg" alt="" aria-hidden="true" />
+          Добавить сайты
+        </a>
         <a
           class="mobile-tabbar__sheet-item {{#if isSupport}}mobile-tabbar__sheet-item--active{{/if}}"
           href="/support"

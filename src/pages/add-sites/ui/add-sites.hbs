@@ -1,0 +1,74 @@
+<section class="campaigns-page add-sites-page" data-add-sites-page>
+  <div class="campaigns-page__toolbar">
+    <div class="campaigns-page__toolbar-primary">
+      <button type="button" class="campaigns-page__create-button" data-add-site-action>
+        Добавить сайт
+      </button>
+    </div>
+
+    <div class="campaigns-page__filters">
+      <input
+        class="campaigns-page__search"
+        type="search"
+        id="sites-search"
+        placeholder="Поиск сайтов"
+        aria-label="Поиск сайтов"
+        autocomplete="off"
+      />
+    </div>
+  </div>
+
+  <div class="campaigns-table">
+    <div class="campaigns-table__header">
+      <div>Название</div>
+      <div>Домен</div>
+      <div>Статус</div>
+      <div>Управление</div>
+    </div>
+
+    {{#if hasSites}}
+      <div class="campaigns-table__body">
+        {{#each sites}}
+          <div
+            class="campaign-row"
+            data-site-id="{{id}}"
+          >
+            <div class="campaign-row__name">
+              <span class="campaign-row__detail-link">{{site_name}}</span>
+            </div>
+            <div>
+              <span class="campaign-row__composition campaign-row__composition--muted">{{domain}}</span>
+            </div>
+            <div>
+              <span class="status-badge status-badge--{{statusType}}" data-site-status-badge>{{statusLabel}}</span>
+            </div>
+            <div class="campaign-row__actions">
+              <button type="button" class="campaign-row__action-button campaign-row__action-button--delete" aria-label="Удалить" disabled>
+                <svg viewBox="0 0 24 24" class="campaign-row__action-icon campaign-row__action-icon--delete">
+                  <path d="M9 3.75A1.75 1.75 0 0 1 10.75 2h2.5A1.75 1.75 0 0 1 15 3.75V4h3.25a.75.75 0 0 1 0 1.5h-.77l-.63 12.03A2 2 0 0 1 14.85 19.5H9.15a2 2 0 0 1-2-1.97L6.52 5.5h-.77a.75.75 0 0 1 0-1.5H9v-.25Zm1.5.25h3v-.25a.25.25 0 0 0-.25-.25h-2.5a.25.25 0 0 0-.25.25V4Zm-1.85 14h6.7a.5.5 0 0 0 .5-.48L16.47 5.5H7.53l.62 12.02a.5.5 0 0 0 .5.48ZM10 8.75a.75.75 0 0 1 1.5 0v5.5a.75.75 0 0 1-1.5 0v-5.5Zm2.5 0a.75.75 0 0 1 1.5 0v5.5a.75.75 0 0 1-1.5 0v-5.5Z"/>
+                </svg>
+              </button>
+              <label class="toggle">
+                <input type="checkbox" {{#if enabled}}checked{{/if}} />
+                <span class="toggle__slider"></span>
+              </label>
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    {{else}}
+      <div class="campaigns-empty">
+        <div class="campaigns-empty__illustration" aria-hidden="true">
+          <picture>
+            <source srcset="/img/empty-campaign.png" type="image/png" />
+            <img class="campaigns-empty__image" src="/img/empty-campaign.png" alt="" />
+          </picture>
+        </div>
+        <h3 class="campaigns-empty__title">Здесь пока ничего нет...</h3>
+        <button type="button" class="campaigns-empty__create-button" data-add-site-action>
+          Добавить сайт
+        </button>
+      </div>
+    {{/if}}
+  </div>
+</section>

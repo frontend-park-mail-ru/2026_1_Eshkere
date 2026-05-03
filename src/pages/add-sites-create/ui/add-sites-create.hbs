@@ -1,0 +1,25 @@
+<section class="site-create-page" data-site-create-page>
+  <header class="site-create-page__toolbar">
+    <a class="site-create-page__back" href="/add-sites">← Площадки</a>
+  </header>
+
+  <div class="site-create-page__shell">
+    <h1 class="site-create-page__title">Создание сайта</h1>
+    <p class="site-create-page__lead">
+      Укажите название и домен площадки, на которой будут показываться рекламные баннеры.
+    </p>
+
+    <form class="site-create-form" id="add-sites-create-form" novalidate>
+      {{{titleField}}}
+      {{{domainField}}}
+      <p class="site-create-page__domain-hint">
+        Можно указать только домен (site.ru), полный URL с протоколом и путём (https://site.ru/page) или параметрами запроса.
+      </p>
+
+      <div class="site-create-form__actions">
+        {{{cancelButton}}}
+        {{{submitButton}}}
+      </div>
+    </form>
+  </div>
+</section>
