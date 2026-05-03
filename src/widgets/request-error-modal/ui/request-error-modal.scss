@@ -1,5 +1,5 @@
 .request-error-modal {
-  z-index: 121;
+  z-index: 1000;
 
   &__content {
     width: min(620px, calc(100vw - 32px));

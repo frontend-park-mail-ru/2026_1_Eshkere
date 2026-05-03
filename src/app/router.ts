@@ -13,6 +13,7 @@ import {
 import { renderHomePage, Home } from 'pages/home';
 import { renderLoginPage, Login } from 'pages/login';
 import { renderNotFoundPage } from 'pages/not-found';
+import { renderOverviewPage, Overview } from 'pages/overview';
 import { renderModeratorQueuePage, ModeratorQueuePage } from 'pages/moderator-queue';
 import { renderModeratorCasePage, ModeratorCasePage } from 'pages/moderator-case';
 import { renderModeratorAppealsPage, ModeratorAppealsPage } from 'pages/moderator-appeals';
@@ -20,7 +21,18 @@ import { renderModeratorMessagesPage, ModeratorMessagesPage } from 'pages/modera
 import { renderModeratorPoliciesPage, ModeratorPoliciesPage } from 'pages/moderator-policies';
 import { renderModeratorAuditPage, ModeratorAuditPage } from 'pages/moderator-audit';
 import { renderProfilePage, Profile } from 'pages/profile';
+import { renderCampaignWizardPage, CampaignWizard } from 'pages/campaign-wizard';
+import { renderCampaignStatsPage, CampaignStats } from 'pages/campaign-stats';
+import { renderGroupStatsPage, GroupStats } from 'pages/group-stats';
+import { renderAdStatsPage, AdStats } from 'pages/ad-stats';
+import { renderCampaignDetailPage, CampaignDetail } from 'pages/campaign-detail';
+import { renderAdGroupCreatePage, AdGroupCreate } from 'pages/ad-group-create';
+import { renderAdGroupEditPage, AdGroupEdit } from 'pages/ad-group-edit';
+import { renderAdCreatePage, AdCreate } from 'pages/ad-create';
+import { renderAdEditPage, AdEdit } from 'pages/ad-edit';
+import { renderCampaignEditFormPage, CampaignEditForm } from 'pages/campaign-edit-form';
 import { renderRegisterPage, Register } from 'pages/register';
+import { renderSupportPage, Support } from 'pages/support';
 import { Navbar } from 'widgets/navbar';
 import { getCurrentPath, navigateTo } from 'shared/lib/navigation';
 import {
@@ -74,16 +86,76 @@ const routes: Record<string, RouteDefinition> = {
     init: Ads,
     protected: true,
   },
-  '/ads/create': {
-    render: renderCampaignCreatePage,
+  '/overview': {
+    render: renderOverviewPage,
     layout: 'dashboard',
-    init: CampaignCreate,
+    init: Overview,
+    protected: true,
+  },
+  '/ads/create': {
+    render: renderCampaignWizardPage,
+    layout: 'dashboard',
+    init: CampaignWizard,
     protected: true,
   },
   '/ads/edit': {
     render: renderCampaignCreatePage,
     layout: 'dashboard',
     init: CampaignCreate,
+    protected: true,
+  },
+  '/ads/stats/campaign': {
+    render: renderCampaignStatsPage,
+    layout: 'dashboard',
+    init: CampaignStats,
+    protected: true,
+  },
+  '/ads/stats/group': {
+    render: renderGroupStatsPage,
+    layout: 'dashboard',
+    init: GroupStats,
+    protected: true,
+  },
+  '/ads/stats/ad': {
+    render: renderAdStatsPage,
+    layout: 'dashboard',
+    init: AdStats,
+    protected: true,
+  },
+  '/ads/campaign': {
+    render: renderCampaignDetailPage,
+    layout: 'dashboard',
+    init: CampaignDetail,
+    protected: true,
+  },
+  '/ads/campaign/edit': {
+    render: renderCampaignEditFormPage,
+    layout: 'dashboard',
+    init: CampaignEditForm,
+    protected: true,
+  },
+  '/ads/group/create': {
+    render: renderAdGroupCreatePage,
+    layout: 'dashboard',
+    init: AdGroupCreate,
+    protected: true,
+  },
+  '/ads/group/edit': {
+    render: renderAdGroupEditPage,
+    layout: 'dashboard',
+    init: AdGroupEdit,
+    protected: true,
+  },
+  '/ads/ad/create': {
+    render: renderAdCreatePage,
+    layout: 'dashboard',
+    init: AdCreate,
+    protected: true,
+  },
+  '/ads/ad/edit': {
+    render: renderAdEditPage,
+    layout: 'dashboard',
+    init: AdEdit,
     protected: true,
   },
   '/ads/statistics': {
@@ -102,6 +174,12 @@ const routes: Record<string, RouteDefinition> = {
     render: renderProfilePage,
     layout: 'dashboard',
     init: Profile,
+    protected: true,
+  },
+  '/support': {
+    render: renderSupportPage,
+    layout: 'dashboard',
+    init: Support,
     protected: true,
   },
   '/moderator': {
@@ -191,7 +269,7 @@ export async function renderRoute(): Promise<void> {
   }
 
   if (route.guestOnly && authState.isAuthenticated()) {
-    navigateTo('/ads', { replace: true });
+    navigateTo('/overview', { replace: true });
     return;
   }
 

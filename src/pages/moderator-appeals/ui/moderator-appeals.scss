@@ -218,3 +218,34 @@
   color: t.$color-text-muted;
   font: 400 15px/1.55 t.$font-family-body;
 }
+
+@include mixins.media-max(t.$bp-md) {
+  .moderator-appeals-page__topbar {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .moderator-appeals-page__kpis {
+    width: 100%;
+
+    article { flex: 1; min-width: 72px; }
+  }
+}
+
+@include mixins.media-max(t.$bp-sm) {
+  .moderator-appeals-page__title {
+    font-size: 26px;
+  }
+
+  .moderator-appeals-page__topbar {
+    padding: 16px;
+  }
+
+  .moderator-appeals-panel {
+    padding: 16px;
+  }
+
+  .moderator-appeal-card {
+    padding: 14px 16px;
+  }
+}

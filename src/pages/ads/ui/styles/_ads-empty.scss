@@ -41,19 +41,10 @@
 
   &__create-button {
     min-width: 216px;
-    height: 54px;
-    padding: 0 30px;
-    border-radius: t.$radius-pill;
-    color: var(--white);
     font-size: 18px;
     font-weight: 700;
-    background: t.$primary-gradient;
     cursor: pointer;
-    @include mixins.interactive-lift(
-      -2px,
-      t.$shadow-primary-hover,
-      brightness(1.03)
-    );
+    @include mixins.shimmer-button(54px, 0 30px);
   }
 }
 
@@ -61,5 +52,22 @@
   font-weight: 600;
   line-height: 1.35;
   color: var(--text-body);
+}
+
+.campaign-row__budget {
+  font-weight: 600;
+  color: var(--text-body);
+  white-space: nowrap;
+}
+
+.campaign-row__detail-link {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.15s;
+
+  &:hover {
+    color: var(--primary-active);
+    text-decoration: underline;
+  }
 }
 

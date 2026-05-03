@@ -1,0 +1,56 @@
+<div class="stats-page" data-group-stats>
+  <header class="stats-header">
+    <button class="stats-header__back" type="button" data-gs-back>← Кампания</button>
+    <div class="stats-header__info">
+      <div class="stats-header__eyebrow">Статистика группы объявлений</div>
+      <h1 class="stats-header__title" data-gs-title>Загрузка…</h1>
+      <div class="stats-header__meta">
+        <span class="stats-header__tag" data-gs-audience>—</span>
+        <span class="stats-header__tag" data-gs-region>—</span>
+      </div>
+    </div>
+    <div class="stats-periods" data-gs-periods>
+      <button class="stats-period stats-period--active" type="button" data-period="7">7 дней</button>
+      <button class="stats-period" type="button" data-period="30">30 дней</button>
+      <button class="stats-period" type="button" data-period="90">90 дней</button>
+    </div>
+  </header>
+
+  <div class="stats-kpis">
+    <div class="stats-kpi"><span class="stats-kpi__label">Показы</span><span class="stats-kpi__value" data-gs-kpi="impressions">—</span></div>
+    <div class="stats-kpi"><span class="stats-kpi__label">Клики</span><span class="stats-kpi__value" data-gs-kpi="clicks">—</span></div>
+    <div class="stats-kpi"><span class="stats-kpi__label">CTR</span><span class="stats-kpi__value" data-gs-kpi="ctr">—</span></div>
+    <div class="stats-kpi"><span class="stats-kpi__label">Потрачено</span><span class="stats-kpi__value" data-gs-kpi="spend">—</span></div>
+    <div class="stats-kpi"><span class="stats-kpi__label">CPC</span><span class="stats-kpi__value" data-gs-kpi="cpc">—</span></div>
+  </div>
+
+  <div class="stats-grid-2">
+    <div class="stats-card">
+      <div class="stats-card__head"><h2 class="stats-card__title">По полу</h2></div>
+      <div class="stats-breakdown" data-gs-gender></div>
+    </div>
+    <div class="stats-card">
+      <div class="stats-card__head"><h2 class="stats-card__title">По возрасту</h2></div>
+      <div class="stats-breakdown" data-gs-age></div>
+    </div>
+  </div>
+
+  <div class="stats-grid-2">
+    <div class="stats-card">
+      <div class="stats-card__head"><h2 class="stats-card__title">По площадкам</h2></div>
+      <div class="stats-breakdown" data-gs-platforms></div>
+    </div>
+    <div class="stats-card">
+      <div class="stats-card__head"><h2 class="stats-card__title">По устройствам</h2></div>
+      <div class="stats-breakdown" data-gs-devices></div>
+    </div>
+  </div>
+
+  <div class="stats-card">
+    <div class="stats-card__head"><h2 class="stats-card__title">Объявления группы</h2></div>
+    <table class="stats-table">
+      <thead><tr><th>Заголовок</th><th>Показы</th><th>Клики</th><th>CTR</th><th>Потрачено</th><th>Статус</th><th></th></tr></thead>
+      <tbody data-gs-ads-table><tr><td colspan="7" style="text-align:center;color:var(--text-note);padding:24px">Загрузка…</td></tr></tbody>
+    </table>
+  </div>
+</div>

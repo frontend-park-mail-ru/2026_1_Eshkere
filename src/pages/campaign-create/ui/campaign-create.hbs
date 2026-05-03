@@ -49,6 +49,35 @@
   <div class="campaign-builder__layout">
     <div class="campaign-builder__main">
       <section class="campaign-builder__panel campaign-builder__panel--content" data-step-panel="content">
+        <div class="campaign-builder__card campaign-builder__format-picker">
+          <div class="campaign-builder__card-head">
+            <h2 class="campaign-builder__card-title">Выберите тип рекламного блока</h2>
+            <p class="campaign-builder__card-subtitle">Формат определяет где и как появится ваше объявление.</p>
+          </div>
+          <div class="campaign-builder__format-grid">
+            {{#each formats}}
+              <button
+                class="campaign-builder__format-card{{#if selected}} campaign-builder__format-card--active{{/if}}"
+                type="button"
+                data-builder-select-option
+                data-select-key="format"
+                data-value="{{value}}"
+              >
+                <div class="campaign-builder__format-card-head">
+                  <strong class="campaign-builder__format-card-name">{{label}}</strong>
+                  <span class="campaign-builder__format-card-dot{{#if selected}} campaign-builder__format-card-dot--active{{/if}}"></span>
+                </div>
+                <p class="campaign-builder__format-card-desc">{{description}}</p>
+                <div class="campaign-builder__format-card-badges">
+                  {{#each platforms}}
+                    <span class="campaign-builder__format-card-badge">{{this}}</span>
+                  {{/each}}
+                </div>
+              </button>
+            {{/each}}
+          </div>
+        </div>
+
         <div class="campaign-builder__grid campaign-builder__grid--content">
           <div class="campaign-builder__card campaign-builder__card--message">
             <div class="campaign-builder__card-head">
@@ -66,23 +95,10 @@
 
               <div class="campaign-builder__row campaign-builder__row--double">
                 <label class="campaign-builder__field">
-                  <span class="campaign-builder__label">Формат размещения</span>
-                  <div class="campaign-builder__select" data-builder-select="format">
-                    <button class="campaign-builder__select-trigger" type="button" data-builder-select-trigger aria-expanded="false">
-                      <span class="campaign-builder__select-trigger-content">
-                        <strong class="campaign-builder__select-value" data-builder-select-value="format">{{content.formatLabel}}</strong>
-                      </span>
-                      <span class="campaign-builder__select-icon"></span>
-                    </button>
-                    <div class="campaign-builder__select-menu" data-builder-select-menu hidden>
-                      {{#each formats}}
-                        <button class="campaign-builder__select-option{{#if selected}} campaign-builder__select-option--active{{/if}}" type="button" data-builder-select-option data-select-key="format" data-value="{{value}}">
-                          <span class="campaign-builder__select-option-label">{{label}}</span>
-                          <span class="campaign-builder__select-option-meta">{{#if selected}}Выбрано{{else}}{{meta}}{{/if}}</span>
-                        </button>
-                      {{/each}}
-                    </div>
-                  </div>
+                  <span class="campaign-builder__label">Дневной бюджет</span>
+                  <input class="campaign-builder__input" type="number" min="1000" step="100" value="{{budget.dailyBudget}}" data-builder-budget="dailyBudget" />
+                  <span class="campaign-builder__hint">Минимум 1 000 ₽. Бюджет пока хранится в мастере и не влияет на API кампании.</span>
+                  <span class="campaign-builder__error" data-builder-error="dailyBudget"></span>
                 </label>
 
                 <label class="campaign-builder__field">
@@ -294,6 +310,30 @@
             </div>
 
             <div class="campaign-builder__stack">
+              <div class="campaign-builder__row campaign-builder__row--double">
+                <label class="campaign-builder__field">
+                  <span class="campaign-builder__label">Название группы</span>
+                  <input
+                    class="campaign-builder__input"
+                    type="text"
+                    value="{{group.name}}"
+                    placeholder="{{group.generatedName}}"
+                    data-builder-input="groupName"
+                  />
+                  <span class="campaign-builder__hint">Если оставить пустым, название сформируется из региона, возраста, пола и тематики.</span>
+                </label>
+
+                <label class="campaign-builder__field">
+                  <span class="campaign-builder__label">Пол</span>
+                  <select class="campaign-builder__input" data-builder-audience-gender>
+                    <option value="any" {{#if group.genderAny}}selected{{/if}}>Все</option>
+                    <option value="male" {{#if group.genderMale}}selected{{/if}}>Мужчины</option>
+                    <option value="female" {{#if group.genderFemale}}selected{{/if}}>Женщины</option>
+                  </select>
+                  <span class="campaign-builder__hint">Передаётся в настройки первой группы объявлений.</span>
+                </label>
+              </div>
+
               <button class="campaign-builder__stack-item campaign-builder__stack-item--interactive" type="button" data-builder-audience-detail="geo">
                 <div>
                   <strong class="campaign-builder__stack-title">География</strong>
@@ -307,7 +347,7 @@
                   <strong class="campaign-builder__stack-title">Возраст и профиль</strong>
                   <p class="campaign-builder__stack-text" data-audience-age>{{audience.age}}</p>
                 </div>
-                <span class="campaign-builder__pill" data-audience-profile-count>{{audience.profileLabel}}</span>
+                <span class="campaign-builder__pill" data-audience-profile-count>{{group.topicLabel}}</span>
               </button>
 
               <button class="campaign-builder__stack-item campaign-builder__stack-item--interactive" type="button" data-builder-audience-detail="exclusions">
@@ -482,11 +522,12 @@
               </div>
 
               <div class="campaign-builder__summary-list campaign-builder__summary-list--compact campaign-builder__summary-list--review">
-                <div class="campaign-builder__summary-item"><span>Формат</span><strong data-summary-format>{{content.formatLabel}}</strong></div>
+                <div class="campaign-builder__summary-item"><span>Кампания</span><strong data-summary-name>{{content.name}}</strong></div>
                 <div class="campaign-builder__summary-item"><span>Цель</span><strong data-summary-goal>{{content.goalLabel}}</strong></div>
-                <div class="campaign-builder__summary-item"><span>Площадки</span><strong data-summary-placement>{{publication.placements}}</strong></div>
+                <div class="campaign-builder__summary-item"><span>Группа</span><strong data-final-group-name>{{group.resolvedName}}</strong></div>
                 <div class="campaign-builder__summary-item"><span>География</span><strong data-final-cities>{{audience.cities}}</strong></div>
                 <div class="campaign-builder__summary-item"><span>Возраст</span><strong data-final-age>{{audience.ageRange}}</strong></div>
+                <div class="campaign-builder__summary-item"><span>Пол</span><strong data-audience-gender>{{group.genderLabel}}</strong></div>
                 <div class="campaign-builder__summary-item"><span>Дневной бюджет</span><strong data-final-daily-budget>{{budget.dailyBudgetLabel}}</strong></div>
                 <div class="campaign-builder__summary-item"><span>Период</span><strong data-final-period>{{budget.period}}</strong></div>
                 <div class="campaign-builder__summary-item"><span>Стратегия</span><strong data-final-strategy>{{budget.strategyLabel}}</strong></div>
@@ -499,7 +540,7 @@
           <div class="campaign-builder__card campaign-builder__card--publication-preview">
             <div class="campaign-builder__card-head">
               <h2 class="campaign-builder__card-title">Предпросмотр объявления</h2>
-              <p class="campaign-builder__card-subtitle">Финальный вид перед модерацией.</p>
+              <p class="campaign-builder__card-subtitle">Финальный вид перед созданием.</p>
             </div>
 
             <div class="campaign-preview">
@@ -520,41 +561,41 @@
 
           <div class="campaign-builder__card campaign-builder__card--review-summary">
             <div class="campaign-builder__card-head">
-              <h2 class="campaign-builder__card-title">Что отправится в публикацию</h2>
-              <p class="campaign-builder__card-subtitle">Ключевые блоки перед публикацией.</p>
+              <h2 class="campaign-builder__card-title">Что будет создано</h2>
+              <p class="campaign-builder__card-subtitle">Кампания, первая группа и первое объявление.</p>
             </div>
 
             <div class="campaign-builder__review-sections">
               <section class="campaign-builder__review-section campaign-builder__review-section--content">
-                <strong class="campaign-builder__review-section-title">Контент</strong>
+                <strong class="campaign-builder__review-section-title">Кампания</strong>
                 <div class="campaign-builder__summary-list campaign-builder__summary-list--compact">
-                  <div class="campaign-builder__summary-item"><span>Название объявления</span><strong data-summary-name>{{content.name}}</strong></div>
-                  <div class="campaign-builder__summary-item"><span>Формат</span><strong data-summary-format>{{content.formatLabel}}</strong></div>
+                  <div class="campaign-builder__summary-item"><span>Название</span><strong data-summary-name>{{content.name}}</strong></div>
                   <div class="campaign-builder__summary-item"><span>Целевое действие</span><strong data-summary-goal>{{content.goalLabel}}</strong></div>
-                  <div class="campaign-builder__summary-item"><span>Креативы</span><strong data-summary-creatives>{{publication.creativesCount}}</strong></div>
-                  <div class="campaign-builder__summary-item"><span>Площадки показа</span><strong data-summary-placement>{{publication.placements}}</strong></div>
+                  <div class="campaign-builder__summary-item"><span>Дневной бюджет</span><strong data-final-daily-budget>{{budget.dailyBudgetLabel}}</strong></div>
+                  <div class="campaign-builder__summary-item"><span>Общий лимит</span><strong data-final-total-budget>{{budget.totalBudgetLabel}}</strong></div>
                 </div>
               </section>
 
               <section class="campaign-builder__review-section campaign-builder__review-section--audience">
-                <strong class="campaign-builder__review-section-title">Аудитория</strong>
+                <strong class="campaign-builder__review-section-title">Группа</strong>
                 <div class="campaign-builder__summary-list campaign-builder__summary-list--compact">
+                  <div class="campaign-builder__summary-item"><span>Название</span><strong data-final-group-name>{{group.resolvedName}}</strong></div>
                   <div class="campaign-builder__summary-item"><span>География</span><strong data-final-cities>{{audience.cities}}</strong></div>
                   <div class="campaign-builder__summary-item"><span>Возраст</span><strong data-final-age>{{audience.ageRange}}</strong></div>
-                  <div class="campaign-builder__summary-item"><span>Профиль</span><strong data-final-profile>{{audience.profile}}</strong></div>
+                  <div class="campaign-builder__summary-item"><span>Пол</span><strong data-audience-gender>{{group.genderLabel}}</strong></div>
+                  <div class="campaign-builder__summary-item"><span>Тематика</span><strong data-final-topic>{{group.topicLabel}}</strong></div>
                   <div class="campaign-builder__summary-item"><span>Интересы</span><strong data-final-interests>{{audience.interests}}</strong></div>
                   <div class="campaign-builder__summary-item"><span>Исключения</span><strong data-final-exclusions>{{audience.exclusions}}</strong></div>
                 </div>
               </section>
 
               <section class="campaign-builder__review-section campaign-builder__review-section--budget">
-                <strong class="campaign-builder__review-section-title">Бюджет</strong>
+                <strong class="campaign-builder__review-section-title">Объявление</strong>
                 <div class="campaign-builder__summary-list campaign-builder__summary-list--compact">
-                  <div class="campaign-builder__summary-item"><span>Охват</span><strong data-summary-reach>{{budget.reach}}</strong></div>
-                  <div class="campaign-builder__summary-item"><span>Дневной бюджет</span><strong data-final-daily-budget>{{budget.dailyBudgetLabel}}</strong></div>
-                  <div class="campaign-builder__summary-item"><span>Общий лимит</span><strong data-final-total-budget>{{budget.totalBudgetLabel}}</strong></div>
-                  <div class="campaign-builder__summary-item"><span>Период показа</span><strong data-final-period>{{budget.period}}</strong></div>
-                  <div class="campaign-builder__summary-item"><span>Стратегия</span><strong data-final-strategy>{{budget.strategyLabel}}</strong></div>
+                  <div class="campaign-builder__summary-item"><span>Заголовок</span><strong data-preview-headline>{{content.headline}}</strong></div>
+                  <div class="campaign-builder__summary-item"><span>Описание</span><strong data-preview-description>{{content.description}}</strong></div>
+                  <div class="campaign-builder__summary-item"><span>Ссылка</span><strong>{{content.link}}</strong></div>
+                  <div class="campaign-builder__summary-item"><span>Креативы</span><strong data-summary-creatives>{{publication.creativesCount}}</strong></div>
                 </div>
               </section>
             </div>
@@ -601,19 +642,19 @@
             </div>
 
             <div class="campaign-builder__review-next">
-              <strong class="campaign-builder__review-section-title">После отправки</strong>
+              <strong class="campaign-builder__review-section-title">После создания</strong>
               <div class="campaign-builder__timeline">
                 <div class="campaign-builder__timeline-item">
-                  <strong>Модерация</strong>
-                  <span>Проверим креатив, ссылку и настройки кампании перед публикацией.</span>
+                  <strong>Кампания</strong>
+                  <span>Сначала создаётся кампания и фиксируется целевое действие.</span>
                 </div>
                 <div class="campaign-builder__timeline-item">
-                  <strong>Подготовка запуска</strong>
-                  <span>Система зафиксирует бюджет, период и соберёт финальный прогноз по показам.</span>
+                  <strong>Группа</strong>
+                  <span>Затем создаётся первая группа с основным регионом, возрастом, полом и тематикой.</span>
                 </div>
                 <div class="campaign-builder__timeline-item">
-                  <strong>Старт кампании</strong>
-                  <span>После одобрения объявление перейдёт в запуск, а черновик сохранится в истории.</span>
+                  <strong>Объявление</strong>
+                  <span>После группы создаётся первое объявление, и вы переходите в карточку кампании.</span>
                 </div>
               </div>
             </div>
@@ -621,7 +662,7 @@
         </div>
 
         <div class="campaign-builder__panel-actions">
-          <span class="campaign-builder__panel-note">После отправки кампания перейдёт в модерацию. Контент и бюджет останутся в черновике до подтверждения.</span>
+          <span class="campaign-builder__panel-note">Будут последовательно созданы кампания, первая группа и первое объявление.</span>
           <div class="campaign-builder__panel-buttons">
             <button class="campaign-builder__button campaign-builder__button--secondary" type="button" data-builder-step-action data-direction="prev">Назад</button>
             <button class="campaign-builder__button campaign-builder__button--primary" type="button" data-builder-submit>{{mode.primaryActionLabel}}</button>

@@ -92,9 +92,6 @@
 
   &__button--primary {
     border-color: transparent;
-    background: t.$primary-gradient;
-    color: #fff;
-    box-shadow: t.$shadow-primary;
-    @include mixins.interactive-lift(-1px, t.$shadow-primary-hover);
+    @include mixins.shimmer-button;
   }
 }

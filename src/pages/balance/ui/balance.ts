@@ -6,6 +6,7 @@ import {
   getBalanceState,
   persistBalanceState,
 } from 'features/balance/model/state';
+import { getBalance } from 'features/balance/api/get-balance';
 import { bindModalShell, closeModal, openModal } from 'shared/ui/modal/modal';
 import type { BalanceHistoryState } from 'features/balance/model/types';
 import {
@@ -146,6 +147,16 @@ export function Balance(): void | VoidFunction {
     autopayModal,
   ]);
   commitState();
+
+  // Синхронизируем баланс с сервером при загрузке страницы
+  getBalance()
+    .then(({ balance }) => {
+      if (balance !== state.balanceValue) {
+        state.balanceValue = balance;
+        commitState();
+      }
+    })
+    .catch(() => {});
 
   const shouldOpenPayment = new URLSearchParams(window.location.search).get('payment') === 'open';
 

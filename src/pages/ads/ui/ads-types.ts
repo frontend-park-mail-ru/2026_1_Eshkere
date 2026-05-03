@@ -1,6 +1,12 @@
 import type { AdItem } from 'features/ads/api/get-ads';
 
-export type CampaignStatusKey = 'active' | 'stopped' | 'draft' | 'moderation';
+export type CampaignStatusKey =
+  | 'active'
+  | 'stopped'
+  | 'draft'
+  | 'moderation'
+  | 'rejected'
+  | 'notEnoughMoney';
 
 export interface CampaignTemplateRow {
   id: AdItem['id'];
@@ -8,7 +14,8 @@ export interface CampaignTemplateRow {
   budget: string;
   budgetValue: number;
   goal: string;
-  lastActionDate: string;
+  composition: string;
+  compositionType: 'ready' | 'warning' | 'muted';
   statusKey: CampaignStatusKey;
   status: string;
   statusType: string;
@@ -17,7 +24,7 @@ export interface CampaignTemplateRow {
 
 export interface CampaignStatusMeta {
   label: string;
-  tone: 'working' | 'paused' | 'draft' | 'pending';
+  tone: 'working' | 'paused' | 'draft' | 'pending' | 'danger' | 'warning';
   enabled: boolean;
 }
 

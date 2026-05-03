@@ -1,9 +1,5 @@
 import { navigateTo } from 'shared/lib/navigation';
-import {
-  createLocalStorageKey,
-  LocalStorageKey,
-  localStorageService,
-} from 'shared/lib/local-storage';
+import { LocalStorageKey, localStorageService } from 'shared/lib/local-storage';
 import { renderElement } from 'shared/lib/render';
 import { OPEN_CAMPAIGN_DELETE_MODAL_EVENT } from 'shared/lib/events';
 import adsActionMenuTemplate from './ads-action-menu.hbs';
@@ -60,20 +56,7 @@ export function initCampaignActionMenus(signal: AbortSignal): void {
       return;
     }
 
-    localStorageService.setJson(LocalStorageKey.CampaignEditSeed, {
-      id: String(campaignId),
-      title: row?.dataset.campaignTitle || '',
-      budgetValue: Number(row?.dataset.campaignBudgetValue || '0'),
-      goal: row?.dataset.campaignGoal || '',
-    });
-    localStorageService.removeItem(
-      createLocalStorageKey(
-        LocalStorageKey.CampaignEditBuilderState,
-        String(campaignId),
-      ),
-    );
-
-    navigateTo('/ads/edit');
+    navigateTo(`/ads/campaign/edit?id=${campaignId}`);
   };
 
   const navigateToStatistics = (target: Element): void => {

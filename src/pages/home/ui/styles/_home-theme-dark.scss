@@ -33,6 +33,22 @@ html[data-theme='dark'] {
     );
   }
 
+  @media (max-width: 600px) {
+    .navbar::before,
+    .navbar.is-scrolled::before {
+      content: none !important;
+      display: none !important;
+      background: none !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+
+    .hero::before {
+      background-position: center top !important;
+      background-size: auto 100% !important;
+    }
+  }
+
   .public-layout--home .public-layout__shimmer {
     display: none;
   }
@@ -320,5 +336,47 @@ html[data-theme='dark'] {
   .home-footer {
     margin-top: 108px;
     border-top: 1px solid rgba(108, 122, 177, 0.12);
+  }
+
+  @media (max-width: 600px) {
+    .faq-item {
+      &__summary {
+        outline: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      &__toggle {
+        background: rgba(30, 39, 70, 0.92);
+        border-color: transparent;
+        box-shadow: none;
+      }
+
+      &[open] &__toggle {
+        background: rgba(38, 47, 82, 0.96);
+        border-color: transparent;
+        box-shadow: none;
+      }
+
+      &[open] &__toggle::before {
+        background: #aeb8ff;
+      }
+    }
+
+    .how-step {
+      background:
+        linear-gradient(180deg, rgba(22, 30, 55, 0.94) 0%, rgba(15, 22, 42, 0.96) 100%);
+      border-color: rgba(111, 126, 190, 0.28);
+      box-shadow:
+        0 18px 34px rgba(0, 0, 0, 0.26),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+
+      &__title {
+        color: #f1f4ff;
+      }
+
+      &__text {
+        color: #b7c2e6;
+      }
+    }
   }
 }

@@ -2,7 +2,7 @@ html[data-theme='dark'] {
   .navbar {
     border: 1px solid rgba(103, 121, 177, 0.24);
     background: rgba(13, 19, 35, 0.72);
-    box-shadow: var(--shadow-floating);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
 
@@ -10,29 +10,29 @@ html[data-theme='dark'] {
       content: '';
       background: linear-gradient(
         180deg,
-        rgba(66, 78, 125, 0.16) 0%,
-        rgba(40, 51, 88, 0.08) 44%,
+        rgba(32, 39, 68, 0.1) 0%,
+        rgba(24, 31, 56, 0.04) 44%,
         rgba(16, 22, 42, 0) 100%
       );
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
     }
 
     &.is-scrolled {
       background: rgba(11, 17, 31, 0.84);
       border-color: rgba(103, 121, 177, 0.32);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.34);
 
       &::before {
         content: '';
         background: linear-gradient(
           180deg,
-          rgba(74, 88, 140, 0.2) 0%,
-          rgba(41, 53, 93, 0.1) 42%,
+          rgba(34, 42, 72, 0.12) 0%,
+          rgba(26, 34, 62, 0.05) 42%,
           rgba(16, 22, 42, 0) 100%
         );
-        backdrop-filter: blur(7px);
-        -webkit-backdrop-filter: blur(7px);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
       }
     }
   }
@@ -88,5 +88,16 @@ html[data-theme='dark'] {
   .navbar__actions-user-icon,
   .navbar__profile-toggle {
     border: none;
+  }
+
+  @media (max-width: 600px) {
+    .navbar::before,
+    .navbar.is-scrolled::before {
+      content: none !important;
+      display: none !important;
+      background: none !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
   }
 }

@@ -5,7 +5,7 @@ export async function updateAvatar(file: File): Promise<AdvertiserProfileRespons
   const formData = new FormData();
   formData.append('avatar', file);
 
-  const response = await request<AdvertiserProfileResponse>('/advertiser/me/avatar', {
+  const response = await request<AdvertiserProfileResponse>('/advertisers/me/avatar', {
     method: 'PUT',
     body: formData,
   });

@@ -1,0 +1,70 @@
+<div class="stats-page" data-ad-stats>
+  <header class="stats-header">
+    <button class="stats-header__back" type="button" data-as-back>← Кампания</button>
+    <div class="stats-header__info">
+      <div class="stats-header__eyebrow">Статистика объявления</div>
+      <h1 class="stats-header__title" data-as-title>Загрузка…</h1>
+      <div class="stats-header__meta">
+        <span class="stats-badge stats-badge--muted" data-as-status>—</span>
+        <span class="stats-header__tag" data-as-url>—</span>
+      </div>
+    </div>
+    <div class="stats-periods" data-as-periods>
+      <button class="stats-period stats-period--active" type="button" data-period="7">7 дней</button>
+      <button class="stats-period" type="button" data-period="30">30 дней</button>
+      <button class="stats-period" type="button" data-period="90">90 дней</button>
+    </div>
+  </header>
+
+  <div class="stats-card">
+    <div class="stats-card__head"><h2 class="stats-card__title">Креатив</h2></div>
+    <div class="stats-ad-preview" data-as-preview>
+      <div class="stats-ad-preview__image" data-as-img>Изображение не загружено</div>
+      <div class="stats-ad-preview__meta">
+        <h3 class="stats-ad-preview__title" data-as-ad-title>—</h3>
+        <p class="stats-ad-preview__desc" data-as-ad-desc>—</p>
+        <a class="stats-ad-preview__url" data-as-ad-url>—</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-kpis">
+    <div class="stats-kpi"><span class="stats-kpi__label">Показы</span><span class="stats-kpi__value" data-as-kpi="impressions">—</span></div>
+    <div class="stats-kpi"><span class="stats-kpi__label">Клики</span><span class="stats-kpi__value" data-as-kpi="clicks">—</span></div>
+    <div class="stats-kpi"><span class="stats-kpi__label">CTR</span><span class="stats-kpi__value" data-as-kpi="ctr">—</span></div>
+    <div class="stats-kpi"><span class="stats-kpi__label">Потрачено</span><span class="stats-kpi__value" data-as-kpi="spend">—</span></div>
+    <div class="stats-kpi"><span class="stats-kpi__label">CPC</span><span class="stats-kpi__value" data-as-kpi="cpc">—</span></div>
+  </div>
+
+  <div class="stats-grid-2">
+    <div class="stats-card">
+      <div class="stats-card__head"><h2 class="stats-card__title">Динамика</h2><span class="stats-card__note">Клики по дням</span></div>
+      <div class="stats-chart" data-as-chart></div>
+      <div class="stats-chart__labels" data-as-chart-labels></div>
+    </div>
+    <div class="stats-card">
+      <div class="stats-card__head"><h2 class="stats-card__title">По часам суток</h2><span class="stats-card__note">Активность аудитории</span></div>
+      <div class="stats-chart" data-as-hour-chart></div>
+      <div class="stats-chart__labels" data-as-hour-labels></div>
+    </div>
+  </div>
+
+  <div class="stats-card">
+    <div class="stats-card__head">
+      <h2 class="stats-card__title">Сравнение с группой</h2>
+      <span class="stats-card__note">Среднее по всем объявлениям группы</span>
+    </div>
+    <div class="stats-breakdown">
+      <div class="stats-breakdown__row">
+        <span class="stats-breakdown__label">CTR этого</span>
+        <div class="stats-breakdown__bar-wrap"><div class="stats-breakdown__bar" data-as-ctr-bar style="width:0%"></div></div>
+        <span class="stats-breakdown__val" data-as-ctr-val>—</span>
+      </div>
+      <div class="stats-breakdown__row">
+        <span class="stats-breakdown__label">CTR среднее</span>
+        <div class="stats-breakdown__bar-wrap"><div class="stats-breakdown__bar" style="width:50%;background:var(--border-strong)"></div></div>
+        <span class="stats-breakdown__val" data-as-ctr-avg>—</span>
+      </div>
+    </div>
+  </div>
+</div>

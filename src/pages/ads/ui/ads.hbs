@@ -7,20 +7,83 @@
     </div>
 
     <div class="campaigns-page__filters">
-      <button
-        class="campaigns-page__date-filter"
-        type="button"
-        id="date-filter-toggle"
-        disabled
-        aria-disabled="true"
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h1V3a1 1 0 0 1 1-1Zm13 8H4v9a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-9ZM5 6a1 1 0 0 0-1 1v1h16V7a1 1 0 0 0-1-1H5Zm3 7a1 1 0 0 1 0 2H8a1 1 0 0 1 0-2Zm4 0a1 1 0 0 1 0 2h0a1 1 0 0 1 0-2Zm4 0a1 1 0 0 1 0 2h0a1 1 0 0 1 0-2Z" fill="currentColor"/>
-        </svg>
-        <span id="date-filter-label">9 мар - 9 апр 2026</span>
-      </button>
+      <div class="campaigns-filter-wrap" data-filter-wrap>
+        <button
+          class="campaigns-page__filter"
+          type="button"
+          aria-expanded="false"
+          data-filter-toggle
+        >
+          Фильтры
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true" data-filter-chevron>
+            <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="campaigns-filter-dropdown" data-filter-dropdown hidden>
+          <div class="campaigns-filter-dropdown__head">
+            <span>Фильтры</span>
+            <button class="campaigns-filter-dropdown__reset" type="button" data-filter-reset>Сбросить всё</button>
+          </div>
 
-      <div class="campaigns-page__filter">Фильтры</div>
+          <div class="campaigns-filter-dropdown__section">
+            <span class="campaigns-filter-dropdown__section-title">Статус</span>
+            <div class="campaigns-filter-dropdown__options" role="group" aria-label="Фильтр по статусу">
+              <label class="campaigns-filter-option">
+                <input type="checkbox" value="moderation" data-filter-status /> На модерации
+              </label>
+              <label class="campaigns-filter-option">
+                <input type="checkbox" value="working" data-filter-status /> Активные
+              </label>
+              <label class="campaigns-filter-option">
+                <input type="checkbox" value="rejected" data-filter-status /> Отклонённые
+              </label>
+              <label class="campaigns-filter-option">
+                <input type="checkbox" value="turned_off" data-filter-status /> Остановленные
+              </label>
+              <label class="campaigns-filter-option">
+                <input type="checkbox" value="not_enough_money" data-filter-status /> Нет баланса
+              </label>
+            </div>
+          </div>
+
+          <div class="campaigns-filter-dropdown__divider"></div>
+
+          <div class="campaigns-filter-dropdown__section">
+            <span class="campaigns-filter-dropdown__section-title">Цель кампании</span>
+            <div class="campaigns-filter-dropdown__options" role="group" aria-label="Фильтр по цели">
+              <label class="campaigns-filter-option">
+                <input type="checkbox" value="click" data-filter-goal /> Переходы на сайт
+              </label>
+              <label class="campaigns-filter-option">
+                <input type="checkbox" value="look" data-filter-goal /> Охват и узнаваемость
+              </label>
+            </div>
+          </div>
+
+          <div class="campaigns-filter-dropdown__divider"></div>
+
+          <div class="campaigns-filter-dropdown__section">
+            <span class="campaigns-filter-dropdown__section-title">Сортировка</span>
+            <div class="campaigns-filter-dropdown__options" role="group" aria-label="Сортировка">
+              <label class="campaigns-filter-option">
+                <input type="radio" name="campaigns-sort" value="" data-filter-sort checked /> По умолчанию
+              </label>
+              <label class="campaigns-filter-option">
+                <input type="radio" name="campaigns-sort" value="name-asc" data-filter-sort /> Название А → Я
+              </label>
+              <label class="campaigns-filter-option">
+                <input type="radio" name="campaigns-sort" value="name-desc" data-filter-sort /> Название Я → А
+              </label>
+              <label class="campaigns-filter-option">
+                <input type="radio" name="campaigns-sort" value="budget-desc" data-filter-sort /> Бюджет: высокий → низкий
+              </label>
+              <label class="campaigns-filter-option">
+                <input type="radio" name="campaigns-sort" value="budget-asc" data-filter-sort /> Бюджет: низкий → высокий
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
       <input
         class="campaigns-page__search"
         type="search"
@@ -31,63 +94,6 @@
     </div>
   </div>
 
-  <div class="campaigns-date-picker" id="campaigns-date-picker" hidden>
-    <div class="campaigns-date-picker__presets" role="radiogroup" aria-label="Быстрые периоды">
-      <button class="campaigns-date-picker__preset" type="button" data-preset="today">Сегодня</button>
-      <button class="campaigns-date-picker__preset" type="button" data-preset="week">Эта неделя</button>
-      <button class="campaigns-date-picker__preset" type="button" data-preset="month">Этот месяц</button>
-      <button class="campaigns-date-picker__preset" type="button" data-preset="year">Этот год</button>
-      <button class="campaigns-date-picker__preset is-active" type="button" data-preset="manual">Вручную</button>
-    </div>
-
-    <div class="campaigns-date-picker__calendar">
-      <div class="campaigns-date-picker__months">
-        <div class="campaigns-date-picker__month">
-          <div class="campaigns-date-picker__month-header">
-            <button type="button" class="campaigns-date-picker__nav" id="date-prev">«</button>
-            <button type="button" class="campaigns-date-picker__nav" id="date-prev-month">‹</button>
-            <strong id="date-month-left-label"></strong>
-            <button type="button" class="campaigns-date-picker__nav" id="date-next-month">›</button>
-            <button type="button" class="campaigns-date-picker__nav" id="date-next">»</button>
-          </div>
-          <div class="campaigns-date-picker__weekdays">
-            <span>П</span><span>В</span><span>С</span><span>Ч</span><span>П</span><span>С</span><span>В</span>
-          </div>
-          <div class="campaigns-date-picker__grid" id="date-grid-left"></div>
-        </div>
-
-        <div class="campaigns-date-picker__month">
-          <div class="campaigns-date-picker__month-header">
-            <button type="button" class="campaigns-date-picker__nav" id="date-prev-right">«</button>
-            <button type="button" class="campaigns-date-picker__nav" id="date-prev-month-right">‹</button>
-            <strong id="date-month-right-label"></strong>
-            <button type="button" class="campaigns-date-picker__nav" id="date-next-month-right">›</button>
-            <button type="button" class="campaigns-date-picker__nav" id="date-next-right">»</button>
-          </div>
-          <div class="campaigns-date-picker__weekdays">
-            <span>П</span><span>В</span><span>С</span><span>Ч</span><span>П</span><span>С</span><span>В</span>
-          </div>
-          <div class="campaigns-date-picker__grid" id="date-grid-right"></div>
-        </div>
-      </div>
-
-      <div class="campaigns-date-picker__footer">
-        <div class="campaigns-date-picker__range">
-          <span id="date-range-from">09.03.2026</span>
-          <span>-</span>
-          <span id="date-range-to">09.04.2026</span>
-        </div>
-        <div class="campaigns-date-picker__actions">
-          <button type="button" class="campaigns-date-picker__action campaigns-date-picker__action--cancel" id="date-cancel">
-            Отмена
-          </button>
-          <button type="button" class="campaigns-date-picker__action campaigns-date-picker__action--apply" id="date-apply">
-            Применить
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
 
   {{#if loadError}}
     <div data-campaigns-load-error hidden>{{loadError}}</div>
@@ -95,13 +101,12 @@
 
   <div class="campaigns-table">
     <div class="campaigns-table__header">
-      <div>Название</div>
-      <div>Бюджет</div>
-      <div>Целевое действие</div>
-      <div>Дата последнего действия</div>
-      <div>Действие</div>
+      <div>Кампания</div>
+      <div>Состав</div>
+      <div>Цель</div>
+      <div>Бюджет / день</div>
       <div>Статус</div>
-      <div>Вкл/выкл</div>
+      <div>Управление</div>
     </div>
 
     {{#if hasCampaigns}}
@@ -115,10 +120,22 @@
             data-campaign-goal="{{goal}}"
             data-status-key="{{statusKey}}"
           >
-            <div class="campaign-row__name">{{title}}</div>
-            <div>{{budget}}</div>
+            <div class="campaign-row__name">
+              <a class="campaign-row__detail-link" href="/ads/campaign?id={{id}}" data-campaign-detail-link="{{id}}">{{title}}</a>
+            </div>
+            <div>
+              <span class="campaign-row__composition campaign-row__composition--{{compositionType}}">
+                {{composition}}
+              </span>
+            </div>
             <div>{{goal}}</div>
-            <div>{{lastActionDate}}</div>
+            <div class="campaign-row__budget">{{budget}}</div>
+
+            <div>
+              <span class="status-badge status-badge--{{statusType}}" data-campaign-status-badge>
+                {{status}}
+              </span>
+            </div>
 
             <div class="campaign-row__actions">
               <button
@@ -151,15 +168,7 @@
                   <path d="M9 3.75A1.75 1.75 0 0 1 10.75 2h2.5A1.75 1.75 0 0 1 15 3.75V4h3.25a.75.75 0 0 1 0 1.5h-.77l-.63 12.03A2 2 0 0 1 14.85 19.5H9.15a2 2 0 0 1-2-1.97L6.52 5.5h-.77a.75.75 0 0 1 0-1.5H9v-.25Zm1.5.25h3v-.25a.25.25 0 0 0-.25-.25h-2.5a.25.25 0 0 0-.25.25V4Zm-1.85 14h6.7a.5.5 0 0 0 .5-.48L16.47 5.5H7.53l.62 12.02a.5.5 0 0 0 .5.48ZM10 8.75a.75.75 0 0 1 1.5 0v5.5a.75.75 0 0 1-1.5 0v-5.5Zm2.5 0a.75.75 0 0 1 1.5 0v5.5a.75.75 0 0 1-1.5 0v-5.5Z"/>
                 </svg>
               </button>
-            </div>
 
-            <div>
-              <span class="status-badge status-badge--{{statusType}}" data-campaign-status-badge>
-                {{status}}
-              </span>
-            </div>
-
-            <div>
               <label class="toggle">
                 <input
                   type="checkbox"

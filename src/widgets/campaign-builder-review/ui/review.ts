@@ -24,6 +24,7 @@ interface SyncCampaignBuilderReviewParams {
   audience: AudienceReviewView;
   checks: Record<string, FinalReviewCheckView>;
   finalHealth: FinalReviewHealthView;
+  groupName: string;
   pendingChecks: string[];
 }
 
@@ -44,6 +45,7 @@ export function syncCampaignBuilderReviewView({
   audience,
   checks,
   finalHealth,
+  groupName,
   pendingChecks,
 }: SyncCampaignBuilderReviewParams): void {
   setTextAll('[data-final-cities]', audience.cities || 'Не выбрано');
@@ -51,6 +53,7 @@ export function syncCampaignBuilderReviewView({
   setTextAll('[data-final-profile]', audience.profile || 'Не выбрано');
   setTextAll('[data-final-interests]', audience.interests || 'Не выбрано');
   setTextAll('[data-final-exclusions]', audience.exclusions || 'Не настроено');
+  setTextAll('[data-final-group-name]', groupName || 'Автогенерация');
   setText('[data-final-health-badge]', finalHealth.badge);
   setText('[data-final-health-title]', finalHealth.title);
   setText('[data-final-health-text]', finalHealth.text);

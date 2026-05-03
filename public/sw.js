@@ -1,6 +1,5 @@
-const APP_SHELL_CACHE = 'app-shell-v2';
-const STATIC_CACHE = 'static-assets-v2';
-const API_CACHE = 'api-responses-v1';
+const APP_SHELL_CACHE = 'app-shell-v3';
+const STATIC_CACHE = 'static-assets-v3';
 const APP_SHELL_URL = '/index.html';
 const PRECACHE_URLS = [
   '/',
@@ -9,10 +8,20 @@ const PRECACHE_URLS = [
   '/img/logo.png',
 ];
 
+/**
+ * Проверяет, принадлежит ли URL текущему источнику (origin).
+ * @param {URL} url - Проверяемый URL.
+ * @return {boolean} true, если URL совпадает с origin сервис-воркера.
+ */
 function isSameOrigin(url) {
   return url.origin === self.location.origin;
 }
 
+/**
+ * Определяет, является ли запрос запросом статического ресурса (скрипт, стиль, шрифт, изображение, манифест).
+ * @param {Request} request - Проверяемый запрос.
+ * @return {boolean} true, если запрос относится к статическим ресурсам того же origin.
+ */
 function isStaticAssetRequest(request) {
   const url = new URL(request.url);
 
@@ -36,8 +45,12 @@ self.addEventListener('install', (event) => {
       caches.open(STATIC_CACHE),
     ]),
   );
+});
 
-  self.skipWaiting();
+self.addEventListener('message', (event) => {
+  if (event.data?.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
 self.addEventListener('activate', (event) => {
@@ -47,7 +60,7 @@ self.addEventListener('activate', (event) => {
       .then((keys) =>
         Promise.all(
           keys
-            .filter((key) => ![APP_SHELL_CACHE, STATIC_CACHE, API_CACHE].includes(key))
+            .filter((key) => ![APP_SHELL_CACHE, STATIC_CACHE].includes(key))
             .map((key) => caches.delete(key)),
         ),
       )
@@ -95,12 +108,8 @@ self.addEventListener('fetch', (event) => {
   }
 
   event.respondWith(
-    caches.match(request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-
-      return fetch(request).then((response) => {
+    fetch(request)
+      .then((response) => {
         if (!response.ok) {
           return response;
         }
@@ -113,7 +122,7 @@ self.addEventListener('fetch', (event) => {
         );
 
         return response;
-      });
-    }),
+      })
+      .catch(() => caches.match(request)),
   );
 });

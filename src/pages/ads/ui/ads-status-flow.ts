@@ -84,7 +84,7 @@ export function bindCampaignStatusModal(signal: AbortSignal): void {
     statusModalConfirm.textContent = isEnabling ? 'Включить' : 'Остановить';
     statusModalImage.src = isEnabling
       ? '/img/News.png'
-      : '/img/DeleteConfirmation-dark.png';
+      : '/img/Delete%20Confirmation.png';
     statusModal.hidden = false;
   };
 

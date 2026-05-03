@@ -113,9 +113,7 @@
 
     &--primary {
       border-color: transparent;
-      background: t.$primary-gradient;
-      color: #fff;
-      box-shadow: t.$shadow-primary;
+      @include mixins.shimmer-accent;
     }
 
     &--secondary {

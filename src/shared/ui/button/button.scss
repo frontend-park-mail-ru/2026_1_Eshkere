@@ -11,7 +11,7 @@
 
   &--primary {
     color: var(--white);
-    background: t.$primary-gradient;
+    @include mixins.shimmer-accent;
     cursor: pointer;
   }
 

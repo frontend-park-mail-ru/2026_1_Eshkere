@@ -3,7 +3,7 @@
 
 .campaigns-delete-modal,
 .campaigns-status-modal {
-  @include mixins.modal-overlay(150);
+  @include mixins.modal-overlay(t.$z-modal);
 
   &[hidden] {
     display: none;
@@ -44,7 +44,7 @@
   }
 
   &__illustration {
-    height: 220px;
+    height: 260px;
     padding: 8px 0;
     border-radius: 20px;
     background: transparent;
@@ -57,7 +57,7 @@
   }
 
   &__image {
-    width: min(100%, 320px);
+    width: min(100%, 260px);
     height: auto;
     display: block;
     margin: 0 auto;
@@ -95,9 +95,8 @@
 
     &--primary {
       border-color: transparent;
-      background: t.$primary-gradient;
       color: var(--white);
-      box-shadow: t.$shadow-primary;
+      @include mixins.shimmer-accent;
     }
 
     &--secondary {
@@ -109,12 +108,15 @@
 
 .campaigns-delete-modal {
   &__illustration {
-    align-items: start;
+    align-items: center;
     padding-top: 0;
+    height: 300px;
   }
 
   &__image {
-    margin-top: -10px;
+    margin-top: 0;
+    width: min(100%, 300px);
+    height: min(100%, 280px);
   }
 
   &__dialog {

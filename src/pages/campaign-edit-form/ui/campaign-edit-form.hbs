@@ -1,0 +1,111 @@
+<section class="agc" data-cef>
+  <form class="agc__form" data-cef-form novalidate>
+
+    <div class="agc__toolbar">
+      <div class="agc__toolbar-left">
+        <button class="agc__back" type="button" data-cef-back>← Назад</button>
+        <div>
+          <h1 class="agc__title">Редактирование кампании</h1>
+          <p class="agc__sub">Измените параметры кампании и сохраните.</p>
+        </div>
+      </div>
+      <button class="agc__submit" type="submit" data-cef-submit>
+        Сохранить изменения
+      </button>
+    </div>
+
+    <div class="agc__layout">
+      <div class="agc__fields">
+
+        <div class="agc__card">
+          <h2 class="agc__section-title">Основное</h2>
+          <div class="agc__field">
+            <label class="agc__label" for="cef-name">Название кампании</label>
+            <input
+              class="agc__input"
+              id="cef-name"
+              name="name"
+              type="text"
+              value="{{name}}"
+              placeholder="Введите название"
+              maxlength="120"
+              required
+            />
+            <span class="agc__error" data-cef-field-error="name"></span>
+          </div>
+        </div>
+
+        <div class="agc__card">
+          <h2 class="agc__section-title">Бюджет</h2>
+          <div class="agc__field">
+            <label class="agc__label" for="cef-budget">Дневной бюджет, ₽</label>
+            <div class="agc__budget-input">
+              <input
+                class="agc__budget-field"
+                id="cef-budget"
+                name="daily_budget"
+                type="number"
+                value="{{daily_budget}}"
+                placeholder="1000"
+                min="100"
+                step="100"
+                required
+              />
+              <span class="agc__budget-currency">₽</span>
+            </div>
+            <span class="agc__field-note">Минимум 100 ₽ в день</span>
+            <span class="agc__error" data-cef-field-error="daily_budget"></span>
+          </div>
+        </div>
+
+        <div class="agc__card">
+          <h2 class="agc__section-title">Цель кампании</h2>
+          <div class="agc__bidding">
+            <label class="agc__bid-option {{#if isClick}}agc__bid-option--active{{/if}}">
+              <input type="radio" name="main_action" value="click" {{#if isClick}}checked{{/if}} style="display:none" />
+              <div class="agc__bid-head">
+                <span class="agc__bid-name">Переходы</span>
+                <span class="agc__bid-badge">CPC</span>
+              </div>
+              <p class="agc__bid-desc">Платите за клики. Подходит для трафика и конверсий.</p>
+            </label>
+            <label class="agc__bid-option {{#unless isClick}}agc__bid-option--active{{/unless}}">
+              <input type="radio" name="main_action" value="look" {{#unless isClick}}checked{{/unless}} style="display:none" />
+              <div class="agc__bid-head">
+                <span class="agc__bid-name">Показы</span>
+                <span class="agc__bid-badge">CPM</span>
+              </div>
+              <p class="agc__bid-desc">Платите за 1000 показов. Подходит для охвата и узнаваемости.</p>
+            </label>
+          </div>
+        </div>
+
+        <p class="agc__form-error" data-cef-error hidden></p>
+      </div>
+
+      <aside class="agc__sidebar">
+        <div class="agc__reach-card">
+          <div class="agc__reach-header">
+            <span class="agc__reach-title">Параметры кампании</span>
+          </div>
+          <div class="agc__reach-stats">
+            <div class="agc__reach-stat">
+              <span class="agc__reach-label">Название</span>
+              <strong class="agc__reach-value" style="font-size:13px;word-break:break-word">{{name}}</strong>
+            </div>
+            <div class="agc__reach-stat">
+              <span class="agc__reach-label">Дневной бюджет</span>
+              <strong class="agc__reach-value">{{daily_budget}} ₽</strong>
+            </div>
+            <div class="agc__reach-stat">
+              <span class="agc__reach-label">Цель</span>
+              <strong class="agc__reach-value">{{#if isClick}}Переходы{{else}}Показы{{/if}}</strong>
+            </div>
+          </div>
+          <p class="agc__reach-note">Изменения вступят в силу сразу после сохранения.</p>
+        </div>
+      </aside>
+    </div>
+
+  </form>
+</section>

@@ -1,4 +1,4 @@
-export { updateProfile } from './api/update-profile';
+export { updateProfile, getMe } from './api/update-profile';
 export { updateAvatar } from './api/update-avatar';
 export type { UpdateProfileParams, AdvertiserProfileResponse } from './api/update-profile';
 

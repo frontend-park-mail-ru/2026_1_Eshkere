@@ -32,6 +32,10 @@ interface SyncCampaignBuilderAudienceParams {
   ctr: string;
   exclusionsCount: number;
   expansionEnabled: boolean;
+  generatedGroupName: string;
+  gender: string;
+  genderLabel: string;
+  groupName: string;
   interestsCount: number;
   interestsPriority: string;
   insights: AudienceInsightsView;
@@ -40,6 +44,7 @@ interface SyncCampaignBuilderAudienceParams {
   quality: string;
   qualityState: string;
   reach: string;
+  topicLabel: string;
 }
 
 function setText(selector: string, value: string): void {
@@ -72,6 +77,10 @@ export function syncCampaignBuilderAudienceView({
   ctr,
   exclusionsCount,
   expansionEnabled,
+  generatedGroupName,
+  gender,
+  genderLabel,
+  groupName,
   interestsCount,
   interestsPriority,
   insights,
@@ -80,6 +89,7 @@ export function syncCampaignBuilderAudienceView({
   quality,
   qualityState,
   reach,
+  topicLabel,
 }: SyncCampaignBuilderAudienceParams): void {
   document
     .querySelectorAll<HTMLElement>('[data-builder-audience-chip]')
@@ -110,6 +120,24 @@ export function syncCampaignBuilderAudienceView({
   );
   setText('[data-audience-interests]', audience.interests);
   setText('[data-audience-interests-count]', `${interestsCount} темы`);
+  setText('[data-audience-gender]', genderLabel);
+  setText('[data-audience-group-name-preview]', groupName || generatedGroupName);
+  setText('[data-final-topic]', topicLabel);
+
+  document
+    .querySelectorAll<HTMLInputElement>('[data-builder-input="groupName"]')
+    .forEach((field) => {
+      if (document.activeElement !== field) {
+        field.value = groupName;
+      }
+      field.placeholder = generatedGroupName;
+    });
+
+  document
+    .querySelectorAll<HTMLSelectElement>('[data-builder-audience-gender]')
+    .forEach((field) => {
+      field.value = gender;
+    });
   setAudienceMetricLabel('[data-audience-reach]', 'Потенциальный охват');
   setAudienceMetricLabel('[data-audience-clicks]', 'Прогноз кликов');
   setAudienceMetricLabel('[data-audience-quality-text]', 'Качество аудитории');

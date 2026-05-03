@@ -5,7 +5,7 @@ import { renderNavbar } from 'widgets/navbar';
 import dashboardLayoutTemplate from './dashboard-layout.hbs';
 
 function shouldShowSidebar(pathname: string): boolean {
-  return !['/ads/create', '/ads/edit', '/ads/statistics'].includes(pathname);
+  return !['/ads/create', '/ads/edit', '/ads/statistics', '/ads/group/create', '/ads/ad/create'].includes(pathname);
 }
 
 /**

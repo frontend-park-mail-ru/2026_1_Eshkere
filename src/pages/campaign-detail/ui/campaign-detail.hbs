@@ -1,0 +1,131 @@
+<div class="campaign-detail" data-campaign-detail data-group-page-size="{{pageSize}}">
+  <header class="campaign-detail__header">
+    <button class="campaign-detail__back" type="button" data-back>← Кампании</button>
+
+    <div class="campaign-detail__info">
+      <h1 class="campaign-detail__title">{{campaign.title}}</h1>
+      <div class="campaign-detail__meta">
+        <span class="campaign-detail__status campaign-detail__status--{{campaign.statusTone}}">
+          {{campaign.statusLabel}}
+        </span>
+        <span class="campaign-detail__meta-item">{{campaign.goal}}</span>
+        <span class="campaign-detail__meta-item">{{campaign.budget}}</span>
+      </div>
+    </div>
+
+    <div class="campaign-detail__header-actions">
+      <button class="campaign-detail__btn-edit" type="button" data-edit-campaign>
+        Редактировать
+      </button>
+      <button class="campaign-detail__add-group" type="button" data-add-group>
+        + Добавить группу
+      </button>
+    </div>
+  </header>
+
+  <section class="campaign-detail__summary" aria-label="Сводка кампании">
+    <div class="campaign-detail__summary-item">
+      <span>Группы</span>
+      <strong>{{summary.groupText}}</strong>
+    </div>
+    <div class="campaign-detail__summary-item">
+      <span>Объявления</span>
+      <strong>{{summary.adText}}</strong>
+    </div>
+    <div class="campaign-detail__summary-item">
+      <span>Модерация</span>
+      <strong>{{summary.moderationText}}</strong>
+    </div>
+    <div class="campaign-detail__summary-item">
+      <span>Заполнение</span>
+      <strong>{{summary.emptyGroupText}}</strong>
+    </div>
+  </section>
+
+  {{#unless hasGroups}}
+    <div class="campaign-detail__empty">
+      <h2>Групп объявлений пока нет</h2>
+      <p>Создайте группу с настройками аудитории, а внутри неё добавьте объявления.</p>
+      <button class="campaign-detail__add-group" type="button" data-add-group>
+        Создать первую группу
+      </button>
+    </div>
+  {{/unless}}
+
+  {{#if hasGroups}}
+    <section class="campaign-detail__group-section">
+      <div class="campaign-detail__section-head">
+        <div>
+          <h2 class="campaign-detail__section-title">Группы объявлений</h2>
+          <p class="campaign-detail__section-text">Каждая группа хранит аудиторию и объявления для отдельного сегмента.</p>
+        </div>
+        <div class="campaign-detail__group-pagination" data-group-pagination {{#unless hasPagination}}hidden{{/unless}}>
+          <button class="campaign-detail__page-button" type="button" data-group-page-prev>←</button>
+          <span class="campaign-detail__page-label" data-group-page-label>1 / 1</span>
+          <button class="campaign-detail__page-button" type="button" data-group-page-next>→</button>
+        </div>
+      </div>
+
+      <div class="campaign-detail__groups">
+        {{#each groups}}
+          <article class="ad-group-card" data-group-card>
+            <header class="ad-group-card__head">
+              <div class="ad-group-card__info">
+                <div class="ad-group-card__eyebrow">{{indexLabel}} · {{adCount}} объявл.</div>
+                <h3 class="ad-group-card__name">{{name}}</h3>
+                <div class="ad-group-card__params">
+                  <span>{{genderLabel}}</span>
+                  <span>{{age_from}}–{{age_to}} лет</span>
+                  <span>{{regionLabel}}</span>
+                  <span>{{topicLabel}}</span>
+                </div>
+              </div>
+              <div class="ad-group-card__actions">
+                <button class="ad-group-card__btn ad-group-card__btn--add" type="button" data-add-ad="{{id}}">
+                  + Объявление
+                </button>
+                <button class="ad-group-card__btn ad-group-card__btn--edit" type="button" data-edit-group="{{id}}">
+                  Редактировать
+                </button>
+                <button class="ad-group-card__btn ad-group-card__btn--stats" type="button" data-stats-group="{{id}}">
+                  Статистика
+                </button>
+                <button class="ad-group-card__btn ad-group-card__btn--delete" type="button" data-delete-group="{{id}}">
+                  Удалить
+                </button>
+              </div>
+            </header>
+
+            {{#if hasAds}}
+              <div class="ad-group-card__ads">
+                {{#each ads}}
+                  <div class="ad-card">
+                    <div class="ad-card__content">
+                      <strong class="ad-card__title">{{title}}</strong>
+                      <p class="ad-card__desc">{{short_desc}}</p>
+                      <a class="ad-card__url" href="{{target_url}}" target="_blank" rel="noreferrer">{{target_url}}</a>
+                    </div>
+                    <div class="ad-card__meta">
+                      <span class="ad-card__status ad-card__status--{{statusTone}}">{{statusLabel}}</span>
+                      <div class="ad-card__actions">
+                        <button class="ad-card__action" type="button" data-edit-ad="{{../id}}:{{id}}">Редактировать</button>
+                        <button class="ad-card__action" type="button" data-stats-ad="{{../id}}:{{id}}">Статистика</button>
+                        <button class="ad-card__action" type="button" data-feed-ad="{{../id}}:{{id}}">Получить фид</button>
+                        <button class="ad-card__action ad-card__action--danger" type="button" data-delete-ad="{{../id}}:{{id}}">Удалить</button>
+                      </div>
+                    </div>
+                  </div>
+                {{/each}}
+              </div>
+            {{else}}
+              <div class="ad-group-card__empty">
+                <strong>Объявлений пока нет</strong>
+                <span>Добавьте первое объявление, чтобы группа могла пройти полный запуск.</span>
+              </div>
+            {{/if}}
+          </article>
+        {{/each}}
+      </div>
+    </section>
+  {{/if}}
+</div>

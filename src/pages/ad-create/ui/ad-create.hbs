@@ -1,0 +1,195 @@
+<section class="adc" data-adc>
+  <form class="adc__form" data-adc-form novalidate>
+
+    <div class="adc__toolbar">
+      <div class="adc__toolbar-left">
+        <button class="adc__back" type="button" data-adc-back>← Назад</button>
+        <div>
+          <h1 class="adc__title">Новое объявление</h1>
+          <p class="adc__sub">Заполните креатив — объявление уйдёт на модерацию после создания.</p>
+        </div>
+      </div>
+      <button class="adc__submit" type="submit" data-adc-submit>
+        Создать объявление
+      </button>
+    </div>
+
+    <div class="adc__layout">
+
+      {{!-- Левая колонка — форма --}}
+      <div class="adc__fields">
+
+        {{!-- Формат --}}
+        <div class="adc__card">
+          <h2 class="adc__section-title">Формат объявления</h2>
+          <div class="adc__format-tabs" role="tablist" data-adc-formats>
+            <button class="adc__format-tab adc__format-tab--active" type="button"
+              role="tab" data-format="feed" aria-selected="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M3 9h18" stroke="currentColor" stroke-width="1.6"/>
+              </svg>
+              Лента
+              <span class="adc__format-tab-size">1200 × 628</span>
+            </button>
+            <button class="adc__format-tab" type="button"
+              role="tab" data-format="stories" aria-selected="false">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect x="6" y="2" width="12" height="20" rx="2" stroke="currentColor" stroke-width="1.6"/>
+              </svg>
+              Stories
+              <span class="adc__format-tab-size">1080 × 1920</span>
+            </button>
+          </div>
+        </div>
+
+        {{!-- Изображение --}}
+        <div class="adc__card">
+          <h2 class="adc__section-title">Изображение</h2>
+          <div class="adc__upload-zone" data-adc-upload-zone>
+            <input
+              class="adc__upload-input"
+              id="adc-image-file"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              data-adc-file-input
+              aria-label="Загрузить изображение"
+            />
+            <div class="adc__upload-placeholder" data-adc-upload-placeholder>
+              <svg class="adc__upload-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"
+                  stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <p class="adc__upload-label">Перетащите файл или <span>нажмите для выбора</span></p>
+              <p class="adc__upload-hint">JPG, PNG, WebP · до 5 МБ</p>
+            </div>
+            <div class="adc__upload-preview" data-adc-upload-preview hidden>
+              <img data-adc-upload-img alt="" />
+              <button class="adc__upload-remove" type="button" data-adc-upload-remove aria-label="Удалить изображение">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </button>
+              <span class="adc__upload-filename" data-adc-upload-filename></span>
+            </div>
+          </div>
+        </div>
+
+        {{!-- Текст --}}
+        <div class="adc__card">
+          <h2 class="adc__section-title">Текст объявления</h2>
+          <div class="adc__field">
+            <label class="adc__label" for="adc-title">
+              Заголовок
+              <span class="adc__counter" data-adc-counter="title">0/60</span>
+            </label>
+            <input
+              class="adc__input"
+              id="adc-title"
+              name="title"
+              type="text"
+              placeholder="Краткий и цепляющий заголовок"
+              maxlength="60"
+              required
+            />
+            <span class="adc__error" data-adc-error="title"></span>
+          </div>
+          <div class="adc__field">
+            <label class="adc__label" for="adc-desc">
+              Описание
+              <span class="adc__counter" data-adc-counter="short_desc">0/150</span>
+            </label>
+            <textarea
+              class="adc__textarea"
+              id="adc-desc"
+              name="short_desc"
+              placeholder="Расскажите о предложении коротко и по делу"
+              maxlength="150"
+              rows="4"
+              required
+            ></textarea>
+            <span class="adc__error" data-adc-error="short_desc"></span>
+          </div>
+        </div>
+
+        {{!-- Ссылка --}}
+        <div class="adc__card">
+          <h2 class="adc__section-title">Целевая ссылка</h2>
+          <div class="adc__field">
+            <label class="adc__label" for="adc-url">URL страницы</label>
+            <input
+              class="adc__input"
+              id="adc-url"
+              name="target_url"
+              type="url"
+              placeholder="https://example.com"
+              required
+            />
+            <span class="adc__error" data-adc-error="target_url"></span>
+          </div>
+        </div>
+
+        {{!-- CTA --}}
+        <div class="adc__card">
+          <h2 class="adc__section-title">Кнопка призыва к действию</h2>
+          <div class="adc__cta-chips" data-adc-cta>
+            <button class="adc__cta-chip adc__cta-chip--active" type="button">Узнать подробнее</button>
+            <button class="adc__cta-chip" type="button">Перейти на сайт</button>
+            <button class="adc__cta-chip" type="button">Купить</button>
+            <button class="adc__cta-chip" type="button">Записаться</button>
+            <button class="adc__cta-chip" type="button">Скачать</button>
+            <button class="adc__cta-chip" type="button">Получить предложение</button>
+          </div>
+          <div class="adc__field">
+            <label class="adc__label" for="adc-cta-text">Или введите свой текст</label>
+            <input
+              class="adc__input"
+              id="adc-cta-text"
+              type="text"
+              placeholder="Текст кнопки"
+              maxlength="40"
+              data-adc-cta-input
+            />
+          </div>
+        </div>
+
+        <p class="adc__form-error" data-adc-form-error hidden></p>
+      </div>
+
+      {{!-- Правая колонка — предпросмотр --}}
+      <aside class="adc__sidebar">
+        <div class="adc__preview-card">
+          <div class="adc__preview-header">
+            <span class="adc__preview-title">Предпросмотр</span>
+            <span class="adc__preview-badge" data-adc-preview-badge>Лента</span>
+          </div>
+
+          <div class="adc__preview-ad adc__preview-ad--feed" data-adc-preview-ad>
+            <div class="adc__preview-image" data-adc-preview-image>
+              <span class="adc__preview-image-placeholder">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/>
+                  <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
+                  <path d="m3 15 5-5 4 4 3-3 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Изображение</span>
+              </span>
+            </div>
+            <div class="adc__preview-body">
+              <div class="adc__preview-meta">
+                <span class="adc__preview-domain" data-adc-preview-domain>example.com</span>
+                <span class="adc__preview-tag">Реклама</span>
+              </div>
+              <p class="adc__preview-headline" data-adc-preview-title>Заголовок объявления</p>
+              <p class="adc__preview-desc" data-adc-preview-desc>Описание вашего предложения появится здесь.</p>
+              <button class="adc__preview-cta" type="button" data-adc-preview-cta>Узнать подробнее</button>
+            </div>
+          </div>
+
+          <p class="adc__preview-note">Предпросмотр обновляется по мере заполнения полей.</p>
+        </div>
+      </aside>
+
+    </div>
+  </form>
+</section>

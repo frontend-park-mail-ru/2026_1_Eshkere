@@ -16,6 +16,12 @@
     align-items: center;
     justify-content: space-between;
     gap: 18px;
+    flex-wrap: wrap;
+
+    @include mixins.media-max(t.$bp-sm) {
+      flex-direction: column;
+      align-items: stretch;
+    }
   }
 
   &__hero-main {
@@ -36,6 +42,10 @@
     line-height: 1;
     font-weight: 800;
     color: #242b3f;
+
+    @include mixins.media-max(t.$bp-sm) {
+      font-size: 26px;
+    }
   }
 
   &__meta {
@@ -50,12 +60,15 @@
     height: 46px;
     padding: 0 18px;
     border-radius: 16px;
-    color: #fff;
     font-size: 14px;
     font-weight: 700;
-    background: t.$primary-gradient;
-    box-shadow: t.$shadow-primary;
     cursor: pointer;
+    @include mixins.shimmer-accent;
+
+    @include mixins.media-max(t.$bp-sm) {
+      min-width: 0;
+      width: 100%;
+    }
   }
 }
 

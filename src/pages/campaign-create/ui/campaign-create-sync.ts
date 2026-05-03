@@ -5,6 +5,12 @@ import {
   STRATEGY_LABELS,
 } from 'features/campaign-builder/model/config';
 import {
+  buildGroupName,
+  getGenderLabel,
+  getResolvedGroupName,
+  getTopicLabel,
+} from 'features/campaign-builder/lib/api-mapping';
+import {
   formatSaveStateLabel,
   getBuilderMode,
   getBuilderModeConfig,
@@ -60,8 +66,8 @@ export function showToast({ title, description }: ToastPayload): void {
     return;
   }
 
-  titleNode.textContent = title;
-  textNode.textContent = description;
+  titleNode.textContent = title ?? null;
+  textNode.textContent = description ?? null;
   toast.hidden = false;
 
   if (builderToastTimer) {
@@ -152,6 +158,10 @@ function syncAudience(state: BuilderState): void {
     ctr: `${insights.ctrValue.toFixed(1)}%`,
     exclusionsCount: state.audienceConfig.exclusions.length,
     expansionEnabled: state.audienceConfig.expansionEnabled,
+    generatedGroupName: buildGroupName(state),
+    gender: state.gender,
+    genderLabel: getGenderLabel(state.gender),
+    groupName: state.groupName,
     interestsCount: state.audienceConfig.interests.length,
     interestsPriority: state.audienceConfig.interestsPriority,
     insights,
@@ -160,6 +170,7 @@ function syncAudience(state: BuilderState): void {
     quality: insights.quality,
     qualityState: insights.qualityState,
     reach: new Intl.NumberFormat('ru-RU').format(insights.reachValue),
+    topicLabel: getTopicLabel(state),
   });
 
   renderSavedAudiencesList(state);
@@ -240,6 +251,7 @@ function syncFinalReview(state: BuilderState): void {
     audience,
     checks,
     finalHealth: finalReview.status,
+    groupName: getResolvedGroupName(state),
     pendingChecks,
   });
 }

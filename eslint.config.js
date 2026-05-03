@@ -34,7 +34,7 @@ module.exports = [
       '@typescript-eslint': tsPlugin,
     },
     rules: {
-      ...tsPlugin.configs.recommended.rules,
+      ...tsPlugin.configs['flat/recommended'].rules,
     },
   },
   {
