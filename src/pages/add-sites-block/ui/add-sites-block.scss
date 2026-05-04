@@ -17,8 +17,9 @@
   }
 }
 
-[data-asb-next][hidden],
-[data-asb-create][hidden] {
+[data-asb-create][hidden],
+[data-asb-done][hidden],
+.add-sites-block__page-actions-btn[hidden] {
   display: none !important;
 }
 

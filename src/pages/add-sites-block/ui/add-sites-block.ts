@@ -1,8 +1,10 @@
 import './add-sites-block.scss';
+import { createPartnerBlock, getPartnerBlockEmbed } from 'features/sites';
 import { renderTemplate } from 'shared/lib/render';
 import { showToast } from 'shared/lib/toast';
 import { renderFormField } from 'shared/ui/form-field/form-field';
 import { setFieldState, validatePartnerBlockName } from 'shared/validators';
+import { navigateTo } from 'shared/lib/navigation';
 import template from './add-sites-block.hbs';
 
 const BLOCK_TYPE_LABELS: Record<string, string> = {
@@ -14,27 +16,34 @@ const BLOCK_TYPE_LABELS: Record<string, string> = {
   in_image: 'In-Image',
 };
 
-/** Примеры под поля dto.PartnerBlockEmbedResponse (до подстановки реальных значений из API). */
 const EMBED_SDK_SAMPLE = [
-  '<!-- PartnerBlockEmbedResponse.script_url — URL фронтового ad-sdk.js -->',
+  '<!-- PartnerBlockEmbedResponse.script_url -->',
   '<script src="https://cdn.eshkere.example/ad-sdk.js" async></script>',
 ].join('\n');
 
 const STEP_SUBTITLES: Record<1 | 2, string> = {
-  1: 'Выберите тип блока и укажите название.',
-  2: 'Скопируйте примеры вставки по полям ответа API.',
+  1: 'Выберите тип блока и укажите название, затем нажмите «Создать блок».',
+  2: 'Скопируйте код и вставьте на сайт. Когда закончите — «Готово».',
 };
 
 const EMBED_SNIPPET_SAMPLE = [
-  '<!-- PartnerBlockEmbedResponse.html_snippet — разметка data-eshkere-ad + script -->',
-  '<div data-eshkere-ad data-embed-token="<embed_token из ответа>"></div>',
-  '<script>',
-  '  // инициализация блока (фрагмент из html_snippet)',
-  '</script>',
-  '',
-  '<!-- PartnerBlockEmbedResponse.iframe_url — при необходимости вставьте iframe с этим src -->',
-  '<!-- <iframe src="…" title="EshkeReklama" loading="lazy"></iframe> -->',
+  '<!-- PartnerBlockEmbedResponse.html_snippet -->',
+  '<div data-eshkere-ad data-embed-token="<token>"></div>',
 ].join('\n');
+
+function readSiteIdFromQuery(): number | null {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+  const raw = new URLSearchParams(window.location.search).get('siteId');
+  const n = raw != null ? Number(raw) : NaN;
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+/** После создания блока или «Назад» — на карточку сайта, если открыли с ?siteId= */
+function addSitesBlockReturnHref(siteId: number | null): string {
+  return siteId != null ? `/add-sites/site?siteId=${siteId}` : '/add-sites';
+}
 
 function formatBlockDefaultName(type: string): string {
   const label = BLOCK_TYPE_LABELS[type] ?? type;
@@ -46,6 +55,9 @@ function formatBlockDefaultName(type: string): string {
 }
 
 export async function renderAddSitesBlockPage(): Promise<string> {
+  const siteId = readSiteIdFromQuery();
+  const backHref = addSitesBlockReturnHref(siteId);
+
   const blockNameField = await renderFormField({
     id: 'add-sites-block-name',
     name: 'block_name',
@@ -57,7 +69,7 @@ export async function renderAddSitesBlockPage(): Promise<string> {
     maxlength: 120,
   });
 
-  return await renderTemplate(template, { blockNameField });
+  return await renderTemplate(template, { blockNameField, backHref });
 }
 
 export function AddSitesBlock(): void | VoidFunction {
@@ -66,11 +78,12 @@ export function AddSitesBlock(): void | VoidFunction {
     return;
   }
 
-  const form = root.querySelector<HTMLFormElement>('#add-sites-block-form');
-  const blockNameItem = form?.elements.namedItem('block_name');
-  if (!form || !(blockNameItem instanceof HTMLInputElement)) {
+  const formEl = root.querySelector<HTMLFormElement>('#add-sites-block-form');
+  const blockNameItem = formEl?.elements.namedItem('block_name');
+  if (!formEl || !(blockNameItem instanceof HTMLInputElement)) {
     return;
   }
+  const form = formEl;
   const blockNameInput = blockNameItem;
 
   const radios = form.querySelectorAll<HTMLInputElement>(
@@ -81,7 +94,6 @@ export function AddSitesBlock(): void | VoidFunction {
   }
 
   const pageRoot = root;
-
   const controller = new AbortController();
   const { signal } = controller;
 
@@ -135,14 +147,14 @@ export function AddSitesBlock(): void | VoidFunction {
   const sdkCodeEl = pageRoot.querySelector<HTMLElement>('#asb-code-sdk');
   const snippetCodeEl = pageRoot.querySelector<HTMLElement>('#asb-code-snippet');
   if (sdkCodeEl) {
-    sdkCodeEl.textContent = EMBED_SDK_SAMPLE;
+    sdkCodeEl.textContent = '';
   }
   if (snippetCodeEl) {
-    snippetCodeEl.textContent = EMBED_SNIPPET_SAMPLE;
+    snippetCodeEl.textContent = '';
   }
 
-  const nextBtn = pageRoot.querySelector<HTMLButtonElement>('[data-asb-next]');
   const createBtn = pageRoot.querySelector<HTMLButtonElement>('[data-asb-create]');
+  const doneBtn = pageRoot.querySelector<HTMLButtonElement>('[data-asb-done]');
   const subtitleEl = pageRoot.querySelector<HTMLElement>('[data-asb-subtitle]');
 
   function goToStep(step: 1 | 2, scrollTop = true): void {
@@ -162,10 +174,15 @@ export function AddSitesBlock(): void | VoidFunction {
       const s = Number(el.dataset.asbHeroStep);
       el.classList.toggle('campaign-builder__step--active', s === step);
       el.classList.toggle('campaign-builder__step--complete', s < step);
+      if (s === step) {
+        el.setAttribute('aria-current', 'step');
+      } else {
+        el.removeAttribute('aria-current');
+      }
     });
 
-    nextBtn?.toggleAttribute('hidden', step !== 1);
-    createBtn?.toggleAttribute('hidden', step !== 2);
+    createBtn?.toggleAttribute('hidden', step !== 1);
+    doneBtn?.toggleAttribute('hidden', step !== 2);
 
     if (scrollTop) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -178,49 +195,97 @@ export function AddSitesBlock(): void | VoidFunction {
     }
   }
 
-  nextBtn?.addEventListener(
-    'click',
-    () => {
-      if (!validateBlockName()) {
-        blockNameInput.focus();
-        return;
-      }
-      goToStep(2);
-    },
-    { signal },
-  );
-
   createBtn?.addEventListener(
     'click',
     () => {
-      showToast(
-        'Создание блока',
-        'Запрос к API будет подключён на следующем шаге.',
-        'warning',
-        3200,
-      );
+      const btn = createBtn;
+      if (!btn) {
+        return;
+      }
+      void (async () => {
+        if (!validateBlockName()) {
+          blockNameInput.focus();
+          return;
+        }
+
+        const siteId = readSiteIdFromQuery();
+        if (siteId == null) {
+          showToast(
+            'Не указан сайт',
+            'Сначала добавьте площадку или откройте эту страницу после создания сайта.',
+            'error',
+            4200,
+          );
+          return;
+        }
+
+        const typeInput = form.querySelector<HTMLInputElement>(
+          'input.block-type-card__input[name="block_type"]:checked',
+        );
+        if (!typeInput?.value) {
+          showToast('Тип блока', 'Выберите тип рекламного блока.', 'error', 2800);
+          return;
+        }
+
+        const prevLabel = btn.textContent ?? '';
+        btn.disabled = true;
+        btn.textContent = 'Создание…';
+
+        try {
+          const block = await createPartnerBlock(siteId, {
+            block_type: typeInput.value,
+            name: blockNameInput.value.trim(),
+          });
+
+          let embed;
+          try {
+            embed = await getPartnerBlockEmbed(siteId, block.id);
+          } catch {
+            embed = null;
+          }
+
+          if (sdkCodeEl) {
+            sdkCodeEl.textContent = embed
+              ? [
+                  '<!-- PartnerBlockEmbedResponse.script_url -->',
+                  `<script src="${embed.script_url}" async></script>`,
+                ].join('\n')
+              : EMBED_SDK_SAMPLE;
+          }
+          if (snippetCodeEl) {
+            snippetCodeEl.textContent = embed?.html_snippet ?? EMBED_SNIPPET_SAMPLE;
+          }
+
+          showToast(
+            'Блок создан',
+            embed ? 'Код для вставки ниже.' : 'Блок создан; код вставки — примерный.',
+            embed ? 'success' : 'warning',
+            3200,
+          );
+
+          goToStep(2);
+        } catch (err) {
+          const message =
+            err instanceof Error && err.message.trim()
+              ? err.message
+              : 'Не удалось создать блок. Попробуйте снова.';
+          showToast('Ошибка', message, 'error', 4200);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = prevLabel || 'Создать блок';
+        }
+      })();
     },
     { signal },
   );
 
-  pageRoot.querySelectorAll<HTMLButtonElement>('[data-asb-step-btn]').forEach((btn) => {
-    btn.addEventListener(
-      'click',
-      () => {
-        const n = Number(btn.getAttribute('data-asb-step-btn'));
-        if (n === 1) {
-          goToStep(1);
-        } else if (n === 2) {
-          if (!validateBlockName()) {
-            blockNameInput.focus();
-            return;
-          }
-          goToStep(2);
-        }
-      },
-      { signal },
-    );
-  });
+  doneBtn?.addEventListener(
+    'click',
+    () => {
+      navigateTo(addSitesBlockReturnHref(readSiteIdFromQuery()));
+    },
+    { signal },
+  );
 
   goToStep(1, false);
 
@@ -246,7 +311,12 @@ export function AddSitesBlock(): void | VoidFunction {
         await navigator.clipboard.writeText(text);
         showToast('Скопировано', 'Код помещён в буфер обмена.', 'success', 2200);
       } catch {
-        showToast('Не удалось скопировать', 'Разрешите доступ к буферу обмена или скопируйте вручную.', 'error', 3200);
+        showToast(
+          'Не удалось скопировать',
+          'Разрешите доступ к буферу обмена или скопируйте вручную.',
+          'error',
+          3200,
+        );
       }
     },
     { signal },

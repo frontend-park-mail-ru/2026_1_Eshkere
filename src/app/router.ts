@@ -32,6 +32,7 @@ import { renderRegisterPage, Register } from 'pages/register';
 import { renderAddSitesPage, AddSites } from 'pages/add-sites';
 import { renderAddSitesCreatePage, AddSitesCreate } from 'pages/add-sites-create';
 import { renderAddSitesBlockPage, AddSitesBlock } from 'pages/add-sites-block';
+import { renderAddSitesSitePage, AddSitesSite } from 'pages/add-sites-site';
 import { renderSupportPage, Support } from 'pages/support';
 import { Navbar } from 'widgets/navbar';
 import { getCurrentPath, navigateTo } from 'shared/lib/navigation';
@@ -168,6 +169,12 @@ const routes: Record<string, RouteDefinition> = {
     render: renderAddSitesBlockPage,
     layout: 'dashboard',
     init: AddSitesBlock,
+    protected: true,
+  },
+  '/add-sites/site': {
+    render: renderAddSitesSitePage,
+    layout: 'dashboard',
+    init: AddSitesSite,
     protected: true,
   },
   '/profile': {

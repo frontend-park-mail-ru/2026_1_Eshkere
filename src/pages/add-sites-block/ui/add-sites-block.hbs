@@ -1,7 +1,7 @@
 <section class="campaign-builder add-sites-block" data-add-sites-block>
   <div class="campaign-builder__toolbar">
     <div class="campaign-builder__toolbar-group">
-      <a class="campaign-builder__button campaign-builder__button--secondary" href="/add-sites">
+      <a class="campaign-builder__button campaign-builder__button--secondary" href="{{backHref}}">
         ← Площадки
       </a>
     </div>
@@ -15,24 +15,17 @@
       </p>
     </div>
     <div class="campaign-builder__steps add-sites-block__steps">
-      <button
+      <div
         class="campaign-builder__step campaign-builder__step--active add-sites-block__hero-step"
-        type="button"
         data-asb-hero-step="1"
-        data-asb-step-btn="1"
       >
         <span class="campaign-builder__step-index">1</span>
         <strong class="campaign-builder__step-title">Настройка типа блока</strong>
-      </button>
-      <button
-        class="campaign-builder__step add-sites-block__hero-step"
-        type="button"
-        data-asb-hero-step="2"
-        data-asb-step-btn="2"
-      >
+      </div>
+      <div class="campaign-builder__step add-sites-block__hero-step" data-asb-hero-step="2">
         <span class="campaign-builder__step-index">2</span>
-        <strong class="campaign-builder__step-title">Получение кода вставки</strong>
-      </button>
+        <strong class="campaign-builder__step-title">Код для вставки</strong>
+      </div>
     </div>
   </section>
 
@@ -182,10 +175,7 @@
                 <span class="add-sites-block__embed-success-icon" aria-hidden="true">🎉</span>
                 <p class="add-sites-block__embed-success-title">Вы создали рекламный блок!</p>
                 <p class="add-sites-block__embed-success-lead">
-                  Ниже — примеры вставки по полям ответа
-                  <span class="add-sites-block__embed-mono">PartnerBlockEmbedResponse</span>
-                  (ручка
-                  <span class="add-sites-block__embed-mono">GET /partners/sites/&#123;site_id&#125;/blocks/&#123;block_id&#125;/embed</span>).
+                  Скопируйте фрагменты ниже и вставьте на сайт: SDK в <code class="add-sites-block__embed-inline-code">&lt;head&gt;</code>, блок — в нужное место в <code class="add-sites-block__embed-inline-code">&lt;body&gt;</code>.
                 </p>
               </div>
 
@@ -235,17 +225,17 @@
       <button
         type="button"
         class="campaign-builder__button campaign-builder__button--primary add-sites-block__page-actions-btn"
-        data-asb-next
+        data-asb-create
       >
-        Получение кода вставки →
+        Создать блок
       </button>
       <button
         type="button"
-        class="campaign-builder__button campaign-builder__button--primary add-sites-block__page-actions-btn"
-        data-asb-create
+        class="campaign-builder__button campaign-builder__button--secondary add-sites-block__page-actions-btn"
+        data-asb-done
         hidden
       >
-        Создать
+        Готово
       </button>
     </div>
   </div>

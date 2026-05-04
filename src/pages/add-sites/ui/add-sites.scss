@@ -1,5 +1,6 @@
 @use '../../ads/ui/styles/ads-page-toolbar';
 @use '../../ads/ui/styles/ads-table';
+@use '../../ads/ui/styles/ads-modal';
 @use '../../ads/ui/styles/ads-mobile-compact';
 @use '../../../shared/styles/tokens' as t;
 @use '../../../shared/styles/mixins';
@@ -37,6 +38,16 @@
   justify-self: start;
   justify-content: flex-start;
   align-items: center;
+}
+
+.add-sites-page .campaign-row__detail-link {
+  color: inherit;
+  text-decoration: none;
+  font-weight: inherit;
+}
+
+.add-sites-page .campaign-row__detail-link:hover {
+  text-decoration: underline;
 }
 
 @media (max-width: 1180px) and (min-width: 981px) {

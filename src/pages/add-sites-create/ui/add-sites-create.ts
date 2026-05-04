@@ -156,10 +156,12 @@ export function AddSitesCreate(): void | VoidFunction {
         }
 
         try {
-          await createPartnerSite({
+          const { id: siteId } = await createPartnerSite({
             domain: parsedUrl.hostname.toLowerCase(),
             site_name: form.elements.title.value.trim(),
           });
+          navigateTo(`/add-sites/block?siteId=${siteId}`);
+          return;
         } catch (err) {
           const raw = err instanceof Error ? err.message : String(err);
           const msg = partnerSiteCreateErrorMessage(raw);
@@ -170,8 +172,6 @@ export function AddSitesCreate(): void | VoidFunction {
           }
           return;
         }
-
-        navigateTo('/add-sites/block');
       } finally {
         if (submitBtn) {
           submitBtn.disabled = false;

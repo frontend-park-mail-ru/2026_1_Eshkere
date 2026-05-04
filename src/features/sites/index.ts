@@ -1,10 +1,43 @@
-export { createPartnerSite } from './api/partner-sites';
-export type { CreatePartnerSiteBody, CreatePartnerSiteResponse } from './api/partner-sites';
 export {
-  getSites,
-  partnerSiteStatusBadgeVariant,
-  partnerSiteStatusLabelRu,
+  createPartnerBlock,
+  deletePartnerBlock,
+  getPartnerBlockEmbed,
+  listPartnerBlocks,
+  updatePartnerBlockMeta,
+} from './api/partner-blocks';
+export type {
+  CreatePartnerBlockBody,
+  CreatePartnerBlockResponse,
+  ListPartnerBlocksResponse,
+  PartnerBlockEmbedDto,
+  PartnerBlockListItemDto,
+  UpdatePartnerBlockMetaBody,
+  UpdatePartnerBlockMetaResponse,
+} from './api/partner-blocks';
+export {
+  createPartnerSite,
+  deletePartnerSite,
+  getPartnerSite,
+  listPartnerSites,
+  updatePartnerSite,
+} from './api/partner-sites';
+export type {
+  CreatePartnerSiteBody,
+  CreatePartnerSiteResponse,
+  ListPartnerSitesResponse,
+  PartnerSiteDto,
+  UpdatePartnerSiteBody,
+} from './api/partner-sites';
+export {
+  partnerSiteStatusBadgeType,
+  partnerSiteStatusRu,
   partnerSiteToggleChecked,
-  setSiteListingEnabled,
-} from './model/storage';
-export type { PartnerSiteStatus, StoredPartnerSite } from './model/storage';
+  partnerSiteToggleEditable,
+} from './model/partner-site-status';
+export type { PartnerSiteStatus } from './model/partner-site-status';
+export {
+  partnerBlockStatusBadgeType,
+  partnerBlockStatusRu,
+  partnerBlockToggleChecked,
+} from './model/partner-block-status';
+export type { PartnerBlockStatus } from './model/partner-block-status';
