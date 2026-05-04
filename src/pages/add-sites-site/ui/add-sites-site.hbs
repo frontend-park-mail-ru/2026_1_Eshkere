@@ -1,0 +1,277 @@
+<section
+  class="campaigns-page add-sites-site-page"
+  data-add-sites-site
+  {{#if siteId}}data-site-page-id="{{siteId}}"{{/if}}
+>
+  <div class="add-sites-site__toolbar">
+    <div class="add-sites-site__toolbar-card">
+      <a class="campaign-builder__button campaign-builder__button--secondary add-sites-site__back" href="/add-sites">
+        ← Площадки
+      </a>
+      <div class="add-sites-site__toolbar-main">
+        {{#if site_name}}
+          <div class="add-sites-site__toolbar-headline">
+            <h1 class="add-sites-site__title">{{site_name}}</h1>
+            {{#if siteStatus}}
+              <span class="status-badge status-badge--{{siteStatusType}} add-sites-site__title-badge">{{siteStatus}}</span>
+            {{/if}}
+          </div>
+          <p class="add-sites-site__domain">{{site_domain}}</p>
+        {{else}}
+          <div class="add-sites-site__toolbar-headline">
+            <h1 class="add-sites-site__title">Площадка</h1>
+            {{#if siteStatus}}
+              <span class="status-badge status-badge--{{siteStatusType}} add-sites-site__title-badge">{{siteStatus}}</span>
+            {{/if}}
+          </div>
+          {{#if siteId}}
+            <p class="add-sites-site__domain add-sites-site__domain--muted">ID {{siteId}}</p>
+          {{/if}}
+          {{#if site_domain}}
+            <p class="add-sites-site__domain">{{site_domain}}</p>
+          {{/if}}
+        {{/if}}
+      </div>
+      {{#if siteId}}
+        <a
+          class="campaigns-page__create-button add-sites-site__create-block"
+          href="/add-sites/block?siteId={{siteId}}"
+        >
+          Создать блок
+        </a>
+      {{/if}}
+    </div>
+  </div>
+
+  {{#if loadError}}
+    <div class="add-sites-site__banner add-sites-site__banner--error" role="alert">
+      {{loadError}}
+    </div>
+  {{/if}}
+
+  {{#unless loadError}}
+  {{#if siteId}}
+    <div class="add-sites-site__table-wrap">
+      <div class="add-sites-site__table">
+        <div class="add-sites-site__thead">
+          <div class="add-sites-site__th add-sites-site__th--block">Блок</div>
+          <div class="add-sites-site__th">Статус блока</div>
+          <div class="add-sites-site__th">Сайт</div>
+          <div class="add-sites-site__th add-sites-site__th--actions">Управление</div>
+        </div>
+        <div class="add-sites-site__tbody">
+          {{#if hasBlocks}}
+            {{#each blocks}}
+              <div class="add-sites-site__row" data-block-id="{{id}}" data-block-status="{{block_status}}">
+                <div class="add-sites-site__cell add-sites-site__cell--block">
+                  <div class="add-sites-site__block-main">
+                    <div class="add-sites-site__block-icon" aria-hidden="true">
+                      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="2" y="4" width="11" height="8" rx="1" stroke="currentColor" stroke-width="1.2"/>
+                        <path d="M13 7h3a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                        <rect x="5" y="14" width="6" height="4" rx="0.5" stroke="currentColor" stroke-width="1.2"/>
+                      </svg>
+                    </div>
+                    <div class="add-sites-site__block-text">
+                      <div class="add-sites-site__block-name">{{name}}</div>
+                      <div class="add-sites-site__block-meta">ID {{id}} · {{block_type_label}}</div>
+                      <div class="add-sites-site__block-actions">
+                        <span class="add-sites-site__link add-sites-site__link--muted" data-placeholder-action>Редактировать</span>
+                        <span class="add-sites-site__link-sep">·</span>
+                        <button
+                          type="button"
+                          class="add-sites-site__link add-sites-site__link--action"
+                          data-block-get-code
+                          data-block-name="{{name}}"
+                          data-block-id="{{id}}"
+                        >
+                          Получить код
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="add-sites-site__cell add-sites-site__cell--block-status">
+                  <span
+                    class="status-badge status-badge--{{block_status_badge_type}}"
+                    data-block-status-label
+                  >{{status_label}}</span>
+                </div>
+                <div class="add-sites-site__cell add-sites-site__cell--site-address">
+                  {{#if ../site_domain}}
+                    <span class="add-sites-site__site-domain" title="{{../site_domain}}">{{../site_domain}}</span>
+                  {{else}}
+                    <span class="add-sites-site__site-muted">—</span>
+                  {{/if}}
+                </div>
+                <div class="add-sites-site__cell add-sites-site__cell--actions">
+                  <div class="campaign-row__actions">
+                    <button
+                      type="button"
+                      class="campaign-row__action-button campaign-row__action-button--delete"
+                      aria-label="Удалить блок"
+                      data-block-delete
+                    >
+                      <svg viewBox="0 0 24 24" class="campaign-row__action-icon campaign-row__action-icon--delete">
+                        <path d="M9 3.75A1.75 1.75 0 0 1 10.75 2h2.5A1.75 1.75 0 0 1 15 3.75V4h3.25a.75.75 0 0 1 0 1.5h-.77l-.63 12.03A2 2 0 0 1 14.85 19.5H9.15a2 2 0 0 1-2-1.97L6.52 5.5h-.77a.75.75 0 0 1 0-1.5H9v-.25Zm1.5.25h3v-.25a.25.25 0 0 0-.25-.25h-2.5a.25.25 0 0 0-.25.25V4Zm-1.85 14h6.7a.5.5 0 0 0 .5-.48L16.47 5.5H7.53l.62 12.02a.5.5 0 0 0 .5.48ZM10 8.75a.75.75 0 0 1 1.5 0v5.5a.75.75 0 0 1-1.5 0v-5.5Zm2.5 0a.75.75 0 0 1 1.5 0v5.5a.75.75 0 0 1-1.5 0v-5.5Z"/>
+                      </svg>
+                    </button>
+                    <label class="toggle">
+                      <input
+                        type="checkbox"
+                        data-block-status-toggle
+                        aria-label="Включить или выключить показ рекламного блока"
+                        {{#if block_toggle_checked}}checked{{/if}}
+                      />
+                      <span class="toggle__slider"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            {{/each}}
+          {{else}}
+            <div class="add-sites-site__empty">
+              <p class="add-sites-site__empty-text">Пока нет рекламных блоков.</p>
+              <a class="campaigns-page__create-button" href="/add-sites/block?siteId={{siteId}}">Создать блок</a>
+            </div>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+  {{/if}}
+  {{/unless}}
+
+  <div
+    class="modal add-sites-site-embed-modal"
+    id="add-sites-block-embed-modal"
+    aria-hidden="true"
+  >
+    <div class="modal__backdrop" data-modal-close></div>
+    <div
+      class="modal__content add-sites-site-embed-modal__dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="add-sites-embed-modal-title"
+    >
+      <div class="modal__inner add-sites-site-embed-modal__inner">
+        <div class="add-sites-site-embed-modal__head">
+          <h2 class="add-sites-site-embed-modal__title" id="add-sites-embed-modal-title">Код вставки</h2>
+          <button
+            type="button"
+            class="add-sites-site-embed-modal__close"
+            data-modal-close
+            aria-label="Закрыть"
+          >
+            ×
+          </button>
+        </div>
+        <p class="add-sites-site-embed-modal__lead" data-embed-modal-subtitle></p>
+        <p class="add-sites-site-embed-modal__note">
+          Ниже — пример кода. Позже сюда подставятся реальные данные из API.
+        </p>
+
+        <div class="add-sites-site-embed-modal__section">
+          <h3 class="add-sites-site-embed-modal__section-title">SDK (<span class="add-sites-site-embed-modal__mono">script_url</span>)</h3>
+          <pre class="add-sites-site-embed-modal__pre" role="region" aria-label="Код SDK"><code id="ass-embed-sdk" class="add-sites-site-embed-modal__code"></code></pre>
+          <button type="button" class="add-sites-site-embed-modal__copy" data-block-embed-copy="#ass-embed-sdk">
+            Копировать
+          </button>
+        </div>
+
+        <div class="add-sites-site-embed-modal__section">
+          <h3 class="add-sites-site-embed-modal__section-title">HTML (<span class="add-sites-site-embed-modal__mono">html_snippet</span>)</h3>
+          <pre class="add-sites-site-embed-modal__pre" role="region" aria-label="HTML блока"><code id="ass-embed-snippet" class="add-sites-site-embed-modal__code"></code></pre>
+          <button type="button" class="add-sites-site-embed-modal__copy" data-block-embed-copy="#ass-embed-snippet">
+            Копировать
+          </button>
+        </div>
+
+        <div class="add-sites-site-embed-modal__footer">
+          <button type="button" class="add-sites-site-embed-modal__btn-secondary" data-modal-close>
+            Закрыть
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="campaigns-status-modal" id="add-sites-site-block-status-modal" hidden>
+    <div
+      class="campaigns-status-modal__dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="add-sites-site-block-status-modal-title"
+    >
+      <div class="campaigns-status-modal__head">
+        <h3 class="campaigns-status-modal__title" id="add-sites-site-block-status-modal-title">
+          Подтвердите изменение статуса
+        </h3>
+        <p class="campaigns-status-modal__text" id="add-sites-site-block-status-modal-text">
+          После подтверждения статус блока будет обновлён.
+        </p>
+      </div>
+
+      <div class="campaigns-status-modal__illustration" aria-hidden="true">
+        <span class="campaigns-status-modal__blob"></span>
+        <img
+          class="campaigns-status-modal__image"
+          id="add-sites-site-block-status-modal-image"
+          src="/img/Bored.png"
+          alt=""
+        />
+      </div>
+
+      <div class="campaigns-status-modal__note" id="add-sites-site-block-status-modal-note">
+        Вы сможете позже снова изменить состояние блока.
+      </div>
+
+      <div class="campaigns-status-modal__actions">
+        <button
+          type="button"
+          class="campaigns-status-modal__button campaigns-status-modal__button--secondary"
+          id="add-sites-site-block-status-cancel"
+        >
+          Отмена
+        </button>
+        <button
+          type="button"
+          class="campaigns-status-modal__button campaigns-status-modal__button--primary"
+          id="add-sites-site-block-status-confirm"
+        >
+          Подтвердить
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="campaigns-delete-modal" id="campaigns-delete-modal" hidden>
+    <div class="campaigns-delete-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="campaigns-delete-modal-title">
+      <div class="campaigns-delete-modal__head">
+        <h3 class="campaigns-delete-modal__title" id="campaigns-delete-modal-title">
+          Удалить кампанию
+        </h3>
+        <p class="campaigns-delete-modal__text">
+          Подтвердите действие.
+        </p>
+      </div>
+
+      <div class="campaigns-delete-modal__illustration" aria-hidden="true">
+        <span class="campaigns-delete-modal__blob"></span>
+        <img class="campaigns-delete-modal__image" src="/img/trash.png" alt="" />
+      </div>
+
+      <div class="campaigns-delete-modal__note">
+        После удаления невозможно будет вернуть эту кампанию снова в работу.
+      </div>
+
+      <div class="campaigns-delete-modal__actions">
+        <button type="button" class="campaigns-delete-modal__button campaigns-delete-modal__button--secondary" id="campaigns-delete-cancel">
+          Остаться
+        </button>
+        <button type="button" class="campaigns-delete-modal__button campaigns-delete-modal__button--primary" id="campaigns-delete-confirm">
+          Удалить
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

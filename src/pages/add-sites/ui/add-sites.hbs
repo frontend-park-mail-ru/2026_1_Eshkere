@@ -1,0 +1,169 @@
+<section class="campaigns-page add-sites-page" data-add-sites-page>
+  <div class="campaigns-page__toolbar">
+    <div class="campaigns-page__toolbar-primary">
+      <button type="button" class="campaigns-page__create-button" data-add-site-action>
+        Добавить сайт
+      </button>
+    </div>
+
+    <div class="campaigns-page__filters">
+      <input
+        class="campaigns-page__search"
+        type="search"
+        id="sites-search"
+        placeholder="Поиск сайтов"
+        aria-label="Поиск сайтов"
+        autocomplete="off"
+      />
+    </div>
+  </div>
+
+  <div class="campaigns-table">
+    <div class="campaigns-table__header">
+      <div>Название</div>
+      <div>Домен</div>
+      <div>Статус</div>
+      <div>Управление</div>
+    </div>
+
+    {{#if hasSites}}
+      <div class="campaigns-table__body">
+        {{#each sites}}
+          <div
+            class="campaign-row"
+            data-site-id="{{id}}"
+            data-site-status="{{statusCode}}"
+          >
+            <div class="campaign-row__name">
+              <a class="campaign-row__detail-link" href="/add-sites/site?siteId={{id}}">{{site_name}}</a>
+            </div>
+            <div>
+              <span class="campaign-row__composition campaign-row__composition--muted">{{domain}}</span>
+            </div>
+            <div>
+              <span
+                class="status-badge status-badge--{{statusType}}"
+                data-site-status-label
+              >{{status}}</span>
+            </div>
+            <div class="campaign-row__actions">
+              <button
+                type="button"
+                class="campaign-row__action-button campaign-row__action-button--delete"
+                aria-label="Удалить сайт"
+                data-site-delete
+              >
+                <svg viewBox="0 0 24 24" class="campaign-row__action-icon campaign-row__action-icon--delete">
+                  <path d="M9 3.75A1.75 1.75 0 0 1 10.75 2h2.5A1.75 1.75 0 0 1 15 3.75V4h3.25a.75.75 0 0 1 0 1.5h-.77l-.63 12.03A2 2 0 0 1 14.85 19.5H9.15a2 2 0 0 1-2-1.97L6.52 5.5h-.77a.75.75 0 0 1 0-1.5H9v-.25Zm1.5.25h3v-.25a.25.25 0 0 0-.25-.25h-2.5a.25.25 0 0 0-.25.25V4Zm-1.85 14h6.7a.5.5 0 0 0 .5-.48L16.47 5.5H7.53l.62 12.02a.5.5 0 0 0 .5.48ZM10 8.75a.75.75 0 0 1 1.5 0v5.5a.75.75 0 0 1-1.5 0v-5.5Zm2.5 0a.75.75 0 0 1 1.5 0v5.5a.75.75 0 0 1-1.5 0v-5.5Z"/>
+                </svg>
+              </button>
+              <label class="toggle">
+                <input
+                  type="checkbox"
+                  data-site-status-toggle
+                  aria-label="Активность сайта в сети"
+                  {{#if enabled}}checked{{/if}}
+                  {{#if listingToggleDisabled}}disabled{{/if}}
+                />
+                <span class="toggle__slider"></span>
+              </label>
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    {{else}}
+      <div class="campaigns-empty">
+        <div class="campaigns-empty__illustration" aria-hidden="true">
+          <picture>
+            <source srcset="/img/empty-campaign.png" type="image/png" />
+            <img class="campaigns-empty__image" src="/img/empty-campaign.png" alt="" />
+          </picture>
+        </div>
+        <h3 class="campaigns-empty__title">Здесь пока ничего нет...</h3>
+        <button type="button" class="campaigns-empty__create-button" data-add-site-action>
+          Добавить сайт
+        </button>
+      </div>
+    {{/if}}
+  </div>
+
+  <div class="campaigns-delete-modal" id="campaigns-delete-modal" hidden>
+    <div class="campaigns-delete-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="campaigns-delete-modal-title">
+      <div class="campaigns-delete-modal__head">
+        <h3 class="campaigns-delete-modal__title" id="campaigns-delete-modal-title">
+          Удалить кампанию
+        </h3>
+        <p class="campaigns-delete-modal__text">
+          Подтвердите действие.
+        </p>
+      </div>
+
+      <div class="campaigns-delete-modal__illustration" aria-hidden="true">
+        <span class="campaigns-delete-modal__blob"></span>
+        <img class="campaigns-delete-modal__image" src="/img/trash.png" alt="" />
+      </div>
+
+      <div class="campaigns-delete-modal__note">
+        После удаления невозможно будет вернуть эту кампанию снова в работу.
+      </div>
+
+      <div class="campaigns-delete-modal__actions">
+        <button type="button" class="campaigns-delete-modal__button campaigns-delete-modal__button--secondary" id="campaigns-delete-cancel">
+          Остаться
+        </button>
+        <button type="button" class="campaigns-delete-modal__button campaigns-delete-modal__button--primary" id="campaigns-delete-confirm">
+          Удалить
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="campaigns-status-modal" id="add-sites-status-modal" hidden>
+    <div
+      class="campaigns-status-modal__dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="add-sites-status-modal-title"
+    >
+      <div class="campaigns-status-modal__head">
+        <h3 class="campaigns-status-modal__title" id="add-sites-status-modal-title">
+          Подтвердите изменение статуса
+        </h3>
+        <p class="campaigns-status-modal__text" id="add-sites-status-modal-text">
+          После подтверждения статус площадки будет обновлён.
+        </p>
+      </div>
+
+      <div class="campaigns-status-modal__illustration" aria-hidden="true">
+        <span class="campaigns-status-modal__blob"></span>
+        <img
+          class="campaigns-status-modal__image"
+          id="add-sites-status-modal-image"
+          src="/img/Bored.png"
+          alt=""
+        />
+      </div>
+
+      <div class="campaigns-status-modal__note" id="add-sites-status-modal-note">
+        Вы сможете позже снова изменить состояние площадки.
+      </div>
+
+      <div class="campaigns-status-modal__actions">
+        <button
+          type="button"
+          class="campaigns-status-modal__button campaigns-status-modal__button--secondary"
+          id="add-sites-status-cancel"
+        >
+          Отмена
+        </button>
+        <button
+          type="button"
+          class="campaigns-status-modal__button campaigns-status-modal__button--primary"
+          id="add-sites-status-confirm"
+        >
+          Подтвердить
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

@@ -4,7 +4,17 @@ export { OPEN_CAMPAIGN_DELETE_MODAL_EVENT };
 export interface CampaignDeleteModalDetail {
   id: number;
   title: string;
+  /** Заголовок диалога (по умолчанию — для кампании). */
+  headingText?: string;
+  /** Основной текст под заголовком (по умолчанию — для кампании). */
+  bodyText?: string;
+  /** Текст нижней подсказки (по умолчанию — для кампании). */
+  noteText?: string;
 }
+
+const DEFAULT_DELETE_HEADING = 'Удалить кампанию';
+const DEFAULT_DELETE_NOTE =
+  'После удаления невозможно будет вернуть эту кампанию снова в работу.';
 
 interface InitCampaignDeleteModalOptions {
   onConfirm?: (detail: CampaignDeleteModalDetail) => Promise<void> | void;
@@ -17,9 +27,9 @@ export function initCampaignDeleteModal(
   const modal = document.getElementById('campaigns-delete-modal');
   const confirmButton = document.getElementById('campaigns-delete-confirm');
   const cancelButton = document.getElementById('campaigns-delete-cancel');
-  const textNode = document.querySelector<HTMLElement>(
-    '.campaigns-delete-modal__text',
-  );
+  const titleEl = modal?.querySelector<HTMLElement>('.campaigns-delete-modal__title');
+  const textNode = modal?.querySelector<HTMLElement>('.campaigns-delete-modal__text');
+  const noteEl = modal?.querySelector<HTMLElement>('.campaigns-delete-modal__note');
 
   if (!modal || !confirmButton || !cancelButton || !textNode) {
     return;
@@ -35,9 +45,20 @@ export function initCampaignDeleteModal(
 
   const open = (detail?: CampaignDeleteModalDetail): void => {
     pendingDetail = detail ?? null;
-    textNode.textContent = detail?.title
-      ? `Кампания «${detail.title}» будет удалена из списка. Это действие нельзя отменить.`
-      : 'Кампания будет удалена из списка. Это действие нельзя отменить.';
+    const heading = detail?.headingText ?? DEFAULT_DELETE_HEADING;
+    const note = detail?.noteText ?? DEFAULT_DELETE_NOTE;
+    const body =
+      detail?.bodyText ??
+      (detail?.title
+        ? `Кампания «${detail.title}» будет удалена из списка. Это действие нельзя отменить.`
+        : 'Кампания будет удалена из списка. Это действие нельзя отменить.');
+    if (titleEl) {
+      titleEl.textContent = heading;
+    }
+    textNode.textContent = body;
+    if (noteEl) {
+      noteEl.textContent = note;
+    }
     modal.hidden = false;
   };
 

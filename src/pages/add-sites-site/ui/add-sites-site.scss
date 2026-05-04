@@ -1,0 +1,521 @@
+@use '../../ads/ui/styles/ads-page-toolbar';
+@use '../../ads/ui/styles/ads-modal';
+@use '../../ads/ui/styles/ads-row';
+@use '../../ads/ui/styles/ads-status';
+@use '../../../shared/styles/tokens' as t;
+@use '../../../shared/styles/mixins';
+@use '../../../shared/ui/modal/modal';
+
+.add-sites-site-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px 32px;
+}
+
+.add-sites-site__toolbar {
+  margin-bottom: 24px;
+  padding-top: 4px;
+}
+
+.add-sites-site__toolbar-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 20px;
+  width: 100%;
+  padding: 18px 20px;
+  border-radius: t.$radius-card;
+  background: var(--surface-card-strong);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-soft-strong);
+}
+
+.add-sites-site__back {
+  flex-shrink: 0;
+  align-self: center;
+  text-decoration: none;
+}
+
+/* Кнопка «Назад» в шапке: те же токены, что и у кабинета в тёмной теме */
+.add-sites-site__toolbar-card .add-sites-site__back.campaign-builder__button--secondary {
+  border-color: var(--border-panel);
+  color: var(--text-body);
+  background: var(--surface-button-secondary);
+
+  &:hover {
+    border-color: var(--primary-border-soft);
+    color: var(--text-heading);
+    background: var(--surface-hover);
+    box-shadow: var(--shadow-button-soft);
+  }
+}
+
+.add-sites-site__toolbar-main {
+  flex: 1;
+  min-width: min(100%, 220px);
+}
+
+.add-sites-site__toolbar-headline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  margin-bottom: 6px;
+}
+
+.add-sites-site__title {
+  margin: 0;
+  font-family: t.$font-family-heading;
+  font-size: clamp(1.2rem, 2.5vw, 1.45rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  color: var(--text-heading);
+}
+
+.add-sites-site__title-badge {
+  min-height: 30px;
+  min-width: 0;
+  padding: 0 12px;
+  font-size: 11px;
+}
+
+.add-sites-site__domain {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-soft);
+  word-break: break-word;
+}
+
+.add-sites-site__domain--muted {
+  font-size: 12px;
+  margin-bottom: 2px;
+}
+
+.add-sites-site__create-block {
+  flex-shrink: 0;
+  margin-left: auto;
+  align-self: center;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+@include mixins.media-max(t.$bp-sm) {
+  .add-sites-site__toolbar-card {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px 16px;
+    gap: 12px;
+  }
+
+  .add-sites-site__back {
+    align-self: flex-start;
+  }
+
+  .add-sites-site__create-block {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+.add-sites-site__banner {
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.add-sites-site__banner--error {
+  background: var(--danger-badge);
+  color: var(--danger-strong);
+  border: 1px solid var(--danger-border-soft);
+}
+
+.add-sites-site__table-wrap {
+  background: var(--surface-card-strong);
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  overflow: hidden;
+}
+
+.add-sites-site__table {
+  width: 100%;
+}
+
+.add-sites-site__thead {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 2fr)
+    minmax(100px, 0.75fr)
+    minmax(120px, 1fr)
+    minmax(140px, 0.55fr);
+  gap: 12px 16px;
+  padding: 14px 20px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-table-head);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.add-sites-site__th--block {
+  padding-left: 52px;
+}
+
+.add-sites-site__th--actions {
+  text-align: center;
+}
+
+.add-sites-site__tbody {
+  min-height: 80px;
+}
+
+.add-sites-site__row {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 2fr)
+    minmax(100px, 0.75fr)
+    minmax(120px, 1fr)
+    minmax(140px, 0.55fr);
+  gap: 12px 16px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+  align-items: start;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.add-sites-site__cell--block {
+  padding-left: 0;
+}
+
+.add-sites-site__block-main {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.add-sites-site__block-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: var(--surface-panel-muted);
+  color: var(--text-soft);
+}
+
+.add-sites-site__block-text {
+  min-width: 0;
+}
+
+.add-sites-site__block-name {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-heading);
+  margin-bottom: 4px;
+}
+
+.add-sites-site__block-meta {
+  font-size: 13px;
+  color: var(--text-soft);
+  margin-bottom: 8px;
+}
+
+.add-sites-site__block-actions {
+  font-size: 13px;
+  line-height: 1.5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 0;
+}
+
+.add-sites-site__link {
+  color: var(--primary-action);
+  text-decoration: none;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+    color: var(--primary-active);
+  }
+}
+
+.add-sites-site__link--muted {
+  color: var(--text-soft);
+}
+
+button.add-sites-site__link--action {
+  font: inherit;
+  color: var(--primary-action);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+
+  &:hover {
+    text-decoration: underline;
+    color: var(--primary-active);
+  }
+}
+
+.add-sites-site__link-sep {
+  color: var(--text-soft);
+  margin: 0 6px;
+  user-select: none;
+}
+
+.add-sites-site__cell--block-status {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 2px;
+}
+
+.add-sites-site__cell--site-address {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-heading);
+  padding-top: 2px;
+  word-break: break-word;
+}
+
+.add-sites-site__site-domain {
+  display: inline-block;
+  max-width: 100%;
+  line-height: 1.35;
+}
+
+.add-sites-site__cell--actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 4px;
+
+  .campaign-row__actions {
+    justify-self: center;
+  }
+}
+
+.add-sites-site__site-muted {
+  color: var(--text-soft);
+  font-weight: 600;
+}
+
+.add-sites-site__empty {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.add-sites-site__empty-text {
+  margin: 0 0 16px;
+  color: var(--text-soft);
+  font-size: 15px;
+}
+
+.add-sites-site__empty .campaigns-page__create-button {
+  text-decoration: none;
+  display: inline-flex;
+}
+
+@include mixins.media-max(t.$bp-md) {
+  .add-sites-site__thead,
+  .add-sites-site__row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .add-sites-site__th:not(.add-sites-site__th--block) {
+    display: none;
+  }
+
+  .add-sites-site__th--block {
+    padding-left: 0;
+  }
+
+  .add-sites-site__cell::before {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-soft);
+    margin-bottom: 4px;
+  }
+
+  .add-sites-site__row > .add-sites-site__cell:nth-child(2)::before {
+    content: 'Статус блока';
+  }
+
+  .add-sites-site__row > .add-sites-site__cell:nth-child(3)::before {
+    content: 'Сайт';
+  }
+
+  .add-sites-site__row > .add-sites-site__cell:nth-child(4)::before {
+    content: 'Управление';
+  }
+}
+
+.add-sites-site-embed-modal__dialog {
+  width: min(640px, 100%);
+}
+
+.add-sites-site-embed-modal__inner {
+  padding: 22px 22px 18px;
+}
+
+.add-sites-site-embed-modal__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.add-sites-site-embed-modal__title {
+  margin: 0;
+  font-family: t.$font-family-heading;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-heading);
+}
+
+.add-sites-site-embed-modal__close {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: var(--surface-panel-accent);
+  color: var(--text-soft);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--surface-hover);
+    color: var(--text-body);
+  }
+}
+
+.add-sites-site-embed-modal__lead {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: var(--text-body);
+}
+
+.add-sites-site-embed-modal__note {
+  margin: 0 0 18px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text-soft);
+}
+
+.add-sites-site-embed-modal__section {
+  margin-bottom: 18px;
+}
+
+.add-sites-site-embed-modal__section-title {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-heading);
+}
+
+.add-sites-site-embed-modal__mono {
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.add-sites-site-embed-modal__pre {
+  margin: 0 0 8px;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--surface-panel-muted);
+  border: 1px solid var(--border-subtle);
+  max-height: 200px;
+  overflow: auto;
+}
+
+.add-sites-site-embed-modal__code {
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--text-body);
+}
+
+.add-sites-site-embed-modal__copy {
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid var(--primary-border-soft);
+  background: var(--surface-card-strong);
+  color: var(--primary-action);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--primary-surface);
+    color: var(--primary-active);
+  }
+}
+
+.add-sites-site-embed-modal__footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.add-sites-site-embed-modal__btn-secondary {
+  padding: 8px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid var(--border-panel);
+  background: var(--surface-card-strong);
+  color: var(--text-body);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--surface-hover);
+    color: var(--text-heading);
+  }
+}
+
+/* Тёмная тема: карточки и модалки в духе остального кабинета */
+html[data-theme='dark'] {
+  .add-sites-site__toolbar-card,
+  .add-sites-site__table-wrap {
+    box-shadow: var(--shadow-floating), var(--shadow-inset-highlight);
+  }
+
+  .add-sites-site-embed-modal__inner {
+    color: var(--text-body);
+  }
+
+  .add-sites-site-embed-modal__mono {
+    color: var(--text-label);
+  }
+}

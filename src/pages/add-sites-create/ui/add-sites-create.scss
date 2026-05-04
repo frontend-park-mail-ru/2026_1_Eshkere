@@ -1,0 +1,104 @@
+@use '../../../shared/styles/tokens' as t;
+
+.site-create-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: calc(100vh - 144px);
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 8px 4px 32px;
+
+  &__toolbar {
+    align-self: flex-start;
+  }
+
+  &__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-body);
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: t.$radius-pill;
+    border: 1px solid var(--border);
+    background: var(--surface-muted);
+    transition:
+      border-color 0.15s,
+      color 0.15s,
+      background-color 0.15s;
+
+    &:hover {
+      border-color: var(--primary-border-soft);
+      color: var(--primary-active);
+      background: var(--surface-card-hover);
+    }
+  }
+
+  &__shell {
+    display: grid;
+    gap: 14px;
+    padding: 24px 22px;
+    border-radius: 20px;
+    background: var(--surface-card);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-subtle);
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-title);
+  }
+
+  &__lead {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--text-soft);
+  }
+
+  &__domain-hint {
+    margin: -8px 0 0;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--text-soft);
+  }
+
+  &__cancel-btn.ui-button {
+    width: auto;
+    min-width: 120px;
+    height: 44px;
+    flex: 0 0 auto;
+    border-radius: t.$radius-pill;
+    text-decoration: none;
+  }
+
+  &__submit-btn.ui-button {
+    width: auto;
+    min-width: 160px;
+    height: 44px;
+    flex: 0 1 auto;
+    border-radius: t.$radius-pill;
+  }
+}
+
+.site-create-form {
+  display: grid;
+  gap: 14px;
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .ui-field__error {
+    min-height: 0;
+  }
+}

@@ -1,0 +1,101 @@
+@use '../../ads/ui/styles/ads-page-toolbar';
+@use '../../ads/ui/styles/ads-table';
+@use '../../ads/ui/styles/ads-modal';
+@use '../../ads/ui/styles/ads-mobile-compact';
+@use '../../../shared/styles/tokens' as t;
+@use '../../../shared/styles/mixins';
+
+/* Таблица сайтов: 4 колонки — ровная сетка без «разъезда» первой колонки. */
+.add-sites-page .campaigns-table__header,
+.add-sites-page .campaigns-table__body .campaign-row {
+  gap: 12px;
+  /* Только fr + minmax: одинаковая раскладка у заголовка и у каждой строки (не max-content по строкам). */
+  grid-template-columns:
+    minmax(0, 1.1fr)
+    minmax(0, 1.35fr)
+    minmax(148px, 0.88fr)
+    minmax(120px, 0.75fr);
+}
+
+.add-sites-page .campaigns-table__header > :nth-child(1),
+.add-sites-page .campaigns-table__body .campaign-row > :nth-child(1),
+.add-sites-page .campaigns-table__header > :nth-child(2),
+.add-sites-page .campaigns-table__body .campaign-row > :nth-child(2),
+.add-sites-page .campaigns-table__header > :nth-child(3),
+.add-sites-page .campaigns-table__body .campaign-row > :nth-child(3) {
+  justify-self: start;
+  text-align: start;
+  min-width: 0;
+}
+
+.add-sites-page .campaigns-table__header > :nth-child(4),
+.add-sites-page .campaigns-table__body .campaign-row > :nth-child(4) {
+  justify-self: start;
+  text-align: start;
+}
+
+.add-sites-page .campaign-row__actions {
+  justify-self: start;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.add-sites-page .campaign-row__detail-link {
+  color: inherit;
+  text-decoration: none;
+  font-weight: inherit;
+}
+
+.add-sites-page .campaign-row__detail-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 1180px) and (min-width: 981px) {
+  .add-sites-page .campaigns-table__header,
+  .add-sites-page .campaigns-table__body .campaign-row {
+    gap: 10px;
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(0, 1.3fr)
+      minmax(128px, 0.85fr)
+      minmax(112px, 0.72fr);
+  }
+}
+
+/* Подписи колонок в компактном виде строки (как на /ads). */
+@include mixins.media-max(t.$bp-lg) {
+  .add-sites-page .campaign-row > div {
+    &:nth-child(2)::before {
+      content: 'Домен';
+    }
+
+    &:nth-child(3)::before {
+      content: 'Статус';
+    }
+
+    &:nth-child(4)::before {
+      content: 'Управление';
+    }
+  }
+}
+
+@include mixins.media-max(t.$bp-sm) {
+  .add-sites-page .campaigns-table__body .campaign-row {
+    grid-template-areas:
+      'title title'
+      'domain domain'
+      'status actions';
+  }
+
+  .add-sites-page .campaign-row > div:nth-child(2) {
+    grid-area: domain;
+  }
+
+  .add-sites-page .campaign-row > div:nth-child(3) {
+    grid-area: status;
+  }
+
+  .add-sites-page .campaign-row > div:nth-child(4) {
+    grid-area: actions;
+  }
+}

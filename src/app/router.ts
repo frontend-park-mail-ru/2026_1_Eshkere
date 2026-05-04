@@ -32,6 +32,10 @@ import { renderAdCreatePage, AdCreate } from 'pages/ad-create';
 import { renderAdEditPage, AdEdit } from 'pages/ad-edit';
 import { renderCampaignEditFormPage, CampaignEditForm } from 'pages/campaign-edit-form';
 import { renderRegisterPage, Register } from 'pages/register';
+import { renderAddSitesPage, AddSites } from 'pages/add-sites';
+import { renderAddSitesCreatePage, AddSitesCreate } from 'pages/add-sites-create';
+import { renderAddSitesBlockPage, AddSitesBlock } from 'pages/add-sites-block';
+import { renderAddSitesSitePage, AddSitesSite } from 'pages/add-sites-site';
 import { renderSupportPage, Support } from 'pages/support';
 import { Navbar } from 'widgets/navbar';
 import { getCurrentPath, navigateTo } from 'shared/lib/navigation';
@@ -168,6 +172,30 @@ const routes: Record<string, RouteDefinition> = {
     render: renderBalancePage,
     layout: 'dashboard',
     init: Balance,
+    protected: true,
+  },
+  '/add-sites': {
+    render: renderAddSitesPage,
+    layout: 'dashboard',
+    init: AddSites,
+    protected: true,
+  },
+  '/add-sites/create': {
+    render: renderAddSitesCreatePage,
+    layout: 'dashboard',
+    init: AddSitesCreate,
+    protected: true,
+  },
+  '/add-sites/block': {
+    render: renderAddSitesBlockPage,
+    layout: 'dashboard',
+    init: AddSitesBlock,
+    protected: true,
+  },
+  '/add-sites/site': {
+    render: renderAddSitesSitePage,
+    layout: 'dashboard',
+    init: AddSitesSite,
     protected: true,
   },
   '/profile': {
