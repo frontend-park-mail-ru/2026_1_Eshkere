@@ -1,0 +1,58 @@
+// Mobile performance overrides — coarse pointer (touch devices).
+// Disables GPU-heavy effects that cause jank on low-end phones:
+//   backdrop-filter, continuous CSS animations, excessive compositing layers.
+
+@media (pointer: coarse) {
+  // Убираем backdrop-filter — самое дорогое свойство на мобильных GPU.
+  // Заменяем на непрозрачный фон, который браузер не должен блюрить.
+  .hero__dashboard {
+    backdrop-filter: none;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(247, 249, 255, 0.95) 100%);
+  }
+
+  .hero__floating {
+    backdrop-filter: none;
+    background: rgba(255, 255, 255, 0.96);
+  }
+
+  // Отключаем анимации плавающих карточек — 3 одновременных infinite-анимации
+  // с transform+opacity создают лишние compositing-слои.
+  .hero__floating--audience,
+  .hero__floating--budget,
+  .hero__floating--status {
+    animation: none;
+  }
+
+  // Отключаем анимации баров графика — 6 одновременных infinite-анимаций.
+  .hero__dashboard-chart span {
+    animation: none;
+  }
+
+  // Упрощаем pulse-dot: box-shadow-анимация не GPU-ускорена, вызывает paint.
+  .hero__signal {
+    animation: none;
+    box-shadow: 0 0 0 4px rgba(52, 200, 118, 0.18);
+  }
+
+  // Убираем will-change у элементов, которые больше не анимируются на мобильных —
+  // лишние promoted-слои потребляют GPU-память.
+  .hero__dashboard,
+  .hero__feed,
+  .hero__floating,
+  .hero__orb {
+    will-change: auto;
+  }
+
+  // CSS-переменные параллакса не обновляются на мобильных (JS отключён),
+  // поэтому убираем transform с calc(), чтобы не было artефактов.
+  .hero__visual {
+    transform: none;
+  }
+
+  // Отключаем bento-card hover-анимации — на тач-устройствах hover не работает
+  // корректно и оставляет stuck-состояния; убираем will-change.
+  .bento-card {
+    will-change: auto;
+    transition: none;
+  }
+}

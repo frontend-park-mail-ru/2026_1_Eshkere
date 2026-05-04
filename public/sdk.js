@@ -76,9 +76,9 @@
         if (!res.ok) throw new Error('no ad');
         return res.json();
       })
-      .then(function (ad) {
+      .then(function (res) {
         injectStyles();
-        container.innerHTML = buildMarkup(ad);
+        container.innerHTML = buildMarkup(res.data || res);
       })
       .catch(function () {
         // Скрываем контейнер если объявление недоступно

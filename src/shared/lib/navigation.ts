@@ -103,11 +103,11 @@ export function initNavigation(onLocationChange: () => void): void {
     const currentUrl =
       `${window.location.pathname}${window.location.search}${window.location.hash}`;
 
+    event.preventDefault();
+
     if (nextUrl === currentUrl) {
       return;
     }
-
-    event.preventDefault();
     window.history.pushState({}, '', nextUrl);
   });
 

@@ -224,6 +224,7 @@ export function setupSmoothAnchors(): VoidFunction {
 
 export function setupSectionParallax(): VoidFunction {
   if (!motionAllowed()) return () => {};
+  if (window.matchMedia('(pointer: coarse)').matches) return () => {};
 
   const home = document.querySelector<HTMLElement>('.home');
   if (!home) return () => {};
@@ -285,10 +286,8 @@ export function setupAuroraBg(): VoidFunction {
   el.setAttribute('aria-hidden', 'true');
   bg.appendChild(el);
 
-  const isCoarse = window.matchMedia('(pointer: coarse)').matches;
-  if (isCoarse) {
-    el.classList.add('home-aurora--auto');
-    return () => el.remove();
+  if (window.matchMedia('(pointer: coarse)').matches) {
+    return () => {};
   }
 
   const layersConfig: Array<{ cls: string; lerp: number; sx: number; sy: number }> = [

@@ -1314,7 +1314,7 @@ html[data-theme='dark'] {
 }
 
 @include mixins.media-max(t.$bp-sm) {
-  // Тулбар: кнопки растягиваются на ширину
+  // Тулбар: скрываем Назад/Далее — они дублируют cw-step-footer
   .campaign-builder__toolbar {
     padding: 10px 12px;
     gap: 8px;
@@ -1323,13 +1323,12 @@ html[data-theme='dark'] {
   .campaign-builder__toolbar-group {
     flex: 1;
 
-    &:first-child { justify-content: flex-start; }
-    &:last-child  { justify-content: flex-end; }
+    &:first-child { justify-content: flex-start; flex: 0 0 auto; }
+    &:last-child  { display: none; }
   }
 
   .campaign-builder__button {
     min-width: 0;
-    flex: 1;
   }
 
   // Hero: компактнее

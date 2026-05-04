@@ -147,7 +147,8 @@
     min-height: 260px;
 
     &--wide {
-      grid-template-columns: 1fr;
+      display: flex;
+      flex-direction: column;
 
       .bento-card__content {
         padding-right: 0;
@@ -175,6 +176,16 @@
   @include mixins.media-max(t.$bp-sm) {
     padding: 24px;
     min-height: 240px;
+
+    &--phone .bento-card__media,
+    &--gift .bento-card__media {
+      margin-bottom: 0;
+    }
+
+    &--phone .bento-card__media img,
+    &--gift .bento-card__media img {
+      transform: none;
+    }
 
     &__title {
       font-size: 22px;
