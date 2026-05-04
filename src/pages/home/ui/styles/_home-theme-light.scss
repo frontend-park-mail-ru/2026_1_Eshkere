@@ -12,6 +12,7 @@
 .public-layout--home::before,
 .public-layout--home::after {
   opacity: 0;
+  animation: none;
 }
 
 .home {
