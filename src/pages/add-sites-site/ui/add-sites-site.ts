@@ -122,7 +122,6 @@ export function AddSitesSite(): void | VoidFunction {
   }
 
   const modal = document.getElementById('add-sites-block-embed-modal');
-  const sdkEl = document.querySelector<HTMLElement>('#ass-embed-sdk');
   const snippetEl = document.querySelector<HTMLElement>('#ass-embed-snippet');
   const subtitleEl = document.querySelector<HTMLElement>('[data-embed-modal-subtitle]');
 
@@ -169,9 +168,6 @@ export function AddSitesSite(): void | VoidFunction {
     if (subtitleEl) {
       subtitleEl.textContent = `Блок «${blockName}»`;
     }
-    if (sdkEl) {
-      sdkEl.textContent = 'Загружаем…';
-    }
     if (snippetEl) {
       snippetEl.textContent = 'Загружаем…';
     }
@@ -180,21 +176,16 @@ export function AddSitesSite(): void | VoidFunction {
     }
 
     if (!Number.isFinite(siteIdNum) || siteIdNum <= 0 || !Number.isFinite(blockId) || blockId <= 0) {
-      if (sdkEl) sdkEl.textContent = '— нет данных —';
       if (snippetEl) snippetEl.textContent = '— нет данных —';
       return;
     }
 
     try {
       const embed = await getPartnerBlockEmbed(siteIdNum, blockId);
-      if (sdkEl) {
-        sdkEl.textContent = `<script src="${embed.script_url}" async></script>`;
-      }
       if (snippetEl) {
         snippetEl.textContent = embed.html_snippet;
       }
     } catch {
-      if (sdkEl) sdkEl.textContent = '— не удалось загрузить код —';
       if (snippetEl) snippetEl.textContent = '— не удалось загрузить код —';
       showToast('Ошибка', 'Не удалось загрузить код блока.', 'error', 3000);
     }

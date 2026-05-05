@@ -19,6 +19,7 @@ export interface CreateAdCampaignRequest {
   name: string;
   main_action?: 'look' | 'click';
   daily_budget?: number;
+  cpm_price?: number;
 }
 
 export interface CreateAdCampaignResponse {
@@ -29,5 +30,6 @@ export interface UpdateAdCampaignRequest {
   name?: string;
   main_action?: 'look' | 'click';
   daily_budget?: number;
+  cpm_price?: number;
   status?: AdCampaignStatus;
 }

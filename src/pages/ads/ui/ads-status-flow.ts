@@ -70,16 +70,16 @@ export function bindCampaignStatusModal(signal: AbortSignal): void {
     pendingStatusChange = pending;
 
     const nextMeta = campaignStatusMap[pending.nextStatus];
-    const isEnabling = nextMeta.enabled;
+    const isEnabling = pending.nextStatus === 'active';
 
     statusModalTitle.textContent = isEnabling
       ? 'Включить кампанию'
       : 'Остановить кампанию';
     statusModalText.textContent = isEnabling
-      ? `Кампания перейдет в статус "${nextMeta.label}".`
+      ? 'Кампания начнёт откручиваться.'
       : `Кампания перейдет в статус "${nextMeta.label}" и перестанет откручиваться.`;
     statusModalNote.textContent = isEnabling
-      ? 'Если кампания была в черновике, она уйдет на модерацию перед запуском.'
+      ? 'Вы сможете остановить кампанию в любой момент.'
       : 'Вы сможете вернуться позже и снова активировать кампанию без потери настроек.';
     statusModalConfirm.textContent = isEnabling ? 'Включить' : 'Остановить';
     statusModalImage.src = isEnabling
@@ -105,9 +105,7 @@ export function bindCampaignStatusModal(signal: AbortSignal): void {
           campaignStatusMap[(currentStatus as keyof typeof campaignStatusMap) ?? 'active'];
         const nextStatus =
           toggle.checked
-            ? currentStatus === 'draft' || currentStatus === 'moderation'
-              ? 'moderation'
-              : 'active'
+            ? 'active'
             : currentStatus === 'draft' || currentStatus === 'moderation'
               ? 'draft'
               : 'stopped';

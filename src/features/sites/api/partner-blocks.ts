@@ -15,10 +15,7 @@ export interface CreatePartnerBlockResponse {
 }
 
 export interface PartnerBlockEmbedDto {
-  block_id: number;
   embed_token: string;
-  script_url: string;
-  iframe_url: string;
   html_snippet: string;
 }
 

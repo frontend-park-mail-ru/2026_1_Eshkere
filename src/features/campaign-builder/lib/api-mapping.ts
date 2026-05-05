@@ -182,10 +182,15 @@ export function getPrimaryCreativeFile(state: BuilderState): File | undefined {
   );
 }
 
+// CPM в копейках: 10 000 = 10 руб. за 1000 показов (1 коп. за показ)
+const DEFAULT_CPM_PRICE = 10000;
+
 export function toCampaignPayload(state: BuilderState): CreateAdCampaignRequest {
   return {
     name: state.name.trim(),
     main_action: GOAL_MAIN_ACTION[state.goal],
+    daily_budget: state.dailyBudget > 0 ? state.dailyBudget : undefined,
+    cpm_price: DEFAULT_CPM_PRICE,
   };
 }
 
@@ -202,10 +207,17 @@ export function toGroupPayload(state: BuilderState): CreateAdGroupRequest {
   };
 }
 
+function normalizeUrl(url: string): string {
+  const trimmed = url.trim();
+  if (!trimmed) return trimmed;
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+}
+
 export function toAdPayload(state: BuilderState): CreateAdRequest {
   return {
     title: state.headline.trim(),
     short_desc: state.description.trim(),
-    target_url: state.link.trim(),
+    target_url: normalizeUrl(state.link),
   };
 }
