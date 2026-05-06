@@ -24,6 +24,8 @@ export function CampaignNew(): VoidFunction {
   const formError  = root.querySelector<HTMLElement>('[data-cnew-form-error]');
   const goalValue  = root.querySelector<HTMLInputElement>('[data-cnew-goal-value]');
 
+  const DEFAULT_CPM_PRICE = 10000;
+
   // Выбор цели
   root.querySelectorAll<HTMLButtonElement>('[data-cnew-goals] [data-goal]').forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -64,7 +66,12 @@ export function CampaignNew(): VoidFunction {
     if (formError) formError.hidden = true;
 
     try {
-      const { id } = await createAdCampaign({ name, main_action, daily_budget });
+      const { id } = await createAdCampaign({
+        name,
+        main_action,
+        daily_budget,
+        cpm_price: DEFAULT_CPM_PRICE,
+      });
       navigateTo(`/ads/campaign?id=${id}`);
     } catch {
       if (formError) {

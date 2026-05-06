@@ -19,7 +19,7 @@ export interface CreateAdCampaignRequest {
   name: string;
   main_action?: 'look' | 'click';
   daily_budget?: number;
-  cpm_price?: number;
+  cpm_price: number;
 }
 
 export interface CreateAdCampaignResponse {

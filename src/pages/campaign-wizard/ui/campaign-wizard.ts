@@ -7,6 +7,8 @@ import { renderTemplate } from 'shared/lib/render';
 import { navigateTo } from 'shared/lib/navigation';
 import campaignWizardTemplate from './campaign-wizard.hbs';
 
+const DEFAULT_CPM_PRICE = 10000;
+
 const STEP_SUBTITLES: Record<number, string> = {
   1: 'Задайте базовые параметры кампании.',
   2: 'Настройте аудиторию первой группы объявлений.',
@@ -211,6 +213,7 @@ export function CampaignWizard(): VoidFunction {
         name: state.name,
         main_action: state.main_action,
         ...(state.daily_budget ? { daily_budget: state.daily_budget } : {}),
+        cpm_price: DEFAULT_CPM_PRICE,
       });
 
       const { id: groupId } = await createAdGroup(campaignId, {
