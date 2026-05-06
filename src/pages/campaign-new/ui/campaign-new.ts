@@ -56,7 +56,10 @@ export function CampaignNew(): VoidFunction {
       if (nameError) nameError.textContent = 'Введите название кампании';
       hasError = true;
     }
-    if (daily_budget !== undefined && daily_budget < 100) {
+    if (daily_budget === undefined) {
+      if (budgetError) budgetError.textContent = 'Введите дневной бюджет';
+      hasError = true;
+    } else if (daily_budget < 100) {
       if (budgetError) budgetError.textContent = 'Минимальный бюджет — 100 ₽';
       hasError = true;
     }

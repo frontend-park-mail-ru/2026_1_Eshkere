@@ -189,7 +189,7 @@ export function toCampaignPayload(state: BuilderState): CreateAdCampaignRequest 
   return {
     name: state.name.trim(),
     main_action: GOAL_MAIN_ACTION[state.goal],
-    daily_budget: state.dailyBudget > 0 ? state.dailyBudget : undefined,
+    daily_budget: state.dailyBudget,
     cpm_price: DEFAULT_CPM_PRICE,
   };
 }
