@@ -96,6 +96,34 @@ function proxyFeedRequest(req, res) {
 
 app.use('/feed', proxyFeedRequest);
 
+function proxyBackendRequest(req, res) {
+  const target = new URL(`http://localhost:8000${req.originalUrl}`);
+  const headers = {...req.headers};
+  headers.host = req.headers.host || 'localhost:8081';
+
+  const proxyRequest = http.request(
+      target,
+      {method: req.method, headers},
+      (proxyResponse) => {
+        const responseHeaders = {...proxyResponse.headers};
+        delete responseHeaders['content-encoding'];
+        delete responseHeaders['content-length'];
+        res.writeHead(proxyResponse.statusCode || 502, responseHeaders);
+        proxyResponse.pipe(res);
+      },
+  );
+
+  proxyRequest.on('error', () => {
+    res.status(502).json({error: 'backend unavailable'});
+  });
+
+  req.pipe(proxyRequest);
+}
+
+app.use('/public', proxyBackendRequest);
+app.use('/click', proxyBackendRequest);
+app.use('/ad', proxyBackendRequest);
+
 /**
  * Проксирует запрос к MinIO S3 на localhost:9000.
  * Убирает префикс /s3 из пути и пробрасывает метод запроса.

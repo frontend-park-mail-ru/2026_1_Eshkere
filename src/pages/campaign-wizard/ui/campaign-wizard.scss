@@ -653,7 +653,7 @@ html[data-theme='dark'] {
 
 .cw-panel-with-preview {
   display: grid;
-  grid-template-columns: 280px minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) 280px;
   gap: 24px;
   align-items: start;
 }
@@ -690,6 +690,9 @@ html[data-theme='dark'] {
   position: sticky;
   top: 110px;
   z-index: 0;
+  width: 100%;
+  max-width: 280px;
+  align-self: start;
 }
 
 .cw-panel-form {
@@ -710,6 +713,9 @@ html[data-theme='dark'] {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  max-height: calc(100vh - 140px);
+  overflow: auto;
+  min-width: 0;
 }
 
 // ─── Preview header (title + badge) ─────────────────────────────
@@ -1141,11 +1147,15 @@ html[data-theme='dark'] {
   justify-content: center;
   border-bottom: 1px solid rgba(213, 220, 239, 0.6);
   overflow: hidden;
+  min-width: 0;
 
   img {
     width: 100%;
     height: 100%;
+    max-width: 100%;
+    max-height: 100%;
     object-fit: cover;
+    display: block;
   }
 }
 
@@ -1314,7 +1324,7 @@ html[data-theme='dark'] {
 }
 
 @include mixins.media-max(t.$bp-sm) {
-  // Тулбар: кнопки растягиваются на ширину
+  // Тулбар: скрываем Назад/Далее — они дублируют cw-step-footer
   .campaign-builder__toolbar {
     padding: 10px 12px;
     gap: 8px;
@@ -1323,13 +1333,12 @@ html[data-theme='dark'] {
   .campaign-builder__toolbar-group {
     flex: 1;
 
-    &:first-child { justify-content: flex-start; }
-    &:last-child  { justify-content: flex-end; }
+    &:first-child { justify-content: flex-start; flex: 0 0 auto; }
+    &:last-child  { display: none; }
   }
 
   .campaign-builder__button {
     min-width: 0;
-    flex: 1;
   }
 
   // Hero: компактнее

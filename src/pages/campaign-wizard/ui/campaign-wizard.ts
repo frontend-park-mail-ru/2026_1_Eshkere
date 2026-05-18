@@ -7,6 +7,8 @@ import { renderTemplate } from 'shared/lib/render';
 import { navigateTo } from 'shared/lib/navigation';
 import campaignWizardTemplate from './campaign-wizard.hbs';
 
+const DEFAULT_CPM_PRICE = 10000;
+
 const STEP_SUBTITLES: Record<number, string> = {
   1: 'Задайте базовые параметры кампании.',
   2: 'Настройте аудиторию первой группы объявлений.',
@@ -143,7 +145,10 @@ export function CampaignWizard(): VoidFunction {
         setError('name', 'Введите название кампании');
         issues.push('Укажите название кампании');
       }
-      if (state.daily_budget !== undefined && state.daily_budget < 100) {
+      if (state.daily_budget === undefined) {
+        setError('daily_budget', 'Укажите дневной бюджет');
+        issues.push('Укажите дневной бюджет');
+      } else if (state.daily_budget < 100) {
         setError('daily_budget', 'Минимальный бюджет — 100 ₽');
         issues.push('Минимальный бюджет — 100 ₽');
       }
@@ -210,7 +215,8 @@ export function CampaignWizard(): VoidFunction {
       const { id: campaignId } = await createAdCampaign({
         name: state.name,
         main_action: state.main_action,
-        ...(state.daily_budget ? { daily_budget: state.daily_budget } : {}),
+        daily_budget: state.daily_budget ?? 0,
+        cpm_price: DEFAULT_CPM_PRICE,
       });
 
       const { id: groupId } = await createAdGroup(campaignId, {

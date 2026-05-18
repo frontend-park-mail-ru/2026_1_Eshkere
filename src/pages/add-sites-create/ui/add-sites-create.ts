@@ -3,7 +3,6 @@ import { createPartnerSite } from 'features/sites';
 import { renderTemplate } from 'shared/lib/render';
 import { renderFormField } from 'shared/ui/form-field/form-field';
 import { renderButton } from 'shared/ui/button/button';
-import { checkSiteReachable } from 'shared/lib/site-reachability';
 import { navigateTo } from 'shared/lib/navigation';
 import {
   parseSiteInputToHttpUrl,
@@ -135,42 +134,23 @@ export function AddSitesCreate(): void | VoidFunction {
 
       if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Проверка доступности…';
+        submitBtn.textContent = 'Добавление сайта…';
         submitBtn.setAttribute('aria-busy', 'true');
       }
 
       try {
-        const reach = await checkSiteReachable(parsedUrl, { signal });
-
-        if (!reach.ok && reach.reason === 'cancelled') {
-          return;
-        }
-
-        if (!reach.ok) {
-          setFieldState(form, 'domain', reach.message);
-          return;
-        }
-
-        if (submitBtn) {
-          submitBtn.textContent = 'Добавление сайта…';
-        }
-
-        try {
-          const { id: siteId } = await createPartnerSite({
-            domain: parsedUrl.hostname.toLowerCase(),
-            site_name: form.elements.title.value.trim(),
-          });
-          navigateTo(`/add-sites/block?siteId=${siteId}`);
-          return;
-        } catch (err) {
-          const raw = err instanceof Error ? err.message : String(err);
-          const msg = partnerSiteCreateErrorMessage(raw);
-          if (raw.toLowerCase().includes('empty site_name')) {
-            setFieldState(form, 'title', msg);
-          } else {
-            setFieldState(form, 'domain', msg);
-          }
-          return;
+        const { id: siteId } = await createPartnerSite({
+          domain: parsedUrl.hostname.toLowerCase(),
+          site_name: form.elements.title.value.trim(),
+        });
+        navigateTo(`/add-sites/block?siteId=${siteId}`);
+      } catch (err) {
+        const raw = err instanceof Error ? err.message : String(err);
+        const msg = partnerSiteCreateErrorMessage(raw);
+        if (raw.toLowerCase().includes('empty site_name')) {
+          setFieldState(form, 'title', msg);
+        } else {
+          setFieldState(form, 'domain', msg);
         }
       } finally {
         if (submitBtn) {

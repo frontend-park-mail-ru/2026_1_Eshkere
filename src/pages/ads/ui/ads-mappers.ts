@@ -24,8 +24,8 @@ export const campaignStatusMap: Record<CampaignStatusKey, CampaignStatusMeta> = 
     enabled: false,
   },
   moderation: {
-    label: 'Черновик',
-    tone: 'draft',
+    label: 'На модерации',
+    tone: 'pending',
     enabled: false,
   },
   rejected: {

@@ -1,6 +1,7 @@
 import './add-sites-site.scss';
 import {
   deletePartnerBlock,
+  getPartnerBlockEmbed,
   getPartnerSite,
   listPartnerBlocks,
   partnerBlockStatusBadgeType,
@@ -25,19 +26,6 @@ import {
 import template from './add-sites-site.hbs';
 import { bindPartnerBlockStatusModal } from './add-sites-site-block-status-flow';
 
-/** Захардкоженные примеры до подключения реального embed API в модалке. */
-const EMBED_MODAL_SDK_PLACEHOLDER = [
-  '<!-- пример: PartnerBlockEmbedResponse.script_url -->',
-  '<script src="https://cdn.eshkere.example/ad-sdk.js" async></script>',
-].join('\n');
-
-const EMBED_MODAL_HTML_PLACEHOLDER = [
-  '<!-- пример: PartnerBlockEmbedResponse.html_snippet -->',
-  '<div data-eshkere-ad data-embed-token="pb_demo_token"></div>',
-  '<script>',
-  '  // инициализация блока (фрагмент из ответа API)',
-  '</script>',
-].join('\n');
 
 function readSiteIdFromQuery(): number | null {
   if (typeof window === 'undefined') {
@@ -134,7 +122,6 @@ export function AddSitesSite(): void | VoidFunction {
   }
 
   const modal = document.getElementById('add-sites-block-embed-modal');
-  const sdkEl = document.querySelector<HTMLElement>('#ass-embed-sdk');
   const snippetEl = document.querySelector<HTMLElement>('#ass-embed-snippet');
   const subtitleEl = document.querySelector<HTMLElement>('[data-embed-modal-subtitle]');
 
@@ -177,18 +164,30 @@ export function AddSitesSite(): void | VoidFunction {
     bindModalShell(modal, signal);
   }
 
-  function openEmbedModal(blockName: string): void {
-    if (sdkEl) {
-      sdkEl.textContent = EMBED_MODAL_SDK_PLACEHOLDER;
-    }
-    if (snippetEl) {
-      snippetEl.textContent = EMBED_MODAL_HTML_PLACEHOLDER;
-    }
+  async function openEmbedModal(blockName: string, blockId: number): Promise<void> {
     if (subtitleEl) {
       subtitleEl.textContent = `Блок «${blockName}»`;
     }
+    if (snippetEl) {
+      snippetEl.textContent = 'Загружаем…';
+    }
     if (modal instanceof HTMLElement) {
       openModal(modal);
+    }
+
+    if (!Number.isFinite(siteIdNum) || siteIdNum <= 0 || !Number.isFinite(blockId) || blockId <= 0) {
+      if (snippetEl) snippetEl.textContent = '— нет данных —';
+      return;
+    }
+
+    try {
+      const embed = await getPartnerBlockEmbed(siteIdNum, blockId);
+      if (snippetEl) {
+        snippetEl.textContent = embed.html_snippet;
+      }
+    } catch {
+      if (snippetEl) snippetEl.textContent = '— не удалось загрузить код —';
+      showToast('Ошибка', 'Не удалось загрузить код блока.', 'error', 3000);
     }
   }
 
@@ -200,7 +199,8 @@ export function AddSitesSite(): void | VoidFunction {
       if (getCodeBtn) {
         event.preventDefault();
         const name = getCodeBtn.dataset.blockName?.trim() || 'Блок';
-        openEmbedModal(name);
+        const blockId = Number(getCodeBtn.dataset.blockId ?? '');
+        void openEmbedModal(name, blockId);
         return;
       }
       if (target?.closest('[data-placeholder-action]')) {

@@ -38,10 +38,11 @@
       .replace(/"/g, '&quot;');
   }
 
-  function buildMarkup(ad) {
+  function buildMarkup(ad, clickUrl) {
+    var href = clickUrl || ad.target_url;
     var parts = [];
     parts.push(
-      '<a class="eshkere-ad" href="' + esc(ad.target_url) + '"' +
+      '<a class="eshkere-ad" href="' + esc(href) + '"' +
       ' target="_blank" rel="noopener noreferrer sponsored">',
     );
     if (ad.image_url) {
@@ -65,6 +66,8 @@
     return parts.join('');
   }
 
+  // ─── Advertiser feed-link flow ──────────────────────────────────────────────
+  // Используется рекламодателями: EshkereAds.render({ token, container })
   function render(config) {
     if (!config || !config.token || !config.container) return;
 
@@ -76,12 +79,11 @@
         if (!res.ok) throw new Error('no ad');
         return res.json();
       })
-      .then(function (ad) {
+      .then(function (res) {
         injectStyles();
-        container.innerHTML = buildMarkup(ad);
+        container.innerHTML = buildMarkup(res.data || res);
       })
       .catch(function () {
-        // Скрываем контейнер если объявление недоступно
         container.hidden = true;
       });
   }
