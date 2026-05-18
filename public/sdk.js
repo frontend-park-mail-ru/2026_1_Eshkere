@@ -65,8 +65,6 @@
     return parts.join('');
   }
 
-  // ─── Advertiser feed-link flow ──────────────────────────────────────────────
-  // Используется рекламодателями: EshkereAds.render({ token, container })
   function render(config) {
     if (!config || !config.token || !config.container) return;
 
@@ -83,55 +81,10 @@
         container.innerHTML = buildMarkup(res.data || res);
       })
       .catch(function () {
+        // Скрываем контейнер если объявление недоступно
         container.hidden = true;
       });
   }
 
-  // ─── Partner block flow ─────────────────────────────────────────────────────
-  // Используется площадками: <div data-eshkere-ad data-embed-token="..."></div>
-  function initBlock(el) {
-    if (!el || el.dataset.eshkereInited) return;
-    el.dataset.eshkereInited = '1';
-
-    var token = el.getAttribute('data-embed-token');
-    if (!token) {
-      el.hidden = true;
-      return;
-    }
-
-    fetch(BASE_URL + '/ad/request', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ embed_token: token }),
-    })
-      .then(function (res) {
-        if (!res.ok) throw new Error('no ad');
-        return res.json();
-      })
-      .then(function (res) {
-        var payload = res.data || res;
-        if (!payload || !payload.ad) throw new Error('no ad');
-        injectStyles();
-        el.innerHTML = buildMarkup(payload.ad);
-      })
-      .catch(function () {
-        el.hidden = true;
-      });
-  }
-
-  function initAllBlocks() {
-    var els = document.querySelectorAll('[data-eshkere-ad]');
-    for (var i = 0; i < els.length; i++) {
-      initBlock(els[i]);
-    }
-  }
-
-  // Запускаем авто-инициализацию как только DOM готов
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initAllBlocks);
-  } else {
-    initAllBlocks();
-  }
-
-  global.EshkereAds = { render: render, initBlock: initBlock };
+  global.EshkereAds = { render: render };
 })(window);

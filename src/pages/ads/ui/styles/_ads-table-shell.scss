@@ -211,6 +211,12 @@
       width: 100%;
       min-width: 0;
       min-height: 0;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-areas:
+        'title title'
+        'composition status'
+        'goal goal'
+        'actions actions';
       padding: 12px;
       gap: 9px 12px;
     }
