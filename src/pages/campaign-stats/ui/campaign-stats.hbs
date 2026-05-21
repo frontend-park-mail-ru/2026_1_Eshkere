@@ -1,95 +1,166 @@
-<div class="stats-page" data-campaign-stats>
-  <header class="stats-header">
-    <button class="stats-header__back" type="button" data-cs-back>← Кампания</button>
-    <div class="stats-header__info">
-      <div class="stats-header__eyebrow">Статистика кампании</div>
-      <h1 class="stats-header__title" data-cs-title>Загрузка…</h1>
-      <div class="stats-header__meta">
-        <span class="stats-badge stats-badge--warning" data-cs-status>—</span>
-        <span class="stats-header__tag" data-cs-goal>—</span>
-        <span class="stats-header__tag" data-cs-budget>—</span>
+<div class="cs-page" data-campaign-stats>
+
+  <div class="as-toolbar">
+    <button class="as-back-btn" type="button" data-cs-back>← Назад к кампаниям</button>
+    <nav class="as-breadcrumb" aria-label="Навигация">
+      <span class="as-breadcrumb__item as-breadcrumb__item--active">Кампании</span>
+    </nav>
+  </div>
+
+  <div class="stats-card cs-hero">
+    <div class="cs-hero__main">
+      <h1 class="cs-hero__title" data-cs-title>Загрузка…</h1>
+      <div class="cs-hero__meta">
+        <span class="stats-badge" data-cs-status>—</span>
+        <span class="cs-hero__sep">·</span>
+        <span class="cs-hero__info" data-cs-launched>—</span>
+        <span class="cs-hero__sep">·</span>
+        <span class="cs-hero__info cs-hero__info--muted" data-cs-id>—</span>
       </div>
     </div>
-    <div class="stats-periods" data-cs-periods>
-      <button class="stats-period stats-period--active" type="button" data-period="7">7 дней</button>
-      <button class="stats-period" type="button" data-period="30">30 дней</button>
-      <button class="stats-period" type="button" data-period="90">90 дней</button>
-    </div>
-  </header>
-
-  <div class="stats-kpis">
-    <div class="stats-kpi">
-      <span class="stats-kpi__label">Показы</span>
-      <span class="stats-kpi__value" data-cs-kpi="impressions">—</span>
-      <span class="stats-kpi__delta stats-kpi__delta--up" data-cs-delta="impressions"></span>
-    </div>
-    <div class="stats-kpi">
-      <span class="stats-kpi__label">Клики</span>
-      <span class="stats-kpi__value" data-cs-kpi="clicks">—</span>
-      <span class="stats-kpi__delta stats-kpi__delta--up" data-cs-delta="clicks"></span>
-    </div>
-    <div class="stats-kpi">
-      <span class="stats-kpi__label">CTR</span>
-      <span class="stats-kpi__value" data-cs-kpi="ctr">—</span>
-      <span class="stats-kpi__delta stats-kpi__delta--up" data-cs-delta="ctr"></span>
-    </div>
-    <div class="stats-kpi">
-      <span class="stats-kpi__label">Потрачено</span>
-      <span class="stats-kpi__value" data-cs-kpi="spend">—</span>
-      <span class="stats-kpi__delta stats-kpi__delta--down" data-cs-delta="spend"></span>
-    </div>
-    <div class="stats-kpi">
-      <span class="stats-kpi__label">CPC</span>
-      <span class="stats-kpi__value" data-cs-kpi="cpc">—</span>
-      <span class="stats-kpi__delta stats-kpi__delta--up" data-cs-delta="cpc"></span>
+    <div class="cs-hero__controls">
+      <div class="stats-periods" data-cs-periods>
+        <button class="stats-period" type="button" data-period="7">7 дней</button>
+        <button class="stats-period stats-period--active" type="button" data-period="30">30 дней</button>
+        <button class="stats-period" type="button" data-period="90">90 дней</button>
+        <button class="stats-period" type="button" data-period="0">Весь срок</button>
+      </div>
+      <button class="as-edit-btn" type="button" data-cs-edit>✎ Редактировать</button>
     </div>
   </div>
 
-  <div class="stats-card">
-    <div class="stats-card__head">
-      <h2 class="stats-card__title">Динамика</h2>
-      <span class="stats-card__note">Показы за период</span>
+  <div class="as-metrics cs-metrics-6">
+    <div class="as-metric">
+      <span class="as-metric__label">ПОКАЗЫ</span>
+      <strong class="as-metric__value" data-cs-kpi="impressions">—</strong>
+      <span class="as-metric__delta" data-cs-delta="impressions">—</span>
     </div>
-    <div class="stats-chart" data-cs-chart></div>
-    <div class="stats-chart__labels" data-cs-chart-labels></div>
+    <div class="as-metric">
+      <span class="as-metric__label">КЛИКИ</span>
+      <strong class="as-metric__value" data-cs-kpi="clicks">—</strong>
+      <span class="as-metric__delta" data-cs-delta="clicks">—</span>
+    </div>
+    <div class="as-metric as-metric--accent">
+      <span class="as-metric__label">CTR</span>
+      <strong class="as-metric__value" data-cs-kpi="ctr">—</strong>
+      <span class="as-metric__delta" data-cs-delta="ctr">—</span>
+    </div>
+    <div class="as-metric">
+      <span class="as-metric__label">РАСХОД</span>
+      <strong class="as-metric__value" data-cs-kpi="spend">—</strong>
+      <span class="as-metric__delta" data-cs-delta="spend">—</span>
+    </div>
+    <div class="as-metric">
+      <span class="as-metric__label">CPC</span>
+      <strong class="as-metric__value" data-cs-kpi="cpc">—</strong>
+      <span class="as-metric__delta" data-cs-delta="cpc">—</span>
+    </div>
+    <div class="as-metric">
+      <span class="as-metric__label">КОНВЕРСИИ</span>
+      <strong class="as-metric__value" data-cs-kpi="conversions">—</strong>
+      <span class="as-metric__delta" data-cs-delta="conversions">—</span>
+    </div>
   </div>
 
-  <div class="stats-card">
-    <div class="stats-card__head">
-      <h2 class="stats-card__title">Использование бюджета</h2>
-      <span class="stats-card__note" data-cs-budget-note>—</span>
-    </div>
-    <div class="stats-breakdown">
-      <div class="stats-breakdown__row">
-        <span class="stats-breakdown__label">Потрачено</span>
-        <div class="stats-breakdown__bar-wrap">
-          <div class="stats-breakdown__bar" data-cs-budget-bar style="width:0%"></div>
+  <div class="cs-main-grid">
+    <div class="stats-card cs-chart-card">
+      <div class="cs-chart-head">
+        <div>
+          <h2 class="stats-card__title">Динамика показателей</h2>
+          <span class="cs-chart-subtitle" data-cs-chart-subtitle>—</span>
         </div>
-        <span class="stats-breakdown__val" data-cs-budget-spent>—</span>
+        <button class="as-link-btn" type="button" data-cs-export>↓ Экспорт</button>
+      </div>
+      <div class="as-metric-tabs" data-cs-metric-tabs>
+        <button class="as-metric-tab as-metric-tab--active" type="button" data-metric="impressions">Показы</button>
+        <button class="as-metric-tab" type="button" data-metric="clicks">Клики</button>
+        <button class="as-metric-tab" type="button" data-metric="ctr">CTR</button>
+        <button class="as-metric-tab" type="button" data-metric="spend">Расход</button>
+      </div>
+      <div class="cs-line-wrap">
+        <svg class="cs-line-chart" viewBox="0 0 700 200" aria-hidden="true" data-cs-line-chart>
+          <defs>
+            <linearGradient id="cs-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="rgba(88,85,255,0.22)"></stop>
+              <stop offset="100%" stop-color="rgba(88,85,255,0)"></stop>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="as-line-labels" data-cs-line-labels></div>
+      </div>
+    </div>
+
+    <div class="cs-side-col">
+      <div class="stats-card">
+        <div class="stats-card__head">
+          <h2 class="stats-card__title">Лучший креатив</h2>
+          <button class="as-link-btn" type="button" data-cs-all-ads>Все</button>
+        </div>
+        <div class="cs-best-creative" data-cs-creative>
+          <div class="cs-best-creative__img" data-cs-creative-img></div>
+          <div class="cs-best-creative__body">
+            <div class="cs-best-creative__title" data-cs-creative-title>—</div>
+            <div class="cs-best-creative__meta" data-cs-creative-meta>—</div>
+            <div class="cs-best-creative__tags" data-cs-creative-tags></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-card">
+        <div class="stats-card__head">
+          <h2 class="stats-card__title">Параметры кампании</h2>
+        </div>
+        <div class="cs-params" data-cs-params></div>
+        <div class="cs-budget-progress">
+          <div class="cs-budget-progress__bar-wrap">
+            <div class="cs-budget-progress__bar" data-cs-budget-bar style="width:0%"></div>
+          </div>
+          <span class="cs-budget-progress__label" data-cs-budget-label>—</span>
+        </div>
       </div>
     </div>
   </div>
 
   <div class="stats-card">
     <div class="stats-card__head">
-      <h2 class="stats-card__title">Группы объявлений</h2>
-      <span class="stats-card__note">Вклад в результат кампании</span>
+      <div>
+        <h2 class="stats-card__title">Группы объявлений</h2>
+        <span class="cs-table-meta" data-cs-groups-count>—</span>
+      </div>
+      <button class="as-link-btn" type="button" data-cs-export-groups>📅 Экспортировать</button>
     </div>
     <table class="stats-table">
       <thead>
         <tr>
-          <th>Название</th>
-          <th>Показы</th>
-          <th>Клики</th>
+          <th>ГРУППА</th>
+          <th>СТАТУС</th>
+          <th>ПОКАЗЫ</th>
+          <th>КЛИКИ</th>
           <th>CTR</th>
-          <th>Потрачено</th>
-          <th>Статус</th>
-          <th></th>
+          <th>РАСХОД</th>
+          <th>CPC</th>
         </tr>
       </thead>
       <tbody data-cs-groups-table>
-        <tr><td colspan="7" style="text-align:center;color:var(--text-note);padding:24px">Загрузка…</td></tr>
+        <tr><td colspan="7" class="as-table-loading">Загрузка…</td></tr>
       </tbody>
     </table>
   </div>
+
+  <div class="cs-bottom-grid">
+    <div class="stats-card">
+      <div class="stats-card__head">
+        <h2 class="stats-card__title">По платформам</h2>
+      </div>
+      <div class="cs-platforms" data-cs-platforms></div>
+    </div>
+
+    <div class="stats-card">
+      <div class="stats-card__head">
+        <h2 class="stats-card__title">Инсайты кампании</h2>
+      </div>
+      <div class="cs-insights" data-cs-insights></div>
+    </div>
+  </div>
+
 </div>

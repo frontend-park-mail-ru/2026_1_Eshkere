@@ -45,7 +45,6 @@
     border-radius: 50%;
     background: #2ec77a;
     box-shadow: 0 0 0 0 rgba(46, 199, 122, 0.6);
-    animation: pulse-dot 2s ease-in-out infinite;
   }
 
   &__feed-counter {
@@ -231,11 +230,7 @@
       border-radius: 6px 6px 3px 3px;
       background: linear-gradient(180deg, #8a7bff 0%, #c994ff 100%);
       opacity: 0.72;
-      animation: hero-bar-float 3.6s ease-in-out infinite;
-
-      &:nth-child(odd)  { animation-delay: 0.15s; }
-      &:nth-child(3n)   { animation-delay: 0.4s; }
-      &:nth-child(5n)   { animation-delay: 0.7s; opacity: 0.85; }
+      &:nth-child(5n)   { opacity: 0.85; }
       &:last-child      { opacity: 1; box-shadow: 0 0 12px rgba(160, 130, 255, 0.5); }
     }
   }

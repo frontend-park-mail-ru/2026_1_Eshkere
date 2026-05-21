@@ -61,17 +61,8 @@ export function initCampaignActionMenus(signal: AbortSignal): void {
 
   const navigateToStatistics = (target: Element): void => {
     const row = target.closest<HTMLElement>('.campaign-row');
-
-    if (row) {
-      localStorageService.setJson(LocalStorageKey.CampaignStatisticsSeed, {
-        id: row.dataset.campaignId || '',
-        title: row.dataset.campaignTitle || '',
-        budgetValue: Number(row.dataset.campaignBudgetValue || '0'),
-        goal: row.dataset.campaignGoal || '',
-      });
-    }
-
-    navigateTo('/ads/statistics');
+    const id = row?.dataset.campaignId;
+    navigateTo(id ? `/ads/stats/campaign?id=${id}` : '/ads/stats/campaign');
   };
 
   const openDeleteModal = (target: Element): void => {

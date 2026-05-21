@@ -1,70 +1,203 @@
-<div class="stats-page" data-ad-stats>
-  <header class="stats-header">
-    <button class="stats-header__back" type="button" data-as-back>← Кампания</button>
-    <div class="stats-header__info">
-      <div class="stats-header__eyebrow">Статистика объявления</div>
-      <h1 class="stats-header__title" data-as-title>Загрузка…</h1>
-      <div class="stats-header__meta">
-        <span class="stats-badge stats-badge--muted" data-as-status>—</span>
-        <span class="stats-header__tag" data-as-url>—</span>
+<div class="as-page" data-ad-stats>
+
+  <div class="as-toolbar">
+    <button class="as-back-btn" type="button" data-as-back>← Назад к группе</button>
+    <nav class="as-breadcrumb" aria-label="Навигация">
+      <button class="as-breadcrumb__item" type="button" data-as-bc-campaigns>Кампании</button>
+      <span class="as-breadcrumb__sep">›</span>
+      <button class="as-breadcrumb__item" type="button" data-as-bc-campaign>—</button>
+      <span class="as-breadcrumb__sep">›</span>
+      <button class="as-breadcrumb__item" type="button" data-as-bc-group>—</button>
+      <span class="as-breadcrumb__sep">›</span>
+      <span class="as-breadcrumb__item as-breadcrumb__item--active">Статистика объявления</span>
+    </nav>
+  </div>
+
+  <div class="stats-card as-hero">
+    <div class="as-hero__main">
+      <div class="as-hero__badges">
+        <span class="as-best-badge" data-as-best hidden>
+          <span class="as-best-badge__icon">ыб</span>
+          Лучшее в группе
+        </span>
+        <span class="stats-badge" data-as-status>—</span>
+        <span class="as-hero__id" data-as-id>—</span>
+      </div>
+      <h1 class="as-hero__title" data-as-title>Загрузка…</h1>
+      <div class="as-hero__controls">
+        <div class="stats-periods">
+          <button class="stats-period stats-period--active" type="button" data-period="7">7 дней</button>
+          <button class="stats-period" type="button" data-period="30">30 дней</button>
+          <button class="stats-period" type="button" data-period="90">90 дней</button>
+          <button class="stats-period" type="button" data-period="0">Весь срок</button>
+        </div>
+        <button class="as-edit-btn" type="button" data-as-edit>✎ Редактировать</button>
       </div>
     </div>
-    <div class="stats-periods" data-as-periods>
-      <button class="stats-period stats-period--active" type="button" data-period="7">7 дней</button>
-      <button class="stats-period" type="button" data-period="30">30 дней</button>
-      <button class="stats-period" type="button" data-period="90">90 дней</button>
-    </div>
-  </header>
-
-  <div class="stats-card">
-    <div class="stats-card__head"><h2 class="stats-card__title">Креатив</h2></div>
-    <div class="stats-ad-preview" data-as-preview>
-      <div class="stats-ad-preview__image" data-as-img>Изображение не загружено</div>
-      <div class="stats-ad-preview__meta">
-        <h3 class="stats-ad-preview__title" data-as-ad-title>—</h3>
-        <p class="stats-ad-preview__desc" data-as-ad-desc>—</p>
-        <a class="stats-ad-preview__url" data-as-ad-url>—</a>
+    <div class="as-hero__hierarchy">
+      <div class="as-hierarchy-label">ИЕРАРХИЯ</div>
+      <div class="as-hierarchy-item">
+        <span class="as-hierarchy-icon as-hierarchy-icon--campaign">кп</span>
+        <div>
+          <div class="as-hierarchy-type">КАМПАНИЯ</div>
+          <div class="as-hierarchy-name" data-as-hc-campaign>—</div>
+        </div>
+      </div>
+      <div class="as-hierarchy-item">
+        <span class="as-hierarchy-icon as-hierarchy-icon--group">гр</span>
+        <div>
+          <div class="as-hierarchy-type">ГРУППА</div>
+          <div class="as-hierarchy-name" data-as-hc-group>—</div>
+        </div>
+      </div>
+      <div class="as-hierarchy-item as-hierarchy-item--active">
+        <span class="as-hierarchy-icon as-hierarchy-icon--ad">об</span>
+        <div>
+          <div class="as-hierarchy-type">ОБЪЯВЛЕНИЕ</div>
+          <div class="as-hierarchy-name as-hierarchy-name--link" data-as-hc-ad>—</div>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="stats-kpis">
-    <div class="stats-kpi"><span class="stats-kpi__label">Показы</span><span class="stats-kpi__value" data-as-kpi="impressions">—</span></div>
-    <div class="stats-kpi"><span class="stats-kpi__label">Клики</span><span class="stats-kpi__value" data-as-kpi="clicks">—</span></div>
-    <div class="stats-kpi"><span class="stats-kpi__label">CTR</span><span class="stats-kpi__value" data-as-kpi="ctr">—</span></div>
-    <div class="stats-kpi"><span class="stats-kpi__label">Потрачено</span><span class="stats-kpi__value" data-as-kpi="spend">—</span></div>
-    <div class="stats-kpi"><span class="stats-kpi__label">CPC</span><span class="stats-kpi__value" data-as-kpi="cpc">—</span></div>
+  <div class="as-metrics">
+    <div class="as-metric as-metric--accent">
+      <span class="as-metric__label">CTR</span>
+      <strong class="as-metric__value" data-as-kpi="ctr">—</strong>
+      <span class="as-metric__delta" data-as-delta="ctr">—</span>
+    </div>
+    <div class="as-metric">
+      <span class="as-metric__label">ПОКАЗЫ</span>
+      <strong class="as-metric__value" data-as-kpi="impressions">—</strong>
+      <span class="as-metric__delta" data-as-delta="impressions">—</span>
+    </div>
+    <div class="as-metric">
+      <span class="as-metric__label">КЛИКИ</span>
+      <strong class="as-metric__value" data-as-kpi="clicks">—</strong>
+      <span class="as-metric__delta" data-as-delta="clicks">—</span>
+    </div>
+    <div class="as-metric">
+      <span class="as-metric__label">CPC</span>
+      <strong class="as-metric__value" data-as-kpi="cpc">—</strong>
+      <span class="as-metric__delta" data-as-delta="cpc">—</span>
+    </div>
+    <div class="as-metric">
+      <span class="as-metric__label">РАСХОД</span>
+      <strong class="as-metric__value" data-as-kpi="spend">—</strong>
+      <span class="as-metric__delta" data-as-delta="spend">—</span>
+    </div>
+    <div class="as-metric">
+      <span class="as-metric__label">КОНВЕРСИИ</span>
+      <strong class="as-metric__value" data-as-kpi="conversions">—</strong>
+      <span class="as-metric__delta" data-as-delta="conversions">—</span>
+    </div>
   </div>
 
-  <div class="stats-grid-2">
+  <div class="as-main-grid">
     <div class="stats-card">
-      <div class="stats-card__head"><h2 class="stats-card__title">Динамика</h2><span class="stats-card__note">Клики по дням</span></div>
-      <div class="stats-chart" data-as-chart></div>
-      <div class="stats-chart__labels" data-as-chart-labels></div>
+      <div class="stats-card__head">
+        <h2 class="stats-card__title">Креатив</h2>
+        <button class="as-link-btn" type="button" data-as-download>↓ Скачать</button>
+      </div>
+      <div class="as-creative">
+        <div class="as-creative__img" data-as-img></div>
+        <h3 class="as-creative__title" data-as-ad-title>—</h3>
+        <p class="as-creative__desc" data-as-ad-desc>—</p>
+        <button class="as-cta-btn" type="button" data-as-cta-btn>Перейти в магазин</button>
+        <div class="as-creative__tags" data-as-tags></div>
+      </div>
     </div>
-    <div class="stats-card">
-      <div class="stats-card__head"><h2 class="stats-card__title">По часам суток</h2><span class="stats-card__note">Активность аудитории</span></div>
-      <div class="stats-chart" data-as-hour-chart></div>
-      <div class="stats-chart__labels" data-as-hour-labels></div>
+
+    <div class="as-chart-col">
+      <div class="stats-card">
+        <div class="as-chart-head">
+          <div>
+            <h2 class="stats-card__title">CTR во времени</h2>
+            <span class="as-chart-period" data-as-chart-period>—</span>
+          </div>
+        </div>
+        <div class="as-metric-tabs" data-as-metric-tabs>
+          <button class="as-metric-tab as-metric-tab--active" type="button" data-metric="ctr">CTR</button>
+          <button class="as-metric-tab" type="button" data-metric="impressions">Показы</button>
+          <button class="as-metric-tab" type="button" data-metric="clicks">Клики</button>
+        </div>
+        <div class="as-line-chart-wrap">
+          <svg class="as-line-chart" viewBox="0 0 360 140" aria-hidden="true" data-as-line-chart>
+            <defs>
+              <linearGradient id="as-chart-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="rgba(88,85,255,0.25)"></stop>
+                <stop offset="100%" stop-color="rgba(88,85,255,0)"></stop>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="as-line-labels" data-as-line-labels></div>
+        </div>
+      </div>
+
+      <div class="stats-card">
+        <div class="stats-card__head">
+          <h2 class="stats-card__title">Активность по дням</h2>
+        </div>
+        <div class="as-day-values" data-as-day-values></div>
+        <div class="as-bar-chart" data-as-bar-chart></div>
+        <div class="as-bar-labels" data-as-bar-labels></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-card as-ab-card">
+    <div class="stats-card__head">
+      <div>
+        <h2 class="stats-card__title">A/B-тест</h2>
+        <p class="as-section-note">Сравнение двух вариантов объявления</p>
+      </div>
+    </div>
+    <div class="as-ab-grid">
+      <div class="as-ab-variant as-ab-variant--winner">
+        <div class="as-ab-variant__head">
+          <span class="as-winner-badge">ыб Победитель</span>
+          <span class="as-variant-label">ВАРИАНТ А</span>
+        </div>
+        <div class="as-ab-variant__title" data-as-title>—</div>
+        <div class="as-ab-rows" data-as-ab-a></div>
+      </div>
+      <div class="as-ab-variant">
+        <div class="as-ab-variant__head">
+          <span class="as-variant-label">ВАРИАНТ Б</span>
+        </div>
+        <div class="as-ab-variant__title" data-as-ab-b-title>—</div>
+        <div class="as-ab-rows" data-as-ab-b></div>
+      </div>
     </div>
   </div>
 
   <div class="stats-card">
     <div class="stats-card__head">
-      <h2 class="stats-card__title">Сравнение с группой</h2>
-      <span class="stats-card__note">Среднее по всем объявлениям группы</span>
+      <h2 class="stats-card__title">Воронка конверсий</h2>
+      <span class="stats-card__note" data-as-funnel-period>—</span>
     </div>
-    <div class="stats-breakdown">
-      <div class="stats-breakdown__row">
-        <span class="stats-breakdown__label">CTR этого</span>
-        <div class="stats-breakdown__bar-wrap"><div class="stats-breakdown__bar" data-as-ctr-bar style="width:0%"></div></div>
-        <span class="stats-breakdown__val" data-as-ctr-val>—</span>
-      </div>
-      <div class="stats-breakdown__row">
-        <span class="stats-breakdown__label">CTR среднее</span>
-        <div class="stats-breakdown__bar-wrap"><div class="stats-breakdown__bar" style="width:50%;background:var(--border-strong)"></div></div>
-        <span class="stats-breakdown__val" data-as-ctr-avg>—</span>
-      </div>
-    </div>
+    <div class="as-funnel" data-as-funnel></div>
   </div>
+
+  <div class="stats-card">
+    <div class="stats-card__head">
+      <h2 class="stats-card__title">Разбивка по платформам</h2>
+    </div>
+    <table class="stats-table">
+      <thead>
+        <tr>
+          <th>ПЛАТФОРМА</th>
+          <th>ПОКАЗЫ</th>
+          <th>КЛИКИ</th>
+          <th>CTR</th>
+          <th>РАСХОД</th>
+          <th>CPC</th>
+        </tr>
+      </thead>
+      <tbody data-as-platforms>
+        <tr><td colspan="6" class="as-table-loading">Загрузка…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
 </div>

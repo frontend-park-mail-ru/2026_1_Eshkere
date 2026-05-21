@@ -3,10 +3,6 @@ import { renderAdsPage, Ads } from 'pages/ads';
 import { renderBalancePage, Balance } from 'pages/balance';
 import { renderCampaignCreatePage, CampaignCreate } from 'pages/campaign-create';
 import {
-  renderCampaignStatisticsPage,
-  CampaignStatistics,
-} from 'pages/campaign-statistics';
-import {
   renderForgotPasswordPage,
   ForgotPassword,
 } from 'pages/forgot-password';
@@ -39,6 +35,7 @@ import { renderAddSitesSitePage, AddSitesSite } from 'pages/add-sites-site';
 import { renderSupportPage, Support } from 'pages/support';
 import { Navbar } from 'widgets/navbar';
 import { getCurrentPath, navigateTo } from 'shared/lib/navigation';
+import { triggerPageEnter, setupReveal } from 'shared/lib/animations';
 import {
   renderLayoutShell,
   updateDashboardLayoutSlots,
@@ -163,9 +160,9 @@ const routes: Record<string, RouteDefinition> = {
     protected: true,
   },
   '/ads/statistics': {
-    render: renderCampaignStatisticsPage,
+    render: renderCampaignStatsPage,
     layout: 'dashboard',
-    init: CampaignStatistics,
+    init: CampaignStats,
     protected: true,
   },
   '/balance': {
@@ -334,8 +331,9 @@ export async function renderRoute(): Promise<void> {
     }
 
     outlet.innerHTML = content;
+    triggerPageEnter(outlet);
 
-    const cleanups: RouteCleanup[] = [];
+    const cleanups: RouteCleanup[] = [setupReveal()];
 
     if (typeof previousCleanup === 'function') {
       previousCleanup();
