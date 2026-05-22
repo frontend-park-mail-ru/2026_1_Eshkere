@@ -56,13 +56,17 @@ export function initCampaignActionMenus(signal: AbortSignal): void {
       return;
     }
 
-    navigateTo(`/ads/campaign/edit?id=${campaignId}`);
+    navigateTo(`/advertiser/campaign/edit?id=${campaignId}`);
   };
 
   const navigateToStatistics = (target: Element): void => {
     const row = target.closest<HTMLElement>('.campaign-row');
     const id = row?.dataset.campaignId;
-    navigateTo(id ? `/ads/stats/campaign?id=${id}` : '/ads/stats/campaign');
+    navigateTo(
+      id
+        ? `/advertiser/stats/campaign?id=${id}`
+        : '/advertiser/stats/campaign',
+    );
   };
 
   const openDeleteModal = (target: Element): void => {

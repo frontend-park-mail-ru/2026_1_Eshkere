@@ -16,7 +16,6 @@ import { hideProfileFeedback } from 'widgets/profile-feedback';
 import { populateProfileForms, refreshProfileFormStates } from 'widgets/profile-forms';
 import { initProfileModals } from 'widgets/profile-modals';
 import { syncProfileView } from 'widgets/profile-view';
-import { initProfileFeedLink } from 'widgets/profile-feed-link';
 import { openAvatarCropModal } from 'widgets/avatar-crop-modal';
 import profileTemplate from './profile.hbs';
 
@@ -149,8 +148,6 @@ export function Profile(): VoidFunction | void {
     signal: controller.signal,
     state,
   });
-
-  initProfileFeedLink(controller.signal);
 
   populateForms(state);
   refreshModalSubmitStates(state);

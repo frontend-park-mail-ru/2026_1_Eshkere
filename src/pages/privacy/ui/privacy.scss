@@ -1,0 +1,3 @@
+// Все стили описаны в oferta.scss (.legal-page, .legal-section, .legal-list)
+// Этот файл импортируется webpack'ом для бандла страницы privacy
+@use '../../oferta/ui/oferta';

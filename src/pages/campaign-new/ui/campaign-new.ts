@@ -64,6 +64,7 @@ export function CampaignNew(): VoidFunction {
       hasError = true;
     }
     if (hasError) return;
+    if (daily_budget === undefined) return;
 
     if (submitBtn) submitBtn.disabled = true;
     if (formError) formError.hidden = true;
@@ -75,7 +76,7 @@ export function CampaignNew(): VoidFunction {
         daily_budget,
         cpm_price: DEFAULT_CPM_PRICE,
       });
-      navigateTo(`/ads/campaign?id=${id}`);
+      navigateTo(`/advertiser/campaign?id=${id}`);
     } catch {
       if (formError) {
         formError.textContent = 'Не удалось создать кампанию. Попробуйте ещё раз.';

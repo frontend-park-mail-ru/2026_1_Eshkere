@@ -196,7 +196,7 @@ export function Login(): void | VoidFunction {
       return;
     }
 
-    navigateTo('/overview', { replace: true });
+    navigateTo('/advertiser/overview', { replace: true });
   });
 
   return () => {

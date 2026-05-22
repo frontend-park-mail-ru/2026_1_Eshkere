@@ -364,7 +364,7 @@ export function Register(): void | VoidFunction {
         return;
       }
 
-      navigateTo('/overview', { replace: true });
+      navigateTo('/advertiser/overview', { replace: true });
     } finally {
       isSubmitting = false;
       if (submitButton) {

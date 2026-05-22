@@ -22,13 +22,20 @@ import {
  * @return {Promise<string>} HTML для #app.
  */
 
-export type LayoutKind = 'public' | 'dashboard' | 'moderator';
+export type LayoutKind =
+  | 'public'
+  | 'advertiser-dashboard'
+  | 'partner-dashboard'
+  | 'moderator';
 
 export async function renderLayoutShell(
   layout: LayoutKind,
   pathname: string = '/',
 ): Promise<string> {
-  if (layout === 'dashboard') {
+  if (
+    layout === 'advertiser-dashboard' ||
+    layout === 'partner-dashboard'
+  ) {
     return renderDashboardLayout('', pathname);
   }
   if (layout === 'moderator') {

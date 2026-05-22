@@ -1,10 +1,9 @@
-import { formatPrice } from 'shared/lib/format';
 import { parseAmountInput, validateMinAmount } from 'shared/validators';
 import { openTopupModal, type ToastController } from 'features/balance/lib/modal';
-import { topUpBalance } from 'features/balance/api/topup';
+import { createPayment } from 'features/balance/api/create-payment';
 import type { BalanceDashboardState } from 'features/balance/model/types';
 import { closeModal, openModal } from 'shared/ui/modal/modal';
-import { syncBalanceDashboardWidget } from './dashboard-render';
+import { dismissAlert, syncBalanceDashboardWidget } from './dashboard-render';
 
 interface InitBalanceDashboardWidgetParams {
   autopayModal: HTMLElement | null;
@@ -120,6 +119,24 @@ export function initBalanceDashboardWidget({
       { signal },
     );
 
+  document
+    .querySelectorAll<HTMLElement>('[data-balance-alert-dismiss]')
+    .forEach((btn) => {
+      btn.addEventListener(
+        'click',
+        () => {
+          const level = btn.dataset.balanceAlertDismiss;
+          if (!level) return;
+          dismissAlert(level);
+          const alertEl = document.querySelector<HTMLElement>(
+            `[data-balance-alert="${level}"]`,
+          );
+          if (alertEl) alertEl.hidden = true;
+        },
+        { signal },
+      );
+    });
+
   if (!topupForm || !(topupModal instanceof HTMLElement)) {
     return;
   }
@@ -148,6 +165,9 @@ export function initBalanceDashboardWidget({
       const errorNode = topupForm.querySelector<HTMLElement>(
         '[data-balance-topup-error]',
       );
+      const submitButton = topupForm.querySelector<HTMLButtonElement>(
+        '[type="submit"]',
+      );
       const amount =
         amountInput instanceof HTMLInputElement
           ? parseAmountInput(amountInput.value)
@@ -170,45 +190,27 @@ export function initBalanceDashboardWidget({
         return;
       }
 
-      if (!state.paymentMethod) {
-        if (errorNode) {
-          errorNode.textContent =
-            'Сначала добавьте способ оплаты в настройках баланса.';
-        }
-        return;
-      }
-
       state.selectedAmount = amount;
 
-      topUpBalance(amount)
-        .then((result) => {
-          state.balanceValue = result.balance;
-          commitState();
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = 'Переходим к оплате…';
+      }
+
+      createPayment(amount)
+        .then(({ payment_url }) => {
+          window.location.href = payment_url;
         })
         .catch(() => {
-          state.balanceValue += amount;
-          commitState();
+          if (errorNode) {
+            errorNode.textContent =
+              'Не удалось создать платёж. Попробуйте позже.';
+          }
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = 'Перейти к оплате';
+          }
         });
-
-      state.operations = [
-        {
-          id: `topup_${Date.now()}`,
-          title: 'Пополнение с карты',
-          date: new Date().toISOString(),
-          amount,
-          status: 'Успешно',
-          tone: 'success',
-          details: `Пополнение через ${state.paymentMethod}`,
-        },
-        ...state.operations,
-      ];
-
-      commitState();
-      closeModal(topupModal);
-      toast.show(
-        'Баланс пополнен',
-        `На счет зачислено ${formatPrice(amount)}. Средства уже доступны для запуска кампаний.`,
-      );
     },
     { signal },
   );

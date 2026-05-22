@@ -82,6 +82,7 @@
   }
 }
 
+
 .campaigns-filter-wrap {
   position: relative;
 }
@@ -89,9 +90,10 @@
 .campaigns-filter-dropdown {
   position: absolute;
   top: calc(100% + 8px);
-  left: 0;
+  right: 0;
+  left: auto;
   z-index: 60;
-  min-width: 220px;
+  width: 580px;
   padding: 8px;
   border: 1px solid var(--border-panel-soft);
   border-radius: 18px;
@@ -121,6 +123,12 @@
     cursor: pointer;
     padding: 0;
     &:hover { text-decoration: underline; }
+  }
+
+  &__body {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0 4px;
   }
 
   &__section {

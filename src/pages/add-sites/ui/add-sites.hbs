@@ -1,4 +1,23 @@
 <section class="campaigns-page add-sites-page" data-add-sites-page>
+  <div class="add-sites-page__summary">
+    <article class="add-sites-summary">
+      <span>Площадки</span>
+      <strong>{{sites.length}}</strong>
+    </article>
+    <article class="add-sites-summary">
+      <span>Активные</span>
+      <strong>{{activeSitesCount}}</strong>
+    </article>
+    <article class="add-sites-summary">
+      <span>На модерации</span>
+      <strong>{{pendingSitesCount}}</strong>
+    </article>
+    <article class="add-sites-summary">
+      <span>Рекламные блоки</span>
+      <strong>{{blocksCount}}</strong>
+    </article>
+  </div>
+
   <div class="campaigns-page__toolbar">
     <div class="campaigns-page__toolbar-primary">
       <button type="button" class="campaigns-page__create-button" data-add-site-action>
@@ -23,6 +42,7 @@
       <div>Название</div>
       <div>Домен</div>
       <div>Статус</div>
+      <div>Блоки</div>
       <div>Управление</div>
     </div>
 
@@ -35,7 +55,7 @@
             data-site-status="{{statusCode}}"
           >
             <div class="campaign-row__name">
-              <a class="campaign-row__detail-link" href="/add-sites/site?siteId={{id}}">{{site_name}}</a>
+              <a class="campaign-row__detail-link" href="/partner/sites/site?siteId={{id}}">{{site_name}}</a>
             </div>
             <div>
               <span class="campaign-row__composition campaign-row__composition--muted">{{domain}}</span>
@@ -46,7 +66,17 @@
                 data-site-status-label
               >{{status}}</span>
             </div>
+            <div>
+              <span class="add-sites-page__blocks-count">{{blocksCount}}</span>
+              <span class="campaign-row__composition campaign-row__composition--muted">{{activeBlocksCount}} активно</span>
+            </div>
             <div class="campaign-row__actions">
+              <a
+                class="campaign-row__action-link"
+                href="/partner/sites/site?siteId={{id}}"
+              >
+                Открыть
+              </a>
               <button
                 type="button"
                 class="campaign-row__action-button campaign-row__action-button--delete"
@@ -79,7 +109,13 @@
             <img class="campaigns-empty__image" src="/img/empty-campaign.png" alt="" />
           </picture>
         </div>
-        <h3 class="campaigns-empty__title">Здесь пока ничего нет...</h3>
+        <h3 class="campaigns-empty__title">Подключите первую площадку</h3>
+        <div class="add-sites-page__empty-steps">
+          <span>1. Добавьте сайт</span>
+          <span>2. Дождитесь модерации</span>
+          <span>3. Создайте рекламный блок</span>
+          <span>4. Вставьте код и следите за доходом</span>
+        </div>
         <button type="button" class="campaigns-empty__create-button" data-add-site-action>
           Добавить сайт
         </button>

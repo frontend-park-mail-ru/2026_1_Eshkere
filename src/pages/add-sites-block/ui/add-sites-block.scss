@@ -238,6 +238,16 @@
   border-top: none;
 }
 
+[data-asb-panel='2'] .campaign-builder__card {
+  padding: 18px 20px;
+}
+
+[data-asb-panel='2'] .add-sites-block__embed--panel {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
 .add-sites-block__embed:focus {
   outline: none;
 }
@@ -245,6 +255,11 @@
 .add-sites-block__embed-success {
   text-align: center;
   margin-bottom: 28px;
+}
+
+[data-asb-panel='2'] .add-sites-block__embed-success {
+  grid-column: 1 / -1;
+  margin-bottom: 2px;
 }
 
 .add-sites-block__embed-success-icon {
@@ -284,6 +299,15 @@
   text-align: left;
 }
 
+[data-asb-panel='2'] .add-sites-block__embed-step {
+  min-width: 0;
+  margin-bottom: 0;
+  padding: 16px;
+  border: 1px solid rgba(225, 228, 240, 0.95);
+  border-radius: 18px;
+  background: rgba(249, 250, 255, 0.82);
+}
+
 .add-sites-block__embed-step-title {
   margin: 0 0 8px;
   font-family: t.$font-family-heading;
@@ -318,6 +342,12 @@
   border: 1px solid rgba(210, 216, 232, 0.95);
   overflow: auto;
   max-height: 280px;
+}
+
+[data-asb-panel='2'] .add-sites-block__embed-pre {
+  margin-bottom: 10px;
+  padding: 10px 12px;
+  max-height: 128px;
 }
 
 .add-sites-block__embed-code {
@@ -356,7 +386,26 @@
   }
 }
 
+[data-asb-panel='2'] .add-sites-block__embed-copy {
+  min-height: 36px;
+  padding-inline: 14px;
+}
+
+@media (max-width: t.$bp-lg) {
+  [data-asb-panel='2'] .add-sites-block__embed--panel {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: t.$bp-sm) {
+  [data-asb-panel='2'] .campaign-builder__card {
+    padding: 16px;
+  }
+
+  [data-asb-panel='2'] .add-sites-block__embed-step {
+    padding: 14px;
+  }
+
   .add-sites-block__embed-copy {
     width: 100%;
   }
@@ -442,6 +491,11 @@ html[data-theme='dark'] {
   .add-sites-block__embed-pre {
     background: rgba(14, 19, 36, 0.75);
     border-color: rgba(68, 84, 130, 0.45);
+  }
+
+  [data-asb-panel='2'] .add-sites-block__embed-step {
+    border-color: rgba(68, 84, 130, 0.35);
+    background: rgba(16, 22, 42, 0.48);
   }
 
   .add-sites-block__embed-code {

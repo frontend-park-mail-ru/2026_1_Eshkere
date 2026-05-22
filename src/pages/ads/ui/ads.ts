@@ -64,7 +64,7 @@ function bindCreateButtons(signal: AbortSignal): void {
         'click',
         (event) => {
           event.preventDefault();
-          navigateTo('/ads/create');
+          navigateTo('/advertiser/campaigns/create');
         },
         { signal },
       );
@@ -76,7 +76,7 @@ function bindDetailLinks(signal: AbortSignal): void {
     link.addEventListener('click', (event) => {
       event.preventDefault();
       const id = link.dataset.campaignDetailLink;
-      if (id) navigateTo(`/ads/campaign?id=${id}`);
+      if (id) navigateTo(`/advertiser/campaign?id=${id}`);
     }, { signal });
   });
 }

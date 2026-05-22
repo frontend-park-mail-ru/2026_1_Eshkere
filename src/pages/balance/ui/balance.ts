@@ -21,21 +21,11 @@ import {
   initBalanceHistoryWidget,
   syncBalanceHistoryWidget,
 } from 'widgets/balance-history';
-import {
-  closeOpenBalanceSelects,
-  initBalancePaymentWidget,
-  syncBalancePaymentWidget,
-} from 'widgets/balance-payment';
 import balanceTemplate from './balance.hbs';
 
 interface BalancePageElements {
-  autopayForm: HTMLFormElement | null;
   autopayModal: HTMLElement | null;
   historyModal: HTMLElement | null;
-  paymentAddForm: HTMLFormElement | null;
-  paymentAddModal: HTMLElement | null;
-  paymentForm: HTMLFormElement | null;
-  paymentModal: HTMLElement | null;
   topupForm: HTMLFormElement | null;
   topupModal: HTMLElement | null;
 }
@@ -45,21 +35,10 @@ let balancePageLifecycleController: AbortController | null = null;
 function getPageElements(): BalancePageElements {
   return {
     topupModal: document.getElementById('balance-topup-modal'),
-    paymentModal: document.getElementById('balance-payment-modal'),
-    paymentAddModal: document.getElementById('balance-payment-add-modal'),
     historyModal: document.getElementById('balance-history-modal'),
     autopayModal: document.getElementById('balance-autopay-modal'),
     topupForm: document.getElementById(
       'balance-topup-form',
-    ) as HTMLFormElement | null,
-    paymentForm: document.getElementById(
-      'balance-payment-form',
-    ) as HTMLFormElement | null,
-    paymentAddForm: document.getElementById(
-      'balance-payment-add-form',
-    ) as HTMLFormElement | null,
-    autopayForm: document.getElementById(
-      'balance-autopay-form',
     ) as HTMLFormElement | null,
   };
 }
@@ -101,22 +80,12 @@ export function Balance(): void | VoidFunction {
     query: '',
   };
   const toast = createToastController();
-  const {
-    topupModal,
-    paymentModal,
-    paymentAddModal,
-    historyModal,
-    autopayModal,
-    topupForm,
-    paymentForm,
-    paymentAddForm,
-    autopayForm,
-  } = getPageElements();
+  const { topupModal, historyModal, autopayModal, topupForm } =
+    getPageElements();
 
   const syncWidgets = (): void => {
     syncBalanceDashboardWidget(state);
     syncBalanceHistoryWidget(state, historyState);
-    syncBalancePaymentWidget(state);
     syncBalanceAutopayWidget(state);
   };
 
@@ -139,16 +108,9 @@ export function Balance(): void | VoidFunction {
   }
 
   toast.hide();
-  closeAllModals([
-    topupModal,
-    paymentModal,
-    paymentAddModal,
-    historyModal,
-    autopayModal,
-  ]);
+  closeAllModals([topupModal, historyModal, autopayModal]);
   commitState();
 
-  // Синхронизируем баланс с сервером при загрузке страницы
   getBalance()
     .then(({ balance }) => {
       if (balance !== state.balanceValue) {
@@ -157,8 +119,6 @@ export function Balance(): void | VoidFunction {
       }
     })
     .catch(() => {});
-
-  const shouldOpenPayment = new URLSearchParams(window.location.search).get('payment') === 'open';
 
   initBalanceDashboardWidget({
     autopayModal,
@@ -176,18 +136,10 @@ export function Balance(): void | VoidFunction {
     state,
     toast,
   });
-  initBalancePaymentWidget({
-    commitState,
-    paymentAddForm,
-    paymentAddModal,
-    paymentForm,
-    paymentModal,
-    signal,
-    state,
-    toast,
-  });
   initBalanceAutopayWidget({
-    autopayForm,
+    autopayForm: document.getElementById(
+      'balance-autopay-form',
+    ) as HTMLFormElement | null,
     autopayModal,
     commitState,
     signal,
@@ -195,15 +147,11 @@ export function Balance(): void | VoidFunction {
     toast,
   });
 
-  [topupModal, historyModal, paymentModal, paymentAddModal, autopayModal]
+  [topupModal, historyModal, autopayModal]
     .filter((modal): modal is HTMLElement => modal instanceof HTMLElement)
     .forEach((modal) => {
       bindModalShell(modal, signal);
     });
-
-  if (shouldOpenPayment && paymentModal instanceof HTMLElement) {
-    openModal(paymentModal);
-  }
 
   document.querySelector('[data-balance-toast-close]')?.addEventListener(
     'click',
@@ -228,19 +176,9 @@ export function Balance(): void | VoidFunction {
         closeModal(historyModal);
       }
 
-      if (isOpenedModal(paymentModal)) {
-        closeModal(paymentModal);
-      }
-
-      if (isOpenedModal(paymentAddModal)) {
-        closeModal(paymentAddModal);
-      }
-
       if (isOpenedModal(autopayModal)) {
         closeModal(autopayModal);
       }
-
-      closeOpenBalanceSelects();
     },
     { signal },
   );

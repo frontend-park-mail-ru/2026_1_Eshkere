@@ -152,6 +152,7 @@ export function mapAdsToCampaigns(ads: AdItem[] = []): CampaignTemplateRow[] {
       status: statusMeta.label,
       statusType: statusMeta.tone,
       enabled: statusMeta.enabled,
+      toggleDisabled: statusKey !== 'active' && statusKey !== 'stopped',
     };
   });
 }
@@ -183,18 +184,4 @@ export function getNextStatus(
   }
 
   return 'stopped';
-}
-
-export function mapCampaignStatusToBackendStatus(
-  status: CampaignStatusKey,
-): AdCampaignStatus {
-  if (status === 'active') {
-    return 'working';
-  }
-
-  if (status === 'stopped') {
-    return 'turned_off';
-  }
-
-  return 'moderation';
 }

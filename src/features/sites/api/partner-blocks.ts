@@ -17,6 +17,7 @@ export interface CreatePartnerBlockResponse {
 export interface PartnerBlockEmbedDto {
   embed_token: string;
   html_snippet: string;
+  script_url?: string;
 }
 
 export interface PartnerBlockListItemDto {

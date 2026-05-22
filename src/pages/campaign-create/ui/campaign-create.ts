@@ -91,7 +91,7 @@ function showCreateError(
       message:
         'Базовая кампания уже появилась в системе, но создать первую группу объявлений не удалось.',
       note: campaignId
-        ? `Откройте /ads/campaign?id=${campaignId} и добавьте группу через упрощённую форму, либо повторите создание из мастера.`
+        ? `Откройте /advertiser/campaign?id=${campaignId} и добавьте группу через упрощённую форму, либо повторите создание из мастера.`
         : 'Повторите создание из мастера после восстановления сервиса.',
     },
     ad: {
@@ -100,7 +100,7 @@ function showCreateError(
         'Первая группа создана, но объявление внутри неё не удалось сохранить.',
       note:
         campaignId && groupId
-          ? `Откройте /ads/ad/create?campaignId=${campaignId}&groupId=${groupId} и добавьте объявление через упрощённую форму.`
+          ? `Откройте /advertiser/ads/create?campaignId=${campaignId}&groupId=${groupId} и добавьте объявление через упрощённую форму.`
           : 'Повторите создание объявления после восстановления сервиса.',
     },
   };
@@ -164,7 +164,7 @@ function createSubmitBuilder() {
           daily_budget: Math.max(1000, Math.round(currentState.dailyBudget)),
         });
         localStorageService.removeItem(LocalStorageKey.CampaignBuilderDraft);
-        navigateTo('/ads');
+        navigateTo('/advertiser/campaigns');
         return;
       } else {
         const campaign = await createAdCampaign(toCampaignPayload(currentState));
@@ -187,7 +187,7 @@ function createSubmitBuilder() {
       }
 
       localStorageService.removeItem(LocalStorageKey.CampaignBuilderDraft);
-      navigateTo(`/ads/campaign?id=${campaignId}`);
+      navigateTo(`/advertiser/campaign?id=${campaignId}`);
     } catch {
       showCreateError(stage, campaignId, groupId);
     }

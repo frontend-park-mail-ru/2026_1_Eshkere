@@ -29,11 +29,12 @@
 
     {{#if isAuthenticated}}
       <div class="navbar__actions-user">
+        {{#if cabinet.showAdvertiserWallet}}
         <div class="navbar__balance">{{user.balanceLabel}}</div>
 
         <a
           class="navbar__actions-user-icon navbar__actions-user-icon--wallet"
-          href="/balance"
+          href="/advertiser/balance"
           aria-label="Перейти к балансу"
         >
           <span
@@ -41,6 +42,7 @@
             aria-hidden="true"
           ></span>
         </a>
+        {{/if}}
 
         <button
           class="navbar__actions-user-icon navbar__actions-user-icon--notification"
@@ -62,7 +64,20 @@
               <span class="navbar__notifications-kicker">Уведомления</span>
               <strong class="navbar__notifications-title">Последние события кабинета</strong>
             </div>
-            <span class="navbar__notifications-badge">{{notifications.length}}</span>
+            <div class="navbar__notifications-head-actions">
+              <span class="navbar__notifications-badge">{{notifications.length}}</span>
+              <button
+                class="navbar__notifications-settings-btn"
+                type="button"
+                id="navbar-notifications-settings-open"
+                aria-label="Настройки уведомлений"
+                title="Настройки уведомлений"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a7.02 7.02 0 0 0-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.48.48 0 0 0-.59.22L2.74 8.87a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.37 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.57 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61l-2.01-1.58ZM12 15.6a3.6 3.6 0 1 1 0-7.2 3.6 3.6 0 0 1 0 7.2Z"/>
+                </svg>
+              </button>
+            </div>
           </div>
 
           <div class="navbar__notifications-list">
@@ -123,7 +138,7 @@
         </button>
 
         <div class="navbar__profile-menu" id="navbar-profile-menu" hidden>
-          <a class="navbar__profile-menu-head" href="/profile">
+          <a class="navbar__profile-menu-head" href="{{cabinet.profileHref}}">
             <div class="navbar__profile-menu-avatar{{#if user.hasAvatar}} navbar__profile-menu-avatar--image{{/if}}" aria-label="{{user.name}}">
               {{#if user.hasAvatar}}
                 <img
@@ -143,7 +158,7 @@
           </a>
 
           <div class="navbar__profile-menu-body">
-            <a class="navbar__profile-menu-link" href="/profile">
+            <a class="navbar__profile-menu-link" href="{{cabinet.profileHref}}">
               <span
                 class="navbar__profile-menu-link-icon navbar__profile-menu-link-icon--profile"
                 aria-hidden="true"
@@ -153,6 +168,28 @@
                 <span>Личные данные и настройки кабинета</span>
               </span>
             </a>
+
+            <section class="navbar__profile-cabinets" aria-label="Кабинет">
+              <span class="navbar__profile-cabinets-label">Кабинет</span>
+              <div class="navbar__profile-cabinets-list">
+                <a
+                  class="navbar__profile-cabinet {{#if cabinet.isAdvertiser}}navbar__profile-cabinet--active{{/if}}"
+                  href="{{cabinet.advertiserHref}}"
+                  {{#if cabinet.isAdvertiser}}aria-current="page"{{/if}}
+                >
+                  <strong>Рекламодатель</strong>
+                  <span>Кампании и бюджет</span>
+                </a>
+                <a
+                  class="navbar__profile-cabinet {{#if cabinet.isPartner}}navbar__profile-cabinet--active{{/if}}"
+                  href="{{cabinet.partnerHref}}"
+                  {{#if cabinet.isPartner}}aria-current="page"{{/if}}
+                >
+                  <strong>Партнер</strong>
+                  <span>Площадки и выплаты</span>
+                </a>
+              </div>
+            </section>
           </div>
 
           <button
@@ -214,6 +251,135 @@
               </button>
             </div>
           </div>
+        </div>
+
+        <div class="navbar__notifications-settings" id="navbar-notifications-settings" hidden>
+          <div
+            class="navbar__notifications-settings-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="navbar-notifications-settings-title"
+          >
+            <div class="navbar__notifications-settings-head">
+              <div>
+                <span class="navbar__notifications-kicker">Настройки</span>
+                <h3 class="navbar__notifications-settings-title" id="navbar-notifications-settings-title">
+                  Настройки уведомлений
+                </h3>
+              </div>
+              <button
+                class="navbar__notifications-modal-close"
+                type="button"
+                id="navbar-notifications-settings-close"
+                aria-label="Закрыть настройки"
+              >×</button>
+            </div>
+
+            <div class="navbar__notifications-settings-body">
+              <div class="navbar__notif-section">
+                <strong class="navbar__notif-section-title">Каналы уведомлений</strong>
+                <p class="navbar__notif-section-sub">Выберите, куда отправлять оповещения о состоянии баланса</p>
+
+                <div class="navbar__notif-channels">
+                  <div class="navbar__notif-channel">
+                    <div class="navbar__notif-channel-icon navbar__notif-channel-icon--bell" aria-hidden="true">
+                      <img src="/icons/notification.svg" alt="" width="18" height="18" />
+                    </div>
+                    <div class="navbar__notif-channel-copy">
+                      <strong>В кабинете</strong>
+                      <span>Уведомления отображаются внутри рекламного кабинета</span>
+                    </div>
+                    <span class="navbar__notif-badge">Рекомендуется</span>
+                    <label class="navbar__notif-toggle">
+                      <input type="checkbox" data-notif-channel="inapp" checked />
+                      <span class="navbar__notif-toggle-ui"></span>
+                    </label>
+                  </div>
+
+                  <div class="navbar__notif-channel">
+                    <div class="navbar__notif-channel-icon navbar__notif-channel-icon--email" aria-hidden="true">
+                      <img src="/icons/Message.svg" alt="" width="18" height="18" />
+                    </div>
+                    <div class="navbar__notif-channel-copy">
+                      <strong>Email</strong>
+                      <span>{{user.email}}</span>
+                    </div>
+                    <label class="navbar__notif-toggle">
+                      <input type="checkbox" data-notif-channel="email" />
+                      <span class="navbar__notif-toggle-ui"></span>
+                    </label>
+                  </div>
+
+                  <div class="navbar__notif-channel navbar__notif-channel--disabled">
+                    <div class="navbar__notif-channel-icon navbar__notif-channel-icon--telegram" aria-hidden="true">
+                      <img src="/icons/platforms/telegram.svg" alt="" width="18" height="18" />
+                    </div>
+                    <div class="navbar__notif-channel-copy">
+                      <strong>Telegram</strong>
+                      <span>Бот не подключён — нажмите для настройки</span>
+                    </div>
+                    <span class="navbar__notif-badge navbar__notif-badge--action">Подключить</span>
+                    <label class="navbar__notif-toggle">
+                      <input type="checkbox" data-notif-channel="telegram" disabled />
+                      <span class="navbar__notif-toggle-ui"></span>
+                    </label>
+                  </div>
+
+                  <div class="navbar__notif-channel navbar__notif-channel--disabled">
+                    <div class="navbar__notif-channel-icon navbar__notif-channel-icon--sms" aria-hidden="true">
+                      <img src="/icons/Chat.svg" alt="" width="18" height="18" />
+                    </div>
+                    <div class="navbar__notif-channel-copy">
+                      <strong>SMS</strong>
+                      <span>Укажите номер телефона для получения SMS</span>
+                    </div>
+                    <label class="navbar__notif-toggle">
+                      <input type="checkbox" data-notif-channel="sms" disabled />
+                      <span class="navbar__notif-toggle-ui"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="navbar__notif-section">
+                <strong class="navbar__notif-section-title">Пороги срабатывания</strong>
+                <p class="navbar__notif-section-sub">Уведомление будет отправлено, когда баланс опустится до указанного порога</p>
+
+                <div class="navbar__notif-thresholds">
+                  <div class="navbar__notif-threshold navbar__notif-threshold--editable" data-threshold-key="warning">
+                    <span class="navbar__notif-threshold-icon" aria-hidden="true"></span>
+                    <div class="navbar__notif-threshold-field">
+                      <strong class="navbar__notif-threshold-value" data-threshold-display="warning">500</strong>
+                      <input class="navbar__notif-threshold-input" type="text" inputmode="numeric" maxlength="6" data-threshold-input="warning" aria-label="Порог предупреждения, ₽" hidden />
+                      <span class="navbar__notif-threshold-suffix">₽</span>
+                    </div>
+                    <span class="navbar__notif-threshold-label">Предупреждение</span>
+                    <span class="navbar__notif-threshold-hint">Нажмите для изменения</span>
+                  </div>
+                  <div class="navbar__notif-threshold navbar__notif-threshold--editable" data-threshold-key="critical">
+                    <span class="navbar__notif-threshold-icon" aria-hidden="true"></span>
+                    <div class="navbar__notif-threshold-field">
+                      <strong class="navbar__notif-threshold-value" data-threshold-display="critical">100</strong>
+                      <input class="navbar__notif-threshold-input" type="text" inputmode="numeric" maxlength="6" data-threshold-input="critical" aria-label="Критический порог, ₽" hidden />
+                      <span class="navbar__notif-threshold-suffix">₽</span>
+                    </div>
+                    <span class="navbar__notif-threshold-label">Критично</span>
+                    <span class="navbar__notif-threshold-hint">Нажмите для изменения</span>
+                  </div>
+                  <div class="navbar__notif-threshold">
+                    <span class="navbar__notif-threshold-icon" aria-hidden="true"></span>
+                    <div class="navbar__notif-threshold-field">
+                      <strong class="navbar__notif-threshold-value">0</strong>
+                      <span class="navbar__notif-threshold-suffix">₽</span>
+                    </div>
+                    <span class="navbar__notif-threshold-label">Баланс исчерпан</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
         </div>
 
         <div class="navbar__notifications-modal" id="navbar-notifications-modal" hidden>

@@ -5,7 +5,7 @@
 >
   <div class="add-sites-site__toolbar">
     <div class="add-sites-site__toolbar-card">
-      <a class="campaign-builder__button campaign-builder__button--secondary add-sites-site__back" href="/add-sites">
+      <a class="campaign-builder__button campaign-builder__button--secondary add-sites-site__back" href="/partner/sites">
         ← Площадки
       </a>
       <div class="add-sites-site__toolbar-main">
@@ -35,7 +35,7 @@
       {{#if siteId}}
         <a
           class="campaigns-page__create-button add-sites-site__create-block"
-          href="/add-sites/block?siteId={{siteId}}"
+          href="/partner/sites/block?siteId={{siteId}}"
         >
           Создать блок
         </a>
@@ -132,7 +132,7 @@
           {{else}}
             <div class="add-sites-site__empty">
               <p class="add-sites-site__empty-text">Пока нет рекламных блоков.</p>
-              <a class="campaigns-page__create-button" href="/add-sites/block?siteId={{siteId}}">Создать блок</a>
+              <a class="campaigns-page__create-button" href="/partner/sites/block?siteId={{siteId}}">Создать блок</a>
             </div>
           {{/if}}
         </div>

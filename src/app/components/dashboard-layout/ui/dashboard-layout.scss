@@ -1,6 +1,125 @@
 @use '../../../../shared/styles/tokens' as t;
 @use '../../../../shared/styles/mixins';
 
+// ─── Global balance alert ─────────────────────────────────────────────────────
+.global-balance-alert {
+  margin: 12px 16px 12px;
+  border-radius: 16px;
+  overflow: hidden;
+  animation: global-alert-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  &__inner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &::before {
+      content: '';
+      display: block;
+      width: 16px;
+      height: 16px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff'%3E%3Cpath d='M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2Zm0 14.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm1-4.5h-2V7h2v5Z'/%3E%3C/svg%3E");
+    }
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  &__title {
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  &__text {
+    font-size: 13px;
+    opacity: 0.85;
+  }
+
+  &__actions {
+    flex-shrink: 0;
+  }
+
+  &__button {
+    display: inline-flex;
+    align-items: center;
+    height: 28px;
+    padding: 0 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.22);
+    color: inherit;
+    transition: background 0.15s;
+    white-space: nowrap;
+
+    &:hover { background: rgba(255, 255, 255, 0.32); }
+  }
+
+  &__close {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 16px;
+    opacity: 0.5;
+    padding: 0;
+    color: inherit;
+    border-radius: 6px;
+    transition: opacity 0.15s, background 0.15s;
+
+    &:hover {
+      opacity: 0.9;
+      background: rgba(255, 255, 255, 0.15);
+    }
+  }
+
+  // Critical (< 100 ₽)
+  &--critical {
+    background: #e84040;
+    color: #fff;
+
+    .global-balance-alert__icon { background: rgba(255, 255, 255, 0.18); }
+  }
+
+  // Depleted (= 0 ₽)
+  &--depleted {
+    background: #8a0000;
+    color: #fff;
+
+    .global-balance-alert__icon { background: rgba(255, 255, 255, 0.18); }
+  }
+}
+
+@keyframes global-alert-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: none; }
+}
+
 .dashboard-layout {
   position: relative;
   @include mixins.page-background('/img/RightFon.png');
