@@ -6,7 +6,7 @@
   min-height: 100vh;
   overflow: visible;
   isolation: isolate;
-  @include mixins.page-background('/img/RightFon.png');
+  @include mixins.page-background('/img/without.png');
 
   &::before {
     content: '';

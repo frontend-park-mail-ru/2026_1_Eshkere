@@ -3,7 +3,13 @@ import 'shared/ui/modal/modal';
 import { renderTemplate } from 'shared/lib/render';
 import { renderFormField } from 'shared/ui/form-field/form-field';
 import { renderButton } from 'shared/ui/button/button';
-import { setFieldState, validateEmailOrPhone } from 'shared/validators';
+import { createAppeal } from 'features/appeals';
+import { showToast } from 'shared/lib/toast';
+import {
+  setFieldState,
+  validateEmail,
+  validateEmailOrPhone,
+} from 'shared/validators';
 import forgotPasswordPageTemplate from './forgot-password.hbs';
 
 /**
@@ -15,6 +21,7 @@ import forgotPasswordPageTemplate from './forgot-password.hbs';
 type ForgotPasswordFormElement = HTMLFormElement & {
   readonly elements: HTMLFormControlsCollection & {
     identifier: HTMLInputElement;
+    replyEmail: HTMLInputElement;
   };
 };
 
@@ -25,6 +32,18 @@ export async function renderForgotPasswordPage(): Promise<string> {
     type: 'text',
     label: 'Электронная почта или телефон',
     placeholder: 'Ваша почта или телефон',
+    autocomplete: 'username',
+    required: true,
+  });
+
+  const replyEmailField = await renderFormField({
+    id: 'forgot-password-reply-email',
+    name: 'replyEmail',
+    type: 'email',
+    label: 'Почта для ответа',
+    placeholder: 'Куда отправить ответ',
+    autocomplete: 'email',
+    inputmode: 'email',
     required: true,
   });
 
@@ -49,6 +68,7 @@ export async function renderForgotPasswordPage(): Promise<string> {
 
   return renderTemplate(forgotPasswordPageTemplate, {
     restoreField,
+    replyEmailField,
     submitButton,
     helpButton,
     backButton,
@@ -62,15 +82,28 @@ export async function renderForgotPasswordPage(): Promise<string> {
  * @return {void}
  */
 export function ForgotPassword(): void | VoidFunction {
+  const publicLayout = document.querySelector('.public-layout');
+  publicLayout?.classList.add('public-layout--auth');
+
   const el = document.getElementById('forgot-password-form');
   if (!(el instanceof HTMLFormElement)) {
-    return;
+    return () => {
+      publicLayout?.classList.remove('public-layout--auth');
+    };
   }
   const form = el as ForgotPasswordFormElement;
 
-  const formPanel = document.querySelector('[data-forgot-password-form]');
   const helpButton = form.querySelector('.forgot-password-help-button');
   const helpModal = document.getElementById('forgot-password-help-modal');
+  const submitButton = form.querySelector<HTMLButtonElement>(
+    'button[type="submit"]',
+  );
+  const feedback = document.querySelector<HTMLElement>(
+    '[data-forgot-password-feedback]',
+  );
+  const successPanel = document.querySelector<HTMLElement>(
+    '[data-forgot-password-success]',
+  );
   const modalCloseElements = helpModal
     ? helpModal.querySelectorAll('[data-modal-close]')
     : [];
@@ -118,7 +151,35 @@ export function ForgotPassword(): void | VoidFunction {
     return !error;
   }
 
+  /**
+   * Проверяет почту, на которую поддержка сможет ответить по заявке.
+   *
+   * @return {boolean} Корректно ли заполнено поле.
+   */
+  function validateReplyEmailField(): boolean {
+    const error = validateEmail(form.elements.replyEmail.value);
+    setFieldState(form, 'replyEmail', error);
+    return !error;
+  }
+
+  /**
+   * Показывает ошибку отправки формы без сброса введенных данных.
+   *
+   * @param {string} message Текст ошибки.
+   * @return {void}
+   */
+  function showSubmitError(message: string): void {
+    if (!feedback) {
+      showToast('Запрос не отправлен', message, 'error');
+      return;
+    }
+
+    feedback.hidden = false;
+    feedback.textContent = message;
+  }
+
   form.elements.identifier.addEventListener('input', validateIdentifierField);
+  form.elements.replyEmail.addEventListener('input', validateReplyEmailField);
 
   if (helpButton && helpModal) {
     helpButton.addEventListener('click', openHelpModal);
@@ -127,11 +188,59 @@ export function ForgotPassword(): void | VoidFunction {
     });
   }
 
-  form.addEventListener('submit', (event) => {
+  form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    if (!validateIdentifierField() || !formPanel) {
+    feedback?.setAttribute('hidden', '');
+
+    if (!validateIdentifierField() || !validateReplyEmailField()) {
       return;
+    }
+
+    const identifier = form.elements.identifier.value.trim();
+    const replyEmail = form.elements.replyEmail.value.trim();
+
+    form.setAttribute('aria-busy', 'true');
+    if (submitButton) {
+      submitButton.disabled = true;
+    }
+
+    try {
+      await createAppeal({
+        category: 'question',
+        title: 'Восстановление доступа',
+        description: [
+          'Пользователь запросил восстановление доступа.',
+          `Идентификатор аккаунта: ${identifier}`,
+          `Почта для ответа: ${replyEmail}`,
+        ].join('\n'),
+        name: 'Пользователь',
+        email: replyEmail,
+      });
+
+      form.hidden = true;
+      if (successPanel) {
+        successPanel.hidden = false;
+        successPanel
+          .querySelector<HTMLElement>('[data-forgot-password-success-title]')
+          ?.focus();
+      }
+      showToast(
+        'Запрос принят',
+        'Поддержка получила данные для восстановления доступа.',
+        'success',
+      );
+    } catch (error) {
+      const message =
+        error instanceof Error && error.message
+          ? error.message
+          : 'Не удалось отправить запрос. Попробуйте еще раз.';
+      showSubmitError(message);
+    } finally {
+      form.removeAttribute('aria-busy');
+      if (submitButton && !form.hidden) {
+        submitButton.disabled = false;
+      }
     }
   });
 
@@ -149,5 +258,6 @@ export function ForgotPassword(): void | VoidFunction {
     }
 
     document.removeEventListener('keydown', handleEscape);
+    publicLayout?.classList.remove('public-layout--auth');
   };
 }

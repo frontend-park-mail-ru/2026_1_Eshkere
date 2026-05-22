@@ -13,7 +13,9 @@ export async function renderPublicLayout(
     navbar,
     content,
     layoutClass:
-      pathname === '/login' || pathname === '/register'
+      pathname === '/login' ||
+      pathname === '/register' ||
+      pathname === '/forgot-password'
         ? 'public-layout--auth-static'
         : '',
   });
@@ -26,7 +28,9 @@ export async function updatePublicNavbarSlot(
   if (layoutRoot) {
     layoutRoot.classList.toggle(
       'public-layout--auth-static',
-      pathname === '/login' || pathname === '/register',
+      pathname === '/login' ||
+        pathname === '/register' ||
+        pathname === '/forgot-password',
     );
   }
 

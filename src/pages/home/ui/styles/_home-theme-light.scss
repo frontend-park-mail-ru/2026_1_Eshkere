@@ -16,7 +16,7 @@
 }
 
 .home {
-  background: transparent;
+  background: var(--home-light-bg);
 }
 
 .hero__curtain {
@@ -57,7 +57,10 @@ html:not([data-theme='dark']) {
 }
 
 .hero::before {
-  background: url('/img/without.png') center calc(100% + 100px) / max(1440px, 100vw) auto no-repeat !important;
+  background-image: var(--bg-main-image, url('/img/without.png')) !important;
+  background-position: var(--bg-main-image-position, center top) !important;
+  background-repeat: no-repeat !important;
+  background-size: var(--bg-main-image-size, max(1440px, 100vw) auto) !important;
   -webkit-mask-image: linear-gradient(
     to top,
     transparent 0%,

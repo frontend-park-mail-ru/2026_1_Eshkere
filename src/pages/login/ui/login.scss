@@ -2,8 +2,8 @@
 @use '../../../shared/styles/mixins';
 
 .public-layout--auth {
+  --bg-main-fade-color: #efedff;
   background-color: #efedff;
-  background-image: none;
   animation: none;
 
   .public-layout__bg {
@@ -41,7 +41,6 @@
     width: 100%;
   }
 
-  .public-layout__content::before,
   .public-layout__content::after {
     content: '';
     position: absolute;
@@ -49,32 +48,6 @@
     width: 100vw;
     transform: translateX(-50%);
     pointer-events: none;
-  }
-
-  .public-layout__content::before {
-    top: -12px;
-    bottom: 0;
-    z-index: 0;
-    background: url('/img/without.png') center bottom / max(1440px, 100vw) auto no-repeat;
-    -webkit-mask-image: linear-gradient(
-      to top,
-      transparent 0%,
-      rgba(0, 0, 0, 0.1) 8%,
-      rgba(0, 0, 0, 0.28) 16%,
-      rgba(0, 0, 0, 0.52) 24%,
-      rgba(0, 0, 0, 0.82) 34%,
-      #000 100%
-    );
-    mask-image: linear-gradient(
-      to top,
-      transparent 0%,
-      rgba(0, 0, 0, 0.1) 8%,
-      rgba(0, 0, 0, 0.28) 16%,
-      rgba(0, 0, 0, 0.52) 24%,
-      rgba(0, 0, 0, 0.82) 34%,
-      #000 100%
-    );
-    opacity: 0.92;
   }
 
   .public-layout__content::after {
@@ -365,6 +338,7 @@
 
 html[data-theme='dark'] {
   .public-layout--auth {
+    --bg-main-fade-color: #181726;
     background-color: #181726;
 
     .public-layout__content::after {

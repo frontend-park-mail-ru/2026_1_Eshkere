@@ -10,7 +10,11 @@
 
 :root {
   --bg-main: #{tokens.$color-bg-main};
-  --bg-main-image: url('/img/RightFon.png');
+  --bg-main-image: url('/img/without.png');
+  --bg-main-image-size: max(1440px, 100vw) auto;
+  --bg-main-image-position: center top;
+  --bg-main-fade-start: clamp(320px, 38dvh, 440px);
+  --bg-main-fade-end: clamp(560px, 68dvh, 720px);
   --bg-main-overlay-start: rgba(240, 244, 255, 0.26);
   --bg-main-overlay-end: rgba(240, 244, 255, 0.34);
   --text-main: #{tokens.$color-text-main};
@@ -106,7 +110,7 @@
 
 [data-theme='dark'] {
   --bg-main: #090d18;
-  --bg-main-image: url('/img/darkBack.png');
+  --bg-main-image: url('/img/without.png');
   --bg-main-overlay-start: rgba(6, 10, 22, 0.24);
   --bg-main-overlay-end: rgba(6, 10, 22, 0.34);
   --text-main: #eef2ff;
@@ -222,19 +226,6 @@ html {
 body {
   font-family: tokens.$font-family-body;
   background-color: var(--bg-main);
-  background-image:
-    linear-gradient(
-      180deg,
-      var(--bg-main-overlay-start) 0%,
-      var(--bg-main-overlay-end) 100%
-    ),
-    var(--bg-main-image);
-  background-size: cover, cover;
-  background-position:
-    center top,
-    right top;
-  background-repeat: no-repeat, no-repeat;
-  background-attachment: scroll, scroll;
   color: var(--text-main);
   overflow-x: clip;
   -webkit-text-size-adjust: 100%;
@@ -272,12 +263,6 @@ button {
 }
 
 @media (max-width: 600px) {
-  body {
-    background-position:
-      center top,
-      center top;
-  }
-
   .modal__content,
   [class$='-modal__dialog'],
   [class*='__modal-dialog'] {
