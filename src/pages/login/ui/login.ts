@@ -10,10 +10,9 @@ import {
   validatePassword,
   setFieldState,
 } from 'shared/validators';
-import { loginUser } from 'features/auth';
+import { initVKAuth, loginUser } from 'features/auth';
 import { navigateTo } from 'shared/lib/navigation';
 import loginPageTemplate from './login.hbs';
-import { initVKLogin } from './vk-login';
 
 /**
  * Удаляет пробелы из пароля при вводе.
@@ -142,7 +141,7 @@ export function Login(): void | VoidFunction {
   }
   const form = el as LoginFormElement;
   const vkLoginButton = document.getElementById('vk-login-button');
-  const cleanupVKLogin = initVKLogin(vkLoginButton);
+  const cleanupVKAuth = initVKAuth(vkLoginButton);
 
   PasswordVisibilityToggles(form);
 
@@ -201,7 +200,7 @@ export function Login(): void | VoidFunction {
   });
 
   return () => {
-    cleanupVKLogin();
+    cleanupVKAuth();
     publicLayout?.classList.remove('public-layout--auth');
   };
 }

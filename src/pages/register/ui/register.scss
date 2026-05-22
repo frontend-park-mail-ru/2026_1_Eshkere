@@ -218,12 +218,14 @@
     background-color 0.22s ease,
     box-shadow 0.22s ease;
 
-  &__label {
+  &__label,
+  .ui-button__label {
     font-size: 15px;
     font-weight: 500;
   }
 
-  &__icon {
+  &__icon,
+  .ui-button__icon {
     @include mixins.flex-center(inline-flex);
     width: 22px;
     height: 22px;

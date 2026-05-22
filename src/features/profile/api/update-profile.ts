@@ -1,5 +1,5 @@
 import { request } from 'shared/lib/request';
-import { authState } from 'features/auth';
+import { authState } from 'entities/user';
 
 export interface UpdateProfileParams {
   name?: string;

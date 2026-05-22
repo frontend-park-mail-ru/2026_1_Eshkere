@@ -1,8 +1,16 @@
 import { request } from 'shared/lib/request';
+import { getMe } from 'features/profile/api/update-profile';
+import { authState, type AuthUser } from '../model/storage';
 
 const VK_ID_SDK_URL = 'https://unpkg.com/@vkid/sdk@latest/dist-sdk/umd/index.js';
 
 let sdkLoader: Promise<void> | null = null;
+
+interface VKAuthResponse {
+  id: number;
+  email: string;
+  phone: string;
+}
 
 function loadVKScript(): Promise<void> {
   if ('VKIDSDK' in window) {
@@ -25,7 +33,7 @@ function loadVKScript(): Promise<void> {
   return sdkLoader;
 }
 
-export function initVKLogin(buttonElement: HTMLElement | null): VoidFunction {
+export function initVKAuth(buttonElement: HTMLElement | null): VoidFunction {
   if (!(buttonElement instanceof HTMLButtonElement)) {
     return () => {};
   }
@@ -60,11 +68,26 @@ export function initVKLogin(buttonElement: HTMLElement | null): VoidFunction {
             ? src.lastName
             : '',
     };
-    const response = await request('/advertisers/login/vk', {
+    const response = await request<VKAuthResponse>('/advertisers/login/vk', {
       method: 'POST',
       body,
     });
-    console.log('VK backend login response:', response);
+
+    const base: AuthUser = {
+      ...response.data,
+      name: body.first_name,
+    };
+    authState.setAuthenticatedUser(base);
+
+    const profile = await getMe().catch(() => null);
+    if (profile) {
+      authState.setAuthenticatedUser({
+        ...base,
+        name: profile.name ?? body.first_name,
+        balance: profile.balance,
+        avatar: profile.avatar_url,
+      });
+    }
   }
 
   function vkidOnError(error: unknown): string {
