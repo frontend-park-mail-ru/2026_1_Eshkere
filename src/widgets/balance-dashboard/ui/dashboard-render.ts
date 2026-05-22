@@ -6,7 +6,6 @@ import {
   getAutopayStatus,
   getAverageDailySpend,
   getDaysLeft,
-  getPaymentMethodLabel,
   getRecommendations,
 } from './dashboard-metrics';
 
@@ -118,6 +117,90 @@ function renderRecommendations(state: BalanceDashboardState): void {
   );
 }
 
+const ALERT_DISMISS_KEY = 'balance_alert_dismiss';
+
+function getAlertThresholds(): { warning: number; critical: number } {
+  try {
+    const raw = localStorage.getItem('notification_thresholds');
+    if (!raw) return { warning: 500, critical: 100 };
+    const data = JSON.parse(raw) as { warning?: number; critical?: number };
+    return {
+      warning: typeof data.warning === 'number' ? data.warning : 500,
+      critical: typeof data.critical === 'number' ? data.critical : 100,
+    };
+  } catch {
+    return { warning: 500, critical: 100 };
+  }
+}
+
+function getAlertLevel(balance: number): 'depleted' | 'critical' | 'warning' | null {
+  if (balance <= 0) return 'depleted';
+  const { warning, critical } = getAlertThresholds();
+  if (balance < critical) return 'critical';
+  if (balance < warning) return 'warning';
+  return null;
+}
+
+function isDismissedToday(level: string): boolean {
+  try {
+    const raw = localStorage.getItem(ALERT_DISMISS_KEY);
+    if (!raw) return false;
+    const data = JSON.parse(raw) as Record<string, string>;
+    const dismissedAt = data[level];
+    if (!dismissedAt) return false;
+    return new Date(dismissedAt).toDateString() === new Date().toDateString();
+  } catch {
+    return false;
+  }
+}
+
+export function dismissAlert(level: string): void {
+  try {
+    const raw = localStorage.getItem(ALERT_DISMISS_KEY);
+    const data = raw ? (JSON.parse(raw) as Record<string, string>) : {};
+    data[level] = new Date().toISOString();
+    localStorage.setItem(ALERT_DISMISS_KEY, JSON.stringify(data));
+  } catch {
+    // ignore
+  }
+}
+
+function syncBalanceAlerts(state: BalanceDashboardState): void {
+  const level = getAlertLevel(state.balanceValue);
+  const levels = ['warning', 'critical', 'depleted', 'autopay'] as const;
+
+  levels.forEach((l) => {
+    const el = document.querySelector<HTMLElement>(`[data-balance-alert="${l}"]`);
+    if (!el) return;
+
+    let visible = false;
+
+    if (l === 'autopay') {
+      visible = state.autopayEnabled && !!state.savedPaymentMethodId && level === null;
+    } else {
+      visible = l === level && !isDismissedToday(l);
+    }
+
+    el.hidden = !visible;
+  });
+
+  // Обновляем динамические значения в баннерах
+  document.querySelectorAll<HTMLElement>('[data-balance-alert-value]').forEach((el) => {
+    el.textContent = formatPrice(state.balanceValue);
+  });
+
+  const daysEl = document.querySelector<HTMLElement>('[data-balance-alert-days]');
+  if (daysEl) {
+    const days = getDaysLeft(state);
+    daysEl.textContent = `${days} дн.`;
+  }
+
+  const autopayText = document.querySelector<HTMLElement>('[data-balance-alert-autopay-text]');
+  if (autopayText && state.autopayEnabled) {
+    autopayText.textContent = `Автоматическое пополнение настроено: ${formatPrice(state.autopayLimit)} будет зачислено на баланс, когда он опустится ниже ${formatPrice(state.autopayThreshold)}.`;
+  }
+}
+
 function syncQuickAmounts(state: BalanceDashboardState): void {
   document
     .querySelectorAll<HTMLElement>('[data-balance-amount]')
@@ -147,7 +230,6 @@ export function syncBalanceDashboardWidget(
   setText('[data-balance-stat="reserve"]', formatPrice(state.moderationReserve));
   setText('[data-balance-stat="monthlySpend"]', formatPrice(state.monthlySpend));
   setText('[data-balance-stat="autopay"]', getAutopayHeroLabel(state));
-  setText('[data-balance-payment-method]', getPaymentMethodLabel(state));
   setText('[data-balance-autopay-status]', getAutopayStatus(state));
   setText('[data-balance-autopay-note]', getAutopayNote(state));
   setText(
@@ -158,10 +240,6 @@ export function syncBalanceDashboardWidget(
   setText(
     '[data-balance-summary="autopayLimit"]',
     formatPrice(state.autopayLimit),
-  );
-  setText(
-    '[data-balance-summary="vat"]',
-    state.vatEnabled ? 'Включено' : 'Отключено',
   );
   setText('[data-balance-current-modal]', formatPrice(state.balanceValue));
   setText('[data-balance-topup-amount]', formatPrice(state.selectedAmount));
@@ -179,6 +257,7 @@ export function syncBalanceDashboardWidget(
   }
 
   syncQuickAmounts(state);
+  syncBalanceAlerts(state);
   renderOperations(state);
   renderRecommendations(state);
 }

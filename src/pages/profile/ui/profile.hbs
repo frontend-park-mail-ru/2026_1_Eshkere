@@ -146,16 +146,6 @@
 
         <article class="profile-stack__item">
           <div>
-            <strong class="profile-stack__title">Способ оплаты</strong>
-            <p class="profile-stack__text" data-profile-card>{{cardMasked}}</p>
-          </div>
-          <button class="profile-stack__action" type="button" data-open-payment-modal>
-            Обновить
-          </button>
-        </article>
-
-        <article class="profile-stack__item">
-          <div>
             <strong class="profile-stack__title">Последнее пополнение</strong>
             <p class="profile-stack__text" data-profile-last-top-up>{{lastTopUp}}</p>
           </div>
@@ -198,67 +188,6 @@
       </div>
     </section>
 
-    <section class="profile-card">
-      <div class="profile-card__head">
-        <h2 class="profile-card__title">Фид объявлений</h2>
-        <p class="profile-card__subtitle">Публичная ссылка на все ваши объявления</p>
-      </div>
-
-      <div class="profile-feed-link" data-feed-link-section>
-        <p class="profile-feed-link__desc">
-          Сгенерируйте уникальную ссылку для кампании, чтобы партнёры могли получать её объявления без авторизации.
-          При повторной генерации старая ссылка перестаёт работать.
-        </p>
-
-        <p class="profile-feed-link__empty" data-feed-link-no-campaigns hidden>
-          Нет рекламных кампаний. Создайте хотя бы одну, чтобы сгенерировать ссылку.
-        </p>
-
-        <select class="profile-feed-link__select" data-feed-link-campaign hidden aria-label="Выберите кампанию"></select>
-
-        <div class="profile-feed-link__result" data-feed-link-result hidden>
-          <div class="profile-feed-link__url-row">
-            <input
-              class="profile-feed-link__url-input"
-              type="text"
-              readonly
-              data-feed-link-url
-              aria-label="Ссылка на фид объявлений"
-            />
-            <button class="profile-feed-link__copy" type="button" data-feed-link-copy aria-label="Скопировать ссылку">
-              Скопировать
-            </button>
-          </div>
-          <p class="profile-feed-link__copied" data-feed-link-copied hidden>Ссылка скопирована</p>
-        </div>
-
-        <div class="profile-feed-link__actions">
-          <button class="profile-stack__action" type="button" data-generate-feed-link disabled>
-            Сгенерировать ссылку
-          </button>
-        </div>
-
-        <div class="profile-feed-link__error" data-feed-link-error hidden></div>
-      </div>
-    </section>
-
-    <section class="profile-card">
-      <div class="profile-card__head">
-        <h2 class="profile-card__title">Поддержка</h2>
-        <p class="profile-card__subtitle">Быстрый контакт по вопросам аккаунта</p>
-      </div>
-
-      <div class="profile-support">
-        <strong class="profile-support__title">Ваш контакт</strong>
-        <p class="profile-support__text">
-          Если возникнут вопросы по профилю, платежам или рекламным кампаниям, можно написать
-          ответственному менеджеру.
-        </p>
-        <a href="https://t.me/chocaboy" target="_blank" rel="noreferrer" class="profile-support__link">
-          {{contactHandle}}
-        </a>
-      </div>
-    </section>
   </div>
 
   <div class="modal profile-modal" id="profile-avatar-modal" aria-hidden="true">
@@ -546,79 +475,13 @@
     </div>
   </div>
 
-  <div class="modal profile-modal" id="profile-payment-modal" aria-hidden="true">
-    <div class="modal__backdrop" data-modal-close></div>
-    <div class="modal__content profile-modal__content" role="dialog" aria-modal="true" aria-labelledby="profile-payment-title">
-      <div class="modal__inner profile-modal__inner">
-        <div class="profile-modal__head">
-          <h2 class="profile-modal__title" id="profile-payment-title">Обновить способ оплаты</h2>
-          <p class="profile-modal__subtitle">Новая карта начнет использоваться только после подтверждения кода.</p>
-        </div>
-
-        <form class="profile-modal__form" id="profile-payment-form" novalidate>
-          <div class="profile-modal__banner profile-modal__banner--error" data-form-error hidden></div>
-
-          <div class="profile-modal__step" data-step="input">
-            <label class="profile-modal__field" data-field="cardNumber">
-              <span class="profile-modal__label">Номер карты</span>
-              <input class="profile-modal__input" type="text" name="cardNumber" placeholder="0000 0000 0000 0000" />
-              <span class="profile-modal__error" data-error-for="cardNumber"></span>
-            </label>
-
-            <label class="profile-modal__field" data-field="expiryDate">
-              <span class="profile-modal__label">Срок действия</span>
-              <input class="profile-modal__input" type="text" name="expiryDate" placeholder="MM / YY" />
-              <span class="profile-modal__error" data-error-for="expiryDate"></span>
-            </label>
-
-            <label class="profile-modal__field" data-field="holderName">
-              <span class="profile-modal__label">Имя держателя</span>
-              <input class="profile-modal__input" type="text" name="holderName" placeholder="EKATERINA KUZNETSOVA" />
-              <span class="profile-modal__error" data-error-for="holderName"></span>
-            </label>
-
-            <label class="profile-modal__field" data-field="cvv">
-              <span class="profile-modal__label">CVV</span>
-              <input class="profile-modal__input" type="password" name="cvv" placeholder="***" />
-              <span class="profile-modal__error" data-error-for="cvv"></span>
-            </label>
-          </div>
-
-          <div class="profile-modal__step" data-step="confirm" hidden>
-            <div class="profile-modal__hint">
-              Подтвердите новую карту <strong data-confirm-target>•••• 0000</strong>. Тестовый код:
-              <strong>123456</strong>
-            </div>
-
-            <label class="profile-modal__field" data-field="code">
-              <span class="profile-modal__label">Код подтверждения</span>
-              <input class="profile-modal__input" type="text" name="code" placeholder="Введите код из SMS / 3DS" />
-              <span class="profile-modal__error" data-error-for="code"></span>
-            </label>
-
-            <button class="profile-modal__link-button" type="button" data-resend-code>
-              Отправить код повторно
-            </button>
-          </div>
-
-          <div class="profile-modal__actions">
-            <button class="profile-modal__button profile-modal__button--secondary" type="button" data-modal-close>Закрыть</button>
-            <button class="profile-modal__button profile-modal__button--primary" type="submit" data-step-submit>
-              Продолжить
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
   <div class="modal profile-modal" id="profile-topup-modal" aria-hidden="true">
     <div class="modal__backdrop" data-modal-close></div>
     <div class="modal__content profile-modal__content" role="dialog" aria-modal="true" aria-labelledby="profile-topup-title">
       <div class="modal__inner profile-modal__inner">
         <div class="profile-modal__head">
           <h2 class="profile-modal__title" id="profile-topup-title">Пополнение баланса</h2>
-          <p class="profile-modal__subtitle">Выберите сумму и подтвердите способ оплаты.</p>
+          <p class="profile-modal__subtitle">Выберите сумму — вы будете перенаправлены на безопасную страницу ЮКассы.</p>
         </div>
 
         <form class="profile-modal__form" id="profile-topup-form" novalidate>
@@ -653,7 +516,7 @@
 
           <div class="profile-modal__actions">
             <button class="profile-modal__button profile-modal__button--secondary" type="button" data-modal-close>Отмена</button>
-            <button class="profile-modal__button profile-modal__button--primary" type="submit">Пополнить</button>
+            <button class="profile-modal__button profile-modal__button--primary" type="submit">Перейти к оплате</button>
           </div>
         </form>
       </div>

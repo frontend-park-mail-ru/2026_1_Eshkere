@@ -15,9 +15,7 @@
     padding: 28px 30px;
     border: 1px solid var(--border-subtle);
     border-radius: 24px;
-    background:
-      linear-gradient(135deg, rgba(99, 93, 255, 0.18), rgba(185, 73, 255, 0.12)),
-      var(--surface-card);
+    background: var(--surface-card);
     box-shadow: var(--shadow);
   }
 

@@ -59,11 +59,8 @@ export async function createAdInGroup(
     `/ad_campaigns/${campaignId}/ad_groups/${groupId}/ads`,
     { method: 'POST', body: formData },
   );
-  const created = response.data;
 
-  await updateAdInGroup(campaignId, groupId, created.id, { status: 'working' });
-
-  return created;
+  return response.data;
 }
 
 export async function updateAdInGroup(

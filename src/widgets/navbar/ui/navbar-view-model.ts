@@ -1,5 +1,10 @@
 import { formatPrice } from 'shared/lib/format';
 import { authState, type AuthUser } from 'features/auth';
+import {
+  getCabinetEntryPath,
+  getCabinetKind,
+  getCabinetProfilePath,
+} from 'shared/lib/cabinet';
 
 const navbarNotifications = [
   {
@@ -39,6 +44,7 @@ function getUserInitials(user: AuthUser): string {
 }
 
 export function getNavbarTemplateContext(pathname: string) {
+  const cabinet = getCabinetKind(pathname);
   const isAuth = authState.isAuthenticated();
   const currentUser: AuthUser =
     authState.getCurrentUser() ?? {
@@ -62,6 +68,14 @@ export function getNavbarTemplateContext(pathname: string) {
     isLogin: pathname === '/login',
     isRegister: pathname === '/register',
     isAuthenticated: isAuth,
+    cabinet: {
+      advertiserHref: getCabinetEntryPath('advertiser'),
+      partnerHref: getCabinetEntryPath('partner'),
+      isAdvertiser: cabinet === 'advertiser',
+      isPartner: cabinet === 'partner',
+      profileHref: getCabinetProfilePath(cabinet),
+      showAdvertiserWallet: cabinet === 'advertiser',
+    },
     user,
     notifications: navbarNotifications,
   };

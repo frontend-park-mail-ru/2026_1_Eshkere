@@ -1,15 +1,8 @@
 import './home.scss';
 import { renderTemplate } from 'shared/lib/render';
 import homePageTemplate from './home.hbs';
-import {
-  setupAuroraBg,
-  setupMagnetic,
-  setupReveal,
-  setupSectionParallax,
-  setupSmoothAnchors,
-  setupTilt,
-} from './home-effects';
-import { resetMotionCache } from './home-motion';
+import { setupSmoothAnchors } from './home-effects';
+import { setupHeroEntrance } from 'shared/lib/animations';
 import { getHomeTemplateContext } from './home-view-model';
 
 export async function renderHomePage() {
@@ -17,19 +10,10 @@ export async function renderHomePage() {
 }
 
 export function Home(): VoidFunction {
-  resetMotionCache();
-
   const publicLayout = document.querySelector('.public-layout');
   publicLayout?.classList.add('public-layout--home');
 
-  const cleanups = [
-    setupAuroraBg(),
-    setupReveal(),
-    setupMagnetic(),
-    setupTilt(),
-    setupSmoothAnchors(),
-    setupSectionParallax(),
-  ];
+  const cleanups = [setupSmoothAnchors(), setupHeroEntrance()];
 
   return () => {
     cleanups.forEach((cleanup) => cleanup());

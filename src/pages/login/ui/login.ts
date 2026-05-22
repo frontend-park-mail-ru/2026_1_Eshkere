@@ -10,7 +10,7 @@ import {
   validatePassword,
   setFieldState,
 } from 'shared/validators';
-import { loginUser } from 'features/auth';
+import { initVKAuth, loginUser } from 'features/auth';
 import { navigateTo } from 'shared/lib/navigation';
 import loginPageTemplate from './login.hbs';
 
@@ -92,11 +92,35 @@ export async function renderLoginPage(): Promise<string> {
     variant: 'secondary',
   });
 
+  const vkLoginButton = await renderButton({
+    text: 'Войти через VK ID',
+    type: 'button',
+    variant: 'secondary',
+    className: 'social-button social-button--vk',
+    id: 'vk-login-button',
+    iconSrc: '/icons/VK_logo_Blue_40x40.svg',
+    iconAlt: '',
+  });
+
+  const yandexLoginButton = await renderButton({
+    text: 'Яндекс ID',
+    type: 'button',
+    variant: 'secondary',
+    className: 'social-button social-button--yandex',
+    title: 'Скоро будет доступно',
+    disabled: true,
+    ariaDisabled: true,
+    iconSrc: '/icons/yandex-id.svg',
+    iconAlt: '',
+  });
+
   return renderTemplate(loginPageTemplate, {
     loginField,
     passwordField,
     submitButton,
     registerLinkButton,
+    vkLoginButton,
+    yandexLoginButton,
   });
 }
 
@@ -116,6 +140,8 @@ export function Login(): void | VoidFunction {
     };
   }
   const form = el as LoginFormElement;
+  const vkLoginButton = document.getElementById('vk-login-button');
+  const cleanupVKAuth = initVKAuth(vkLoginButton);
 
   PasswordVisibilityToggles(form);
 
@@ -170,10 +196,11 @@ export function Login(): void | VoidFunction {
       return;
     }
 
-    navigateTo('/overview', { replace: true });
+    navigateTo('/advertiser/overview', { replace: true });
   });
 
   return () => {
+    cleanupVKAuth();
     publicLayout?.classList.remove('public-layout--auth');
   };
 }

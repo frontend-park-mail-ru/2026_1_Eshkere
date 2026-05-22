@@ -1,6 +1,7 @@
 import './add-sites.scss';
 import {
   deletePartnerSite,
+  listPartnerBlocks,
   listPartnerSites,
   partnerSiteStatusBadgeType,
   partnerSiteStatusRu,
@@ -33,25 +34,35 @@ export async function renderAddSitesPage(): Promise<string> {
     statusType: string;
     enabled: boolean;
     listingToggleDisabled: boolean;
+    blocksCount: number;
+    activeBlocksCount: number;
   }> = [];
 
   try {
     const { sites: apiSites } = await listPartnerSites();
-    sites = apiSites.map((s) => {
-      const statusCode = s.status?.trim() || 'draft';
-      return {
-        id: s.id,
-        domain: s.domain,
-        site_name: s.site_name,
-        created_at: s.created_at,
-        updated_at: s.updated_at,
-        statusCode,
-        status: partnerSiteStatusRu(statusCode),
-        statusType: partnerSiteStatusBadgeType(statusCode),
-        enabled: partnerSiteToggleChecked(statusCode),
-        listingToggleDisabled: !partnerSiteToggleEditable(statusCode),
-      };
-    });
+    sites = await Promise.all(
+      apiSites.map(async (s) => {
+        const statusCode = s.status?.trim() || 'draft';
+        const blocks = await listPartnerBlocks(s.id)
+          .then((response) => response.blocks)
+          .catch(() => []);
+        return {
+          id: s.id,
+          domain: s.domain,
+          site_name: s.site_name,
+          created_at: s.created_at,
+          updated_at: s.updated_at,
+          statusCode,
+          status: partnerSiteStatusRu(statusCode),
+          statusType: partnerSiteStatusBadgeType(statusCode),
+          enabled: partnerSiteToggleChecked(statusCode),
+          listingToggleDisabled: !partnerSiteToggleEditable(statusCode),
+          blocksCount: blocks.length,
+          activeBlocksCount: blocks.filter((block) => block.status === 'active')
+            .length,
+        };
+      }),
+    );
   } catch (err) {
     const message =
       err instanceof Error && err.message.trim()
@@ -69,7 +80,13 @@ export async function renderAddSitesPage(): Promise<string> {
   }
 
   return await renderTemplate(addSitesTemplate, {
+    activeSitesCount: sites.filter((site) => site.statusCode === 'active')
+      .length,
+    blocksCount: sites.reduce((total, site) => total + site.blocksCount, 0),
     hasSites: sites.length > 0,
+    pendingSitesCount: sites.filter(
+      (site) => site.statusCode === 'pending_review',
+    ).length,
     sites,
   });
 }
@@ -112,7 +129,7 @@ export function AddSites(): void | VoidFunction {
     button.addEventListener(
       'click',
       () => {
-        navigateTo('/add-sites/create');
+        navigateTo('/partner/sites/create');
       },
       { signal },
     );

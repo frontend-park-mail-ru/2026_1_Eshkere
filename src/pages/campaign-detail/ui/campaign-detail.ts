@@ -259,13 +259,17 @@ export function CampaignDetail(): VoidFunction {
   initGroupPagination(root, signal);
 
   root.querySelector<HTMLElement>('[data-edit-campaign]')?.addEventListener('click', () => {
-    navigateTo(`/ads/campaign/edit?id=${campaignId}`);
+    navigateTo(`/advertiser/campaign/edit?id=${campaignId}`);
   }, { signal });
 
   root.querySelectorAll<HTMLElement>('[data-edit-group]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const groupId = btn.dataset.editGroup;
-      if (groupId) navigateTo(`/ads/group/edit?campaignId=${campaignId}&groupId=${groupId}`);
+      if (groupId) {
+        navigateTo(
+          `/advertiser/groups/edit?campaignId=${campaignId}&groupId=${groupId}`,
+        );
+      }
     }, { signal });
   });
 
@@ -274,7 +278,11 @@ export function CampaignDetail(): VoidFunction {
       const parts = (btn.dataset.editAd ?? '').split(':');
       const groupId = parts[0];
       const adId = parts[1];
-      if (groupId && adId) navigateTo(`/ads/ad/edit?campaignId=${campaignId}&groupId=${groupId}&adId=${adId}`);
+      if (groupId && adId) {
+        navigateTo(
+          `/advertiser/ads/edit?campaignId=${campaignId}&groupId=${groupId}&adId=${adId}`,
+        );
+      }
     }, { signal });
   });
 
@@ -282,7 +290,11 @@ export function CampaignDetail(): VoidFunction {
   root.querySelectorAll<HTMLElement>('[data-stats-group]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const groupId = btn.dataset.statsGroup;
-      if (groupId) navigateTo(`/ads/stats/group?campaignId=${campaignId}&groupId=${groupId}`);
+      if (groupId) {
+        navigateTo(
+          `/advertiser/stats/group?campaignId=${campaignId}&groupId=${groupId}`,
+        );
+      }
     }, { signal });
   });
 
@@ -293,7 +305,9 @@ export function CampaignDetail(): VoidFunction {
       const groupId = parts[0];
       const adId    = parts[1];
       if (groupId && adId) {
-        navigateTo(`/ads/stats/ad?campaignId=${campaignId}&groupId=${groupId}&adId=${adId}`);
+        navigateTo(
+          `/advertiser/stats/ad?campaignId=${campaignId}&groupId=${groupId}&adId=${adId}`,
+        );
       }
     }, { signal });
   });
@@ -319,7 +333,7 @@ export function CampaignDetail(): VoidFunction {
     btn.addEventListener(
       'click',
       () => {
-        navigateTo(`/ads/group/create?campaignId=${campaignId}`);
+        navigateTo(`/advertiser/groups/create?campaignId=${campaignId}`);
       },
       { signal },
     );
@@ -330,7 +344,11 @@ export function CampaignDetail(): VoidFunction {
       'click',
       () => {
         const groupId = btn.dataset.addAd;
-        if (groupId) navigateTo(`/ads/ad/create?campaignId=${campaignId}&groupId=${groupId}`);
+        if (groupId) {
+          navigateTo(
+            `/advertiser/ads/create?campaignId=${campaignId}&groupId=${groupId}`,
+          );
+        }
       },
       { signal },
     );
@@ -344,7 +362,7 @@ export function CampaignDetail(): VoidFunction {
         if (!groupId || !confirm('Удалить группу объявлений и все объявления в ней?')) return;
         try {
           await deleteAdGroup(campaignId, groupId);
-          navigateTo(`/ads/campaign?id=${campaignId}`);
+          navigateTo(`/advertiser/campaign?id=${campaignId}`);
         } catch {
           alert('Не удалось удалить группу');
         }
@@ -362,7 +380,7 @@ export function CampaignDetail(): VoidFunction {
         if (!groupId || !adId || !confirm('Удалить объявление?')) return;
         try {
           await deleteAdInGroup(campaignId, groupId, adId);
-          navigateTo(`/ads/campaign?id=${campaignId}`);
+          navigateTo(`/advertiser/campaign?id=${campaignId}`);
         } catch {
           alert('Не удалось удалить объявление');
         }
@@ -374,7 +392,7 @@ export function CampaignDetail(): VoidFunction {
   root.querySelector<HTMLElement>('[data-back]')?.addEventListener(
     'click',
     () => {
-      navigateTo('/ads');
+      navigateTo('/advertiser/campaigns');
     },
     { signal },
   );

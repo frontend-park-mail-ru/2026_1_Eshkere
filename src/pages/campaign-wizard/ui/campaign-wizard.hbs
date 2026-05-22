@@ -258,36 +258,6 @@
 
       {{!-- Шаг 3: Объявление --}}
       <section class="campaign-builder__panel cw-panel-with-preview" data-cw-panel="3" hidden>
-        <div class="cw-preview-panel">
-          <div class="cw-preview-card">
-            <div class="cw-preview-header">
-              <span class="cw-preview-title">Предпросмотр</span>
-              <span class="cw-preview-badge">Лента</span>
-            </div>
-            <div class="cw-preview-ad">
-              <div class="cw-preview-image" data-cw-preview-image>
-                <span class="cw-preview-placeholder">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/>
-                    <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
-                    <path d="m3 15 5-5 4 4 3-3 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                  </svg>
-                  <span>Изображение</span>
-                </span>
-              </div>
-              <div class="cw-preview-body">
-                <div class="cw-preview-meta">
-                  <span class="cw-preview-domain" data-cw-preview-domain>example.com</span>
-                  <span class="cw-preview-tag">Реклама</span>
-                </div>
-                <p class="cw-preview-headline" data-cw-preview-title>Заголовок объявления</p>
-                <p class="cw-preview-desc" data-cw-preview-desc>Описание появится здесь.</p>
-                <button class="cw-preview-cta" type="button" data-cw-preview-cta>Узнать подробнее</button>
-              </div>
-            </div>
-            <p class="cw-preview-note">Обновляется по мере заполнения полей.</p>
-          </div>
-        </div>
 
         <div class="cw-panel-form">
         <div class="campaign-builder__card">
@@ -295,6 +265,7 @@
             <h2 class="campaign-builder__card-title">Формат и изображение</h2>
             <p class="campaign-builder__card-subtitle">Выберите формат и загрузите креатив.</p>
           </div>
+
           <div class="campaign-builder__form">
             <div>
               <span class="campaign-builder__label">Формат</span>
@@ -389,8 +360,6 @@
             <input class="campaign-builder__input" type="text" placeholder="Текст кнопки" maxlength="40" data-cw-cta-input />
           </div>
         </div>
-        </div>
-
         <div class="cw-step-footer">
           <button class="campaign-builder__button campaign-builder__button--secondary" type="button" data-cw-prev>
             ← Аудитория
@@ -399,10 +368,8 @@
             Проверить →
           </button>
         </div>
-      </section>
+        </div>{{!-- /cw-panel-form --}}
 
-      {{!-- Шаг 4: Итог --}}
-      <section class="campaign-builder__panel cw-panel-with-preview" data-cw-panel="4" hidden>
         <div class="cw-preview-panel">
           <div class="cw-preview-card">
             <div class="cw-preview-header">
@@ -410,7 +377,7 @@
               <span class="cw-preview-badge">Лента</span>
             </div>
             <div class="cw-preview-ad">
-              <div class="cw-preview-image" data-cw-review-image>
+              <div class="cw-preview-image" data-cw-preview-image>
                 <span class="cw-preview-placeholder">
                   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/>
@@ -422,16 +389,21 @@
               </div>
               <div class="cw-preview-body">
                 <div class="cw-preview-meta">
-                  <span class="cw-preview-domain" data-cw-review-domain>example.com</span>
+                  <span class="cw-preview-domain" data-cw-preview-domain>example.com</span>
                   <span class="cw-preview-tag">Реклама</span>
                 </div>
-                <p class="cw-preview-headline" data-cw-review-ad-title>Заголовок объявления</p>
-                <p class="cw-preview-desc" data-cw-review-ad-desc>Описание появится здесь.</p>
-                <button class="cw-preview-cta" type="button" data-cw-review-cta>Узнать подробнее</button>
+                <p class="cw-preview-headline" data-cw-preview-title>Заголовок объявления</p>
+                <p class="cw-preview-desc" data-cw-preview-desc>Описание появится здесь.</p>
+                <button class="cw-preview-cta" type="button" data-cw-preview-cta>Узнать подробнее</button>
               </div>
             </div>
+            <p class="cw-preview-note">Обновляется по мере заполнения полей.</p>
           </div>
         </div>
+      </section>
+
+      {{!-- Шаг 4: Итог --}}
+      <section class="campaign-builder__panel cw-panel-with-preview" data-cw-panel="4" hidden>
         <div class="cw-panel-form">
         <div class="campaign-builder__card">
           <div class="campaign-builder__card-head">
@@ -469,6 +441,37 @@
           </button>
         </div>
         </div>{{!-- /cw-panel-form --}}
+
+
+        <div class="cw-preview-panel">
+          <div class="cw-preview-card">
+            <div class="cw-preview-header">
+              <span class="cw-preview-title">Предпросмотр</span>
+              <span class="cw-preview-badge">Лента</span>
+            </div>
+            <div class="cw-preview-ad">
+              <div class="cw-preview-image" data-cw-review-image>
+                <span class="cw-preview-placeholder">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/>
+                    <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
+                    <path d="m3 15 5-5 4 4 3-3 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                  <span>Изображение</span>
+                </span>
+              </div>
+              <div class="cw-preview-body">
+                <div class="cw-preview-meta">
+                  <span class="cw-preview-domain" data-cw-review-domain>example.com</span>
+                  <span class="cw-preview-tag">Реклама</span>
+                </div>
+                <p class="cw-preview-headline" data-cw-review-ad-title>Заголовок объявления</p>
+                <p class="cw-preview-desc" data-cw-review-ad-desc>Описание появится здесь.</p>
+                <button class="cw-preview-cta" type="button" data-cw-review-cta>Узнать подробнее</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
     </div>

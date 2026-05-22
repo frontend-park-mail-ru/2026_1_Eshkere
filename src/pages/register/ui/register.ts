@@ -13,7 +13,7 @@ import {
   validateRepeatPassword,
   setFieldState,
 } from 'shared/validators';
-import { registerUser } from 'features/auth';
+import { initVKAuth, registerUser } from 'features/auth';
 import { navigateTo } from 'shared/lib/navigation';
 import registerPageTemplate from './register.hbs';
 
@@ -180,6 +180,28 @@ export async function renderRegisterPage(): Promise<string> {
     variant: 'secondary',
   });
 
+  const vkRegisterButton = await renderButton({
+    text: 'VK ID',
+    type: 'button',
+    variant: 'secondary',
+    className: 'social-button social-button--vk',
+    id: 'vk-register-button',
+    iconSrc: '/icons/VK_logo_Blue_40x40.svg',
+    iconAlt: '',
+  });
+
+  const yandexRegisterButton = await renderButton({
+    text: 'Яндекс ID',
+    type: 'button',
+    variant: 'secondary',
+    className: 'social-button social-button--yandex',
+    title: 'Скоро будет доступно',
+    disabled: true,
+    ariaDisabled: true,
+    iconSrc: '/icons/yandex-id.svg',
+    iconAlt: '',
+  });
+
   return renderTemplate(registerPageTemplate, {
     nameField,
     emailField,
@@ -188,6 +210,8 @@ export async function renderRegisterPage(): Promise<string> {
     repeatPasswordField,
     submitButton,
     loginLinkButton,
+    vkRegisterButton,
+    yandexRegisterButton,
   });
 }
 
@@ -208,6 +232,8 @@ export function Register(): void | VoidFunction {
     };
   }
   const form = el as RegisterFormElement;
+  const vkRegisterButton = document.getElementById('vk-register-button');
+  const cleanupVKAuth = initVKAuth(vkRegisterButton);
 
   PasswordVisibilityToggles(form);
 
@@ -338,7 +364,7 @@ export function Register(): void | VoidFunction {
         return;
       }
 
-      navigateTo('/overview', { replace: true });
+      navigateTo('/advertiser/overview', { replace: true });
     } finally {
       isSubmitting = false;
       if (submitButton) {
@@ -359,6 +385,7 @@ export function Register(): void | VoidFunction {
   });
 
   return () => {
+    cleanupVKAuth();
     publicLayout?.classList.remove('public-layout--auth');
   };
 }

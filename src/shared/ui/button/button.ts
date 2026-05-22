@@ -20,6 +20,14 @@ export interface RenderButtonOptions {
   href?: string;
   variant?: string;
   className?: string;
+  id?: string;
+  title?: string;
+  target?: string;
+  rel?: string;
+  disabled?: boolean;
+  ariaDisabled?: boolean;
+  iconSrc?: string;
+  iconAlt?: string;
 }
 
 export async function renderButton(
@@ -31,5 +39,13 @@ export async function renderButton(
     href: options.href || '',
     variant: options.variant || 'primary',
     className: options.className || '',
+    id: options.id || '',
+    title: options.title || '',
+    target: options.target || '',
+    rel: options.rel || '',
+    disabled: Boolean(options.disabled),
+    ariaDisabled: Boolean(options.ariaDisabled),
+    iconSrc: options.iconSrc || '',
+    iconAlt: options.iconAlt || '',
   });
 }

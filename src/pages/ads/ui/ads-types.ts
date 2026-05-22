@@ -20,6 +20,7 @@ export interface CampaignTemplateRow {
   status: string;
   statusType: string;
   enabled: boolean;
+  toggleDisabled: boolean;
 }
 
 export interface CampaignStatusMeta {
@@ -33,5 +34,5 @@ export interface PendingStatusChange {
   row: HTMLElement;
   toggle: HTMLInputElement;
   badge: HTMLElement;
-  nextStatus: CampaignStatusKey;
+  nextStatus: 'active' | 'stopped';
 }

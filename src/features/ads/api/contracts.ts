@@ -31,5 +31,4 @@ export interface UpdateAdCampaignRequest {
   main_action?: 'look' | 'click';
   daily_budget?: number;
   cpm_price?: number;
-  status?: AdCampaignStatus;
 }

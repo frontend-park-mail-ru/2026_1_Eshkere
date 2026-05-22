@@ -1,5 +1,4 @@
 import { PasswordVisibilityToggles } from 'shared/ui/form-field/form-field';
-import { navigateTo } from 'shared/lib/navigation';
 import {
   clearFormState,
   resetTwoStepForm,
@@ -113,7 +112,6 @@ export function initProfileModals({
   };
 
   bindModalOpenTriggers(openModal, signal);
-  document.querySelector('[data-open-payment-modal]')?.addEventListener('click', () => navigateTo('/balance?payment=open'), { signal });
   document.querySelector('[data-profile-toast-close]')?.addEventListener('click', hideProfileFeedback, { signal });
   PasswordVisibilityToggles(document);
 

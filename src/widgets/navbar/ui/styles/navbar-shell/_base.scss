@@ -46,20 +46,21 @@
   }
 
   &.is-scrolled {
-    background: rgba(238, 240, 255, 0.82);
-    backdrop-filter: blur(16px);
-    box-shadow: 0 12px 28px rgba(68, 74, 140, 0.12);
+    background: rgba(238, 240, 255, 0.62);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 8px 20px rgba(68, 74, 140, 0.07);
 
     &::before {
+      height: 104px;
       background: linear-gradient(
         180deg,
-        rgba(238, 240, 255, 0.88) 0%,
-        rgba(238, 240, 255, 0.68) 36%,
-        rgba(238, 240, 255, 0.28) 70%,
+        rgba(238, 240, 255, 0.62) 0%,
+        rgba(238, 240, 255, 0.28) 48%,
+        rgba(238, 240, 255, 0.1) 74%,
         rgba(238, 240, 255, 0) 100%
       );
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
   }
 

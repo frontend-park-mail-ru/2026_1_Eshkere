@@ -1,9 +1,38 @@
 {{#if href}}
-  <a href="{{href}}" class="ui-button ui-button--{{variant}} {{className}}">
-    {{text}}
+  <a
+    href="{{href}}"
+    class="ui-button ui-button--{{variant}} {{className}}"
+    {{#if id}}id="{{id}}"{{/if}}
+    {{#if title}}title="{{title}}"{{/if}}
+    {{#if target}}target="{{target}}"{{/if}}
+    {{#if rel}}rel="{{rel}}"{{/if}}
+    {{#if ariaDisabled}}aria-disabled="true"{{/if}}
+  >
+    {{#if iconSrc}}
+      <span class="ui-button__icon" aria-hidden="true">
+        <img src="{{iconSrc}}" alt="{{iconAlt}}" />
+      </span>
+      <span class="ui-button__label">{{text}}</span>
+    {{else}}
+      {{text}}
+    {{/if}}
   </a>
 {{else}}
-  <button type="{{type}}" class="ui-button ui-button--{{variant}} {{className}}">
-    {{text}}
+  <button
+    type="{{type}}"
+    class="ui-button ui-button--{{variant}} {{className}}"
+    {{#if id}}id="{{id}}"{{/if}}
+    {{#if title}}title="{{title}}"{{/if}}
+    {{#if disabled}}disabled{{/if}}
+    {{#if ariaDisabled}}aria-disabled="true"{{/if}}
+  >
+    {{#if iconSrc}}
+      <span class="ui-button__icon" aria-hidden="true">
+        <img src="{{iconSrc}}" alt="{{iconAlt}}" />
+      </span>
+      <span class="ui-button__label">{{text}}</span>
+    {{else}}
+      {{text}}
+    {{/if}}
   </button>
 {{/if}}

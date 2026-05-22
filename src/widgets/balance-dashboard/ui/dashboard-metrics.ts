@@ -24,13 +24,13 @@ export function getAutopayHeroLabel(state: BalanceDashboardState): string {
 }
 
 export function getAutopayNote(state: BalanceDashboardState): string {
+  if (!state.savedPaymentMethodId) {
+    return 'Требуется привязанная карта';
+  }
+
   return state.autopayEnabled
     ? `Когда баланс опускается ниже ${formatPrice(state.autopayThreshold)}`
     : 'Автопополнение отключено';
-}
-
-export function getPaymentMethodLabel(state: BalanceDashboardState): string {
-  return state.paymentMethod || 'Не добавлен';
 }
 
 export function getRecommendations(

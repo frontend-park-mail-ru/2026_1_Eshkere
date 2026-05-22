@@ -1,0 +1,77 @@
+<section class='partner-page' data-partner-links>
+  <div class='partner-hero'>
+    <div class='partner-hero__copy'>
+      <span class='partner-hero__eyebrow'>Доход</span>
+      <h1 class='partner-hero__title'>Отчет по монетизации</h1>
+      <p class='partner-hero__subtitle'>
+        Сверяйте доход по площадкам, рекламным блокам и периодам.
+      </p>
+    </div>
+    <div class='partner-hero__actions'>
+      <a
+        class='partner-button partner-button--ghost'
+        href='/partner/sites'
+      >Площадки</a>
+      <a class='partner-button' href='/partner/payouts'>Баланс</a>
+    </div>
+  </div>
+
+  <div class='partner-stats'>
+    <article class='partner-stat partner-stat--muted'>
+      <span class='partner-stat__label'>Доход сегодня</span>
+      <strong class='partner-stat__value'>—</strong>
+      <span class='partner-stat__note'>Начисления появятся после первых показов.</span>
+    </article>
+    <article class='partner-stat partner-stat--muted'>
+      <span class='partner-stat__label'>Показы</span>
+      <strong class='partner-stat__value'>—</strong>
+      <span class='partner-stat__note'>Отчет будет разбит по блокам.</span>
+    </article>
+    <article class='partner-stat partner-stat--muted'>
+      <span class='partner-stat__label'>eCPM</span>
+      <strong class='partner-stat__value'>—</strong>
+      <span class='partner-stat__note'>Средний доход на тысячу показов.</span>
+    </article>
+    <article class='partner-stat partner-stat--info'>
+      <span class='partner-stat__label'>Площадки в фильтре</span>
+      <strong class='partner-stat__value'>{{sites.length}}</strong>
+      <span class='partner-stat__note'>Выберите сайт после подключения
+        аналитики.</span>
+    </article>
+  </div>
+
+  <div class='partner-toolbar'>
+    <div class='partner-segments' aria-label='Период отчета'>
+      <button
+        class='partner-segment partner-segment--active'
+        type='button'
+      >Сегодня</button>
+      <button class='partner-segment' type='button'>7 дней</button>
+      <button class='partner-segment' type='button'>30 дней</button>
+    </div>
+    <span class='partner-panel__subtitle'>Фильтры по площадке и блоку готовы для
+      API отчета.</span>
+  </div>
+
+  <section class='partner-report'>
+    <div class='partner-report__header'>
+      <span>Дата</span>
+      <span>Площадка</span>
+      <span>Блок</span>
+      <span>Показы</span>
+      <span>Доход</span>
+      <span>eCPM</span>
+    </div>
+    <div class='partner-empty'>
+      {{#if hasSites}}
+        <strong>Пока нет данных по доходу</strong>
+        <span>Площадки уже есть. После показов здесь появится отчет по каждому
+          блоку.</span>
+      {{else}}
+        <strong>Сначала подключите площадку</strong>
+        <span>Создайте сайт и рекламный блок, чтобы начать сбор показателей.</span>
+        <a href='/partner/sites/create'>Добавить сайт</a>
+      {{/if}}
+    </div>
+  </section>
+</section>

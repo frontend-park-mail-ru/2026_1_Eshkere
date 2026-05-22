@@ -1,0 +1,64 @@
+// ─── Scroll reveal ────────────────────────────────────────────────────────────
+// Добавь [data-reveal] на любой элемент — он появится при скролле.
+// Опциональный [data-reveal-delay="N"] задаёт задержку в шагах по 80ms.
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--reveal-delay, 0) * 80ms);
+
+  &.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+// ─── Hero stagger ─────────────────────────────────────────────────────────────
+// JS выставляет --stagger-i и класс hero-stagger, затем добавляет is-visible.
+// Каждый следующий элемент появляется на 80ms позже предыдущего.
+.hero-stagger {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--stagger-i, 0) * 80ms);
+
+  &.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+// ─── Page transition ──────────────────────────────────────────────────────────
+// Роутер добавляет .page-entering на #app-layout-outlet после смены innerHTML.
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#app-layout-outlet.page-entering {
+  animation: page-enter 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+// ─── Accessibility ────────────────────────────────────────────────────────────
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal],
+  .hero-stagger {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  #app-layout-outlet.page-entering {
+    animation: none !important;
+  }
+}

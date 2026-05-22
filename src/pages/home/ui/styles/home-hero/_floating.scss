@@ -29,14 +29,12 @@
       top: -12px;
       left: -8px;
       width: 272px;
-      animation: hero-card-drift 7.4s ease-in-out infinite;
     }
 
     &--budget {
       right: -8px;
       bottom: 18px;
       width: 256px;
-      animation: hero-card-drift 8.6s ease-in-out infinite reverse;
     }
 
     &--status {
@@ -48,7 +46,6 @@
       font-size: 14px;
       font-weight: 600;
       color: #2a3046;
-      animation: hero-card-drift 6.4s ease-in-out infinite;
     }
   }
 
@@ -68,6 +65,5 @@
     border-radius: 50%;
     background: #34c876;
     box-shadow: 0 0 0 8px rgba(52, 200, 118, 0.12);
-    animation: pulse-dot 2.4s ease-in-out infinite;
   }
 }

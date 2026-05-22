@@ -224,6 +224,14 @@ html[data-theme='dark'] {
   display: none !important;
 }
 
+// Панели с превью — grid перебивает flex из __panel
+.campaign-builder__panel.cw-panel-with-preview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 24px;
+  align-items: start;
+}
+
 // Кнопка "Назад" на первом шаге
 [data-cw-prev][hidden] {
   display: none !important;
@@ -237,9 +245,10 @@ html[data-theme='dark'] {
   margin-top: 4px;
 }
 
-// Когда футер — прямой потомок grid-панели, растягиваем на все колонки
-.cw-panel-with-preview > .cw-step-footer {
-  grid-column: 1 / -1;
+// Превью — всегда вторая колонка
+.cw-panel-with-preview > .cw-preview-panel {
+  grid-column: 2;
+  grid-row: 1;
 }
 
 // Счётчики символов
@@ -693,6 +702,7 @@ html[data-theme='dark'] {
   width: 100%;
   max-width: 280px;
   align-self: start;
+  height: fit-content;
 }
 
 .cw-panel-form {
@@ -942,6 +952,7 @@ html[data-theme='dark'] {
   line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 
@@ -955,6 +966,7 @@ html[data-theme='dark'] {
   line-height: 1.35;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -1217,6 +1229,7 @@ html[data-theme='dark'] {
   line-height: 1.35;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -1307,9 +1320,16 @@ html[data-theme='dark'] {
     grid-template-columns: 1fr;
   }
 
-  .cw-preview-panel {
+  .cw-panel-with-preview > .cw-preview-panel {
+    grid-column: 1;
+    grid-row: auto;
     position: static;
     order: -1;
+    max-width: 100%;
+  }
+
+  .cw-panel-with-preview > .cw-step-footer {
+    grid-column: 1;
   }
 }
 

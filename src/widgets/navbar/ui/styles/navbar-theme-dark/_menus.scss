@@ -51,6 +51,30 @@ html[data-theme='dark'] {
     border-color: rgba(100, 118, 171, 0.32);
   }
 
+  .navbar__profile-cabinets {
+    border-color: rgba(82, 98, 150, 0.34);
+    background: rgba(18, 27, 50, 0.92);
+  }
+
+  .navbar__profile-cabinet {
+    color: #dbe3ff;
+    background: rgba(125, 110, 255, 0.1);
+  }
+
+  .navbar__profile-cabinet span,
+  .navbar__profile-cabinets-label {
+    color: #9ea9cf;
+  }
+
+  .navbar__profile-cabinet--active {
+    border-color: rgba(125, 110, 255, 0.32);
+    background: rgba(125, 110, 255, 0.2);
+  }
+
+  .navbar__profile-cabinet--active strong {
+    color: #f2f4ff;
+  }
+
   .navbar__notification-dismiss {
     border-color: rgba(100, 118, 171, 0.42);
     background: rgba(21, 30, 54, 0.95);

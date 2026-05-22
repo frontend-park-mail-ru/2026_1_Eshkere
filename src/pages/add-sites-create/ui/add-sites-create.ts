@@ -60,7 +60,7 @@ export async function renderAddSitesCreatePage(): Promise<string> {
 
   const cancelButton = await renderButton({
     text: 'Отмена',
-    href: '/add-sites',
+    href: '/partner/sites',
     variant: 'secondary',
     className: 'site-create-page__cancel-btn',
   });
@@ -143,7 +143,7 @@ export function AddSitesCreate(): void | VoidFunction {
           domain: parsedUrl.hostname.toLowerCase(),
           site_name: form.elements.title.value.trim(),
         });
-        navigateTo(`/add-sites/block?siteId=${siteId}`);
+        navigateTo(`/partner/sites/block?siteId=${siteId}`);
       } catch (err) {
         const raw = err instanceof Error ? err.message : String(err);
         const msg = partnerSiteCreateErrorMessage(raw);

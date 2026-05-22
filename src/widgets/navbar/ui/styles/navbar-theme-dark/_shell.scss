@@ -19,20 +19,21 @@ html[data-theme='dark'] {
     }
 
     &.is-scrolled {
-      background: rgba(11, 17, 31, 0.84);
-      border-color: rgba(103, 121, 177, 0.32);
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.34);
+      background: rgba(11, 17, 31, 0.76);
+      border-color: rgba(103, 121, 177, 0.26);
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.3);
 
       &::before {
         content: '';
+        height: 104px;
         background: linear-gradient(
           180deg,
-          rgba(34, 42, 72, 0.12) 0%,
-          rgba(26, 34, 62, 0.05) 42%,
+          rgba(34, 42, 72, 0.09) 0%,
+          rgba(26, 34, 62, 0.035) 42%,
           rgba(16, 22, 42, 0) 100%
         );
-        backdrop-filter: blur(4px);
-        -webkit-backdrop-filter: blur(4px);
+        backdrop-filter: blur(3px);
+        -webkit-backdrop-filter: blur(3px);
       }
     }
   }

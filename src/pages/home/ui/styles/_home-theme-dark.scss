@@ -12,7 +12,10 @@ html[data-theme='dark'] {
 
   // Dark hero background image — spheres at bottom of image, fade upward to dark
   .hero::before {
-    background: url('/img/without.png') center calc(100% + 100px) / max(1440px, 100vw) auto no-repeat !important;
+    background-image: var(--bg-main-image, url('/img/without.png')) !important;
+    background-position: var(--bg-main-image-position, center top) !important;
+    background-repeat: no-repeat !important;
+    background-size: var(--bg-main-image-size, max(1440px, 100vw) auto) !important;
     -webkit-mask-image: linear-gradient(
       to top,
       transparent 0%,
@@ -33,6 +36,21 @@ html[data-theme='dark'] {
     );
   }
 
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    z-index: 1;
+    height: min(36vh, 360px);
+    pointer-events: none;
+    background: linear-gradient(
+      180deg,
+      rgba(24, 23, 38, 0) 0%,
+      rgba(24, 23, 38, 0.82) 68%,
+      var(--home-dark-bg) 100%
+    );
+  }
+
   @media (max-width: 600px) {
     .navbar::before,
     .navbar.is-scrolled::before {
@@ -43,10 +61,6 @@ html[data-theme='dark'] {
       -webkit-backdrop-filter: none !important;
     }
 
-    .hero::before {
-      background-position: center top !important;
-      background-size: auto 100% !important;
-    }
   }
 
   .public-layout--home .public-layout__shimmer {
@@ -72,7 +86,7 @@ html[data-theme='dark'] {
   .home {
     position: relative;
     isolation: isolate;
-    background: transparent;
+    background: var(--home-dark-bg);
   }
 
   .home::before {

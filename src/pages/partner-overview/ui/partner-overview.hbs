@@ -1,0 +1,125 @@
+<section class="partner-page" data-partner-links>
+  <div class="partner-hero">
+    <div class="partner-hero__copy">
+      <span class="partner-hero__eyebrow">Кабинет партнера</span>
+      <h1 class="partner-hero__title">Монетизация площадок</h1>
+      <p class="partner-hero__subtitle">
+        Площадки, рекламные блоки, доход и баланс в одном рабочем обзоре.
+      </p>
+    </div>
+
+    <div class="partner-hero__actions">
+      <a class="partner-button partner-button--ghost" href="/partner/sites">Площадки</a>
+      <a class="partner-button" href="/partner/sites/create">Добавить сайт</a>
+    </div>
+  </div>
+
+  {{#if loadError}}
+    <div class="partner-notice">{{loadError}}</div>
+  {{/if}}
+
+  <div class="partner-stats">
+    {{#each stats}}
+      <article class="partner-stat partner-stat--{{tone}}">
+        <span class="partner-stat__label">{{label}}</span>
+        <strong class="partner-stat__value">{{value}}</strong>
+        <span class="partner-stat__note">{{note}}</span>
+      </article>
+    {{/each}}
+  </div>
+
+  <div class="partner-grid">
+    <section class="partner-panel partner-panel--wide">
+      <div class="partner-panel__head">
+        <div>
+          <h2 class="partner-panel__title">Подключение</h2>
+          <p class="partner-panel__subtitle">Короткий путь от сайта до первых начислений.</p>
+        </div>
+      </div>
+
+      <div class="partner-steps">
+        {{#each setupSteps}}
+          <a class="partner-step {{#if complete}}partner-step--complete{{/if}}" href="{{href}}">
+            <span class="partner-step__marker"></span>
+            <span class="partner-step__copy">
+              <strong>{{label}}</strong>
+              <span>{{text}}</span>
+            </span>
+          </a>
+        {{/each}}
+      </div>
+    </section>
+
+    <section class="partner-panel">
+      <div class="partner-panel__head">
+        <div>
+          <h2 class="partner-panel__title">Баланс</h2>
+          <p class="partner-panel__subtitle">Сумма партнера для будущих выплат.</p>
+        </div>
+      </div>
+
+      <div class="partner-balance">
+        <strong>{{balance}}</strong>
+        <div class="partner-balance__actions">
+          <a href="/partner/payouts">Открыть выплаты</a>
+          <a href="/partner/income">Доход</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="partner-panel">
+      <div class="partner-panel__head">
+        <div>
+          <h2 class="partner-panel__title">Требует внимания</h2>
+          <p class="partner-panel__subtitle">Площадки и блоки, где есть следующий шаг.</p>
+        </div>
+      </div>
+
+      <div class="partner-attention">
+        {{#each attentionItems}}
+          <a class="partner-row partner-row--{{tone}}" href="{{href}}">
+            <span class="partner-row__copy">
+              <strong>{{title}}</strong>
+              <span>{{meta}}</span>
+            </span>
+            <span class="partner-pill">{{status}}</span>
+          </a>
+        {{/each}}
+      </div>
+    </section>
+
+    <section class="partner-panel partner-panel--wide">
+      <div class="partner-panel__head partner-panel__head--with-action">
+        <div>
+          <h2 class="partner-panel__title">Площадки</h2>
+          <p class="partner-panel__subtitle">Быстрый переход к сайтам и их рекламным блокам.</p>
+        </div>
+        <a class="partner-panel__link" href="/partner/sites">Все площадки</a>
+      </div>
+
+      {{#if hasSites}}
+        <div class="partner-site-list">
+          {{#each sites}}
+            <a class="partner-site" href="{{href}}">
+              <span class="partner-site__main">
+                <strong>{{name}}</strong>
+                <span>{{domain}}</span>
+              </span>
+              <span class="partner-site__meta">
+                <strong>{{blocksCount}}</strong>
+                <span>блоков, {{activeBlocksCount}} активно</span>
+              </span>
+              <span class="partner-pill">{{status}}</span>
+            </a>
+          {{/each}}
+        </div>
+      {{else}}
+        <div class="partner-empty">
+          <strong>Площадок пока нет</strong>
+          <span>Добавьте первый сайт, чтобы создать рекламные блоки и получить код.</span>
+          <a href="/partner/sites/create">Добавить сайт</a>
+        </div>
+      {{/if}}
+    </section>
+  </div>
+</section>

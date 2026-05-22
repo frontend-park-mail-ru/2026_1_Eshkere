@@ -49,7 +49,6 @@
     width: 8px; height: 8px;
     border-radius: 50%;
     background: #5855ff;
-    animation: pulse-dot 2s ease-in-out infinite;
   }
   &__title {
     margin-bottom: 20px;
@@ -69,12 +68,11 @@
         #4a3dff 100%
       );
       background-size: 200% 100%;
-      background-position: -150% 0;
+      background-position: 0% 0;
       color: transparent;
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
-      animation: hero-shine 5s ease-in-out 1.5s infinite;
     }
   }
   &__description {

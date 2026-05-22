@@ -91,6 +91,69 @@
     background: rgba(255, 255, 255, 0.52);
   }
 
+  &__profile-cabinets {
+    display: grid;
+    gap: 8px;
+    padding: 10px;
+    border: 1px solid rgba(214, 219, 244, 0.8);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.66);
+  }
+
+  &__profile-cabinets-label {
+    padding-inline: 2px;
+    color: #7f86a1;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  &__profile-cabinets-list {
+    display: grid;
+    gap: 6px;
+  }
+
+  &__profile-cabinet {
+    min-height: 48px;
+    padding: 9px 10px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    background: rgba(104, 100, 255, 0.06);
+    color: #2a3045;
+    display: grid;
+    gap: 2px;
+    text-decoration: none;
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease;
+
+    strong {
+      font-size: 13px;
+      line-height: 1.2;
+    }
+
+    span {
+      color: #7d849c;
+      font-size: 11px;
+      line-height: 1.25;
+    }
+
+    &:hover {
+      border-color: rgba(104, 100, 255, 0.22);
+      background: rgba(104, 100, 255, 0.1);
+    }
+
+    &--active {
+      border-color: rgba(104, 100, 255, 0.28);
+      background: rgba(104, 100, 255, 0.14);
+
+      strong {
+        color: #514bff;
+      }
+    }
+  }
+
   &__profile-menu-link {
     display: flex;
     align-items: flex-start;

@@ -2,15 +2,11 @@ import { authState } from 'entities/user';
 import { formatPhoneInput } from 'features/profile/lib/form';
 import { request } from 'shared/lib/request';
 import { formatPrice } from 'shared/lib/format';
+import { getBalanceState } from 'features/balance';
 interface CampaignsApiResponse {
   campaigns?: Array<{ id: number }>;
 }
 
-const LEGACY_DEFAULT_PAYMENT_METHODS = new Set([
-  'Банковская карта •••• 4481',
-  'Корпоративная карта •••• 9024',
-  'Безналичный счет компании',
-]);
 
 import type {
   AccountStatus,
@@ -169,11 +165,7 @@ export async function getProfileState(): Promise<ProfileState> {
     activeCampaigns,
     lastAction: '—',
     contactHandle: currentUser.contactHandle || '',
-    cardMasked:
-      currentUser.cardMasked &&
-      !LEGACY_DEFAULT_PAYMENT_METHODS.has(currentUser.cardMasked)
-        ? currentUser.cardMasked
-        : '',
+    cardMasked: getBalanceState().savedPaymentMethodTitle ?? 'Не привязана',
     lastTopUp: currentUser.lastTopUp || '—',
     passwordStatus: currentUser.passwordStatus || 'Добавить',
   };

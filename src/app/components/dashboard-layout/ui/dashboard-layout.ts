@@ -9,10 +9,23 @@ function shouldShowSidebar(pathname: string): boolean {
     '/ads/create',
     '/ads/edit',
     '/ads/statistics',
+    '/ads/stats/campaign',
+    '/ads/stats/group',
+    '/ads/stats/ad',
     '/ads/group/create',
     '/ads/ad/create',
     '/add-sites/create',
     '/add-sites/block',
+    '/advertiser/campaigns/create',
+    '/advertiser/campaigns/edit',
+    '/advertiser/statistics',
+    '/advertiser/stats/campaign',
+    '/advertiser/stats/group',
+    '/advertiser/stats/ad',
+    '/advertiser/groups/create',
+    '/advertiser/ads/create',
+    '/partner/sites/create',
+    '/partner/sites/block',
   ].includes(pathname);
 }
 

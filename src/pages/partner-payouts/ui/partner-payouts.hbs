@@ -1,0 +1,101 @@
+<section class="partner-page" data-partner-links>
+  <div class="partner-hero">
+    <div class="partner-hero__copy">
+      <span class="partner-hero__eyebrow">Баланс партнера</span>
+      <h1 class="partner-hero__title">Выплаты</h1>
+      <p class="partner-hero__subtitle">
+        Баланс, платежный профиль и история будущих выплат партнера.
+      </p>
+    </div>
+    <div class="partner-hero__actions">
+      <a class="partner-button partner-button--ghost" href="/partner/income">Доход</a>
+      <a class="partner-button" href="/partner/profile">Профиль</a>
+    </div>
+  </div>
+
+  <div class="partner-stats">
+    <article class="partner-stat {{#if hasBalance}}partner-stat--success{{else}}partner-stat--warning{{/if}}">
+      <span class="partner-stat__label">Текущий баланс</span>
+      <strong class="partner-stat__value">{{balance}}</strong>
+      <span class="partner-stat__note">Начисленный баланс партнера.</span>
+    </article>
+    <article class="partner-stat partner-stat--info">
+      <span class="partner-stat__label">Валюта выплат</span>
+      <strong class="partner-stat__value">{{currency}}</strong>
+      <span class="partner-stat__note">Берется из платежного профиля.</span>
+    </article>
+    <article class="partner-stat partner-stat--muted">
+      <span class="partner-stat__label">К выплате</span>
+      <strong class="partner-stat__value">—</strong>
+      <span class="partner-stat__note">Появится после подключения payout API.</span>
+    </article>
+    <article class="partner-stat partner-stat--muted">
+      <span class="partner-stat__label">Последняя выплата</span>
+      <strong class="partner-stat__value">—</strong>
+      <span class="partner-stat__note">История пока не загружена.</span>
+    </article>
+  </div>
+
+  <div class="partner-grid">
+    <section class="partner-panel">
+      <div class="partner-panel__head">
+        <div>
+          <h2 class="partner-panel__title">Платежный профиль</h2>
+          <p class="partner-panel__subtitle">Данные, которые нужны перед первой выплатой.</p>
+        </div>
+      </div>
+
+      <div class="partner-stack">
+        <div class="partner-stack__item">
+          <div>
+            <strong>Форма сотрудничества</strong>
+            <span>{{cooperationForm}}</span>
+          </div>
+          <span class="partner-pill">Профиль</span>
+        </div>
+        <div class="partner-stack__item">
+          <div>
+            <strong>Контакт для уведомлений</strong>
+            <span>{{email}}</span>
+          </div>
+          <span class="partner-pill">Email</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="partner-panel">
+      <div class="partner-panel__head">
+        <div>
+          <h2 class="partner-panel__title">Готовность к выплатам</h2>
+          <p class="partner-panel__subtitle">Проверьте ключевые поля профиля.</p>
+        </div>
+      </div>
+
+      <div class="partner-steps">
+        {{#each payoutChecklist}}
+          <div class="partner-step {{#if complete}}partner-step--complete{{/if}}">
+            <span class="partner-step__marker"></span>
+            <span class="partner-step__copy">
+              <strong>{{label}}</strong>
+              <span>{{text}}</span>
+            </span>
+          </div>
+        {{/each}}
+      </div>
+    </section>
+
+    <section class="partner-panel partner-panel--wide">
+      <div class="partner-panel__head">
+        <div>
+          <h2 class="partner-panel__title">История выплат</h2>
+          <p class="partner-panel__subtitle">Статусы выплат и операции по выводу средств.</p>
+        </div>
+      </div>
+
+      <div class="partner-empty">
+        <strong>Выплат пока нет</strong>
+        <span>Баланс партнера уже вынесен отдельно. Когда появятся payout-операции, здесь будет их журнал.</span>
+      </div>
+    </section>
+  </div>
+</section>

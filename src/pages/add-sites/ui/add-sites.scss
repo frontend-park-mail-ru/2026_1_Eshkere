@@ -5,16 +5,16 @@
 @use '../../../shared/styles/tokens' as t;
 @use '../../../shared/styles/mixins';
 
-/* Таблица сайтов: 4 колонки — ровная сетка без «разъезда» первой колонки. */
+/* Таблица сайтов: площадка, домен, статус, блоки и действия. */
 .add-sites-page .campaigns-table__header,
 .add-sites-page .campaigns-table__body .campaign-row {
   gap: 12px;
-  /* Только fr + minmax: одинаковая раскладка у заголовка и у каждой строки (не max-content по строкам). */
   grid-template-columns:
     minmax(0, 1.1fr)
     minmax(0, 1.35fr)
-    minmax(148px, 0.88fr)
-    minmax(120px, 0.75fr);
+    minmax(148px, 0.82fr)
+    minmax(110px, 0.55fr)
+    minmax(180px, 0.88fr);
 }
 
 .add-sites-page .campaigns-table__header > :nth-child(1),
@@ -22,14 +22,16 @@
 .add-sites-page .campaigns-table__header > :nth-child(2),
 .add-sites-page .campaigns-table__body .campaign-row > :nth-child(2),
 .add-sites-page .campaigns-table__header > :nth-child(3),
-.add-sites-page .campaigns-table__body .campaign-row > :nth-child(3) {
+.add-sites-page .campaigns-table__body .campaign-row > :nth-child(3),
+.add-sites-page .campaigns-table__header > :nth-child(4),
+.add-sites-page .campaigns-table__body .campaign-row > :nth-child(4) {
   justify-self: start;
   text-align: start;
   min-width: 0;
 }
 
-.add-sites-page .campaigns-table__header > :nth-child(4),
-.add-sites-page .campaigns-table__body .campaign-row > :nth-child(4) {
+.add-sites-page .campaigns-table__header > :nth-child(5),
+.add-sites-page .campaigns-table__body .campaign-row > :nth-child(5) {
   justify-self: start;
   text-align: start;
 }
@@ -38,6 +40,82 @@
   justify-self: start;
   justify-content: flex-start;
   align-items: center;
+}
+
+.add-sites-page__summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.add-sites-summary {
+  min-height: 92px;
+  padding: 18px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--text-soft);
+  background: var(--surface-card);
+  box-shadow: var(--shadow);
+
+  span {
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  strong {
+    color: var(--text-title);
+    font-size: 28px;
+    line-height: 1;
+  }
+}
+
+.add-sites-page__blocks-count {
+  display: block;
+  color: var(--text-title);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.add-sites-page .campaign-row__action-link {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: t.$radius-pill;
+  display: inline-flex;
+  align-items: center;
+  color: var(--text-action);
+  background: var(--surface-muted);
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.add-sites-page__empty-steps {
+  width: min(100%, 680px);
+  margin: 0 auto 18px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+
+  span {
+    min-height: 64px;
+    padding: 12px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    color: var(--text-soft);
+    background: var(--surface-muted);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.35;
+    text-align: left;
+  }
 }
 
 .add-sites-page .campaign-row__detail-link {
@@ -57,8 +135,9 @@
     grid-template-columns:
       minmax(0, 1fr)
       minmax(0, 1.3fr)
-      minmax(128px, 0.85fr)
-      minmax(112px, 0.72fr);
+      minmax(128px, 0.8fr)
+      minmax(100px, 0.5fr)
+      minmax(172px, 0.85fr);
   }
 }
 
@@ -74,6 +153,10 @@
     }
 
     &:nth-child(4)::before {
+      content: 'Блоки';
+    }
+
+    &:nth-child(5)::before {
       content: 'Управление';
     }
   }
@@ -84,7 +167,8 @@
     grid-template-areas:
       'title title'
       'domain domain'
-      'status actions';
+      'status blocks'
+      'actions actions';
   }
 
   .add-sites-page .campaign-row > div:nth-child(2) {
@@ -96,6 +180,15 @@
   }
 
   .add-sites-page .campaign-row > div:nth-child(4) {
+    grid-area: blocks;
+  }
+
+  .add-sites-page .campaign-row > div:nth-child(5) {
     grid-area: actions;
+  }
+
+  .add-sites-page__summary,
+  .add-sites-page__empty-steps {
+    grid-template-columns: 1fr;
   }
 }

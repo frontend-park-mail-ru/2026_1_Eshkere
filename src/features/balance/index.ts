@@ -1,4 +1,4 @@
-export { getBalanceState, persistBalanceState, DEFAULT_PAYMENT_METHOD } from './model/state';
+export { getBalanceState, persistBalanceState } from './model/state';
 export { topUpBalance } from './api/topup';
 export { getBalance } from './api/get-balance';
 export type {
@@ -6,6 +6,5 @@ export type {
   BalanceHistoryFilter,
   BalanceHistoryState,
   BalanceOperation,
-  PaymentMethodOption,
   RecommendationRow,
 } from './model/types';

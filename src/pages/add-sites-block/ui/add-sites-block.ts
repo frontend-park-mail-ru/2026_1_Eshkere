@@ -42,7 +42,9 @@ function readSiteIdFromQuery(): number | null {
 
 /** После создания блока или «Назад» — на карточку сайта, если открыли с ?siteId= */
 function addSitesBlockReturnHref(siteId: number | null): string {
-  return siteId != null ? `/add-sites/site?siteId=${siteId}` : '/add-sites';
+  return siteId != null
+    ? `/partner/sites/site?siteId=${siteId}`
+    : '/partner/sites';
 }
 
 function formatBlockDefaultName(type: string): string {
@@ -245,11 +247,11 @@ export function AddSitesBlock(): void | VoidFunction {
           }
 
           if (sdkCodeEl) {
-            sdkCodeEl.textContent = embed
+            sdkCodeEl.textContent = embed?.script_url
               ? [
                   '<!-- PartnerBlockEmbedResponse.script_url -->',
                   `<script src="${embed.script_url}" async></script>`,
-                ].join('\n')
+              ].join('\n')
               : EMBED_SDK_SAMPLE;
           }
           if (snippetCodeEl) {

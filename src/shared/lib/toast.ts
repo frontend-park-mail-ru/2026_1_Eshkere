@@ -39,14 +39,11 @@ export function showToast(
     (el) => el.querySelector('.app-toast__title')?.textContent === title,
   );
   if (existing) {
-    existing.classList.remove('app-toast--shake');
-    void existing.offsetWidth; // reflow для перезапуска анимации
-    existing.classList.add('app-toast--shake');
     return;
   }
 
   const toast = document.createElement('div');
-  toast.className = 'app-toast app-toast--in';
+  toast.className = 'app-toast';
   toast.innerHTML = `
     <span class="app-toast__dot"></span>
     <div class="app-toast__copy">
@@ -62,9 +59,7 @@ export function showToast(
 
   const close = toast.querySelector<HTMLButtonElement>('.app-toast__close')!;
   const remove = (): void => {
-    toast.classList.remove('app-toast--in');
-    toast.classList.add('app-toast--out');
-    setTimeout(() => toast.remove(), 260);
+    toast.remove();
   };
   const timer = setTimeout(remove, duration);
   close.addEventListener('click', () => { clearTimeout(timer); remove(); }, { once: true });
@@ -76,8 +71,7 @@ let currentProfileToast: HTMLElement | null = null;
 
 export function showProfileFeedback(payload: ToastPayload): void {
   if (currentProfileToast) {
-    currentProfileToast.classList.add('app-toast--out');
-    setTimeout(() => currentProfileToast?.remove(), 260);
+    currentProfileToast.remove();
     currentProfileToast = null;
   }
   showToast(payload.title, payload.description ?? '', payload.tone ?? 'success');
@@ -87,10 +81,7 @@ export function showProfileFeedback(payload: ToastPayload): void {
 
 export function hideProfileFeedback(): void {
   if (currentProfileToast) {
-    currentProfileToast.classList.add('app-toast--out');
-    setTimeout(() => {
-      currentProfileToast?.remove();
-      currentProfileToast = null;
-    }, 260);
+    currentProfileToast.remove();
+    currentProfileToast = null;
   }
 }

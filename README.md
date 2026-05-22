@@ -10,7 +10,7 @@
 ### Внешние ссылки - TODO
  - [Figma](https://www.figma.com/design/rbnwxrv896e0UNpOAswobu/Esketit-Ad-web-design?node-id=0-1&p=f&t=HQEMbsCg4WYOV4FC-0)
  - [Backend](https://github.com/go-park-mail-ru/2026_1_Eshkere)
- - [Deploy](http://212.233.96.112:8080/)
+ - [Deploy](https://eshkereklama.ru/)
  - [Jira](https://a4-code.yougile.com/team/e78120020d9d/Eshkere-Ads?lang=ru)
 
 ### Правила оформления Pull Requests
