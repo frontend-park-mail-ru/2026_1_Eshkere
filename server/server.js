@@ -96,6 +96,13 @@ function proxyFeedRequest(req, res) {
 
 app.use('/feed', proxyFeedRequest);
 
+/**
+ * Проксирует публичные backend-маршруты без изменения пути.
+ * Используется для статики, кликов и публичных рекламных URL.
+ * @param {Object} req - Входящий запрос.
+ * @param {Object} res - Объект ответа.
+ * @return {void}
+ */
 function proxyBackendRequest(req, res) {
   const target = new URL(`http://localhost:8000${req.originalUrl}`);
   const headers = {...req.headers};

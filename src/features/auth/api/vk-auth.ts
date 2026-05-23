@@ -41,15 +41,29 @@ export function initVKAuth(buttonElement: HTMLElement | null): VoidFunction {
   let isVkConfigInitialized = false;
 
   async function vkidOnSuccess(data: unknown): Promise<void> {
-    const src = (data ?? {}) as Record<string, unknown>;
-
+    let src = (data ?? {}) as Record<string, unknown>;
+    if (src.type === 'code_v2') {
+      const code = String(src.code ?? '').trim();
+      const deviceId = String(src.device_id ?? src.deviceId ?? '').trim();
+      if (!code || !deviceId) {
+        console.error('VK code payload invalid:', data);
+        return;
+      }
+      const VKID = (window as Window & { VKIDSDK?: any }).VKIDSDK;
+      if (!VKID?.Auth?.exchangeCode) {
+        console.error('VK exchangeCode is unavailable');
+        return;
+      }
+      src = (await VKID.Auth.exchangeCode(code, deviceId)) as Record<string, unknown>;
+    }
     const accessToken = String(src.access_token ?? src.accessToken ?? '').trim();
     const userId = Number(src.user_id ?? src.userId ?? 0);
-
+    
     if (!accessToken || !Number.isFinite(userId) || userId <= 0) {
-      console.error('VK payload invalid:', data);
+      console.error('VK payload invalid:', src);
       return;
     }
+
     const body = {
       access_token: accessToken,
       user_id: userId,

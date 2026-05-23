@@ -3,12 +3,12 @@
 
   // Определяем origin из URL самого скрипта, чтобы SDK работал
   // и на локальном окружении, и в проде без изменений.
-  var _script = document.currentScript;
-  var BASE_URL = _script ? new URL(_script.src).origin : 'https://eshkereklama.ru';
+  const _script = document.currentScript;
+  const BASE_URL = _script ? new URL(_script.src).origin : 'https://eshkereklama.ru';
 
-  var STYLES_ID = 'eshkere-ads-styles';
+  const STYLES_ID = 'eshkere-ads-styles';
 
-  var STYLES =
+  const STYLES =
     '.eshkere-ad{display:block;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;' +
     'border-radius:10px;overflow:hidden;border:1px solid #e5e7eb;background:#fff;' +
     'text-decoration:none;color:inherit;transition:box-shadow .15s}' +
@@ -21,14 +21,23 @@
     '.eshkere-ad__footer{padding:6px 14px 10px;display:flex;justify-content:flex-end}' +
     '.eshkere-ad__label{font-size:10px;color:#9ca3af;letter-spacing:.4px;text-transform:uppercase}';
 
+  /**
+   * Добавляет CSS-стили рекламного блока на страницу.
+   * @return {void}
+   */
   function injectStyles() {
     if (document.getElementById(STYLES_ID)) return;
-    var style = document.createElement('style');
+    const style = document.createElement('style');
     style.id = STYLES_ID;
     style.textContent = STYLES;
     (document.head || document.documentElement).appendChild(style);
   }
 
+  /**
+   * Экранирует HTML-значимые символы для безопасной вставки строки в разметку.
+   * @param {*} str - Значение для экранирования.
+   * @return {string} Экранированная строка.
+   */
   function esc(str) {
     if (str == null) return '';
     return String(str)
@@ -38,9 +47,15 @@
       .replace(/"/g, '&quot;');
   }
 
+  /**
+   * Формирует HTML-разметку рекламного блока.
+   * @param {Object} ad - Данные объявления.
+   * @param {string=} clickUrl - URL для перехода по клику.
+   * @return {string} HTML-разметка объявления.
+   */
   function buildMarkup(ad, clickUrl) {
-    var href = clickUrl || ad.target_url;
-    var parts = [];
+    const href = clickUrl || ad.target_url;
+    const parts = [];
     parts.push(
       '<a class="eshkere-ad" href="' + esc(href) + '"' +
       ' target="_blank" rel="noopener noreferrer sponsored">',
@@ -68,10 +83,15 @@
 
   // ─── Advertiser feed-link flow ──────────────────────────────────────────────
   // Используется рекламодателями: EshkereAds.render({ token, container })
+  /**
+   * Рендерит рекламный блок в указанный контейнер.
+   * @param {Object} config - Конфигурация рендера.
+   * @return {void}
+   */
   function render(config) {
     if (!config || !config.token || !config.container) return;
 
-    var container = document.getElementById(config.container);
+    const container = document.getElementById(config.container);
     if (!container) return;
 
     fetch(BASE_URL + '/feed/' + config.token)
