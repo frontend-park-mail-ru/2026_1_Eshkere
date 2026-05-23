@@ -1,6 +1,7 @@
 import { request } from 'shared/lib/request';
 import { getMe } from 'features/profile/api/update-profile';
 import { authState, type AuthUser } from '../model/storage';
+import { navigateTo } from 'shared/lib/navigation';
 
 const VK_ID_SDK_URL = 'https://unpkg.com/@vkid/sdk@latest/dist-sdk/umd/index.js';
 
@@ -41,20 +42,28 @@ export function initVKAuth(buttonElement: HTMLElement | null): VoidFunction {
   let isVkConfigInitialized = false;
 
   async function vkidOnSuccess(data: unknown): Promise<void> {
+    
     let src = (data ?? {}) as Record<string, unknown>;
+    
     if (src.type === 'code_v2') {
-      const code = String(src.code ?? '').trim();
+      
+      const code = String(src.code ?? '').trim(); 
       const deviceId = String(src.device_id ?? src.deviceId ?? '').trim();
+      
       if (!code || !deviceId) {
         console.error('VK code payload invalid:', data);
         return;
       }
+
+      
       const VKID = (window as Window & { VKIDSDK?: any }).VKIDSDK;
       if (!VKID?.Auth?.exchangeCode) {
         console.error('VK exchangeCode is unavailable');
         return;
       }
+
       src = (await VKID.Auth.exchangeCode(code, deviceId)) as Record<string, unknown>;
+    
     }
     const accessToken = String(src.access_token ?? src.accessToken ?? '').trim();
     const userId = Number(src.user_id ?? src.userId ?? 0);
@@ -102,6 +111,8 @@ export function initVKAuth(buttonElement: HTMLElement | null): VoidFunction {
         avatar: profile.avatar_url,
       });
     }
+    navigateTo('/advertiser/overview', { replace: true });
+
   }
 
   function vkidOnError(error: unknown): string {
