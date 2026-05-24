@@ -9,8 +9,8 @@ let sdkLoader: Promise<void> | null = null;
 
 interface VKAuthResponse {
   id: number;
-  email: string;
-  phone: string;
+  email?: string;
+  phone?: string;
 }
 
 function loadVKScript(): Promise<void> {
@@ -72,24 +72,11 @@ export function initVKAuth(buttonElement: HTMLElement | null): VoidFunction {
       console.error('VK payload invalid:', src);
       return;
     }
+    
 
     const body = {
       access_token: accessToken,
       user_id: userId,
-      email: typeof src.email === 'string' ? src.email : '',
-      phone: typeof src.phone === 'string' ? src.phone : '',
-      first_name:
-        typeof src.first_name === 'string'
-          ? src.first_name
-          : typeof src.firstName === 'string'
-            ? src.firstName
-            : '',
-      last_name:
-        typeof src.last_name === 'string'
-          ? src.last_name
-          : typeof src.lastName === 'string'
-            ? src.lastName
-            : '',
     };
     const response = await request<VKAuthResponse>('/advertisers/login/vk', {
       method: 'POST',
@@ -98,15 +85,31 @@ export function initVKAuth(buttonElement: HTMLElement | null): VoidFunction {
 
     const base: AuthUser = {
       ...response.data,
-      name: body.first_name,
+      email:
+        typeof response.data.email === 'string' && response.data.email.trim()
+          ? response.data.email
+          : '',
+      phone:
+        typeof response.data.phone === 'string' && response.data.phone.trim()
+          ? response.data.phone
+          : '',
     };
+    
     authState.setAuthenticatedUser(base);
 
     const profile = await getMe().catch(() => null);
     if (profile) {
       authState.setAuthenticatedUser({
         ...base,
-        name: profile.name ?? body.first_name,
+        name: profile.name ?? base.name,
+        email:
+          typeof profile.email === 'string' && profile.email.trim()
+            ? profile.email
+            : base.email,
+        phone:
+          typeof profile.phone === 'string' && profile.phone.trim()
+            ? profile.phone
+            : base.phone,
         balance: profile.balance,
         avatar: profile.avatar_url,
       });
@@ -158,7 +161,7 @@ export function initVKAuth(buttonElement: HTMLElement | null): VoidFunction {
           .catch(vkidOnError);
       })
       .catch((error) => {
-        const message = vkidOnError(error);
+        vkidOnError(error);
       });
   };
 
