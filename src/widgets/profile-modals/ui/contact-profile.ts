@@ -58,7 +58,7 @@ export function initProfileEditForm({
     state.company = company;
     state.city = city;
 
-    updateProfile({ name: `${firstName} ${lastName}`.trim() }).catch(() => {});
+    updateProfile({ name: firstName, surname: lastName }).catch(() => {});
 
     onStateChange(state);
     showProfileFeedback({

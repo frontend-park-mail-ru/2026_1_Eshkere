@@ -54,8 +54,8 @@ function splitFullName(name: string): { firstName: string; lastName: string } {
   };
 }
 
-function isEmailLike(value: string): boolean {
-  return /.+@.+\..+/.test(value.trim());
+function normalizeNamePart(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : '';
 }
 
 function formatPhoneForDisplay(value: string): string {
@@ -101,6 +101,7 @@ export async function getProfileState(): Promise<ProfileState> {
     email: '',
     phone: '',
     name: '',
+    surname: '',
     balance: 0,
   };
 
@@ -116,15 +117,12 @@ export async function getProfileState(): Promise<ProfileState> {
       created_at?: string;
     }>('/advertisers/me', { method: 'GET' });
     const profile = response.data;
-    const fullName = [profile?.name, profile?.surname]
-      .filter((part): part is string => typeof part === 'string' && part.trim().length > 0)
-      .map((part) => part.trim())
-      .join(' ');
 
     currentUser = {
       ...currentUser,
       id: typeof profile?.id === 'number' ? profile.id : currentUser.id,
-      name: fullName || currentUser.name,
+      name: normalizeNamePart(profile?.name) || currentUser.name,
+      surname: normalizeNamePart(profile?.surname) || currentUser.surname,
       email:
         typeof profile?.email === 'string' ? profile.email : currentUser.email,
       phone:
@@ -143,9 +141,8 @@ export async function getProfileState(): Promise<ProfileState> {
     // используем данные из локального состояния, чтобы не ломать рендер страницы.
   }
 
-  const rawName = typeof currentUser.name === 'string' ? currentUser.name.trim() : '';
-  const fullName = rawName && !isEmailLike(rawName) ? rawName : '';
-  const { firstName, lastName } = splitFullName(fullName);
+  const firstName = normalizeNamePart(currentUser.name);
+  const lastName = normalizeNamePart(currentUser.surname);
   let activeCampaigns = 0;
 
   try {
@@ -213,7 +210,8 @@ export function persistUserState(state: ProfileState): void {
 
   authState.setAuthenticatedUser({
     ...currentUser,
-    name: `${state.firstName} ${state.lastName}`.trim(),
+    name: state.firstName,
+    surname: state.lastName,
     email: state.email,
     phone: state.phone,
     balance: state.balanceValue,
