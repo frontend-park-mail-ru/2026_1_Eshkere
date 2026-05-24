@@ -1,4 +1,5 @@
 ﻿import './campaign-wizard.scss';
+import { initCampaignBuilderSelectArrows } from 'shared/lib/campaign-builder-select-arrow';
 import { showToast } from 'shared/lib/toast';
 import { createAdCampaign } from 'features/ads/api/create-ad-campaign';
 import { createAdGroup } from 'features/ads/api/ad-groups';
@@ -37,6 +38,8 @@ export function CampaignWizard(): VoidFunction {
 
   const controller = new AbortController();
   const { signal } = controller;
+
+  initCampaignBuilderSelectArrows(root, signal);
 
   let currentStep = 1;
   const TOTAL_STEPS = 4;

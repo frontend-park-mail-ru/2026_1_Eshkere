@@ -7,6 +7,7 @@ import {
 } from 'features/ads';
 import { showToast } from 'shared/lib/toast';
 import { REQUEST_ERROR_EVENT_NAME } from 'widgets/request-error-modal';
+import { closeModal, openModal } from 'shared/ui/modal/modal';
 import {
   campaignStatusMap,
   mapBackendStatusToCampaignStatus,
@@ -182,7 +183,7 @@ export function bindCampaignStatusModal(signal: AbortSignal): void {
   let pending: PendingStatusChange | null = null;
 
   const closeStatusModal = (): void => {
-    statusModal.hidden = true;
+    closeModal(statusModal);
     statusModalConfirm.removeAttribute('disabled');
     pending = null;
   };
@@ -203,7 +204,7 @@ export function bindCampaignStatusModal(signal: AbortSignal): void {
     statusModalImage.src = isEnabling
       ? '/img/News.webp'
       : '/img/Delete%20Confirmation.webp';
-    statusModal.hidden = false;
+    openModal(statusModal);
   };
 
   document.querySelectorAll<HTMLElement>('.campaign-row').forEach((row) => {
@@ -315,7 +316,10 @@ export function bindCampaignStatusModal(signal: AbortSignal): void {
   statusModal.addEventListener(
     'click',
     (event) => {
-      if (event.target === statusModal) {
+      if (
+        event.target === statusModal ||
+        event.target === statusModal.querySelector('.modal__backdrop')
+      ) {
         closeStatusModal();
       }
     },
@@ -325,7 +329,7 @@ export function bindCampaignStatusModal(signal: AbortSignal): void {
   document.addEventListener(
     'keydown',
     (event) => {
-      if (event.key === 'Escape' && !statusModal.hidden) {
+      if (event.key === 'Escape' && statusModal.classList.contains('modal--open')) {
         closeStatusModal();
       }
     },

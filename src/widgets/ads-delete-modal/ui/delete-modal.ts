@@ -1,4 +1,7 @@
 import { OPEN_CAMPAIGN_DELETE_MODAL_EVENT } from 'shared/lib/events';
+import 'shared/ui/modal/modal';
+import { closeModal, openModal } from 'shared/ui/modal/modal';
+
 export { OPEN_CAMPAIGN_DELETE_MODAL_EVENT };
 
 export interface CampaignDeleteModalDetail {
@@ -38,7 +41,7 @@ export function initCampaignDeleteModal(
   let pendingDetail: CampaignDeleteModalDetail | null = null;
 
   const close = (): void => {
-    modal.hidden = true;
+    closeModal(modal);
     pendingDetail = null;
     confirmButton.removeAttribute('disabled');
   };
@@ -59,7 +62,7 @@ export function initCampaignDeleteModal(
     if (noteEl) {
       noteEl.textContent = note;
     }
-    modal.hidden = false;
+    openModal(modal);
   };
 
   cancelButton.addEventListener('click', close, { signal });
@@ -86,7 +89,10 @@ export function initCampaignDeleteModal(
   modal.addEventListener(
     'click',
     (event) => {
-      if (event.target === modal) {
+      if (
+        event.target === modal ||
+        event.target === modal.querySelector('.modal__backdrop')
+      ) {
         close();
       }
     },
@@ -96,7 +102,7 @@ export function initCampaignDeleteModal(
   document.addEventListener(
     'keydown',
     (event) => {
-      if (event.key === 'Escape' && !modal.hidden) {
+      if (event.key === 'Escape' && modal.classList.contains('modal--open')) {
         close();
       }
     },

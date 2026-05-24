@@ -40,6 +40,7 @@ import { initCampaignBuilderActions } from 'widgets/campaign-builder-actions';
 import { initCampaignBuilderBudgetControls } from 'widgets/campaign-builder-budget';
 import { initCampaignBuilderContentControls } from 'widgets/campaign-builder-content';
 import { initCampaignBuilderStepControls } from 'widgets/campaign-builder-step';
+import { initCampaignBuilderSelectArrows } from 'shared/lib/campaign-builder-select-arrow';
 import {
   cloneAudienceConfig,
   ensureAudiencePanelScaffold,
@@ -210,6 +211,8 @@ export function CampaignCreate(): void | VoidFunction {
   campaignCreateLifecycleController = controller;
   const { signal } = controller;
   const state = getBuilderState();
+
+  initCampaignBuilderSelectArrows(document, signal);
 
   enhanceAudienceSummaryCard(state);
   ensureAudiencePanelScaffold(state);

@@ -199,14 +199,14 @@ export function AddSitesSite(): void | VoidFunction {
       if (!target?.closest('[data-site-delete]')) return;
       const siteName = document.querySelector<HTMLElement>('.add-sites-site__title')?.textContent?.trim() ?? '';
       if (siteDeleteNameEl) siteDeleteNameEl.textContent = siteName;
-      if (siteDeleteModal instanceof HTMLElement) siteDeleteModal.hidden = false;
+      if (siteDeleteModal instanceof HTMLElement) openModal(siteDeleteModal);
     },
     { signal },
   );
 
   siteDeleteModal?.querySelector('[data-site-delete-cancel]')?.addEventListener(
     'click',
-    () => { if (siteDeleteModal instanceof HTMLElement) siteDeleteModal.hidden = true; },
+    () => { if (siteDeleteModal instanceof HTMLElement) closeModal(siteDeleteModal); },
     { signal },
   );
 
@@ -223,7 +223,7 @@ export function AddSitesSite(): void | VoidFunction {
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Не удалось удалить сайт.';
         window.dispatchEvent(new CustomEvent(REQUEST_ERROR_EVENT_NAME, { detail: { title: 'Ошибка удаления', message } }));
-        if (siteDeleteModal instanceof HTMLElement) siteDeleteModal.hidden = true;
+        if (siteDeleteModal instanceof HTMLElement) closeModal(siteDeleteModal);
       } finally {
         if (confirmBtn) confirmBtn.disabled = false;
       }

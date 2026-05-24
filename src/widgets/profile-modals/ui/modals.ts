@@ -10,6 +10,7 @@ import type {
   TariffMeta,
 } from 'features/profile/model/types';
 import { hideProfileFeedback } from 'shared/lib/toast';
+import { closeModal, openModal } from 'shared/ui/modal/modal';
 import { initProfileAccountModals } from './account';
 import { initProfileBillingModals } from './billing';
 import { initProfileContactModals } from './contact';
@@ -82,7 +83,7 @@ export function initProfileModals({
 }: InitProfileModalsParams): void {
   const modals = Array.from(document.querySelectorAll<HTMLElement>('.profile-modal'));
 
-  const openModal = (id: string): void => {
+  const openModalById = (id: string): void => {
     populateForms(state);
     refreshSubmitStates(state);
     const modal = document.getElementById(id);
@@ -95,13 +96,12 @@ export function initProfileModals({
       resetProfileModalForm(form);
     }
 
-    modal.classList.add('modal--open');
-    modal.setAttribute('aria-hidden', 'false');
+    closeModal(modal);
+    openModal(modal);
   };
 
   const closeCurrentModal = (modal: HTMLElement): void => {
-    modal.classList.remove('modal--open');
-    modal.setAttribute('aria-hidden', 'true');
+    closeModal(modal);
   };
 
   const closeModalById = (id: string): void => {
@@ -111,7 +111,7 @@ export function initProfileModals({
     }
   };
 
-  bindModalOpenTriggers(openModal, signal);
+  bindModalOpenTriggers(openModalById, signal);
   document.querySelector('[data-profile-toast-close]')?.addEventListener('click', hideProfileFeedback, { signal });
   PasswordVisibilityToggles(document);
 

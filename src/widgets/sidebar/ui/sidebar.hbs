@@ -82,14 +82,6 @@
   </div>
 
   <div class="sidebar__footer">
-    <a
-      href="{{profileHref}}"
-      class="sidebar__link {{#if isProfile}}sidebar__link--active{{/if}}"
-      {{#if isProfile}}aria-current="page"{{/if}}
-    >
-      <img class="sidebar__icon" src="/icons/User.svg" alt="" aria-hidden="true" />
-      Профиль
-    </a>
     <button
       type="button"
       class="sidebar__link sidebar__button"
@@ -147,14 +139,6 @@
       <div class="mobile-tabbar__sheet">
         <span class="mobile-tabbar__sheet-title">Еще разделы</span>
         <a
-          class="mobile-tabbar__sheet-item {{#if isProfile}}mobile-tabbar__sheet-item--active{{/if}}"
-          href="{{profileHref}}"
-          {{#if isProfile}}aria-current="page"{{/if}}
-        >
-          <img class="mobile-tabbar__sheet-icon" src="/icons/User.svg" alt="" aria-hidden="true" />
-          Профиль
-        </a>
-        <a
           class="mobile-tabbar__sheet-item {{#if isSupport}}mobile-tabbar__sheet-item--active{{/if}}"
           href="{{supportHref}}"
           {{#if isSupport}}aria-current="page"{{/if}}
@@ -190,15 +174,6 @@
     >
       <img class="mobile-tabbar__icon" src="/icons/wallet.svg" alt="" aria-hidden="true" />
       <span>Баланс</span>
-    </a>
-
-    <a
-      href="{{profileHref}}"
-      class="mobile-tabbar__item {{#if isProfile}}mobile-tabbar__item--active{{/if}}"
-      {{#if isProfile}}aria-current="page"{{/if}}
-    >
-      <img class="mobile-tabbar__icon" src="/icons/User.svg" alt="" aria-hidden="true" />
-      <span>Профиль</span>
     </a>
 
     <details class="mobile-tabbar__more">

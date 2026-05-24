@@ -2,7 +2,6 @@ import './sidebar.scss';
 import { renderTemplate } from 'shared/lib/render';
 import {
   getCabinetKind,
-  getCabinetProfilePath,
   getCabinetSupportPath,
   isPartnerCabinet,
 } from 'shared/lib/cabinet';
@@ -42,15 +41,10 @@ export async function renderSidebar(pathname = '/ads'): Promise<string> {
       pathname === '/advertiser/statistics',
     isBalance: pathname === '/balance' || pathname === '/advertiser/balance',
     isAddSites,
-    isProfile:
-      pathname === '/profile' ||
-      pathname === '/advertiser/profile' ||
-      pathname === '/partner/profile',
     isSupport:
       pathname === '/support' ||
       pathname === '/advertiser/support' ||
       pathname === '/partner/support',
-    profileHref: getCabinetProfilePath(cabinet),
     supportHref: getCabinetSupportPath(cabinet),
   });
 }
