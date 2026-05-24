@@ -112,6 +112,8 @@ export async function getProfileState(): Promise<ProfileState> {
       surname?: string;
       email?: string;
       phone?: string;
+      company?: string;
+      city?: string;
       balance?: number;
       avatar_url?: string;
       created_at?: string;
@@ -127,6 +129,10 @@ export async function getProfileState(): Promise<ProfileState> {
         typeof profile?.email === 'string' ? profile.email : currentUser.email,
       phone:
         typeof profile?.phone === 'string' ? profile.phone : currentUser.phone,
+      company:
+        typeof profile?.company === 'string' ? profile.company : currentUser.company,
+      city:
+        typeof profile?.city === 'string' ? profile.city : currentUser.city,
       balance:
         typeof profile?.balance === 'number'
           ? profile.balance
