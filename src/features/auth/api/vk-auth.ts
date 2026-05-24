@@ -99,9 +99,13 @@ export function initVKAuth(buttonElement: HTMLElement | null): VoidFunction {
 
     const profile = await getMe().catch(() => null);
     if (profile) {
+      const fullName = [profile.name, profile.surname]
+        .filter((part): part is string => typeof part === 'string' && part.trim().length > 0)
+        .map((part) => part.trim())
+        .join(' ');
       authState.setAuthenticatedUser({
         ...base,
-        name: profile.name ?? base.name,
+        name: fullName,
         email:
           typeof profile.email === 'string' && profile.email.trim()
             ? profile.email

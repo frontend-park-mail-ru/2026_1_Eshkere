@@ -108,6 +108,7 @@ export async function getProfileState(): Promise<ProfileState> {
     const response = await request<{
       id: number;
       name?: string;
+      surname?: string;
       email?: string;
       phone?: string;
       balance?: number;
@@ -115,11 +116,15 @@ export async function getProfileState(): Promise<ProfileState> {
       created_at?: string;
     }>('/advertisers/me', { method: 'GET' });
     const profile = response.data;
+    const fullName = [profile?.name, profile?.surname]
+      .filter((part): part is string => typeof part === 'string' && part.trim().length > 0)
+      .map((part) => part.trim())
+      .join(' ');
 
     currentUser = {
       ...currentUser,
       id: typeof profile?.id === 'number' ? profile.id : currentUser.id,
-      name: typeof profile?.name === 'string' ? profile.name : currentUser.name,
+      name: fullName || currentUser.name,
       email:
         typeof profile?.email === 'string' ? profile.email : currentUser.email,
       phone:
