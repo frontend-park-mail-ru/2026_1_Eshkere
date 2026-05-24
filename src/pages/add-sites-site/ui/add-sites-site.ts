@@ -1,6 +1,7 @@
 import './add-sites-site.scss';
 import {
   deletePartnerBlock,
+  deletePartnerSite,
   getPartnerBlockEmbed,
   getPartnerSite,
   listPartnerBlocks,
@@ -9,6 +10,7 @@ import {
   partnerBlockToggleChecked,
   partnerSiteStatusBadgeType,
   partnerSiteStatusRu,
+  updatePartnerSite,
 } from 'features/sites';
 import { renderTemplate } from 'shared/lib/render';
 import { showToast } from 'shared/lib/toast';
@@ -132,6 +134,102 @@ export function AddSitesSite(): void | VoidFunction {
   const siteIdNum = sitePageId != null ? Number(sitePageId) : NaN;
 
   bindPartnerBlockStatusModal(signal, siteIdNum);
+
+  // --- Редактирование сайта ---
+  const editModal = document.getElementById('add-sites-site-edit-modal');
+  const editForm = document.getElementById('add-sites-site-edit-form');
+  if (editModal instanceof HTMLElement) {
+    bindModalShell(editModal, signal);
+  }
+
+  root.addEventListener(
+    'click',
+    (event) => {
+      const target = event.target as HTMLElement | null;
+      if (!target?.closest('[data-site-edit]')) return;
+      const nameInput = editForm?.querySelector<HTMLInputElement>('[name="site_name"]');
+      const domainInput = editForm?.querySelector<HTMLInputElement>('[name="domain"]');
+      if (nameInput) nameInput.value = document.querySelector<HTMLElement>('.add-sites-site__title')?.textContent?.trim() ?? '';
+      if (domainInput) domainInput.value = document.querySelector<HTMLElement>('.add-sites-site__domain')?.textContent?.trim() ?? '';
+      if (editModal instanceof HTMLElement) openModal(editModal);
+    },
+    { signal },
+  );
+
+  editForm?.addEventListener(
+    'submit',
+    async (event) => {
+      event.preventDefault();
+      if (!Number.isFinite(siteIdNum) || siteIdNum <= 0) return;
+      const errorEl = editForm.querySelector<HTMLElement>('[data-form-error]');
+      const submitBtn = editForm.querySelector<HTMLButtonElement>('[type="submit"]');
+      const nameInput = editForm.querySelector<HTMLInputElement>('[name="site_name"]');
+      const domainInput = editForm.querySelector<HTMLInputElement>('[name="domain"]');
+      const siteName = nameInput?.value.trim() ?? '';
+      const domain = domainInput?.value.trim() ?? '';
+      if (!siteName && !domain) return;
+      if (errorEl) errorEl.hidden = true;
+      if (submitBtn) submitBtn.disabled = true;
+      try {
+        await updatePartnerSite(siteIdNum, {
+          site_name: siteName || undefined,
+          domain: domain || undefined,
+        });
+        if (editModal instanceof HTMLElement) closeModal(editModal);
+        const { renderRoute } = await import('app/router');
+        await renderRoute();
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Не удалось сохранить изменения.';
+        if (errorEl) { errorEl.textContent = message; errorEl.hidden = false; }
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+      }
+    },
+    { signal },
+  );
+
+  // --- Удаление сайта ---
+  const siteDeleteModal = document.getElementById('add-sites-site-delete-modal');
+  const siteDeleteNameEl = siteDeleteModal?.querySelector<HTMLElement>('[data-site-delete-name]');
+
+  root.addEventListener(
+    'click',
+    (event) => {
+      const target = event.target as HTMLElement | null;
+      if (!target?.closest('[data-site-delete]')) return;
+      const siteName = document.querySelector<HTMLElement>('.add-sites-site__title')?.textContent?.trim() ?? '';
+      if (siteDeleteNameEl) siteDeleteNameEl.textContent = siteName;
+      if (siteDeleteModal instanceof HTMLElement) siteDeleteModal.hidden = false;
+    },
+    { signal },
+  );
+
+  siteDeleteModal?.querySelector('[data-site-delete-cancel]')?.addEventListener(
+    'click',
+    () => { if (siteDeleteModal instanceof HTMLElement) siteDeleteModal.hidden = true; },
+    { signal },
+  );
+
+  siteDeleteModal?.querySelector('[data-site-delete-confirm]')?.addEventListener(
+    'click',
+    async () => {
+      if (!Number.isFinite(siteIdNum) || siteIdNum <= 0) return;
+      const confirmBtn = siteDeleteModal.querySelector<HTMLButtonElement>('[data-site-delete-confirm]');
+      if (confirmBtn) confirmBtn.disabled = true;
+      try {
+        await deletePartnerSite(siteIdNum);
+        const { navigateTo } = await import('shared/lib/navigation');
+        navigateTo('/partner/sites', { replace: true });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Не удалось удалить сайт.';
+        window.dispatchEvent(new CustomEvent(REQUEST_ERROR_EVENT_NAME, { detail: { title: 'Ошибка удаления', message } }));
+        if (siteDeleteModal instanceof HTMLElement) siteDeleteModal.hidden = true;
+      } finally {
+        if (confirmBtn) confirmBtn.disabled = false;
+      }
+    },
+    { signal },
+  );
 
   initCampaignDeleteModal(signal, {
     onConfirm: async (detail: CampaignDeleteModalDetail) => {

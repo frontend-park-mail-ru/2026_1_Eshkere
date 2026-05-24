@@ -1,5 +1,5 @@
 import './sw-update-toast.scss';
-import { SW_UPDATE_EVENT } from 'shared/lib/events';
+import { SW_UPDATE_EVENT, type SwUpdateReadyDetail } from 'shared/lib/events';
 
 const TOAST_ID = 'sw-update-toast';
 
@@ -28,8 +28,8 @@ function ensureToast(): HTMLElement {
   return toast;
 }
 
-function applyUpdate(): void {
-  if (!navigator.serviceWorker.controller) {
+function applyUpdate(waitingWorker: ServiceWorker | null): void {
+  if (!waitingWorker || !navigator.serviceWorker.controller) {
     window.location.reload();
     return;
   }
@@ -38,19 +38,23 @@ function applyUpdate(): void {
     window.location.reload();
   }, { once: true });
 
-  navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+  waitingWorker.postMessage({ type: 'SKIP_WAITING' });
 }
 
 export function initSwUpdateToast(): void {
   const toast = ensureToast();
   const button = toast.querySelector<HTMLElement>('[data-sw-update]');
+  let waitingWorker: ServiceWorker | null = null;
 
   button?.addEventListener('click', () => {
     button.setAttribute('disabled', 'true');
-    applyUpdate();
+    applyUpdate(waitingWorker);
   });
 
-  window.addEventListener(SW_UPDATE_EVENT, () => {
+  window.addEventListener(SW_UPDATE_EVENT, (event) => {
+    const detail = (event as CustomEvent<SwUpdateReadyDetail>).detail;
+    waitingWorker = detail?.waitingWorker || waitingWorker;
+    button?.removeAttribute('disabled');
     toast.hidden = false;
   });
 }

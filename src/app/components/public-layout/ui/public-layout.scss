@@ -2,7 +2,7 @@
 @use '../../../../shared/styles/mixins';
 
 .public-layout {
-  @include mixins.page-background('/img/without.png');
+  @include mixins.page-background('/img/without.webp');
 
   &__container {
     position: relative;

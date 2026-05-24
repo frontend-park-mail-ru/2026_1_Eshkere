@@ -1,12 +1,17 @@
 export type TariffKey = 'basic' | 'pro' | 'business';
 export type AccountStatus = 'pending' | 'verified';
+export type UserType = 'advertiser' | 'partner';
 
 export interface AuthUser {
   id: number;
   email: string;
   phone: string;
   name?: string;
+<<<<<<< Updated upstream
   surname?: string;
+=======
+  userType?: UserType;
+>>>>>>> Stashed changes
   role?: string;
   roles?: string[];
   permissions?: string[];

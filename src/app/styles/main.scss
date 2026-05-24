@@ -10,7 +10,7 @@
 
 :root {
   --bg-main: #{tokens.$color-bg-main};
-  --bg-main-image: url('/img/without.png');
+  --bg-main-image: url('/img/without.webp');
   --bg-main-image-size: max(1440px, 100vw) auto;
   --bg-main-image-position: center top;
   --bg-main-fade-start: clamp(320px, 38dvh, 440px);
@@ -110,7 +110,7 @@
 
 [data-theme='dark'] {
   --bg-main: #090d18;
-  --bg-main-image: url('/img/without.png');
+  --bg-main-image: url('/img/without.webp');
   --bg-main-overlay-start: rgba(6, 10, 22, 0.24);
   --bg-main-overlay-end: rgba(6, 10, 22, 0.34);
   --text-main: #eef2ff;

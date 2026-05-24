@@ -24,7 +24,7 @@ function updateTextContentAll(selector: string, value: string): void {
 }
 
 function syncNavbarIdentity(state: ProfileState, fullName: string): void {
-  const navbarAvatar = state.avatar || '/img/avatar-placeholder.png';
+  const navbarAvatar = state.avatar || '/img/avatar-placeholder.webp';
   const navbarName = fullName || state.email || 'Профиль';
 
   document
@@ -34,7 +34,7 @@ function syncNavbarIdentity(state: ProfileState, fullName: string): void {
       node.alt = navbarName;
       node.onerror = () => {
         node.onerror = null;
-        node.src = '/img/avatar-placeholder.png';
+        node.src = '/img/avatar-placeholder.webp';
       };
     });
 

@@ -51,7 +51,7 @@
   }
 }
 
-@mixin page-background($image-path: '/img/without.png') {
+@mixin page-background($image-path: '/img/without.webp') {
   position: relative;
   min-height: 100vh;
   overflow: hidden;

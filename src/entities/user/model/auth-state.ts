@@ -106,8 +106,11 @@ class AuthState {
       return false;
     }
 
+    const user = this.readStoredUser();
+    const sessionEndpoint = user?.userType === 'partner' ? '/partners/me' : '/ad_campaigns';
+
     try {
-      await request('/ad_campaigns', { method: 'GET' });
+      await request(sessionEndpoint, { method: 'GET' });
       this.confirmedSession = true;
       return true;
     } catch (error: unknown) {

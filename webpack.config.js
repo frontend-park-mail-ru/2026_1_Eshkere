@@ -1,6 +1,8 @@
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = (env, argv = {}) => {
   const isProduction = argv.mode === 'production';
@@ -15,7 +17,19 @@ module.exports = (env, argv = {}) => {
       clean: true,
       publicPath: '/',
     },
-    devtool: isProduction ? 'source-map' : 'eval-source-map',
+    optimization: isProduction
+      ? {
+          runtimeChunk: 'single',
+          minimizer: [
+            '...',
+            new CssMinimizerPlugin(),
+          ],
+          splitChunks: {
+            chunks: 'all',
+          },
+        }
+      : undefined,
+    devtool: isProduction ? 'hidden-source-map' : 'eval-source-map',
     module: {
       rules: [
         {
@@ -26,16 +40,22 @@ module.exports = (env, argv = {}) => {
         {
           test: /\.(sa|sc|c)ss$/i,
           use: [
-            'style-loader',
+            isProduction ? MiniCssExtractPlugin.loader : 'style-loader',
             {
               loader: 'css-loader',
               options: {
+                sourceMap: !isProduction,
                 url: {
                   filter: (url) => !url.startsWith('/img/') && !url.startsWith('/fonts/'),
                 },
               },
             },
-            'sass-loader',
+            {
+              loader: 'sass-loader',
+              options: {
+                sourceMap: !isProduction,
+              },
+            },
           ],
         },
         {
@@ -55,6 +75,14 @@ module.exports = (env, argv = {}) => {
       new HtmlWebpackPlugin({
         template: path.resolve(__dirname, 'public/index.html'),
       }),
+      ...(isProduction
+        ? [
+            new MiniCssExtractPlugin({
+              filename: 'css/[name].[contenthash:8].css',
+              chunkFilename: 'css/[name].[contenthash:8].css',
+            }),
+          ]
+        : []),
       new CopyWebpackPlugin({
         patterns: [
           {

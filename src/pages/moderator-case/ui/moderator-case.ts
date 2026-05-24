@@ -1,10 +1,14 @@
 import './moderator-case.scss';
-import { getModerationCaseById } from 'features/moderation/model/mock';
+import { getAdminAd, updateAdModerationStatus, type AdminAdDto } from 'features/admin';
 import { renderTemplate } from 'shared/lib/render';
+import { navigateTo } from 'shared/lib/navigation';
+import { showToast } from 'shared/lib/toast';
 import caseTemplate from './moderator-case.hbs';
 
-function getCaseIdFromLocation(): string {
-  return new URLSearchParams(window.location.search).get('id') || '5821';
+function getAdIdFromLocation(): number | null {
+  const raw = new URLSearchParams(window.location.search).get('id');
+  const n = Number(raw);
+  return Number.isFinite(n) && n > 0 ? n : null;
 }
 
 function escapeHtml(value: string): string {
@@ -16,14 +20,110 @@ function escapeHtml(value: string): string {
     .replace(/'/g, '&#39;');
 }
 
-export async function renderModeratorCasePage(): Promise<string> {
-  const detail = getModerationCaseById(getCaseIdFromLocation());
+function buildDetail(ad: AdminAdDto) {
+  return {
+    id: String(ad.id),
+    title: ad.title,
+    objectType: 'Объявление',
+    advertiser: '—',
+    status: 'На модерации',
+    stage: 'incoming',
+    priority: 'medium',
+    platform: '—',
+    campaignId: String(ad.id),
+    submittedAt: '—',
+    assignedTo: '—',
+    sla: '—',
+    summary: ad.short_desc,
+    assets: [
+      { label: 'Заголовок', value: ad.title },
+      { label: 'Описание', value: ad.short_desc },
+      { label: 'Ссылка', value: ad.target_url },
+    ],
+    signals: [] as string[],
+    checks: [] as Array<{ label: string; state: string }>,
+    decisions: [
+      {
+        id: 'approve',
+        label: 'Одобрить',
+        tone: 'success',
+        note: 'Объявление соответствует правилам и будет запущено.',
+      },
+      {
+        id: 'disapprove',
+        label: 'Отклонить',
+        tone: 'danger',
+        note: 'Объявление нарушает правила и не будет показано.',
+      },
+    ],
+    internalNotes: [] as string[],
+    policyReferences: [] as Array<{ code: string; title: string; description: string }>,
+    messages: [] as Array<{ id: string; author: string; authorName: string; timestamp: string; text: string }>,
+    submission: {
+      name: ad.title,
+      formatLabel: '—',
+      goalLabel: '—',
+      headline: ad.title,
+      description: ad.short_desc,
+      cta: '—',
+      link: ad.target_url,
+      moderationNote: 'Проверьте заголовок, описание и ссылку перехода.',
+      placements: '—',
+      creativeType: '—',
+      creativeAssets: ad.image_url
+        ? [{ title: 'Изображение', meta: '—', status: 'Загружено', note: '' }]
+        : [],
+      audience: {
+        cities: ['—'],
+        ageRange: '—',
+        profileTags: ['—'],
+        interests: ['—'],
+        exclusions: ['—'],
+        matchingMode: '—',
+        expansionLabel: '—',
+      },
+      budget: {
+        dailyBudget: '—',
+        totalBudget: '—',
+        period: '—',
+        strategy: '—',
+        forecastReach: '—',
+        forecastClicks: '—',
+        forecastCpc: '—',
+      },
+    },
+  };
+}
 
-  return renderTemplate(caseTemplate, {
-    detail,
-    initialDecisionId: detail.decisions[0]?.id ?? '',
-    initialPolicyCode: detail.policyReferences[0]?.code ?? '',
-  });
+export async function renderModeratorCasePage(): Promise<string> {
+  const adId = getAdIdFromLocation();
+
+  if (adId === null) {
+    return renderTemplate(caseTemplate, {
+      detail: buildDetail({ id: 0, status: '', title: 'Объявление не найдено', short_desc: '', image_url: '', target_url: '' }),
+      initialDecisionId: 'approve',
+      initialPolicyCode: '',
+      loadError: 'Не указан ID объявления.',
+    });
+  }
+
+  try {
+    const ad = await getAdminAd(adId);
+    const detail = buildDetail(ad);
+
+    return renderTemplate(caseTemplate, {
+      detail,
+      initialDecisionId: detail.decisions[0]?.id ?? '',
+      initialPolicyCode: '',
+    });
+  } catch {
+    return renderTemplate(caseTemplate, {
+      detail: buildDetail({ id: adId, status: '', title: `Объявление #${adId}`, short_desc: '', image_url: '', target_url: '' }),
+      initialDecisionId: 'approve',
+      initialPolicyCode: '',
+      loadError: 'Не удалось загрузить данные объявления.',
+    });
+  }
 }
 
 function switchCaseTab(root: HTMLElement, nextTabId: string): void {
@@ -138,6 +238,8 @@ export function ModeratorCasePage(): VoidFunction {
     return () => {};
   }
 
+  const adId = getAdIdFromLocation();
+
   const defaultTab = root.querySelector<HTMLElement>('[data-case-tab].is-active')?.dataset.caseTab ?? 'materials';
   const defaultDecision =
     root.querySelector<HTMLElement>('[data-decision-option].is-active')?.dataset.decisionOption ?? '';
@@ -178,50 +280,57 @@ export function ModeratorCasePage(): VoidFunction {
   const statusText = root.querySelector<HTMLElement>('[data-case-status-text]');
   const nextStep = root.querySelector<HTMLElement>('[data-case-next-step]');
 
-  applyButton?.addEventListener('click', () => {
+  applyButton?.addEventListener('click', async () => {
     const decisionId = root.querySelector<HTMLInputElement>('[data-decision-input]')?.value ?? '';
-    const policyCode = root.querySelector<HTMLInputElement>('[data-policy-input]')?.value ?? '';
-    const replyText = publicReply?.value.trim() ?? '';
-    const noteText = internalNote?.value.trim() ?? '';
+    if (!decisionId || adId === null) return;
 
-    const activeDecision = root.querySelector<HTMLElement>(`[data-decision-option="${decisionId}"] strong`);
-    const decisionLabel = activeDecision?.textContent?.trim() ?? 'Решение обновлено';
-
-    if (statusBadge) {
-      statusBadge.textContent = decisionLabel;
+    if (decisionId !== 'approve' && decisionId !== 'disapprove') {
+      showToast('Ошибка', 'Выберите «Одобрить» или «Отклонить».', 'error', 3000);
+      return;
     }
 
-    if (statusText) {
-      statusText.textContent = policyCode
-        ? `Решение связано с правилом ${policyCode} и зафиксировано в карточке кейса.`
-        : 'Решение зафиксировано в карточке кейса.';
-    }
+    if (applyButton) applyButton.disabled = true;
 
-    if (nextStep) {
-      nextStep.textContent = replyText
-        ? 'Ответ клиенту подготовлен, кейс можно перевести в следующий этап.'
-        : 'Нужно добавить публичный комментарий, если решение требует обратной связи клиенту.';
-    }
+    try {
+      await updateAdModerationStatus(adId, decisionId);
 
-    if (replyText) {
-      appendThreadMessage(root, replyText);
-      if (publicReply) {
-        publicReply.value = '';
+      const policyCode = root.querySelector<HTMLInputElement>('[data-policy-input]')?.value ?? '';
+      const replyText = publicReply?.value.trim() ?? '';
+      const noteText = internalNote?.value.trim() ?? '';
+
+      const activeDecision = root.querySelector<HTMLElement>(`[data-decision-option="${decisionId}"] strong`);
+      const decisionLabel = activeDecision?.textContent?.trim() ?? 'Решение обновлено';
+
+      if (statusBadge) statusBadge.textContent = decisionLabel;
+      if (statusText) {
+        statusText.textContent = policyCode
+          ? `Решение связано с правилом ${policyCode} и зафиксировано.`
+          : 'Решение зафиксировано.';
       }
-    }
-
-    if (noteText) {
-      appendTimelineEvent(root, 'Добавлена внутренняя заметка', noteText);
-      if (internalNote) {
-        internalNote.value = '';
+      if (nextStep) {
+        nextStep.textContent = decisionId === 'approve'
+          ? 'Объявление одобрено и будет запущено.'
+          : 'Объявление отклонено. Уведомите рекламодателя о причинах.';
       }
-    }
 
-    appendTimelineEvent(
-      root,
-      'Решение обновлено',
-      policyCode ? `${decisionLabel}. Основание: ${policyCode}.` : decisionLabel,
-    );
+      if (replyText) {
+        appendThreadMessage(root, replyText);
+        if (publicReply) publicReply.value = '';
+      }
+      if (noteText) {
+        appendTimelineEvent(root, 'Добавлена внутренняя заметка', noteText);
+        if (internalNote) internalNote.value = '';
+      }
+      appendTimelineEvent(root, 'Решение принято', decisionLabel);
+
+      showToast('Готово', `Статус объявления обновлён: ${decisionLabel.toLowerCase()}.`, 'success', 3000);
+
+      setTimeout(() => navigateTo('/moderator/queue'), 1500);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Не удалось обновить статус.';
+      showToast('Ошибка', msg, 'error', 4000);
+      if (applyButton) applyButton.disabled = false;
+    }
   });
 
   return () => {};

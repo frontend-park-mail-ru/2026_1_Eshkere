@@ -33,12 +33,20 @@
         {{/if}}
       </div>
       {{#if siteId}}
-        <a
-          class="campaigns-page__create-button add-sites-site__create-block"
-          href="/partner/sites/block?siteId={{siteId}}"
-        >
-          Создать блок
-        </a>
+        <div class="add-sites-site__toolbar-actions">
+          <button type="button" class="campaign-builder__button campaign-builder__button--secondary" data-site-edit>
+            Редактировать сайт
+          </button>
+          <button type="button" class="campaign-builder__button campaign-builder__button--danger" data-site-delete>
+            Удалить сайт
+          </button>
+          <a
+            class="campaigns-page__create-button add-sites-site__create-block"
+            href="/partner/sites/block?siteId={{siteId}}"
+          >
+            Создать блок
+          </a>
+        </div>
       {{/if}}
     </div>
   </div>
@@ -76,7 +84,7 @@
                       <div class="add-sites-site__block-name">{{name}}</div>
                       <div class="add-sites-site__block-meta">ID {{id}} · {{block_type_label}}</div>
                       <div class="add-sites-site__block-actions">
-                        <span class="add-sites-site__link add-sites-site__link--muted" data-placeholder-action>Редактировать</span>
+                        <a class="add-sites-site__link add-sites-site__link--action" href="/partner/sites/block-edit?siteId={{../siteId}}&blockId={{id}}">Редактировать</a>
                         <span class="add-sites-site__link-sep">·</span>
                         <button
                           type="button"
@@ -207,7 +215,7 @@
         <img
           class="campaigns-status-modal__image"
           id="add-sites-site-block-status-modal-image"
-          src="/img/Bored.png"
+          src="/img/Bored.webp"
           alt=""
         />
       </div>
@@ -235,6 +243,51 @@
     </div>
   </div>
 
+  <div class="modal add-sites-site-edit-modal" id="add-sites-site-edit-modal" aria-hidden="true">
+    <div class="modal__backdrop" data-modal-close></div>
+    <div class="modal__content add-sites-site-embed-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="add-sites-site-edit-title">
+      <div class="modal__inner add-sites-site-embed-modal__inner">
+        <div class="add-sites-site-embed-modal__head">
+          <h2 class="add-sites-site-embed-modal__title" id="add-sites-site-edit-title">Редактировать площадку</h2>
+          <button type="button" class="add-sites-site-embed-modal__close" data-modal-close aria-label="Закрыть">×</button>
+        </div>
+        <form id="add-sites-site-edit-form" novalidate>
+          <div class="add-sites-site-edit-modal__banner" data-form-error hidden></div>
+          <label class="add-sites-site-edit-modal__label">
+            Название сайта
+            <input class="add-sites-site-edit-modal__input" type="text" name="site_name" placeholder="Мой сайт" />
+          </label>
+          <label class="add-sites-site-edit-modal__label">
+            Домен
+            <input class="add-sites-site-edit-modal__input" type="text" name="domain" placeholder="example.com" />
+          </label>
+          <div class="add-sites-site-embed-modal__footer">
+            <button type="button" class="add-sites-site-embed-modal__btn-secondary" data-modal-close>Отмена</button>
+            <button type="submit" class="campaigns-page__create-button">Сохранить</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="campaigns-delete-modal" id="add-sites-site-delete-modal" hidden>
+    <div class="campaigns-delete-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="add-sites-site-delete-title">
+      <div class="campaigns-delete-modal__head">
+        <h3 class="campaigns-delete-modal__title" id="add-sites-site-delete-title">Удалить площадку</h3>
+        <p class="campaigns-delete-modal__text">Подтвердите удаление сайта «<span data-site-delete-name></span>».</p>
+      </div>
+      <div class="campaigns-delete-modal__illustration" aria-hidden="true">
+        <span class="campaigns-delete-modal__blob"></span>
+        <img class="campaigns-delete-modal__image" src="/img/trash.webp" alt="" />
+      </div>
+      <div class="campaigns-delete-modal__note">После удаления сайт и все его блоки будут недоступны.</div>
+      <div class="campaigns-delete-modal__actions">
+        <button type="button" class="campaigns-delete-modal__button campaigns-delete-modal__button--secondary" data-site-delete-cancel>Отмена</button>
+        <button type="button" class="campaigns-delete-modal__button campaigns-delete-modal__button--primary" data-site-delete-confirm>Удалить</button>
+      </div>
+    </div>
+  </div>
+
   <div class="campaigns-delete-modal" id="campaigns-delete-modal" hidden>
     <div class="campaigns-delete-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="campaigns-delete-modal-title">
       <div class="campaigns-delete-modal__head">
@@ -248,7 +301,7 @@
 
       <div class="campaigns-delete-modal__illustration" aria-hidden="true">
         <span class="campaigns-delete-modal__blob"></span>
-        <img class="campaigns-delete-modal__image" src="/img/trash.png" alt="" />
+        <img class="campaigns-delete-modal__image" src="/img/trash.webp" alt="" />
       </div>
 
       <div class="campaigns-delete-modal__note">

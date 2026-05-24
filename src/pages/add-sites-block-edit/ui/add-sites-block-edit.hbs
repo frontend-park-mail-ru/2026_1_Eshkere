@@ -1,0 +1,147 @@
+<section class="campaigns-page add-sites-block-edit-page" data-add-sites-block-edit data-site-id="{{siteId}}" data-block-id="{{blockId}}">
+  <div class="add-sites-site__toolbar">
+    <div class="add-sites-site__toolbar-card">
+      <a class="campaign-builder__button campaign-builder__button--secondary" href="{{backHref}}">
+        ← Площадка
+      </a>
+      <div class="add-sites-site__toolbar-main">
+        <h1 class="add-sites-site__title">{{blockName}}</h1>
+        <p class="add-sites-site__domain">{{blockType}} · ID {{blockId}}</p>
+      </div>
+    </div>
+  </div>
+
+  {{#if loadError}}
+    <div class="add-sites-site__banner add-sites-site__banner--error">{{loadError}}</div>
+  {{else}}
+
+  <div class="add-sites-block-edit__tabs" role="tablist">
+    <button class="add-sites-block-edit__tab add-sites-block-edit__tab--active" role="tab" data-tab="general" aria-selected="true">Общие</button>
+    <button class="add-sites-block-edit__tab" role="tab" data-tab="geography" aria-selected="false">География</button>
+    <button class="add-sites-block-edit__tab" role="tab" data-tab="self-ad" aria-selected="false">Своя реклама</button>
+  </div>
+
+  <div class="add-sites-block-edit__panels">
+
+    {{!-- Вкладка: Общие --}}
+    <div class="add-sites-block-edit__panel" data-panel="general">
+      <form class="add-sites-block-edit__form" id="block-general-form" novalidate>
+        <div class="add-sites-block-edit__banner" data-form-error hidden></div>
+        <div class="add-sites-block-edit__banner add-sites-block-edit__banner--success" data-form-success hidden>Сохранено</div>
+
+        <div class="add-sites-block-edit__grid">
+          <label class="add-sites-block-edit__label">
+            Стратегия CPM
+            <select class="add-sites-block-edit__select" name="cpm_strategy">
+              <option value="max_income"{{#if general.isMaxIncome}} selected{{/if}}>Максимальный доход</option>
+            </select>
+          </label>
+
+          <label class="add-sites-block-edit__label">
+            Тема
+            <select class="add-sites-block-edit__select" name="theme">
+              <option value="light"{{#if general.isThemeLight}} selected{{/if}}>Светлая</option>
+              <option value="dark"{{#if general.isThemeDark}} selected{{/if}}>Тёмная</option>
+            </select>
+          </label>
+
+          <label class="add-sites-block-edit__label">
+            Скругление углов
+            <select class="add-sites-block-edit__select" name="corner_mode">
+              <option value="auto"{{#if general.isCornerAuto}} selected{{/if}}>Авто</option>
+              <option value="rounded"{{#if general.isCornerRounded}} selected{{/if}}>Скруглённые</option>
+              <option value="square"{{#if general.isCornerSquare}} selected{{/if}}>Квадратные</option>
+            </select>
+          </label>
+
+          <label class="add-sites-block-edit__label">
+            Рамка
+            <select class="add-sites-block-edit__select" name="border_mode">
+              <option value="auto"{{#if general.isBorderAuto}} selected{{/if}}>Авто</option>
+              <option value="enabled"{{#if general.isBorderEnabled}} selected{{/if}}>Включена</option>
+              <option value="disabled"{{#if general.isBorderDisabled}} selected{{/if}}>Выключена</option>
+            </select>
+          </label>
+
+          <label class="add-sites-block-edit__label">
+            AMP-режим
+            <select class="add-sites-block-edit__select" name="amp_mode">
+              <option value="disabled"{{#if general.isAmpDisabled}} selected{{/if}}>Выключен</option>
+              <option value="enabled"{{#if general.isAmpEnabled}} selected{{/if}}>Включён</option>
+            </select>
+          </label>
+
+          <label class="add-sites-block-edit__label">
+            Interscroller
+            <select class="add-sites-block-edit__select" name="interscroller_mode">
+              <option value="auto"{{#if general.isInterAuto}} selected{{/if}}>Авто</option>
+              <option value="enabled"{{#if general.isInterEnabled}} selected{{/if}}>Включён</option>
+              <option value="disabled"{{#if general.isInterDisabled}} selected{{/if}}>Выключен</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="add-sites-block-edit__actions">
+          <button class="campaigns-page__create-button" type="submit">Сохранить</button>
+        </div>
+      </form>
+    </div>
+
+    {{!-- Вкладка: География --}}
+    <div class="add-sites-block-edit__panel" data-panel="geography" hidden>
+      <form class="add-sites-block-edit__form" id="block-geography-form" novalidate>
+        <div class="add-sites-block-edit__banner" data-form-error hidden></div>
+        <div class="add-sites-block-edit__banner add-sites-block-edit__banner--success" data-form-success hidden>Сохранено</div>
+
+        <div class="add-sites-block-edit__geo-options">
+          <label class="add-sites-block-edit__checkbox-label">
+            <input type="checkbox" name="only_configured"{{#if geography.onlyConfigured}} checked{{/if}} />
+            Показывать только в настроенных регионах
+          </label>
+        </div>
+
+        <div class="add-sites-block-edit__geo-rules" data-geo-rules>
+          {{#each geography.rules}}
+          <div class="add-sites-block-edit__geo-rule" data-geo-code="{{geo_code}}">
+            <label class="add-sites-block-edit__checkbox-label">
+              <input type="checkbox" data-geo-enabled{{#if is_enabled}} checked{{/if}} />
+              {{geo_code}}
+            </label>
+            <label class="add-sites-block-edit__label add-sites-block-edit__label--inline">
+              CPM (коп.)
+              <input class="add-sites-block-edit__input add-sites-block-edit__input--sm" type="number" min="0" data-geo-cpmv value="{{cpmv}}" placeholder="—" />
+            </label>
+          </div>
+          {{/each}}
+        </div>
+
+        <div class="add-sites-block-edit__actions">
+          <button class="campaigns-page__create-button" type="submit">Сохранить</button>
+        </div>
+      </form>
+    </div>
+
+    {{!-- Вкладка: Своя реклама --}}
+    <div class="add-sites-block-edit__panel" data-panel="self-ad" hidden>
+      <form class="add-sites-block-edit__form" id="block-self-ad-form" novalidate>
+        <div class="add-sites-block-edit__banner" data-form-error hidden></div>
+        <div class="add-sites-block-edit__banner add-sites-block-edit__banner--success" data-form-success hidden>Сохранено</div>
+
+        <div class="add-sites-block-edit__self-ad-info">
+          <p>В режиме «reserved» блок резервируется для вашей рекламы и не участвует в аукционе.</p>
+        </div>
+
+        <label class="add-sites-block-edit__checkbox-label add-sites-block-edit__checkbox-label--lg">
+          <input type="checkbox" name="reserved"{{#if selfAd.reserved}} checked{{/if}} />
+          Зарезервировать блок для своей рекламы
+        </label>
+
+        <div class="add-sites-block-edit__actions">
+          <button class="campaigns-page__create-button" type="submit">Сохранить</button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+  {{/if}}
+</section>

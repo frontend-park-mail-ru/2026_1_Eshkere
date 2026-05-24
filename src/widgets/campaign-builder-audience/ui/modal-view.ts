@@ -35,7 +35,7 @@ function renderAudienceSearchEmptyState(): string {
     <div class="campaign-builder__modal-empty">
       <img
         class="campaign-builder__modal-empty-image"
-        src="/img/Searching - Looking.png"
+        src="/img/Searching%20-%20Looking.webp"
         alt="Ничего не найдено"
       />
       <strong class="campaign-builder__modal-empty-title">Ничего не найдено</strong>

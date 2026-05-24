@@ -88,6 +88,101 @@ export interface UpdatePartnerBlockMetaResponse {
   status: string;
 }
 
+export interface PartnerBlockDetailsDto {
+  id: number;
+  site_id: number;
+  name: string;
+  block_type: string;
+  status: string;
+  supported_platforms: string[];
+  general_settings: {
+    cpm_strategy: string;
+    amp_mode: string;
+    size_mode: string;
+    border_mode: string;
+    corner_mode: string;
+    theme: string;
+    interscroller_mode: string;
+    interscroller_background_color?: string | null;
+    revenue_share_bps: number;
+  };
+  geography_settings: {
+    only_configured: boolean;
+    global_cpmv?: number | null;
+    rules: Array<{ geo_code: string; is_enabled: boolean; cpmv?: number | null }>;
+  };
+  self_ad_settings: { reserved: boolean };
+  created_at: string;
+  updated_at?: string;
+}
+
+export async function getPartnerBlock(
+  siteId: number,
+  blockId: number,
+): Promise<PartnerBlockDetailsDto> {
+  const response = await request<PartnerBlockDetailsDto>(
+    `/partners/sites/${siteId}/blocks/${blockId}`,
+  );
+  return response.data;
+}
+
+export interface UpdatePartnerBlockGeneralBody {
+  cpm_strategy?: string;
+  amp_mode?: string;
+  size_mode?: string;
+  border_mode?: string;
+  corner_mode?: string;
+  theme?: string;
+  interscroller_mode?: string;
+  interscroller_background_color?: string;
+  revenue_share_bps?: number;
+}
+
+export async function updatePartnerBlockGeneral(
+  siteId: number,
+  blockId: number,
+  body: UpdatePartnerBlockGeneralBody,
+): Promise<void> {
+  await request(`/partners/sites/${siteId}/blocks/${blockId}/general`, {
+    method: 'PUT',
+    body,
+  });
+}
+
+export interface GeoRule {
+  geo_code: string;
+  is_enabled: boolean;
+  cpmv?: number | null;
+}
+
+export interface UpdatePartnerBlockGeographyBody {
+  only_configured: boolean;
+  global_cpmv?: number | null;
+  rules: GeoRule[];
+}
+
+export async function updatePartnerBlockGeography(
+  siteId: number,
+  blockId: number,
+  body: UpdatePartnerBlockGeographyBody,
+): Promise<void> {
+  await request(`/partners/sites/${siteId}/blocks/${blockId}/geography`, {
+    method: 'PUT',
+    body,
+  });
+}
+
+export async function updatePartnerBlockSelfAd(
+  siteId: number,
+  blockId: number,
+  reserved: boolean,
+): Promise<void> {
+  await request(`/partners/sites/${siteId}/blocks/${blockId}/self-ad`, {
+    method: 'PUT',
+    body: { reserved },
+  });
+}
+
 export async function updatePartnerBlockMeta(
   siteId: number,
   blockId: number,

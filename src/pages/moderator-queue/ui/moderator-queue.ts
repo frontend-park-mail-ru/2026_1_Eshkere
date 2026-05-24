@@ -1,141 +1,59 @@
 import './moderator-queue.scss';
 import { navigateTo } from 'shared/lib/navigation';
-import { moderationQueue } from 'features/moderation/model/mock';
+import { listAdminAds, type AdminAdDto } from 'features/admin';
 import { renderTemplate } from 'shared/lib/render';
 import queueTemplate from './moderator-queue.hbs';
 
 const MODERATOR_QUEUE_PAGE_SIZE = 3;
 
-function getObjectTypeLabel(type: string): string {
-  if (type === 'campaign') {
-    return 'Кампания';
-  }
-
-  if (type === 'creative') {
-    return 'Креатив';
-  }
-
-  if (type === 'landing') {
-    return 'Лендинг';
-  }
-
-  if (type === 'account') {
-    return 'Аккаунт';
-  }
-
-  return 'Документ';
-}
-
-function getStageLabel(stage: string): string {
-  if (stage === 'incoming') {
-    return 'Новый кейс';
-  }
-
-  if (stage === 'review') {
-    return 'Идет проверка';
-  }
-
-  if (stage === 'decision') {
-    return 'Нужно решение';
-  }
-
-  return 'Требует эскалации';
-}
-
-function getStageTone(stage: string): 'incoming' | 'review' | 'decision' | 'escalation' {
-  if (stage === 'incoming') {
-    return 'incoming';
-  }
-
-  if (stage === 'review') {
-    return 'review';
-  }
-
-  if (stage === 'decision') {
-    return 'decision';
-  }
-
-  return 'escalation';
-}
-
-function getPriorityLabel(priority: string): string {
-  if (priority === 'critical') {
-    return 'Критично';
-  }
-
-  if (priority === 'high') {
-    return 'Высокий';
-  }
-
-  return 'Средний';
-}
-
-function getSlaTone(slaMinutes: number): 'danger' | 'warning' | 'normal' {
-  if (slaMinutes <= 6) {
-    return 'danger';
-  }
-
-  if (slaMinutes <= 12) {
-    return 'warning';
-  }
-
-  return 'normal';
-}
-
-function getActionLabel(item: (typeof moderationQueue)[number]): string {
-  if (item.stage === 'incoming') {
-    return 'Проверить риск и взять кейс в ручную проверку.';
-  }
-
-  if (item.stage === 'review') {
-    return 'Сверить материалы и обещание с фактическим оффером.';
-  }
-
-  if (item.stage === 'decision') {
-    return 'Зафиксировать решение и подготовить ответ клиенту.';
-  }
-
-  return 'Передать кейс на старший review или в смежную команду.';
-}
-
-function getQueueAgeLabel(createdAt: string): string {
-  const value = createdAt.trim();
-
-  if (value.includes('мин')) {
-    return `${value} в очереди`;
-  }
-
-  if (value.includes('час')) {
-    return `${value} в очереди`;
-  }
-
-  return `Поступил: ${value}`;
+function mapAdToQueueItem(ad: AdminAdDto) {
+  return {
+    id: String(ad.id),
+    title: ad.title,
+    advertiser: '—',
+    platform: '—',
+    stage: 'incoming' as const,
+    priority: 'medium' as const,
+    slaMinutes: 60,
+    reason: ad.short_desc,
+    tags: [] as string[],
+    createdAt: '—',
+    assignedTo: '—',
+    summary: ad.short_desc,
+    objectType: 'Объявление',
+    actionLabel: 'Проверить и вынести решение по объявлению.',
+    stageLabel: 'Новый кейс',
+    stageTone: 'incoming' as const,
+    priorityLabel: 'Средний',
+    slaTone: 'normal' as const,
+    queueAgeLabel: '—',
+    tagsLabel: '',
+    isCritical: false,
+    isHigh: false,
+    isMedium: true,
+  };
 }
 
 export async function renderModeratorQueuePage(): Promise<string> {
-  const items = moderationQueue.map((item) => ({
-    ...item,
-    objectType: getObjectTypeLabel(item.type),
-    actionLabel: getActionLabel(item),
-    stageLabel: getStageLabel(item.stage),
-    stageTone: getStageTone(item.stage),
-    priorityLabel: getPriorityLabel(item.priority),
-    slaTone: getSlaTone(item.slaMinutes),
-    queueAgeLabel: getQueueAgeLabel(item.createdAt),
-    tagsLabel: item.tags.join(', '),
-    isCritical: item.priority === 'critical',
-    isHigh: item.priority === 'high',
-    isMedium: item.priority === 'medium',
-  }));
+  try {
+    const ads = await listAdminAds();
+    const items = ads.map(mapAdToQueueItem);
 
-  return renderTemplate(queueTemplate, {
-    priorityItems: items,
-    stats: {
-      incoming: moderationQueue.filter((item) => item.stage === 'incoming').length,
-      review: moderationQueue.filter((item) => item.stage === 'review').length,
-      overdue: moderationQueue.filter((item) => item.slaMinutes <= 6).length,
-    },
-  });
+    return renderTemplate(queueTemplate, {
+      priorityItems: items,
+      stats: {
+        incoming: items.length,
+        review: 0,
+        overdue: 0,
+      },
+    });
+  } catch {
+    return renderTemplate(queueTemplate, {
+      priorityItems: [],
+      stats: { incoming: 0, review: 0, overdue: 0 },
+      loadError: 'Не удалось загрузить очередь модерации.',
+    });
+  }
 }
 
 export function ModeratorQueuePage(): VoidFunction {

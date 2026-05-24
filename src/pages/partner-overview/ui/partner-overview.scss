@@ -561,3 +561,72 @@
     display: none;
   }
 }
+
+.partner-profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px 0 0;
+
+  &__banner {
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    background: var(--danger-subtle, #fee2e2);
+    color: var(--danger, #dc2626);
+
+    &--success {
+      background: var(--success-subtle, #dcfce7);
+      color: var(--success, #16a34a);
+    }
+  }
+
+  &__row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  &__label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+
+  &__input,
+  &__select {
+    padding: 9px 12px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    background: var(--surface-input, var(--surface-card));
+    color: var(--text-primary);
+    font-size: 14px;
+    transition: border-color 0.15s;
+
+    &:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 4px;
+  }
+}

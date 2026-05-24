@@ -2,13 +2,30 @@
   <header class="support-hero">
     <div class="support-hero__copy">
       <span class="support-hero__eyebrow">Поддержка</span>
+      {{#if isPartner}}
+      <h1 class="support-hero__title">Помощь партнёрам</h1>
+      <p class="support-hero__text">
+        Задайте вопрос по площадке, выплатам или интеграции кода. Мы отвечаем в течение рабочего дня.
+      </p>
+      {{else}}
       <h1 class="support-hero__title">Вопросы по кампаниям и модерации</h1>
       <p class="support-hero__text">
         Выберите кампанию, посмотрите сообщение модератора и отправьте уточняющий вопрос по запуску, отклонению или настройкам.
       </p>
+      {{/if}}
     </div>
 
     <div class="support-hero__stats" aria-label="Сводка обращений">
+      {{#if isPartner}}
+      <article class="support-stat">
+        <span>Открытых обращений</span>
+        <strong>{{openAppealsCount}}</strong>
+      </article>
+      <article class="support-stat support-stat--success">
+        <span>Решено</span>
+        <strong>{{resolvedAppealsCount}}</strong>
+      </article>
+      {{else}}
       <article class="support-stat">
         <span>На проверке</span>
         <strong>{{pendingCount}}</strong>
@@ -17,6 +34,7 @@
         <span>Отклонено</span>
         <strong>{{rejectedCount}}</strong>
       </article>
+      {{/if}}
     </div>
   </header>
 
@@ -24,102 +42,220 @@
     <div class="support-alert">{{loadError}}</div>
   {{/if}}
 
-  {{#if hasBackendAppeals}}
-    <section class="support-appeals">
-      <h2 class="support-appeals__title">Мои обращения</h2>
-      <div class="support-appeals__list">
-        {{#each backendAppeals}}
-          <article class="support-appeal" data-appeal-id="{{id}}">
-            <div class="support-appeal__head">
-              <strong class="support-appeal__name">{{title}}</strong>
-              <span class="support-appeal__status">{{statusLabel}}</span>
-            </div>
-            <p class="support-appeal__desc" data-appeal-desc>{{description}}</p>
-            <span class="support-appeal__date">{{createdAtFormatted}}</span>
-          </article>
-        {{/each}}
-      </div>
-    </section>
-  {{/if}}
+  {{#if isPartner}}
 
-  {{#if hasCampaigns}}
-    <div class="support-shell">
-      <aside class="support-list" aria-label="Кампании">
-        <div class="support-list__head">
-          <h2>Кампании</h2>
-          <span>Выберите тему обращения</span>
+    {{!-- Партнёрский режим: форма нового обращения + список --}}
+
+    <div class="support-partner">
+      <div class="support-new-appeal">
+        <div class="support-new-appeal__head">
+          <h2 class="support-new-appeal__title">Новое обращение</h2>
+          <p class="support-new-appeal__subtitle">Опишите проблему как можно подробнее — это ускорит ответ</p>
         </div>
 
-        <div class="support-list__items">
-          {{#each campaigns}}
-            <button
-              class="support-campaign {{#if isSelected}}is-active{{/if}}"
-              type="button"
-              data-support-campaign="{{id}}"
-              aria-pressed="{{#if isSelected}}true{{else}}false{{/if}}"
-            >
-              <span class="support-campaign__status support-campaign__status--{{statusTone}}">{{statusLabel}}</span>
-              <strong class="support-campaign__title">{{title}}</strong>
-              <span class="support-campaign__subtitle">{{subtitle}}</span>
+        <form class="support-partner-form" data-support-partner-form novalidate>
+          <div class="support-partner-form__banner" data-partner-form-error hidden></div>
+          <div class="support-partner-form__banner support-partner-form__banner--success" data-partner-form-success hidden>
+            Обращение отправлено. Ответим в течение рабочего дня.
+          </div>
+
+          <div class="support-partner-form__row">
+            <label class="support-partner-form__label">
+              Категория
+              <select class="support-partner-form__select" data-support-topic required>
+                <option value="question">Вопрос по площадке</option>
+                <option value="complaint">Вопрос по выплатам</option>
+                <option value="bug">Интеграция кода</option>
+                <option value="bug">Техническая проблема</option>
+                <option value="suggestion">Предложение</option>
+              </select>
+            </label>
+
+            <label class="support-partner-form__label">
+              Тема
+              <input
+                class="support-partner-form__input"
+                type="text"
+                data-support-title
+                placeholder="Кратко опишите суть вопроса"
+                maxlength="100"
+                required
+              />
+            </label>
+          </div>
+
+          <label class="support-partner-form__label">
+            Описание
+            <textarea
+              class="support-partner-form__textarea"
+              data-support-message
+              rows="5"
+              placeholder="Укажите детали: URL площадки, ID блока, дату, сумму выплаты — всё что поможет разобраться быстрее"
+              required
+            ></textarea>
+          </label>
+
+          <div class="support-partner-form__attach">
+            <label class="support-partner-form__file-label" for="partner-screenshot">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M2 10.5V13h2.5l7.07-7.07-2.5-2.5L2 10.5zM13.71 4.04a.667.667 0 0 0 0-.943l-1.83-1.83a.667.667 0 0 0-.943 0l-1.43 1.43 2.5 2.5 1.706-1.157z" fill="currentColor"/>
+              </svg>
+              <span data-file-label>Прикрепить скриншот</span>
+              <input
+                class="support-partner-form__file"
+                id="partner-screenshot"
+                type="file"
+                accept="image/*"
+                data-support-screenshot
+              />
+            </label>
+          </div>
+
+          <div class="support-partner-form__actions">
+            <button class="support-partner-form__submit" type="submit" data-partner-submit>
+              Отправить обращение
             </button>
+          </div>
+        </form>
+      </div>
+
+      {{#if hasBackendAppeals}}
+      <section class="support-appeals">
+        <h2 class="support-appeals__title">Мои обращения</h2>
+        <div class="support-appeals__list">
+          {{#each backendAppeals}}
+            <article class="support-appeal" data-appeal-id="{{id}}">
+              <div class="support-appeal__head">
+                <strong class="support-appeal__name">{{title}}</strong>
+                <span class="support-appeal__status support-appeal__status--{{statusTone}}">{{statusLabel}}</span>
+              </div>
+              <p class="support-appeal__desc" data-appeal-desc>{{description}}</p>
+              <span class="support-appeal__date">{{createdAtFormatted}}</span>
+            </article>
           {{/each}}
         </div>
-      </aside>
-
-      <div class="support-thread-stack">
-        {{#each campaigns}}
-          <section class="support-thread" data-support-thread="{{id}}" {{#unless isSelected}}hidden{{/unless}}>
-            <div class="support-thread__head">
-              <div>
-                <span class="support-thread__kicker">Кампания</span>
-                <h2 class="support-thread__title">{{title}}</h2>
-              </div>
-              <span class="support-thread__status support-thread__status--{{statusTone}}">{{statusLabel}}</span>
-            </div>
-
-            <div class="support-moderator-note">
-              <span class="support-moderator-note__label">Сообщение модератора</span>
-              <p>{{moderatorMessage}}</p>
-            </div>
-
-            <div class="support-messages" data-support-messages>
-              {{#each messages}}
-                <article class="support-message support-message--{{author}}">
-                  <span class="support-message__meta">{{time}}</span>
-                  <p class="support-message__text">{{text}}</p>
-                </article>
-              {{/each}}
-            </div>
-
-            <form class="support-form" data-support-form>
-              <label class="support-form__field">
-                <span>Что хотите уточнить?</span>
-                <textarea
-                  data-support-message
-                  rows="4"
-                  placeholder="Например: какие правки нужны, чтобы кампания прошла модерацию?"
-                ></textarea>
-              </label>
-
-              <div class="support-form__actions">
-                <select class="support-form__select" data-support-topic aria-label="Тема вопроса">
-                  <option>Вопрос по модерации</option>
-                  <option>Креативы и текст</option>
-                  <option>Бюджет и списания</option>
-                  <option>Запуск кампании</option>
-                </select>
-                <button class="support-form__button" type="submit">Отправить вопрос</button>
-              </div>
-            </form>
-          </section>
-        {{/each}}
-      </div>
+      </section>
+      {{/if}}
     </div>
+
   {{else}}
-    <section class="support-empty">
-      <h2>Пока нет кампаний для обращения</h2>
-      <p>Создайте кампанию или дождитесь проверки, чтобы задать вопрос по конкретному запуску.</p>
-      <a href="/ads/create">Создать кампанию</a>
-    </section>
+
+    {{!-- Рекламодательский режим: треды по кампаниям --}}
+
+    {{#if hasBackendAppeals}}
+      <section class="support-appeals">
+        <h2 class="support-appeals__title">Мои обращения</h2>
+        <div class="support-appeals__list">
+          {{#each backendAppeals}}
+            <article class="support-appeal" data-appeal-id="{{id}}">
+              <div class="support-appeal__head">
+                <strong class="support-appeal__name">{{title}}</strong>
+                <span class="support-appeal__status support-appeal__status--{{statusTone}}">{{statusLabel}}</span>
+              </div>
+              <p class="support-appeal__desc" data-appeal-desc>{{description}}</p>
+              <span class="support-appeal__date">{{createdAtFormatted}}</span>
+            </article>
+          {{/each}}
+        </div>
+      </section>
+    {{/if}}
+
+    {{#if hasCampaigns}}
+      <div class="support-shell">
+        <aside class="support-list" aria-label="Кампании">
+          <div class="support-list__head">
+            <h2>Кампании</h2>
+            <span>Выберите тему обращения</span>
+          </div>
+
+          <div class="support-list__items">
+            {{#each campaigns}}
+              <button
+                class="support-campaign {{#if isSelected}}is-active{{/if}}"
+                type="button"
+                data-support-campaign="{{id}}"
+                aria-pressed="{{#if isSelected}}true{{else}}false{{/if}}"
+              >
+                <span class="support-campaign__status support-campaign__status--{{statusTone}}">{{statusLabel}}</span>
+                <strong class="support-campaign__title">{{title}}</strong>
+                <span class="support-campaign__subtitle">{{subtitle}}</span>
+              </button>
+            {{/each}}
+          </div>
+        </aside>
+
+        <div class="support-thread-stack">
+          {{#each campaigns}}
+            <section class="support-thread" data-support-thread="{{id}}" {{#unless isSelected}}hidden{{/unless}}>
+              <div class="support-thread__head">
+                <div>
+                  <span class="support-thread__kicker">Кампания</span>
+                  <h2 class="support-thread__title">{{title}}</h2>
+                </div>
+                <span class="support-thread__status support-thread__status--{{statusTone}}">{{statusLabel}}</span>
+              </div>
+
+              <div class="support-moderator-note">
+                <span class="support-moderator-note__label">Сообщение модератора</span>
+                <p>{{moderatorMessage}}</p>
+              </div>
+
+              <div class="support-messages" data-support-messages>
+                {{#each messages}}
+                  <article class="support-message support-message--{{author}}">
+                    <span class="support-message__meta">{{time}}</span>
+                    <p class="support-message__text">{{text}}</p>
+                  </article>
+                {{/each}}
+              </div>
+
+              <form class="support-form" data-support-form novalidate>
+                <label class="support-form__field">
+                  <span>Что хотите уточнить?</span>
+                  <textarea
+                    data-support-message
+                    rows="4"
+                    placeholder="Например: какие правки нужны, чтобы кампания прошла модерацию?"
+                  ></textarea>
+                </label>
+
+                <div class="support-form__attach">
+                  <label class="support-form__file-label" for="adv-screenshot-{{id}}">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <path d="M2 10.5V13h2.5l7.07-7.07-2.5-2.5L2 10.5zM13.71 4.04a.667.667 0 0 0 0-.943l-1.83-1.83a.667.667 0 0 0-.943 0l-1.43 1.43 2.5 2.5 1.706-1.157z" fill="currentColor"/>
+                    </svg>
+                    <span data-file-label>Прикрепить скриншот</span>
+                    <input
+                      class="support-form__file"
+                      id="adv-screenshot-{{id}}"
+                      type="file"
+                      accept="image/*"
+                      data-support-screenshot
+                    />
+                  </label>
+                </div>
+
+                <div class="support-form__actions">
+                  <select class="support-form__select" data-support-topic aria-label="Тема вопроса">
+                    <option>Вопрос по модерации</option>
+                    <option>Креативы и текст</option>
+                    <option>Бюджет и списания</option>
+                    <option>Запуск кампании</option>
+                  </select>
+                  <button class="support-form__button" type="submit">Отправить вопрос</button>
+                </div>
+              </form>
+            </section>
+          {{/each}}
+        </div>
+      </div>
+    {{else}}
+      <section class="support-empty">
+        <h2>Пока нет кампаний для обращения</h2>
+        <p>Создайте кампанию или дождитесь проверки, чтобы задать вопрос по конкретному запуску.</p>
+        <a href="/advertiser/campaigns/create">Создать кампанию</a>
+      </section>
+    {{/if}}
+
   {{/if}}
 </section>

@@ -1,4 +1,5 @@
 import './overview.scss';
+import { maybeStartAdvertiserTour } from 'features/onboarding';
 import { getAds, getAdGroups, getAdsInGroup } from 'features/ads';
 import type { AdCampaignStatus } from 'features/ads';
 import type { AdItem } from 'features/ads/api/get-ads';
@@ -320,6 +321,8 @@ export function Overview(): VoidFunction {
   if (!root) {
     return () => controller.abort();
   }
+
+  maybeStartAdvertiserTour();
 
   root.querySelectorAll<HTMLElement>('[data-overview-link]').forEach((link) => {
     link.addEventListener(

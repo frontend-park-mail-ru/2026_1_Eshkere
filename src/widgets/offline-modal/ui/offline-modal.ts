@@ -24,7 +24,7 @@ function ensureOfflineModal(): HTMLElement {
           <div class="offline-modal__hero">
             <img
               class="offline-modal__illustration"
-              src="/img/Security.png"
+              src="/img/Security.webp"
               alt=""
             />
             <div class="offline-modal__copy">

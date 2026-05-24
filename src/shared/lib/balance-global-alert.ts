@@ -1,8 +1,11 @@
 import { getBalanceState } from 'features/balance';
+import { getAds } from 'features/ads';
+import { authState } from 'entities/user';
 import { formatPrice } from './format';
 
 const SLOT_ID = 'app-global-alert-slot';
 const DISMISS_KEY = 'global_balance_alert_dismiss';
+const BALANCE_ALERT_ACTIVITY_KEY = 'global_balance_alert_activity';
 
 type AlertLevel = 'critical' | 'depleted';
 
@@ -52,6 +55,71 @@ function dismiss(level: AlertLevel): void {
   }
 }
 
+function getUserActivityKey(): string {
+  const currentUser = authState.getCurrentUser();
+  const userId =
+    typeof currentUser?.id === 'number' && currentUser.id > 0
+      ? String(currentUser.id)
+      : 'guest';
+
+  return `${BALANCE_ALERT_ACTIVITY_KEY}:${userId}`;
+}
+
+function markBalanceWasPositive(): void {
+  try {
+    localStorage.setItem(getUserActivityKey(), '1');
+  } catch {
+    // ignore
+  }
+}
+
+function hadPositiveBalanceBefore(): boolean {
+  try {
+    return localStorage.getItem(getUserActivityKey()) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function hasLocalBalanceActivity(state: ReturnType<typeof getBalanceState>): boolean {
+  return (
+    state.monthlySpend > 0 ||
+    state.moderationReserve > 0 ||
+    state.operations.some((operation) => operation.amount !== 0)
+  );
+}
+
+async function hasCampaignActivity(): Promise<boolean> {
+  const result = await getAds();
+  return result.ads.some((campaign) =>
+    ['working', 'not_enough_money'].includes(String(campaign.status)),
+  );
+}
+
+async function shouldShowLevel(
+  level: AlertLevel,
+  state: ReturnType<typeof getBalanceState>,
+): Promise<boolean> {
+  if (level !== 'depleted') {
+    return true;
+  }
+
+  if (state.balanceValue > 0) {
+    markBalanceWasPositive();
+    return false;
+  }
+
+  if (hadPositiveBalanceBefore() || hasLocalBalanceActivity(state)) {
+    return true;
+  }
+
+  try {
+    return await hasCampaignActivity();
+  } catch {
+    return false;
+  }
+}
+
 function buildBanner(level: AlertLevel, balance: number): HTMLElement {
   const wrap = document.createElement('div');
   wrap.className = `global-balance-alert global-balance-alert--${level}`;
@@ -89,7 +157,7 @@ function buildBanner(level: AlertLevel, balance: number): HTMLElement {
   return wrap;
 }
 
-export function syncGlobalBalanceAlert(): void {
+export async function syncGlobalBalanceAlert(): Promise<void> {
   const slot = document.getElementById(SLOT_ID);
   if (!slot) return;
 
@@ -100,11 +168,16 @@ export function syncGlobalBalanceAlert(): void {
   }
 
   const state = getBalanceState();
+  if (state.balanceValue > 0) {
+    markBalanceWasPositive();
+  }
+
   const level = getLevel(state.balanceValue);
 
   slot.innerHTML = '';
 
   if (!level || isDismissed(level)) return;
+  if (!(await shouldShowLevel(level, state))) return;
 
   slot.appendChild(buildBanner(level, state.balanceValue));
 }

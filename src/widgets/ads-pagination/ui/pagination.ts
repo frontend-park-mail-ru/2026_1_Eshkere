@@ -31,7 +31,11 @@ export function initCampaignPagination(signal: AbortSignal): void {
   let currentPage = 1;
 
   const getVisibleRows = (): HTMLElement[] =>
-    rows.filter((row) => row.dataset.searchHidden !== 'true');
+    rows.filter(
+      (row) =>
+        row.dataset.searchHidden !== 'true' &&
+        row.dataset.filterHidden !== 'true',
+    );
 
   const getTotalPages = (): number =>
     Math.max(1, Math.ceil(getVisibleRows().length / pageSize));
@@ -81,7 +85,9 @@ export function initCampaignPagination(signal: AbortSignal): void {
     const endIndex = startIndex + pageSize;
 
     rows.forEach((row) => {
-      row.hidden = row.dataset.searchHidden === 'true';
+      row.hidden =
+        row.dataset.searchHidden === 'true' ||
+        row.dataset.filterHidden === 'true';
     });
 
     visibleRows.forEach((row, index) => {

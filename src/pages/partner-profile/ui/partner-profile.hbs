@@ -4,7 +4,7 @@
       <span class="partner-hero__eyebrow">Профиль</span>
       <h1 class="partner-hero__title">{{fullName}}</h1>
       <p class="partner-hero__subtitle">
-        Контакты, форма сотрудничества и платежные настройки партнера.
+        Контакты, форма сотрудничества и платёжные настройки партнёра.
       </p>
     </div>
     <div class="partner-hero__actions">
@@ -15,19 +15,19 @@
 
   <div class="partner-stats">
     <article class="partner-stat {{#if hasProfile}}partner-stat--success{{else}}partner-stat--warning{{/if}}">
-      <span class="partner-stat__label">Баланс партнера</span>
+      <span class="partner-stat__label">Баланс партнёра</span>
       <strong class="partner-stat__value">{{balance}}</strong>
       <span class="partner-stat__note">Связан с начислениями и выплатами.</span>
     </article>
     <article class="partner-stat partner-stat--info">
       <span class="partner-stat__label">Форма сотрудничества</span>
-      <strong class="partner-stat__value">{{cooperationForm}}</strong>
-      <span class="partner-stat__note">Используется в платежном профиле.</span>
+      <strong class="partner-stat__value">{{cooperationFormLabel}}</strong>
+      <span class="partner-stat__note">Используется в платёжном профиле.</span>
     </article>
     <article class="partner-stat partner-stat--info">
       <span class="partner-stat__label">Валюта</span>
       <strong class="partner-stat__value">{{currency}}</strong>
-      <span class="partner-stat__note">Валюта выплат партнера.</span>
+      <span class="partner-stat__note">Валюта выплат партнёра.</span>
     </article>
     <article class="partner-stat partner-stat--muted">
       <span class="partner-stat__label">Аккаунт</span>
@@ -40,51 +40,82 @@
     <section class="partner-panel partner-panel--wide">
       <div class="partner-panel__head">
         <div>
-          <h2 class="partner-panel__title">Контакты</h2>
-          <p class="partner-panel__subtitle">Данные для уведомлений и связи с партнером.</p>
+          <h2 class="partner-panel__title">Редактировать профиль</h2>
+          <p class="partner-panel__subtitle">Обновите личные данные и платёжные настройки.</p>
         </div>
       </div>
 
-      <div class="partner-stack">
-        <div class="partner-stack__item">
-          <div>
-            <strong>Email</strong>
-            <span>{{email}}</span>
-          </div>
-          <span class="partner-pill">Контакт</span>
+      <form class="partner-profile-form" id="partner-profile-form" novalidate>
+        <div class="partner-profile-form__banner" data-form-error hidden></div>
+        <div class="partner-profile-form__banner partner-profile-form__banner--success" data-form-success hidden>
+          Профиль успешно обновлён
         </div>
-        <div class="partner-stack__item">
-          <div>
-            <strong>Телефон</strong>
-            <span>{{phone}}</span>
-          </div>
-          <span class="partner-pill">Контакт</span>
-        </div>
-      </div>
-    </section>
 
-    <section class="partner-panel">
-      <div class="partner-panel__head">
-        <div>
-          <h2 class="partner-panel__title">Регистрация</h2>
-          <p class="partner-panel__subtitle">Региональные данные финансового профиля.</p>
+        <div class="partner-profile-form__row">
+          <label class="partner-profile-form__label">
+            Фамилия
+            <input class="partner-profile-form__input" type="text" name="lastName" value="{{lastName}}" placeholder="Иванов" />
+          </label>
+          <label class="partner-profile-form__label">
+            Имя
+            <input class="partner-profile-form__input" type="text" name="firstName" value="{{firstName}}" placeholder="Иван" />
+          </label>
+          <label class="partner-profile-form__label">
+            Отчество
+            <input class="partner-profile-form__input" type="text" name="middleName" value="{{middleName}}" placeholder="Иванович" />
+          </label>
         </div>
-      </div>
 
-      <div class="partner-stack">
-        <div class="partner-stack__item">
-          <div>
-            <strong>Страна</strong>
-            <span>{{countryCode}}</span>
-          </div>
+        <div class="partner-profile-form__row">
+          <label class="partner-profile-form__label">
+            Дата рождения
+            <input class="partner-profile-form__input" type="date" name="birthDate" value="{{birthDate}}" />
+          </label>
+          <label class="partner-profile-form__label">
+            Email
+            <input class="partner-profile-form__input" type="email" name="email" value="{{email}}" disabled />
+            <span class="partner-profile-form__hint">Email нельзя изменить</span>
+          </label>
+          <label class="partner-profile-form__label">
+            Телефон
+            <input class="partner-profile-form__input" type="text" name="phone" value="{{phoneRaw}}" placeholder="999 123 45 67" inputmode="numeric" />
+          </label>
         </div>
-        <div class="partner-stack__item">
-          <div>
-            <strong>Регион</strong>
-            <span>{{regionCode}}</span>
-          </div>
+
+        <div class="partner-profile-form__row">
+          <label class="partner-profile-form__label">
+            Форма сотрудничества
+            <select class="partner-profile-form__select" name="cooperationForm">
+              {{{cooperationFormOptions}}}
+            </select>
+          </label>
+          <label class="partner-profile-form__label">
+            Страна
+            <select class="partner-profile-form__select" name="countryCode">
+              {{{countryOptions}}}
+            </select>
+          </label>
+          <label class="partner-profile-form__label">
+            Регион регистрации
+            <select class="partner-profile-form__select" name="registrationRegionCode" data-region-select data-current-region="{{regionCode}}">
+              <option value="">— Выберите —</option>
+            </select>
+          </label>
         </div>
-      </div>
+
+        <div class="partner-profile-form__row">
+          <label class="partner-profile-form__label">
+            Валюта выплат
+            <select class="partner-profile-form__select" name="payoutCurrency">
+              {{{payoutCurrencyOptions}}}
+            </select>
+          </label>
+        </div>
+
+        <div class="partner-profile-form__actions">
+          <button class="partner-button" type="submit">Сохранить изменения</button>
+        </div>
+      </form>
     </section>
   </div>
 </section>

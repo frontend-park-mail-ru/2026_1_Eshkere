@@ -201,8 +201,8 @@ export function bindCampaignStatusModal(signal: AbortSignal): void {
       'Объявления на модерации и отклоненные объявления не изменятся.';
     statusModalConfirm.textContent = isEnabling ? 'Включить' : 'Остановить';
     statusModalImage.src = isEnabling
-      ? '/img/News.png'
-      : '/img/Delete%20Confirmation.png';
+      ? '/img/News.webp'
+      : '/img/Delete%20Confirmation.webp';
     statusModal.hidden = false;
   };
 

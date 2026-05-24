@@ -19,6 +19,33 @@ import {
 
 let adsPageLifecycleController: AbortController | null = null;
 
+const COMPOSITION_PREFETCH_LIMIT = 7;
+const COMPOSITION_REQUEST_CONCURRENCY = 2;
+
+async function mapWithConcurrency<TItem, TResult>(
+  items: TItem[],
+  concurrency: number,
+  task: (item: TItem) => Promise<TResult>,
+): Promise<TResult[]> {
+  const results: TResult[] = new Array(items.length);
+  let nextIndex = 0;
+
+  const worker = async (): Promise<void> => {
+    while (nextIndex < items.length) {
+      const currentIndex = nextIndex;
+      nextIndex += 1;
+      results[currentIndex] = await task(items[currentIndex]);
+    }
+  };
+
+  const workerCount = Math.min(Math.max(1, concurrency), items.length);
+  await Promise.all(
+    Array.from({ length: workerCount }, () => worker()),
+  );
+
+  return results;
+}
+
 async function enrichCampaignComposition(ad: AdItem): Promise<AdItem> {
   const campaignId = Number(ad.id || '0');
 
@@ -33,11 +60,13 @@ async function enrichCampaignComposition(ad: AdItem): Promise<AdItem> {
 
   try {
     const groupsResult = await getAdGroups(campaignId);
-    const adCounts = await Promise.all(
-      groupsResult.groups.map(async (group) => {
+    const adCounts = await mapWithConcurrency(
+      groupsResult.groups,
+      COMPOSITION_REQUEST_CONCURRENCY,
+      async (group) => {
         const adsResult = await getAdsInGroup(campaignId, group.id);
         return adsResult.ads.length;
-      }),
+      },
     );
 
     return {
@@ -163,12 +192,14 @@ function bindSearch(signal: AbortSignal): void {
   const searchInput = document.getElementById(
     'campaigns-search',
   ) as HTMLInputElement | null;
+  const rows = Array.from(document.querySelectorAll<HTMLElement>('.campaign-row'));
+  let searchFrameId = 0;
 
   const applySearch = (query: string): void => {
     const normalizedQuery = query.trim().toLowerCase();
 
-    document.querySelectorAll<HTMLElement>('.campaign-row').forEach((row) => {
-      const searchableText = [
+    rows.forEach((row) => {
+      row.dataset.searchText ||= [
         row.dataset.campaignTitle || '',
         row.dataset.campaignGoal || '',
         row.textContent || '',
@@ -179,7 +210,7 @@ function bindSearch(signal: AbortSignal): void {
         .toLowerCase();
 
       row.dataset.searchHidden =
-        normalizedQuery && !searchableText.includes(normalizedQuery)
+        normalizedQuery && !row.dataset.searchText.includes(normalizedQuery)
           ? 'true'
           : 'false';
     });
@@ -190,9 +221,25 @@ function bindSearch(signal: AbortSignal): void {
   searchInput?.addEventListener(
     'input',
     () => {
-      applySearch(searchInput.value);
+      if (searchFrameId) {
+        cancelAnimationFrame(searchFrameId);
+      }
+      searchFrameId = requestAnimationFrame(() => {
+        applySearch(searchInput.value);
+        searchFrameId = 0;
+      });
     },
     { signal },
+  );
+
+  signal.addEventListener(
+    'abort',
+    () => {
+      if (searchFrameId) {
+        cancelAnimationFrame(searchFrameId);
+      }
+    },
+    { once: true },
   );
 }
 
@@ -232,9 +279,18 @@ function initDeleteFlow(signal: AbortSignal): void {
 
 export async function renderAdsPage(): Promise<string> {
   const result = await getAds();
-  const adsWithComposition = await Promise.all(
-    result.ads.map(enrichCampaignComposition),
+  const enrichedAds = await mapWithConcurrency(
+    result.ads.slice(0, COMPOSITION_PREFETCH_LIMIT),
+    COMPOSITION_REQUEST_CONCURRENCY,
+    enrichCampaignComposition,
   );
+  const adsWithComposition = [
+    ...enrichedAds,
+    ...result.ads.slice(COMPOSITION_PREFETCH_LIMIT).map((ad) => ({
+      ...ad,
+      compositionLoaded: false,
+    })),
+  ];
   const campaigns = mapAdsToCampaigns(adsWithComposition);
 
   return renderTemplate(adsPageTemplate, {

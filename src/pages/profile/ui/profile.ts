@@ -1,4 +1,5 @@
 ﻿import './profile.scss';
+import { onboardingState, startTour, advertiserTourSteps } from 'features/onboarding';
 import 'shared/ui/modal/modal';
 import { renderTemplate } from 'shared/lib/render';
 import { getNamedFormValue, setSubmitEnabled } from 'features/profile/lib/form';
@@ -151,6 +152,16 @@ export function Profile(): VoidFunction | void {
 
   populateForms(state);
   refreshModalSubmitStates(state);
+
+  const restartTourBtn = root.querySelector<HTMLButtonElement>('[data-restart-tour]');
+  restartTourBtn?.addEventListener(
+    'click',
+    () => {
+      onboardingState.reset();
+      startTour(advertiserTourSteps);
+    },
+    { signal: controller.signal },
+  );
 
   return () => {
     if (profileLifecycleController === controller) {

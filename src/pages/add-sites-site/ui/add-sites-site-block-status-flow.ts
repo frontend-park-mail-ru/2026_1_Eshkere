@@ -82,8 +82,8 @@ export function bindPartnerBlockStatusModal(signal: AbortSignal, siteId: number)
       : 'Вы сможете снова включить блок позже — настройки сохранятся.';
     statusModalConfirm.textContent = isEnabling ? 'Включить' : 'Выключить';
     statusModalImage.src = isEnabling
-      ? '/img/News.png'
-      : '/img/Delete%20Confirmation.png';
+      ? '/img/News.webp'
+      : '/img/Delete%20Confirmation.webp';
     statusModal.hidden = false;
   };
 
