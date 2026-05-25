@@ -7,11 +7,8 @@ export interface AuthUser {
   email: string;
   phone: string;
   name?: string;
-<<<<<<< Updated upstream
   surname?: string;
-=======
   userType?: UserType;
->>>>>>> Stashed changes
   role?: string;
   roles?: string[];
   permissions?: string[];

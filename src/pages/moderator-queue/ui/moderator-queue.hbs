@@ -56,6 +56,12 @@
       </select>
     </div>
 
+    {{#if loadError}}
+      <div class="moderator-queue-empty moderator-queue-empty--error">
+        {{loadError}}
+      </div>
+    {{/if}}
+
     <div class="moderator-queue-list">
       {{#each priorityItems}}
         <article

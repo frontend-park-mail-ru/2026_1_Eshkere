@@ -1,5 +1,6 @@
 ﻿import './profile.scss';
-import { onboardingState, startTour, advertiserTourSteps } from 'features/onboarding';
+import { onboardingState } from 'features/onboarding';
+import { navigateTo } from 'shared/lib/navigation';
 import 'shared/ui/modal/modal';
 import { renderTemplate } from 'shared/lib/render';
 import { getNamedFormValue, setSubmitEnabled } from 'features/profile/lib/form';
@@ -158,7 +159,7 @@ export function Profile(): VoidFunction | void {
     'click',
     () => {
       onboardingState.reset();
-      startTour(advertiserTourSteps);
+      navigateTo('/overview');
     },
     { signal: controller.signal },
   );

@@ -1,4 +1,5 @@
 import './support.scss';
+import { maybeStartAdvertiserTour } from 'features/onboarding';
 import { getAds, type AdItem } from 'features/ads/api/get-ads';
 import { listAppeals, createAppeal, getAppeal, type AppealResponse, type AppealCategory } from 'features/appeals';
 import { authState } from 'entities/user';
@@ -263,6 +264,8 @@ export function Support(): void | VoidFunction {
 
   const root = document.querySelector<HTMLElement>('[data-support-page]');
   if (!root) return;
+
+  maybeStartAdvertiserTour();
 
   const controller = new AbortController();
   supportController = controller;

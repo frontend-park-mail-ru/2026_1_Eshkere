@@ -1,5 +1,6 @@
 import './balance.scss';
 import 'shared/ui/modal/modal';
+import { maybeStartAdvertiserTour } from 'features/onboarding';
 import { renderTemplate } from 'shared/lib/render';
 import { createToastController } from 'features/balance/lib/modal';
 import {
@@ -70,6 +71,8 @@ export function Balance(): void | VoidFunction {
     return;
   }
 
+  maybeStartAdvertiserTour();
+
   const controller = new AbortController();
   balancePageLifecycleController = controller;
 
@@ -112,11 +115,10 @@ export function Balance(): void | VoidFunction {
   commitState();
 
   getBalance()
-    .then(({ balance }) => {
-      if (balance !== state.balanceValue) {
-        state.balanceValue = balance;
-        commitState();
-      }
+    .then(({ balance, delivery_alert }) => {
+      state.balanceValue = balance;
+      state.deliveryAlert = delivery_alert ?? null;
+      commitState();
     })
     .catch(() => {});
 

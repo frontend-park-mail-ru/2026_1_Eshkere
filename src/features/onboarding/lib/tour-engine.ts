@@ -23,6 +23,7 @@ let steps: TourStep[] = [];
 let currentStep = 0;
 let resizeObserver: ResizeObserver | null = null;
 let onComplete: (() => void) | null = null;
+let onRouteChange: ((route: string, stepIndex: number) => void) | null = null;
 
 function createElement(): TourElements {
   const overlay = document.createElement('div');
@@ -90,34 +91,12 @@ function handleKeydown(e: KeyboardEvent): void {
   if (e.key === 'ArrowLeft') prev();
 }
 
-function updateOverlayHole(rect: DOMRect | null): void {
-  if (!elements) return;
-  if (!rect) {
-    elements.overlay.style.clipPath = '';
-    return;
-  }
-
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-  const t = Math.max(0, rect.top - SPOTLIGHT_PADDING);
-  const l = Math.max(0, rect.left - SPOTLIGHT_PADDING);
-  const r = Math.min(vw, rect.right + SPOTLIGHT_PADDING);
-  const b = Math.min(vh, rect.bottom + SPOTLIGHT_PADDING);
-
-  // evenodd fill-rule: outer rect filled, inner rect becomes a transparent hole
-  elements.overlay.style.clipPath = `polygon(evenodd,
-    0px 0px, ${vw}px 0px, ${vw}px ${vh}px, 0px ${vh}px,
-    ${l}px ${t}px, ${r}px ${t}px, ${r}px ${b}px, ${l}px ${b}px
-  )`;
-}
-
 function positionSpotlight(target: Element): DOMRect {
   const rect = target.getBoundingClientRect();
-  const scrollY = window.scrollY;
-  const scrollX = window.scrollX;
 
-  const top = rect.top + scrollY - SPOTLIGHT_PADDING;
-  const left = rect.left + scrollX - SPOTLIGHT_PADDING;
+  // Spotlight is position:fixed — viewport coordinates directly from getBoundingClientRect
+  const top = rect.top - SPOTLIGHT_PADDING;
+  const left = rect.left - SPOTLIGHT_PADDING;
   const width = rect.width + SPOTLIGHT_PADDING * 2;
   const height = rect.height + SPOTLIGHT_PADDING * 2;
 
@@ -128,8 +107,6 @@ function positionSpotlight(target: Element): DOMRect {
     height: ${height}px;
   `;
 
-  updateOverlayHole(rect);
-
   return rect;
 }
 
@@ -137,6 +114,7 @@ function positionTooltip(target: Element | null, placement: TourStep['placement'
   const tooltip = elements!.tooltip;
   tooltip.dataset.placement = placement;
 
+  // Tooltip is position:fixed — all coordinates are viewport-relative, no scrollY needed
   if (!target || placement === 'center') {
     tooltip.style.cssText = `
       top: 50%;
@@ -147,8 +125,6 @@ function positionTooltip(target: Element | null, placement: TourStep['placement'
   }
 
   const rect = target.getBoundingClientRect();
-  const scrollY = window.scrollY;
-  const scrollX = window.scrollX;
   const tw = tooltip.offsetWidth || 440;
   const th = tooltip.offsetHeight || 180;
   const vw = window.innerWidth;
@@ -159,41 +135,41 @@ function positionTooltip(target: Element | null, placement: TourStep['placement'
 
   switch (placement) {
     case 'right':
-      top = rect.top + scrollY + rect.height / 2 - th / 2;
-      left = rect.right + scrollX + TOOLTIP_OFFSET + TOOLTIP_ARROW_SIZE;
+      top = rect.top + rect.height / 2 - th / 2;
+      left = rect.right + TOOLTIP_OFFSET + TOOLTIP_ARROW_SIZE;
       if (left + tw > vw - 16) {
-        left = rect.left + scrollX - tw - TOOLTIP_OFFSET - TOOLTIP_ARROW_SIZE;
+        left = rect.left - tw - TOOLTIP_OFFSET - TOOLTIP_ARROW_SIZE;
         tooltip.dataset.placement = 'left';
       }
       break;
     case 'left':
-      top = rect.top + scrollY + rect.height / 2 - th / 2;
-      left = rect.left + scrollX - tw - TOOLTIP_OFFSET - TOOLTIP_ARROW_SIZE;
+      top = rect.top + rect.height / 2 - th / 2;
+      left = rect.left - tw - TOOLTIP_OFFSET - TOOLTIP_ARROW_SIZE;
       if (left < 16) {
-        left = rect.right + scrollX + TOOLTIP_OFFSET + TOOLTIP_ARROW_SIZE;
+        left = rect.right + TOOLTIP_OFFSET + TOOLTIP_ARROW_SIZE;
         tooltip.dataset.placement = 'right';
       }
       break;
     case 'bottom':
-      top = rect.bottom + scrollY + TOOLTIP_OFFSET + TOOLTIP_ARROW_SIZE;
-      left = rect.left + scrollX + rect.width / 2 - tw / 2;
-      if (top + th > vh + scrollY - 16) {
-        top = rect.top + scrollY - th - TOOLTIP_OFFSET - TOOLTIP_ARROW_SIZE;
+      top = rect.bottom + TOOLTIP_OFFSET + TOOLTIP_ARROW_SIZE;
+      left = rect.left + rect.width / 2 - tw / 2;
+      if (top + th > vh - 16) {
+        top = rect.top - th - TOOLTIP_OFFSET - TOOLTIP_ARROW_SIZE;
         tooltip.dataset.placement = 'top';
       }
       break;
     case 'top':
-      top = rect.top + scrollY - th - TOOLTIP_OFFSET - TOOLTIP_ARROW_SIZE;
-      left = rect.left + scrollX + rect.width / 2 - tw / 2;
-      if (top < scrollY + 16) {
-        top = rect.bottom + scrollY + TOOLTIP_OFFSET + TOOLTIP_ARROW_SIZE;
+      top = rect.top - th - TOOLTIP_OFFSET - TOOLTIP_ARROW_SIZE;
+      left = rect.left + rect.width / 2 - tw / 2;
+      if (top < 16) {
+        top = rect.bottom + TOOLTIP_OFFSET + TOOLTIP_ARROW_SIZE;
         tooltip.dataset.placement = 'bottom';
       }
       break;
   }
 
   left = Math.max(16, Math.min(left, vw - tw - 16));
-  top = Math.max(scrollY + 16, top);
+  top = Math.max(16, Math.min(top, vh - th - 16));
 
   tooltip.style.cssText = `top: ${top}px; left: ${left}px; transform: none;`;
 }
@@ -211,6 +187,7 @@ function renderStep(index: number): void {
   elements.nextBtn.textContent = index === steps.length - 1 ? 'Готово' : 'Далее';
 
   if (target) {
+    elements.overlay.style.background = 'transparent';
     elements.spotlight.hidden = false;
     target.scrollIntoView({ behavior: 'smooth', block: 'center' });
     requestAnimationFrame(() => {
@@ -219,17 +196,44 @@ function renderStep(index: number): void {
     });
   } else {
     elements.spotlight.hidden = true;
-    updateOverlayHole(null);
+    elements.overlay.style.background = 'rgba(0, 0, 0, 0.6)';
     positionTooltip(null, 'center');
   }
 
   elements.tooltip.classList.add('tour-tooltip--visible');
 }
 
+function cleanup(): void {
+  if (!elements) return;
+
+  document.removeEventListener('keydown', handleKeydown);
+  document.removeEventListener('click', handleDocumentClick);
+  resizeObserver?.disconnect();
+  resizeObserver = null;
+
+  elements.overlay.remove();
+  elements.spotlight.remove();
+  elements.tooltip.remove();
+  elements = null;
+  currentStep = 0;
+  onRouteChange = null;
+}
+
 function next(): void {
   if (!elements) return;
   if (currentStep < steps.length - 1) {
     currentStep++;
+    const step = steps[currentStep];
+
+    // If this step requires a different page, hand off to the navigation callback
+    if (step.route && onRouteChange && !window.location.pathname.startsWith(step.route)) {
+      const handler = onRouteChange;
+      const savedStep = currentStep;
+      cleanup();
+      handler(step.route, savedStep);
+      return;
+    }
+
     renderStep(currentStep);
   } else {
     stop(false);
@@ -244,32 +248,27 @@ function prev(): void {
 
 export function stop(skipped = false): void {
   if (!elements) return;
-
-  document.removeEventListener('keydown', handleKeydown);
-  document.removeEventListener('click', handleDocumentClick);
-  resizeObserver?.disconnect();
-  resizeObserver = null;
-
-  elements.overlay.remove();
-  elements.spotlight.remove();
-  elements.tooltip.remove();
-  elements = null;
-  currentStep = 0;
-
+  cleanup();
   if (!skipped) {
     onboardingState.markCompleted();
   }
-
   onComplete?.();
   onComplete = null;
 }
 
-export function startTour(tourSteps: TourStep[], onDone?: () => void): void {
+export function startTour(
+  tourSteps: TourStep[],
+  fromStep = 0,
+  onDone?: () => void,
+  navigateFn?: (route: string, stepIndex: number) => void,
+): void {
   if (elements) stop(true);
 
   steps = tourSteps;
-  currentStep = 0;
+  currentStep = fromStep;
   onComplete = onDone ?? null;
+  onRouteChange = navigateFn ?? null;
+
   // Defer createElement so the click that triggered startTour doesn't
   // immediately fire handleDocumentClick and close the tour.
   setTimeout(() => {
@@ -280,6 +279,6 @@ export function startTour(tourSteps: TourStep[], onDone?: () => void): void {
     });
     resizeObserver.observe(document.body);
 
-    requestAnimationFrame(() => renderStep(0));
+    requestAnimationFrame(() => renderStep(currentStep));
   }, 0);
 }

@@ -1,6 +1,7 @@
 export enum LocalStorageKey {
   AdsAuth = 'ads_auth',
   OnboardingCompleted = 'onboarding_completed',
+  OnboardingPendingStep = 'onboarding_pending_step',
   DevModeratorAccess = 'dev_moderator_access',
   BalanceDashboardState = 'balance_dashboard_state',
   CampaignBuilderDraft = 'campaign_builder_draft',

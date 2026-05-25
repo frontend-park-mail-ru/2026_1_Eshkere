@@ -1,0 +1,29 @@
+<section class='payment-result payment-result--{{#if isSuccess}}success{{else}}fail{{/if}}'>
+  <div class='payment-result__shell'>
+    <div class='payment-result__status' aria-hidden='true'>
+      <span class='payment-result__status-icon'></span>
+    </div>
+
+    <div class='payment-result__content'>
+      <span class='payment-result__kicker'>{{kicker}}</span>
+      <h1 class='payment-result__title'>{{title}}</h1>
+      <p class='payment-result__subtitle'>{{subtitle}}</p>
+
+      <div class='payment-result__meta' aria-label='Детали платежа'>
+        <div class='payment-result__meta-item'>
+          <span class='payment-result__meta-label'>Сумма</span>
+          <strong class='payment-result__meta-value'>{{amountLabel}}</strong>
+        </div>
+        <div class='payment-result__meta-item'>
+          <span class='payment-result__meta-label'>Статус</span>
+          <strong class='payment-result__meta-value'>{{statusText}}</strong>
+        </div>
+      </div>
+
+      <div class='payment-result__actions'>
+        <a class='payment-result__primary' href='{{primaryHref}}'>{{primaryText}}</a>
+        <a class='payment-result__secondary' href='{{secondaryHref}}'>{{secondaryText}}</a>
+      </div>
+    </div>
+  </div>
+</section>

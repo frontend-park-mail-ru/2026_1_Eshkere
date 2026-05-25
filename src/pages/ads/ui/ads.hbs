@@ -1,13 +1,13 @@
 <section class="campaigns-page">
   <div class="campaigns-page__toolbar">
     <div class="campaigns-page__toolbar-primary">
-      <a class="campaigns-page__create-button" href="/advertiser/campaigns/create">
+      <a class="campaigns-page__create-button" href="/advertiser/campaigns/create" data-tour="campaigns-create-btn">
         Создать кампанию
       </a>
     </div>
 
     <div class="campaigns-page__filters">
-      <div class="campaigns-filter-wrap" data-filter-wrap>
+      <div class="campaigns-filter-wrap" data-filter-wrap data-tour="campaigns-filter">
         <button
           class="campaigns-page__filter"
           type="button"
@@ -90,6 +90,7 @@
         id="campaigns-search"
         placeholder="Поиск кампаний"
         aria-label="Поиск кампаний"
+        data-tour="campaigns-search"
       />
     </div>
   </div>

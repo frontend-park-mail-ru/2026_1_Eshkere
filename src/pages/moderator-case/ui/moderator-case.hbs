@@ -1,4 +1,4 @@
-<section class="moderator-case-page">
+<section class="moderator-case-page" data-case-can-apply="{{canApplyDecision}}">
   <div class="moderator-case-page__hero">
     <div class="moderator-case-page__hero-head">
       <div>
@@ -21,6 +21,12 @@
       <article><span>Исполнитель</span><strong>{{detail.assignedTo}}</strong></article>
     </div>
   </div>
+
+  {{#if loadError}}
+    <div class="moderator-case-alert moderator-case-alert--error">
+      {{loadError}}
+    </div>
+  {{/if}}
 
   <div class="moderator-case-page__layout">
     <div class="moderator-case-page__main">
@@ -83,7 +89,11 @@
                 </article>
                 <article>
                   <span>Ссылка перехода</span>
-                  <a href="{{detail.submission.link}}" target="_blank" rel="noreferrer">{{detail.submission.link}}</a>
+                  {{#if detail.submission.hasLink}}
+                    <a href="{{detail.submission.link}}" target="_blank" rel="noreferrer">{{detail.submission.linkLabel}}</a>
+                  {{else}}
+                    <strong>{{detail.submission.linkLabel}}</strong>
+                  {{/if}}
                 </article>
               </div>
 
@@ -102,10 +112,14 @@
               <div class="campaign-preview">
                 <div class="campaign-preview__frame">
                   <div class="campaign-preview__visual">
-                    <div class="campaign-preview__visual-copy">
-                      <span class="campaign-preview__visual-badge">{{detail.submission.goalLabel}}</span>
-                      <strong>{{detail.submission.formatLabel}}</strong>
-                    </div>
+                    {{#if detail.submission.imageUrl}}
+                      <img class="campaign-preview__image" src="{{detail.submission.imageUrl}}" alt="{{detail.submission.headline}}" />
+                    {{else}}
+                      <div class="campaign-preview__visual-copy">
+                        <span class="campaign-preview__visual-badge">{{detail.submission.goalLabel}}</span>
+                        <strong>{{detail.submission.formatLabel}}</strong>
+                      </div>
+                    {{/if}}
                   </div>
                   <span class="campaign-preview__badge">Реклама</span>
                   <strong class="campaign-preview__headline">{{detail.submission.headline}}</strong>
@@ -330,7 +344,7 @@
         </label>
 
         <div class="moderator-action-panel__controls">
-          <button class="moderator-primary-button" type="button" data-apply-decision>
+          <button class="moderator-primary-button" type="button" data-apply-decision {{#unless canApplyDecision}}disabled{{/unless}}>
             Применить решение
           </button>
           <p>После применения экран обновит статус кейса, историю и публичный диалог.</p>

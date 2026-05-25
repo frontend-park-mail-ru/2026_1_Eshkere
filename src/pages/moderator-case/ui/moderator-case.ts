@@ -1,14 +1,28 @@
 import './moderator-case.scss';
-import { getAdminAd, updateAdModerationStatus, type AdminAdDto } from 'features/admin';
+import {
+  getAdminAd,
+  updateAdModerationStatus,
+  type AdminAdDto,
+} from 'features/admin';
 import { renderTemplate } from 'shared/lib/render';
 import { navigateTo } from 'shared/lib/navigation';
 import { showToast } from 'shared/lib/toast';
 import caseTemplate from './moderator-case.hbs';
 
+const FALLBACK_TEXT = '—';
+
 function getAdIdFromLocation(): number | null {
   const raw = new URLSearchParams(window.location.search).get('id');
   const n = Number(raw);
   return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+function cleanText(
+  value: string | null | undefined,
+  fallback = FALLBACK_TEXT,
+): string {
+  const text = value?.trim();
+  return text ? text : fallback;
 }
 
 function escapeHtml(value: string): string {
@@ -20,28 +34,86 @@ function escapeHtml(value: string): string {
     .replace(/'/g, '&#39;');
 }
 
+function getHostLabel(url: string | null | undefined): string {
+  const rawUrl = url?.trim();
+
+  if (!rawUrl) {
+    return FALLBACK_TEXT;
+  }
+
+  try {
+    return new URL(rawUrl).hostname.replace(/^www\./, '') || rawUrl;
+  } catch {
+    return rawUrl;
+  }
+}
+
+function getStatusLabel(status: string): string {
+  switch (status) {
+    case 'approved':
+    case 'active':
+      return 'Одобрено';
+    case 'disapproved':
+    case 'rejected':
+      return 'Отклонено';
+    case 'moderation':
+    case 'pending':
+      return 'На модерации';
+    default:
+      return cleanText(status, 'Статус неизвестен');
+  }
+}
+
+function getCheckState(value: string | null | undefined): 'pass' | 'fail' {
+  return value?.trim() ? 'pass' : 'fail';
+}
+
 function buildDetail(ad: AdminAdDto) {
+  const title = cleanText(ad.title, `Объявление #${ad.id}`);
+  const description = cleanText(
+    ad.short_desc,
+    'Описание объявления не заполнено.',
+  );
+  const targetUrl = ad.target_url?.trim() ?? '';
+  const targetUrlLabel = cleanText(ad.target_url);
+  const imageUrl = cleanText(ad.image_url, '');
+  const platform = getHostLabel(ad.target_url);
+  const hasImage = Boolean(imageUrl);
+  const hasTarget = Boolean(ad.target_url?.trim());
+
   return {
     id: String(ad.id),
-    title: ad.title,
+    title,
     objectType: 'Объявление',
-    advertiser: '—',
-    status: 'На модерации',
+    advertiser: 'Рекламодатель не передан',
+    status: getStatusLabel(ad.status),
     stage: 'incoming',
-    priority: 'medium',
-    platform: '—',
+    priority:
+      !ad.title?.trim() || !ad.short_desc?.trim() || !ad.target_url?.trim()
+        ? 'high'
+        : 'medium',
+    platform,
     campaignId: String(ad.id),
-    submittedAt: '—',
-    assignedTo: '—',
-    sla: '—',
-    summary: ad.short_desc,
+    submittedAt: FALLBACK_TEXT,
+    assignedTo: 'Не назначен',
+    sla: '60 мин',
+    summary: description,
     assets: [
-      { label: 'Заголовок', value: ad.title },
-      { label: 'Описание', value: ad.short_desc },
-      { label: 'Ссылка', value: ad.target_url },
+      { label: 'Заголовок', value: title },
+      { label: 'Описание', value: description },
+      { label: 'Ссылка', value: targetUrlLabel },
     ],
-    signals: [] as string[],
-    checks: [] as Array<{ label: string; state: string }>,
+    signals: [
+      hasImage ? 'Креатив загружен' : 'Креатив не передан',
+      hasTarget ? `Целевая ссылка: ${platform}` : 'Целевая ссылка не передана',
+      `Backend-статус: ${cleanText(ad.status, 'unknown')}`,
+    ],
+    checks: [
+      { label: 'Заголовок заполнен', state: getCheckState(ad.title) },
+      { label: 'Описание заполнено', state: getCheckState(ad.short_desc) },
+      { label: 'Целевая ссылка передана', state: getCheckState(ad.target_url) },
+      { label: 'Изображение передано', state: hasImage ? 'pass' : 'warning' },
+    ],
     decisions: [
       {
         id: 'approve',
@@ -56,53 +128,111 @@ function buildDetail(ad: AdminAdDto) {
         note: 'Объявление нарушает правила и не будет показано.',
       },
     ],
-    internalNotes: [] as string[],
-    policyReferences: [] as Array<{ code: string; title: string; description: string }>,
-    messages: [] as Array<{ id: string; author: string; authorName: string; timestamp: string; text: string }>,
+    internalNotes: [
+      'Данные ниже загружены из текущей admin-ручки объявлений. Поля, которых нет в ответе backend, помечены прочерком.',
+    ],
+    policyReferences: [
+      {
+        code: 'ADV-BASE',
+        title: 'Базовая проверка объявления',
+        description:
+          'Проверить заголовок, описание, целевую ссылку и наличие креатива.',
+      },
+      {
+        code: 'ADV-LINK',
+        title: 'Проверка целевой страницы',
+        description:
+          'Убедиться, что ссылка открывается и соответствует содержанию объявления.',
+      },
+    ],
+    messages: [
+      {
+        id: 'system-status',
+        author: 'system',
+        authorName: 'Система',
+        timestamp: 'Сейчас',
+        text: `Объявление находится в статусе «${getStatusLabel(ad.status)}».`,
+      },
+    ],
     submission: {
-      name: ad.title,
-      formatLabel: '—',
-      goalLabel: '—',
-      headline: ad.title,
-      description: ad.short_desc,
-      cta: '—',
-      link: ad.target_url,
-      moderationNote: 'Проверьте заголовок, описание и ссылку перехода.',
-      placements: '—',
-      creativeType: '—',
-      creativeAssets: ad.image_url
-        ? [{ title: 'Изображение', meta: '—', status: 'Загружено', note: '' }]
-        : [],
+      name: title,
+      formatLabel: 'Объявление',
+      goalLabel: 'Переход по ссылке',
+      headline: title,
+      description,
+      cta: 'Перейти',
+      link: targetUrl || '#',
+      linkLabel: targetUrlLabel,
+      hasLink: hasTarget,
+      imageUrl,
+      moderationNote:
+        'Проверьте заголовок, описание, изображение и ссылку перехода.',
+      placements: FALLBACK_TEXT,
+      creativeType: hasImage ? 'Изображение объявления' : 'Креатив не передан',
+      creativeAssets: hasImage
+        ? [
+            {
+              title: 'Изображение объявления',
+              meta: 'Файл из кампании',
+              status: 'Загружено',
+              note: imageUrl,
+            },
+          ]
+        : [
+            {
+              title: 'Изображение объявления',
+              meta: 'Нет файла',
+              status: 'Не передано',
+              note: 'Backend не вернул image_url для этого объявления.',
+            },
+          ],
       audience: {
-        cities: ['—'],
-        ageRange: '—',
-        profileTags: ['—'],
-        interests: ['—'],
-        exclusions: ['—'],
-        matchingMode: '—',
-        expansionLabel: '—',
+        cities: FALLBACK_TEXT,
+        ageRange: FALLBACK_TEXT,
+        profileTags: FALLBACK_TEXT,
+        interests: FALLBACK_TEXT,
+        exclusions: FALLBACK_TEXT,
+        matchingMode: FALLBACK_TEXT,
+        expansionLabel: 'Данные аудитории не приходят в текущей admin-ручке.',
       },
       budget: {
-        dailyBudget: '—',
-        totalBudget: '—',
-        period: '—',
-        strategy: '—',
-        forecastReach: '—',
-        forecastClicks: '—',
-        forecastCpc: '—',
+        dailyBudget: FALLBACK_TEXT,
+        totalBudget: FALLBACK_TEXT,
+        period: FALLBACK_TEXT,
+        strategy: FALLBACK_TEXT,
+        forecastReach: FALLBACK_TEXT,
+        forecastClicks: FALLBACK_TEXT,
+        forecastCpc: FALLBACK_TEXT,
       },
     },
   };
+}
+
+function buildUnavailableDetail(
+  adId: number,
+  title: string,
+): ReturnType<typeof buildDetail> {
+  return buildDetail({
+    id: adId,
+    status: '',
+    title,
+    short_desc: '',
+    image_url: '',
+    target_url: '',
+  });
 }
 
 export async function renderModeratorCasePage(): Promise<string> {
   const adId = getAdIdFromLocation();
 
   if (adId === null) {
+    const detail = buildUnavailableDetail(0, 'Объявление не найдено');
+
     return renderTemplate(caseTemplate, {
-      detail: buildDetail({ id: 0, status: '', title: 'Объявление не найдено', short_desc: '', image_url: '', target_url: '' }),
-      initialDecisionId: 'approve',
-      initialPolicyCode: '',
+      detail,
+      initialDecisionId: '',
+      initialPolicyCode: detail.policyReferences[0]?.code ?? '',
+      canApplyDecision: false,
       loadError: 'Не указан ID объявления.',
     });
   }
@@ -114,21 +244,33 @@ export async function renderModeratorCasePage(): Promise<string> {
     return renderTemplate(caseTemplate, {
       detail,
       initialDecisionId: detail.decisions[0]?.id ?? '',
-      initialPolicyCode: '',
+      initialPolicyCode: detail.policyReferences[0]?.code ?? '',
+      canApplyDecision: true,
     });
-  } catch {
+  } catch (err) {
+    const detail = buildUnavailableDetail(adId, `Объявление #${adId}`);
+    const message =
+      err instanceof Error
+        ? err.message
+        : 'Не удалось загрузить данные объявления.';
+
     return renderTemplate(caseTemplate, {
-      detail: buildDetail({ id: adId, status: '', title: `Объявление #${adId}`, short_desc: '', image_url: '', target_url: '' }),
-      initialDecisionId: 'approve',
-      initialPolicyCode: '',
-      loadError: 'Не удалось загрузить данные объявления.',
+      detail,
+      initialDecisionId: '',
+      initialPolicyCode: detail.policyReferences[0]?.code ?? '',
+      canApplyDecision: false,
+      loadError: message,
     });
   }
 }
 
 function switchCaseTab(root: HTMLElement, nextTabId: string): void {
-  const tabs = Array.from(root.querySelectorAll<HTMLElement>('[data-case-tab]'));
-  const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-case-panel]'));
+  const tabs = Array.from(
+    root.querySelectorAll<HTMLElement>('[data-case-tab]'),
+  );
+  const panels = Array.from(
+    root.querySelectorAll<HTMLElement>('[data-case-panel]'),
+  );
 
   tabs.forEach((tab) => {
     const isActive = tab.dataset.caseTab === nextTabId;
@@ -144,10 +286,19 @@ function switchCaseTab(root: HTMLElement, nextTabId: string): void {
 }
 
 function syncSelectedDecision(root: HTMLElement, decisionId: string): void {
-  const decisionButtons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-decision-option]'));
-  const selectedLabel = root.querySelector<HTMLElement>('[data-selected-decision]');
-  const applyButton = root.querySelector<HTMLButtonElement>('[data-apply-decision]');
-  const hiddenInput = root.querySelector<HTMLInputElement>('[data-decision-input]');
+  const decisionButtons = Array.from(
+    root.querySelectorAll<HTMLButtonElement>('[data-decision-option]'),
+  );
+  const selectedLabel = root.querySelector<HTMLElement>(
+    '[data-selected-decision]',
+  );
+  const applyButton = root.querySelector<HTMLButtonElement>(
+    '[data-apply-decision]',
+  );
+  const hiddenInput = root.querySelector<HTMLInputElement>(
+    '[data-decision-input]',
+  );
+  const canApplyDecision = root.dataset.caseCanApply !== 'false';
 
   hiddenInput?.setAttribute('value', decisionId);
 
@@ -157,22 +308,31 @@ function syncSelectedDecision(root: HTMLElement, decisionId: string): void {
     button.setAttribute('aria-pressed', String(isActive));
   });
 
-  const activeButton = decisionButtons.find((button) => button.dataset.decisionOption === decisionId);
-  const label = activeButton?.querySelector('strong')?.textContent?.trim() ?? 'Не выбрано';
+  const activeButton = decisionButtons.find(
+    (button) => button.dataset.decisionOption === decisionId,
+  );
+  const label =
+    activeButton?.querySelector('strong')?.textContent?.trim() ?? 'Не выбрано';
 
   if (selectedLabel) {
     selectedLabel.textContent = label;
   }
 
   if (applyButton) {
-    applyButton.disabled = !decisionId;
+    applyButton.disabled = !canApplyDecision || !decisionId;
   }
 }
 
 function syncSelectedPolicy(root: HTMLElement, policyCode: string): void {
-  const policyButtons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-policy-option]'));
-  const selectedLabel = root.querySelector<HTMLElement>('[data-selected-policy]');
-  const hiddenInput = root.querySelector<HTMLInputElement>('[data-policy-input]');
+  const policyButtons = Array.from(
+    root.querySelectorAll<HTMLButtonElement>('[data-policy-option]'),
+  );
+  const selectedLabel = root.querySelector<HTMLElement>(
+    '[data-selected-policy]',
+  );
+  const hiddenInput = root.querySelector<HTMLInputElement>(
+    '[data-policy-input]',
+  );
 
   hiddenInput?.setAttribute('value', policyCode);
 
@@ -182,15 +342,22 @@ function syncSelectedPolicy(root: HTMLElement, policyCode: string): void {
     button.setAttribute('aria-pressed', String(isActive));
   });
 
-  const activeButton = policyButtons.find((button) => button.dataset.policyOption === policyCode);
-  const label = activeButton?.querySelector('strong')?.textContent?.trim() ?? 'Без ссылки';
+  const activeButton = policyButtons.find(
+    (button) => button.dataset.policyOption === policyCode,
+  );
+  const label =
+    activeButton?.querySelector('strong')?.textContent?.trim() ?? 'Без ссылки';
 
   if (selectedLabel) {
     selectedLabel.textContent = label;
   }
 }
 
-function appendTimelineEvent(root: HTMLElement, title: string, description: string): void {
+function appendTimelineEvent(
+  root: HTMLElement,
+  title: string,
+  description: string,
+): void {
   const timeline = root.querySelector<HTMLElement>('[data-case-timeline]');
 
   if (!timeline) {
@@ -240,10 +407,15 @@ export function ModeratorCasePage(): VoidFunction {
 
   const adId = getAdIdFromLocation();
 
-  const defaultTab = root.querySelector<HTMLElement>('[data-case-tab].is-active')?.dataset.caseTab ?? 'materials';
+  const defaultTab =
+    root.querySelector<HTMLElement>('[data-case-tab].is-active')?.dataset
+      .caseTab ?? 'materials';
   const defaultDecision =
-    root.querySelector<HTMLElement>('[data-decision-option].is-active')?.dataset.decisionOption ?? '';
-  const defaultPolicy = root.querySelector<HTMLElement>('[data-policy-option].is-active')?.dataset.policyOption ?? '';
+    root.querySelector<HTMLElement>('[data-decision-option].is-active')?.dataset
+      .decisionOption ?? '';
+  const defaultPolicy =
+    root.querySelector<HTMLElement>('[data-policy-option].is-active')?.dataset
+      .policyOption ?? '';
 
   switchCaseTab(root, defaultTab);
   syncSelectedDecision(root, defaultDecision);
@@ -257,35 +429,55 @@ export function ModeratorCasePage(): VoidFunction {
     });
   });
 
-  root.querySelectorAll<HTMLButtonElement>('[data-decision-option]').forEach((button) => {
-    button.addEventListener('click', () => {
-      if (button.dataset.decisionOption) {
-        syncSelectedDecision(root, button.dataset.decisionOption);
-      }
+  root
+    .querySelectorAll<HTMLButtonElement>('[data-decision-option]')
+    .forEach((button) => {
+      button.addEventListener('click', () => {
+        if (button.dataset.decisionOption) {
+          syncSelectedDecision(root, button.dataset.decisionOption);
+        }
+      });
     });
-  });
 
-  root.querySelectorAll<HTMLButtonElement>('[data-policy-option]').forEach((button) => {
-    button.addEventListener('click', () => {
-      if (button.dataset.policyOption) {
-        syncSelectedPolicy(root, button.dataset.policyOption);
-      }
+  root
+    .querySelectorAll<HTMLButtonElement>('[data-policy-option]')
+    .forEach((button) => {
+      button.addEventListener('click', () => {
+        if (button.dataset.policyOption) {
+          syncSelectedPolicy(root, button.dataset.policyOption);
+        }
+      });
     });
-  });
 
-  const applyButton = root.querySelector<HTMLButtonElement>('[data-apply-decision]');
-  const publicReply = root.querySelector<HTMLTextAreaElement>('[data-public-reply]');
-  const internalNote = root.querySelector<HTMLTextAreaElement>('[data-internal-note]');
+  const applyButton = root.querySelector<HTMLButtonElement>(
+    '[data-apply-decision]',
+  );
+  const publicReply = root.querySelector<HTMLTextAreaElement>(
+    '[data-public-reply]',
+  );
+  const internalNote = root.querySelector<HTMLTextAreaElement>(
+    '[data-internal-note]',
+  );
   const statusBadge = root.querySelector<HTMLElement>('[data-case-status]');
   const statusText = root.querySelector<HTMLElement>('[data-case-status-text]');
   const nextStep = root.querySelector<HTMLElement>('[data-case-next-step]');
 
   applyButton?.addEventListener('click', async () => {
-    const decisionId = root.querySelector<HTMLInputElement>('[data-decision-input]')?.value ?? '';
-    if (!decisionId || adId === null) return;
+    const decisionId =
+      root.querySelector<HTMLInputElement>('[data-decision-input]')?.value ??
+      '';
+
+    if (!decisionId || adId === null || root.dataset.caseCanApply === 'false') {
+      return;
+    }
 
     if (decisionId !== 'approve' && decisionId !== 'disapprove') {
-      showToast('Ошибка', 'Выберите «Одобрить» или «Отклонить».', 'error', 3000);
+      showToast(
+        'Ошибка',
+        'Выберите «Одобрить» или «Отклонить».',
+        'error',
+        3000,
+      );
       return;
     }
 
@@ -294,12 +486,17 @@ export function ModeratorCasePage(): VoidFunction {
     try {
       await updateAdModerationStatus(adId, decisionId);
 
-      const policyCode = root.querySelector<HTMLInputElement>('[data-policy-input]')?.value ?? '';
+      const policyCode =
+        root.querySelector<HTMLInputElement>('[data-policy-input]')?.value ??
+        '';
       const replyText = publicReply?.value.trim() ?? '';
       const noteText = internalNote?.value.trim() ?? '';
 
-      const activeDecision = root.querySelector<HTMLElement>(`[data-decision-option="${decisionId}"] strong`);
-      const decisionLabel = activeDecision?.textContent?.trim() ?? 'Решение обновлено';
+      const activeDecision = root.querySelector<HTMLElement>(
+        `[data-decision-option="${decisionId}"] strong`,
+      );
+      const decisionLabel =
+        activeDecision?.textContent?.trim() ?? 'Решение обновлено';
 
       if (statusBadge) statusBadge.textContent = decisionLabel;
       if (statusText) {
@@ -308,9 +505,10 @@ export function ModeratorCasePage(): VoidFunction {
           : 'Решение зафиксировано.';
       }
       if (nextStep) {
-        nextStep.textContent = decisionId === 'approve'
-          ? 'Объявление одобрено и будет запущено.'
-          : 'Объявление отклонено. Уведомите рекламодателя о причинах.';
+        nextStep.textContent =
+          decisionId === 'approve'
+            ? 'Объявление одобрено и будет запущено.'
+            : 'Объявление отклонено. Уведомите рекламодателя о причинах.';
       }
 
       if (replyText) {
@@ -323,11 +521,17 @@ export function ModeratorCasePage(): VoidFunction {
       }
       appendTimelineEvent(root, 'Решение принято', decisionLabel);
 
-      showToast('Готово', `Статус объявления обновлён: ${decisionLabel.toLowerCase()}.`, 'success', 3000);
+      showToast(
+        'Готово',
+        `Статус объявления обновлён: ${decisionLabel.toLowerCase()}.`,
+        'success',
+        3000,
+      );
 
       setTimeout(() => navigateTo('/moderator/queue'), 1500);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Не удалось обновить статус.';
+      const msg =
+        err instanceof Error ? err.message : 'Не удалось обновить статус.';
       showToast('Ошибка', msg, 'error', 4000);
       if (applyButton) applyButton.disabled = false;
     }

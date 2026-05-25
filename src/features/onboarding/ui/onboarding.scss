@@ -8,17 +8,17 @@
 }
 
 .tour-spotlight {
-  position: absolute;
+  position: fixed;
   z-index: 9001;
   border-radius: 8px;
   pointer-events: none;
   outline: 3px solid rgba(255, 255, 255, 0.7);
   outline-offset: 1px;
-  transition: top 0.25s ease, left 0.25s ease, width 0.25s ease, height 0.25s ease;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
 }
 
 .tour-tooltip {
-  position: absolute;
+  position: fixed;
   z-index: 9002;
   width: 440px;
   background: var(--color-surface, #fff);

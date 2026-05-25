@@ -21,8 +21,10 @@ export function initCampaignPagination(signal: AbortSignal): void {
     return;
   }
 
-  const rows = Array.from(body.querySelectorAll<HTMLElement>('.campaign-row'));
-  if (!rows.length) {
+  const getRows = (): HTMLElement[] =>
+    Array.from(body.querySelectorAll<HTMLElement>('.campaign-row'));
+
+  if (!getRows().length) {
     footer.hidden = true;
     return;
   }
@@ -31,7 +33,7 @@ export function initCampaignPagination(signal: AbortSignal): void {
   let currentPage = 1;
 
   const getVisibleRows = (): HTMLElement[] =>
-    rows.filter(
+    getRows().filter(
       (row) =>
         row.dataset.searchHidden !== 'true' &&
         row.dataset.filterHidden !== 'true',
@@ -84,7 +86,7 @@ export function initCampaignPagination(signal: AbortSignal): void {
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
 
-    rows.forEach((row) => {
+    getRows().forEach((row) => {
       row.hidden =
         row.dataset.searchHidden === 'true' ||
         row.dataset.filterHidden === 'true';

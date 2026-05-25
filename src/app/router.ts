@@ -165,6 +165,16 @@ const balancePage = createLazyPage(
   (pageModule) => pageModule.renderBalancePage,
   (pageModule) => pageModule.Balance,
 );
+const paymentSuccessPage = createLazyPage(
+  () => import(/* webpackChunkName: "page-payment-result" */ 'pages/payment-result'),
+  (pageModule) => pageModule.renderPaymentSuccessPage,
+  (pageModule) => pageModule.PaymentResult,
+);
+const paymentFailPage = createLazyPage(
+  () => import(/* webpackChunkName: "page-payment-result" */ 'pages/payment-result'),
+  (pageModule) => pageModule.renderPaymentFailPage,
+  (pageModule) => pageModule.PaymentResult,
+);
 const profilePage = createLazyPage(
   () => import(/* webpackChunkName: "page-profile" */ 'pages/profile'),
   (pageModule) => pageModule.renderProfilePage,
@@ -289,6 +299,10 @@ const renderOverviewPage = overviewPage.render;
 const Overview = overviewPage.init;
 const renderBalancePage = balancePage.render;
 const Balance = balancePage.init;
+const renderPaymentSuccessPage = paymentSuccessPage.render;
+const PaymentSuccess = paymentSuccessPage.init;
+const renderPaymentFailPage = paymentFailPage.render;
+const PaymentFail = paymentFailPage.init;
 const renderProfilePage = profilePage.render;
 const Profile = profilePage.init;
 const renderSupportPage = supportPage.render;
@@ -551,6 +565,42 @@ const routes: Record<string, RouteDefinition> = {
     render: renderBalancePage,
     layout: 'advertiser-dashboard',
     init: Balance,
+    protected: true,
+  },
+  '/payment/success': {
+    render: renderPaymentSuccessPage,
+    layout: 'advertiser-dashboard',
+    init: PaymentSuccess,
+    protected: true,
+  },
+  '/advertiser/payment/success': {
+    render: renderPaymentSuccessPage,
+    layout: 'advertiser-dashboard',
+    init: PaymentSuccess,
+    protected: true,
+  },
+  '/payment/fail': {
+    render: renderPaymentFailPage,
+    layout: 'advertiser-dashboard',
+    init: PaymentFail,
+    protected: true,
+  },
+  '/payment/failure': {
+    render: renderPaymentFailPage,
+    layout: 'advertiser-dashboard',
+    init: PaymentFail,
+    protected: true,
+  },
+  '/payment/cancel': {
+    render: renderPaymentFailPage,
+    layout: 'advertiser-dashboard',
+    init: PaymentFail,
+    protected: true,
+  },
+  '/advertiser/payment/fail': {
+    render: renderPaymentFailPage,
+    layout: 'advertiser-dashboard',
+    init: PaymentFail,
     protected: true,
   },
   '/add-sites': {

@@ -1,4 +1,5 @@
 import './offline-modal.scss';
+import { APP_ROUTE_REFRESH_EVENT } from 'shared/lib/events';
 import { closeModal, openModal } from 'shared/ui/modal/modal';
 
 const OFFLINE_EVENT_NAME = 'app:offline-error';
@@ -95,7 +96,8 @@ export function initOfflineModal(): void {
     fetch('/manifest.json', { method: 'HEAD', cache: 'no-store' })
       .then((response) => {
         if (response.ok) {
-          window.location.reload();
+          hide();
+          window.dispatchEvent(new Event(APP_ROUTE_REFRESH_EVENT));
         } else {
           show();
         }

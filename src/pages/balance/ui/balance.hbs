@@ -8,11 +8,11 @@
       </p>
     </div>
 
-    <button class="balance-page__hero-action" type="button" data-balance-open-topup>
+    <button class="balance-page__hero-action" type="button" data-balance-open-topup data-tour="balance-topup-btn">
       Пополнить баланс
     </button>
 
-    <div class="balance-page__stats">
+    <div class="balance-page__stats" data-tour="balance-stats">
       <article class="balance-stat">
         <span class="balance-stat__label">Текущий баланс</span>
         <strong class="balance-stat__value" data-balance-stat="balance">0 ₽</strong>
@@ -113,7 +113,7 @@
         <p class="balance-card__subtitle">Популярные суммы и настройки оплаты</p>
       </div>
 
-      <div class="balance-page__amounts">
+      <div class="balance-page__amounts" data-tour="balance-quick-amounts">
         <button class="balance-amount" type="button" data-balance-amount="5000">
           <span class="balance-amount__value">5 000 ₽</span>
           <span class="balance-amount__label">Минимально</span>
@@ -136,6 +136,7 @@
         class="balance-stack__item balance-stack__item--button"
         type="button"
         data-balance-open-autopay
+        data-tour="balance-autopay"
       >
         <div class="balance-stack__main">
           <strong class="balance-stack__title">Автопополнение</strong>

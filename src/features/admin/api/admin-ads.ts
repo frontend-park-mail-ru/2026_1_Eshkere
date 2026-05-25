@@ -10,12 +10,12 @@ export interface AdminAdDto {
 }
 
 export async function listAdminAds(): Promise<AdminAdDto[]> {
-  const res = await request<{ ads: AdminAdDto[] }>('/api/admin/ads');
+  const res = await request<{ ads: AdminAdDto[] }>('/admin/ads');
   return res.data.ads ?? [];
 }
 
 export async function getAdminAd(adId: number): Promise<AdminAdDto> {
-  const res = await request<AdminAdDto>(`/api/admin/ads/${adId}`);
+  const res = await request<AdminAdDto>(`/admin/ads/${adId}`);
   return res.data;
 }
 
@@ -23,9 +23,9 @@ export async function updateAdModerationStatus(
   adId: number,
   status: 'approve' | 'disapprove',
 ): Promise<void> {
-  await request<unknown>(`/api/admin/ads/${adId}/status`, {
+  await request<unknown>(`/admin/ads/${adId}/status`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ status }),
+    body: { status },
   });
 }

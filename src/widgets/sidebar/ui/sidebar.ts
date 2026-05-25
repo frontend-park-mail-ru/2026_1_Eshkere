@@ -20,6 +20,13 @@ export async function renderSidebar(pathname = '/ads'): Promise<string> {
     pathname.startsWith('/add-sites/') ||
     pathname === '/partner/sites' ||
     pathname.startsWith('/partner/sites/');
+  const isPaymentResult =
+    pathname === '/payment/success' ||
+    pathname === '/payment/fail' ||
+    pathname === '/payment/failure' ||
+    pathname === '/payment/cancel' ||
+    pathname === '/advertiser/payment/success' ||
+    pathname === '/advertiser/payment/fail';
 
   return await renderTemplate(sidebarTemplate, {
     isPartnerCabinet: partnerCabinet,
@@ -39,7 +46,10 @@ export async function renderSidebar(pathname = '/ads'): Promise<string> {
       pathname.startsWith('/advertiser/groups/') ||
       pathname.startsWith('/advertiser/ads/') ||
       pathname === '/advertiser/statistics',
-    isBalance: pathname === '/balance' || pathname === '/advertiser/balance',
+    isBalance:
+      pathname === '/balance' ||
+      pathname === '/advertiser/balance' ||
+      isPaymentResult,
     isAddSites,
     isSupport:
       pathname === '/support' ||

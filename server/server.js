@@ -583,7 +583,9 @@ async function getTlsCredentials() {
 }
 
 async function startServer() {
-  if (forceHttp) {
+  const tlsCredentials = forceHttp ? null : await getTlsCredentials();
+
+  if (!tlsCredentials) {
     http.createServer(app).listen(PORT, () => {
       console.log(
           `Frontend server is running on http://localhost:${PORT} ` +
@@ -594,7 +596,7 @@ async function startServer() {
   }
 
   const server = http2.createSecureServer({
-    ...await getTlsCredentials(),
+    ...tlsCredentials,
     allowHTTP1: true,
   });
 
