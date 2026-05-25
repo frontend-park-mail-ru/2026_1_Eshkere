@@ -23,6 +23,7 @@ export interface AdvertiserProfileResponse {
   city?: string;
   tariff?: string;
   created_at?: string;
+  is_moderator?: boolean;
 }
 
 export async function getMe(): Promise<AdvertiserProfileResponse> {

@@ -97,7 +97,11 @@ export function initOfflineModal(): void {
       .then((response) => {
         if (response.ok) {
           hide();
-          window.dispatchEvent(new Event(APP_ROUTE_REFRESH_EVENT));
+          const path = window.location.pathname;
+          const isAuthPage = path === '/login' || path === '/register' || path.startsWith('/login') || path.startsWith('/register');
+          if (!isAuthPage) {
+            window.dispatchEvent(new Event(APP_ROUTE_REFRESH_EVENT));
+          }
         } else {
           show();
         }

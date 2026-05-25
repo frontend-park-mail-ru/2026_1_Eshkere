@@ -126,6 +126,7 @@ export function AdCreate(): VoidFunction {
     if (uploadPreview)     uploadPreview.hidden = false;
     if (uploadImg)         uploadImg.src = url;
     if (uploadFilename)    uploadFilename.textContent = file.name;
+    if (fileInput)         fileInput.style.pointerEvents = 'none';
 
     // Показать в предпросмотре
     if (previewImg) {
@@ -144,7 +145,7 @@ export function AdCreate(): VoidFunction {
 
   function clearFile(): void {
     selectedFile = null;
-    if (fileInput) fileInput.value = '';
+    if (fileInput) { fileInput.value = ''; fileInput.style.pointerEvents = ''; }
     if (uploadPlaceholder) uploadPlaceholder.hidden = false;
     if (uploadPreview)     uploadPreview.hidden = true;
 

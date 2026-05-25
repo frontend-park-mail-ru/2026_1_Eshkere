@@ -20,6 +20,14 @@ function extractDomain(url: string): string {
   try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return url || 'example.com'; }
 }
 
+function toProxiedUrl(url: string): string {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    try { return '/s3' + new URL(url).pathname; } catch { /* fall through */ }
+  }
+  return url;
+}
+
 export async function renderAdEditPage(): Promise<string> {
   const { campaignId, groupId, adId } = getParams();
   if (!campaignId || !groupId || !adId) {
@@ -36,7 +44,7 @@ export async function renderAdEditPage(): Promise<string> {
     title: ad.title,
     short_desc: ad.short_desc,
     target_url: ad.target_url,
-    currentImageUrl: ad.image_url || null,
+    currentImageUrl: toProxiedUrl(ad.image_url) || null,
   });
 }
 
@@ -97,6 +105,7 @@ export function AdEdit(): VoidFunction {
     if (uploadPreview) uploadPreview.hidden = false;
     if (uploadImg) uploadImg.src = url;
     if (uploadFilename) uploadFilename.textContent = file.name;
+    if (fileInput) fileInput.style.pointerEvents = 'none';
 
     if (previewImg) {
       const existing = previewImg.querySelector('img');
@@ -120,7 +129,7 @@ export function AdEdit(): VoidFunction {
   root.querySelector<HTMLButtonElement>('[data-ade-upload-remove]')?.addEventListener('click', (e) => {
     e.stopPropagation();
     selectedFile = null;
-    if (fileInput) fileInput.value = '';
+    if (fileInput) { fileInput.value = ''; fileInput.style.pointerEvents = ''; }
     if (uploadPlaceholder) uploadPlaceholder.hidden = false;
     if (uploadPreview) uploadPreview.hidden = true;
   }, { signal });

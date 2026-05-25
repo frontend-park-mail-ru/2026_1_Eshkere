@@ -98,6 +98,24 @@ export function AdGroupEdit(): VoidFunction {
     toggle.setAttribute('aria-checked', checked ? 'false' : 'true');
   }, { signal });
 
+  const ageFromSelect = root.querySelector<HTMLSelectElement>('[name="age_from"]');
+  const ageToSelect = root.querySelector<HTMLSelectElement>('[name="age_to"]');
+
+  function syncAgeRange(): void {
+    if (!ageFromSelect || !ageToSelect) return;
+    const from = parseInt(ageFromSelect.value, 10);
+    ageToSelect.querySelectorAll('option').forEach((opt) => {
+      opt.disabled = parseInt(opt.value, 10) <= from;
+    });
+    if (parseInt(ageToSelect.value, 10) <= from) {
+      const firstValid = Array.from(ageToSelect.options).find((o) => !o.disabled);
+      if (firstValid) ageToSelect.value = firstValid.value;
+    }
+  }
+
+  ageFromSelect?.addEventListener('change', syncAgeRange, { signal });
+  syncAgeRange();
+
   root.querySelector<HTMLElement>('[data-age-back]')?.addEventListener('click', () => {
     navigateTo(`/ads/campaign?id=${campaignId}`);
   }, { signal });

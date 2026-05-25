@@ -37,6 +37,10 @@
     overflow: visible;
     width: fit-content;
     justify-self: center;
+
+    &.is-open {
+      z-index: 100;
+    }
   }
 
   &__actions-trigger {

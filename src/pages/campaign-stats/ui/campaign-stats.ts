@@ -14,6 +14,14 @@ function getParams() {
   return Number.isFinite(id) ? id : null;
 }
 
+function toProxiedUrl(url: string): string {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    try { return '/s3' + new URL(url).pathname; } catch { /* fall through */ }
+  }
+  return url;
+}
+
 function fmtNum(n: number): string {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(2).replace('.', ',') + ' М';
   if (n >= 1_000)     return new Intl.NumberFormat('ru-RU').format(Math.round(n));
@@ -364,7 +372,7 @@ export function CampaignStats(): VoidFunction {
         const imgEl = root.querySelector<HTMLElement>('[data-cs-creative-img]');
         if (imgEl) {
           imgEl.innerHTML = bestAd.image_url
-            ? `<img src="${bestAd.image_url}" alt="" />`
+            ? `<img src="${toProxiedUrl(bestAd.image_url)}" alt="" />`
             : '';
         }
         (root.querySelector('[data-cs-creative-title]') as HTMLElement).textContent = bestAd.title;

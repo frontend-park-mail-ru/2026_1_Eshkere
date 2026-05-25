@@ -17,6 +17,14 @@ function getAdIdFromLocation(): number | null {
   return Number.isFinite(n) && n > 0 ? n : null;
 }
 
+function toProxiedUrl(url: string): string {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    try { return '/s3' + new URL(url).pathname; } catch { /* fall through */ }
+  }
+  return url;
+}
+
 function cleanText(
   value: string | null | undefined,
   fallback = FALLBACK_TEXT,
@@ -76,7 +84,7 @@ function buildDetail(ad: AdminAdDto) {
   );
   const targetUrl = ad.target_url?.trim() ?? '';
   const targetUrlLabel = cleanText(ad.target_url);
-  const imageUrl = cleanText(ad.image_url, '');
+  const imageUrl = toProxiedUrl(cleanText(ad.image_url, ''));
   const platform = getHostLabel(ad.target_url);
   const hasImage = Boolean(imageUrl);
   const hasTarget = Boolean(ad.target_url?.trim());

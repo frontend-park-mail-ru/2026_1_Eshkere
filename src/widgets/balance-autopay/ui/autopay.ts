@@ -6,6 +6,7 @@ import {
 } from 'shared/validators';
 import { type ToastController } from 'features/balance/lib/modal';
 import type { BalanceDashboardState } from 'features/balance/model/types';
+import { updateAutopaySettings } from 'features/balance/api/autopay';
 import { closeModal, openModal } from 'shared/ui/modal/modal';
 
 interface InitBalanceAutopayWidgetParams {
@@ -123,15 +124,21 @@ export function initBalanceAutopayWidget({
         return;
       }
 
+      const newThreshold = Math.max(1000, threshold || state.autopayThreshold);
+      const newLimit = Math.max(newThreshold, limit || state.autopayLimit);
+
+      const submitBtn = autopayForm.querySelector<HTMLButtonElement>('[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
+
+      updateAutopaySettings({ enabled, threshold: newThreshold, limit: newLimit })
+        .catch(() => {})
+        .finally(() => {
+          if (submitBtn) submitBtn.disabled = false;
+        });
+
       state.autopayEnabled = enabled;
-      state.autopayThreshold = Math.max(
-        1000,
-        threshold || state.autopayThreshold,
-      );
-      state.autopayLimit = Math.max(
-        state.autopayThreshold,
-        limit || state.autopayLimit,
-      );
+      state.autopayThreshold = newThreshold;
+      state.autopayLimit = newLimit;
 
       commitState();
       closeModal(autopayModal);

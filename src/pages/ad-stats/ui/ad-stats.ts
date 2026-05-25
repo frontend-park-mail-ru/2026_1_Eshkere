@@ -17,6 +17,14 @@ function getParams() {
   };
 }
 
+function toProxiedUrl(url: string): string {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    try { return '/s3' + new URL(url).pathname; } catch { /* fall through */ }
+  }
+  return url;
+}
+
 function fmtNum(n: number) {
   return new Intl.NumberFormat('ru-RU').format(Math.round(n));
 }
@@ -414,7 +422,7 @@ export function AdStats(): VoidFunction {
     const imgContainer = root.querySelector<HTMLElement>('[data-as-img]');
     if (imgContainer) {
       if (ad.image_url) {
-        imgContainer.innerHTML = `<img src="${ad.image_url}" alt="" />`;
+        imgContainer.innerHTML = `<img src="${toProxiedUrl(ad.image_url)}" alt="" />`;
       } else {
         imgContainer.textContent = 'Изображение не загружено';
       }

@@ -5,6 +5,7 @@ import { onboardingState } from '../model/onboarding-state';
 const SPOTLIGHT_PADDING = 10;
 const TOOLTIP_OFFSET = 16;
 const TOOLTIP_ARROW_SIZE = 8;
+const MOBILE_BREAKPOINT = 600;
 
 interface TourElements {
   overlay: HTMLElement;
@@ -22,8 +23,13 @@ let elements: TourElements | null = null;
 let steps: TourStep[] = [];
 let currentStep = 0;
 let resizeObserver: ResizeObserver | null = null;
+let scrollCleanup: (() => void) | null = null;
 let onComplete: (() => void) | null = null;
 let onRouteChange: ((route: string, stepIndex: number) => void) | null = null;
+
+function isMobile(): boolean {
+  return window.innerWidth < MOBILE_BREAKPOINT;
+}
 
 function createElement(): TourElements {
   const overlay = document.createElement('div');
@@ -70,7 +76,7 @@ function createElement(): TourElements {
 
   el.nextBtn.addEventListener('click', () => next());
   el.prevBtn.addEventListener('click', () => prev());
-  el.skipBtn.addEventListener('click', () => stop(true));
+  el.skipBtn.addEventListener('click', () => stop());
 
   document.addEventListener('keydown', handleKeydown);
   document.addEventListener('click', handleDocumentClick);
@@ -81,20 +87,19 @@ function createElement(): TourElements {
 function handleDocumentClick(e: MouseEvent): void {
   if (!elements) return;
   if (!elements.tooltip.contains(e.target as Node)) {
-    stop(true);
+    stop();
   }
 }
 
 function handleKeydown(e: KeyboardEvent): void {
-  if (e.key === 'Escape') stop(true);
+  if (e.key === 'Escape') stop();
   if (e.key === 'ArrowRight') next();
   if (e.key === 'ArrowLeft') prev();
 }
 
-function positionSpotlight(target: Element): DOMRect {
+function positionSpotlight(target: Element): void {
   const rect = target.getBoundingClientRect();
 
-  // Spotlight is position:fixed — viewport coordinates directly from getBoundingClientRect
   const top = rect.top - SPOTLIGHT_PADDING;
   const left = rect.left - SPOTLIGHT_PADDING;
   const width = rect.width + SPOTLIGHT_PADDING * 2;
@@ -106,23 +111,25 @@ function positionSpotlight(target: Element): DOMRect {
     width: ${width}px;
     height: ${height}px;
   `;
-
-  return rect;
 }
 
 function positionTooltip(target: Element | null, placement: TourStep['placement']): void {
   const tooltip = elements!.tooltip;
-  tooltip.dataset.placement = placement;
 
-  // Tooltip is position:fixed — all coordinates are viewport-relative, no scrollY needed
   if (!target || placement === 'center') {
-    tooltip.style.cssText = `
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    `;
+    tooltip.dataset.placement = 'center';
+    tooltip.style.cssText = 'top: 50%; left: 50%; transform: translate(-50%, -50%);';
     return;
   }
+
+  // Mobile: dock to bottom of viewport as a sheet
+  if (isMobile()) {
+    tooltip.dataset.placement = 'bottom-sheet';
+    tooltip.style.cssText = 'bottom: 12px; left: 12px; right: 12px; top: auto; transform: none;';
+    return;
+  }
+
+  tooltip.dataset.placement = placement;
 
   const rect = target.getBoundingClientRect();
   const tw = tooltip.offsetWidth || 440;
@@ -174,6 +181,16 @@ function positionTooltip(target: Element | null, placement: TourStep['placement'
   tooltip.style.cssText = `top: ${top}px; left: ${left}px; transform: none;`;
 }
 
+function repositionCurrent(): void {
+  if (!elements) return;
+  const step = steps[currentStep];
+  const target = step.target ? document.querySelector(step.target) : null;
+  if (target) {
+    positionSpotlight(target);
+    positionTooltip(target, step.placement);
+  }
+}
+
 function renderStep(index: number): void {
   if (!elements) return;
 
@@ -189,11 +206,34 @@ function renderStep(index: number): void {
   if (target) {
     elements.overlay.style.background = 'transparent';
     elements.spotlight.hidden = false;
-    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    requestAnimationFrame(() => {
+
+    const rect = target.getBoundingClientRect();
+    const alreadyInView = rect.top >= 0 && rect.bottom <= window.innerHeight;
+
+    const doPosition = () => {
+      if (!elements) return;
       positionSpotlight(target);
       positionTooltip(target, step.placement);
-    });
+    };
+
+    if (alreadyInView) {
+      requestAnimationFrame(doPosition);
+    } else {
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      let done = false;
+      const settle = () => {
+        if (done) return;
+        done = true;
+        window.removeEventListener('scrollend', settle);
+        doPosition();
+      };
+
+      // scrollend fires when smooth scroll completes (Chrome 109+, Firefox 109+)
+      window.addEventListener('scrollend', settle, { once: true });
+      // Fallback for older browsers or when element is already close to view
+      setTimeout(settle, 420);
+    }
   } else {
     elements.spotlight.hidden = true;
     elements.overlay.style.background = 'rgba(0, 0, 0, 0.6)';
@@ -210,6 +250,8 @@ function cleanup(): void {
   document.removeEventListener('click', handleDocumentClick);
   resizeObserver?.disconnect();
   resizeObserver = null;
+  scrollCleanup?.();
+  scrollCleanup = null;
 
   elements.overlay.remove();
   elements.spotlight.remove();
@@ -225,7 +267,6 @@ function next(): void {
     currentStep++;
     const step = steps[currentStep];
 
-    // If this step requires a different page, hand off to the navigation callback
     if (step.route && onRouteChange && !window.location.pathname.startsWith(step.route)) {
       const handler = onRouteChange;
       const savedStep = currentStep;
@@ -236,7 +277,7 @@ function next(): void {
 
     renderStep(currentStep);
   } else {
-    stop(false);
+    stop();
   }
 }
 
@@ -246,12 +287,10 @@ function prev(): void {
   renderStep(currentStep);
 }
 
-export function stop(skipped = false): void {
+export function stop(): void {
   if (!elements) return;
   cleanup();
-  if (!skipped) {
-    onboardingState.markCompleted();
-  }
+  onboardingState.markCompleted();
   onComplete?.();
   onComplete = null;
 }
@@ -262,18 +301,22 @@ export function startTour(
   onDone?: () => void,
   navigateFn?: (route: string, stepIndex: number) => void,
 ): void {
-  if (elements) stop(true);
+  if (elements) stop();
 
   steps = tourSteps;
   currentStep = fromStep;
   onComplete = onDone ?? null;
   onRouteChange = navigateFn ?? null;
 
-  // Defer createElement so the click that triggered startTour doesn't
-  // immediately fire handleDocumentClick and close the tour.
   setTimeout(() => {
     elements = createElement();
 
+    // Re-position spotlight on scroll (user may scroll manually)
+    const onScroll = () => repositionCurrent();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    scrollCleanup = () => window.removeEventListener('scroll', onScroll);
+
+    // Re-render on resize / orientation change
     resizeObserver = new ResizeObserver(() => {
       if (elements) renderStep(currentStep);
     });
