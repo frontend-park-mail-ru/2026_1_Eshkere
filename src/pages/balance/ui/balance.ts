@@ -8,6 +8,7 @@ import {
   persistBalanceState,
 } from 'features/balance/model/state';
 import { getBalance } from 'features/balance/api/get-balance';
+import { getAutopaySettings } from 'features/balance/api/autopay-settings';
 import { bindModalShell, closeModal, openModal } from 'shared/ui/modal/modal';
 import type { BalanceHistoryState } from 'features/balance/model/types';
 import {
@@ -114,10 +115,17 @@ export function Balance(): void | VoidFunction {
   closeAllModals([topupModal, historyModal, autopayModal]);
   commitState();
 
-  getBalance()
-    .then(({ balance, delivery_alert }) => {
-      state.balanceValue = balance;
-      state.deliveryAlert = delivery_alert ?? null;
+  Promise.all([getBalance(), getAutopaySettings()])
+    .then(([balanceResponse, autopayResponse]) => {
+      state.balanceValue = balanceResponse.balance;
+      state.deliveryAlert = balanceResponse.delivery_alert ?? null;
+      state.savedPaymentMethodId =
+        balanceResponse.saved_payment_method_id?.trim() || null;
+      state.savedPaymentMethodTitle =
+        balanceResponse.saved_payment_method_title?.trim() || null;
+      state.autopayEnabled = Boolean(autopayResponse.enabled);
+      state.autopayThreshold = autopayResponse.threshold;
+      state.autopayLimit = autopayResponse.limit;
       commitState();
     })
     .catch(() => {});

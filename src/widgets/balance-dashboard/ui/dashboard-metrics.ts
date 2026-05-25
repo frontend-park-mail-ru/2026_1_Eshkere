@@ -16,10 +16,18 @@ export function getDaysLeft(state: BalanceDashboardState): number {
 }
 
 export function getAutopayStatus(state: BalanceDashboardState): string {
+  if (!state.savedPaymentMethodId) {
+    return 'Недоступен';
+  }
+
   return state.autopayEnabled ? 'Настроено' : 'Выключено';
 }
 
 export function getAutopayHeroLabel(state: BalanceDashboardState): string {
+  if (!state.savedPaymentMethodId) {
+    return '—';
+  }
+
   return state.autopayEnabled ? 'Вкл' : 'Выкл';
 }
 

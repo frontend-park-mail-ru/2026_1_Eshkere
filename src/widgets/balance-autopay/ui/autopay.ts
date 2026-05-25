@@ -7,6 +7,7 @@ import {
 import { type ToastController } from 'features/balance/lib/modal';
 import type { BalanceDashboardState } from 'features/balance/model/types';
 import { closeModal, openModal } from 'shared/ui/modal/modal';
+import { updateAutopaySettings } from 'features/balance/api/autopay-settings';
 
 interface InitBalanceAutopayWidgetParams {
   autopayForm: HTMLFormElement | null;
@@ -123,24 +124,42 @@ export function initBalanceAutopayWidget({
         return;
       }
 
-      state.autopayEnabled = enabled;
-      state.autopayThreshold = Math.max(
-        1000,
-        threshold || state.autopayThreshold,
-      );
-      state.autopayLimit = Math.max(
-        state.autopayThreshold,
-        limit || state.autopayLimit,
-      );
+      if (enabled && !state.savedPaymentMethodId) {
+        if (errorNode) {
+          errorNode.textContent =
+            'Карта не сохранена. Сделайте первое пополнение через ЮKassa, чтобы включить автоплатёж.';
+        }
+        return;
+      }
 
-      commitState();
-      closeModal(autopayModal);
-      toast.show(
-        'Настройки автоплатежа сохранены',
-        enabled
-          ? `Пополнение включится при падении ниже ${formatPrice(state.autopayThreshold)}.`
-          : 'Автопополнение отключено. Контролируйте остаток вручную.',
-      );
+      const normalizedThreshold = Math.max(1000, threshold || state.autopayThreshold);
+      const normalizedLimit = Math.max(normalizedThreshold, limit || state.autopayLimit);
+
+      updateAutopaySettings({
+        enabled,
+        threshold: normalizedThreshold,
+        limit: normalizedLimit,
+      })
+        .then((settings) => {
+          state.autopayEnabled = Boolean(settings.enabled);
+          state.autopayThreshold = settings.threshold;
+          state.autopayLimit = settings.limit;
+
+          commitState();
+          closeModal(autopayModal);
+          toast.show(
+            'Настройки автоплатежа сохранены',
+            settings.enabled
+              ? `Пополнение включится при падении ниже ${formatPrice(settings.threshold)}.`
+              : 'Автопополнение отключено. Контролируйте остаток вручную.',
+          );
+        })
+        .catch(() => {
+          if (errorNode) {
+            errorNode.textContent =
+              'Не удалось сохранить настройки автоплатежа. Попробуйте позже.';
+          }
+        });
     },
     { signal },
   );

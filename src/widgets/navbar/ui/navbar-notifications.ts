@@ -1,3 +1,8 @@
+import {
+  getNotificationSettings,
+  updateNotificationSettings,
+} from 'features/balance/api/notification-settings';
+
 export function initNavbarNotifications(signal: AbortSignal, closeProfileMenu: () => void): {
   closeNotifications: () => void;
   closeNotificationsModal: () => void;
@@ -182,47 +187,121 @@ export function initNavbarNotifications(signal: AbortSignal, closeProfileMenu: (
   const settingsModal = document.getElementById('navbar-notifications-settings');
   const settingsOpenBtn = document.getElementById('navbar-notifications-settings-open');
   const settingsCloseBtn = document.getElementById('navbar-notifications-settings-close');
+  const settingsErrorNode = document.createElement('p');
+  settingsErrorNode.className = 'navbar__notif-section-sub';
+  settingsErrorNode.dataset.notifSettingsError = 'true';
+  settingsErrorNode.style.color = 'var(--color-danger-500, #ff4d4f)';
+  settingsErrorNode.hidden = true;
+  settingsModal?.querySelector('.navbar__notifications-settings-body')?.prepend(settingsErrorNode);
 
-  const NOTIF_SETTINGS_KEY = 'notification_settings';
+  let notificationSettings = {
+    email_enabled: false,
+    warning_threshold: 500,
+    critical_threshold: 100,
+  };
 
-  function loadSettings(): Record<string, boolean> {
-    try {
-      const raw = localStorage.getItem(NOTIF_SETTINGS_KEY);
-      return raw ? (JSON.parse(raw) as Record<string, boolean>) : { inapp: true };
-    } catch {
-      return { inapp: true };
-    }
+  function parseThreshold(value: string): number {
+    const digits = value.replace(/[^\d]/g, '');
+    return digits ? Number(digits) : 0;
   }
 
-  function saveSettings(settings: Record<string, boolean>): void {
-    try {
-      localStorage.setItem(NOTIF_SETTINGS_KEY, JSON.stringify(settings));
-    } catch {
-      // ignore
-    }
+  function setSettingsError(message: string): void {
+    settingsErrorNode.textContent = message;
+    settingsErrorNode.hidden = !message;
   }
 
-  function syncSettingsToggles(): void {
+  function syncSettingsInputs(): void {
     if (!settingsModal) return;
-    const settings = loadSettings();
+
     settingsModal
       .querySelectorAll<HTMLInputElement>('[data-notif-channel]')
       .forEach((input) => {
         const channel = input.dataset.notifChannel ?? '';
-        if (!input.disabled) {
-          input.checked = settings[channel] ?? false;
+        if (channel === 'inapp') {
+          input.checked = true;
+          input.disabled = true;
+          return;
+        }
+
+        if (channel === 'email') {
+          input.checked = notificationSettings.email_enabled;
         }
       });
+
+    settingsModal
+      .querySelectorAll<HTMLElement>('[data-threshold-key]')
+      .forEach((card) => {
+        card.hidden = false;
+      });
+
+    const warningInput = settingsModal.querySelector<HTMLInputElement>(
+      '[data-threshold-input="warning"]',
+    );
+    const criticalInput = settingsModal.querySelector<HTMLInputElement>(
+      '[data-threshold-input="critical"]',
+    );
+    const warningDisplay = settingsModal.querySelector<HTMLElement>(
+      '[data-threshold-display="warning"]',
+    );
+    const criticalDisplay = settingsModal.querySelector<HTMLElement>(
+      '[data-threshold-display="critical"]',
+    );
+
+    if (warningInput) {
+      warningInput.hidden = false;
+      warningInput.value = String(notificationSettings.warning_threshold);
+    }
+    if (criticalInput) {
+      criticalInput.hidden = false;
+      criticalInput.value = String(notificationSettings.critical_threshold);
+    }
+    if (warningDisplay) {
+      warningDisplay.textContent = String(notificationSettings.warning_threshold);
+    }
+    if (criticalDisplay) {
+      criticalDisplay.textContent = String(notificationSettings.critical_threshold);
+    }
+  }
+
+  async function persistNotificationSettings(nextSettings: {
+    email_enabled: boolean;
+    warning_threshold: number;
+    critical_threshold: number;
+  }): Promise<void> {
+    if (nextSettings.warning_threshold <= nextSettings.critical_threshold) {
+      setSettingsError('Порог предупреждения должен быть больше критического.');
+      syncSettingsInputs();
+      return;
+    }
+
+    try {
+      notificationSettings = await updateNotificationSettings(nextSettings);
+      setSettingsError('');
+      syncSettingsInputs();
+    } catch {
+      setSettingsError('Не удалось сохранить настройки уведомлений. Попробуйте позже.');
+      syncSettingsInputs();
+    }
   }
 
   const openSettingsModal = (): void => {
     if (!settingsModal) return;
     closeNotifications();
-    syncSettingsToggles();
+    setSettingsError('');
     settingsModal.hidden = false;
     if (settingsModal.parentElement !== document.body) {
       document.body.appendChild(settingsModal);
     }
+
+    void getNotificationSettings()
+      .then((settings) => {
+        notificationSettings = settings;
+        syncSettingsInputs();
+      })
+      .catch(() => {
+        setSettingsError('Не удалось загрузить настройки уведомлений.');
+        syncSettingsInputs();
+      });
   };
 
   const closeSettingsModal = (): void => {
@@ -244,20 +323,78 @@ export function initNavbarNotifications(signal: AbortSignal, closeProfileMenu: (
     ?.querySelectorAll<HTMLInputElement>('[data-notif-channel]')
     .forEach((input) => {
       input.addEventListener('change', () => {
-        if (input.disabled) return;
-        const settings = loadSettings();
-        settings[input.dataset.notifChannel ?? ''] = input.checked;
-        saveSettings(settings);
+        const channel = input.dataset.notifChannel ?? '';
+        if (channel !== 'email') {
+          return;
+        }
+
+        void persistNotificationSettings({
+          ...notificationSettings,
+          email_enabled: input.checked,
+        });
       }, { signal });
     });
 
-  // Threshold cards are hidden — thresholds are now determined by the backend
   settingsModal
-    ?.querySelectorAll<HTMLElement>('[data-threshold-key]')
-    .forEach((card) => {
-      card.hidden = true;
+    ?.querySelectorAll<HTMLInputElement>('[data-threshold-input]')
+    .forEach((input) => {
+      input.addEventListener('input', () => {
+        const key = input.dataset.thresholdInput;
+        const value = parseThreshold(input.value);
+        input.value = String(value || '');
+
+        if (key === 'warning') {
+          notificationSettings = {
+            ...notificationSettings,
+            warning_threshold: value,
+          };
+          const warningDisplay = settingsModal?.querySelector<HTMLElement>(
+            '[data-threshold-display="warning"]',
+          );
+          if (warningDisplay) {
+            warningDisplay.textContent = String(value || 0);
+          }
+        }
+
+        if (key === 'critical') {
+          notificationSettings = {
+            ...notificationSettings,
+            critical_threshold: value,
+          };
+          const criticalDisplay = settingsModal?.querySelector<HTMLElement>(
+            '[data-threshold-display="critical"]',
+          );
+          if (criticalDisplay) {
+            criticalDisplay.textContent = String(value || 0);
+          }
+        }
+      }, { signal });
+
+      input.addEventListener('change', () => {
+        const warning = parseThreshold(
+          (
+            settingsModal?.querySelector<HTMLInputElement>(
+              '[data-threshold-input="warning"]',
+            )?.value ?? ''
+          ),
+        );
+        const critical = parseThreshold(
+          (
+            settingsModal?.querySelector<HTMLInputElement>(
+              '[data-threshold-input="critical"]',
+            )?.value ?? ''
+          ),
+        );
+
+        void persistNotificationSettings({
+          ...notificationSettings,
+          warning_threshold: warning,
+          critical_threshold: critical,
+        });
+      }, { signal });
     });
 
+  syncSettingsInputs();
 
   syncNotificationsState();
 

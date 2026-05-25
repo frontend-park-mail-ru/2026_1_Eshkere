@@ -1,5 +1,10 @@
 import './payment-result.scss';
 import { renderTemplate } from 'shared/lib/render';
+import { getBalance } from 'features/balance/api/get-balance';
+import {
+  getBalanceState,
+  persistBalanceState,
+} from 'features/balance/model/state';
 import paymentResultTemplate from './payment-result.hbs';
 
 interface PaymentResultViewModel {
@@ -79,6 +84,22 @@ export async function renderPaymentFailPage(): Promise<string> {
   return renderTemplate(paymentResultTemplate, createFailViewModel());
 }
 
+async function refreshBalanceAfterReturn(): Promise<void> {
+  try {
+    const response = await getBalance();
+    const state = getBalanceState();
+    state.balanceValue = response.balance;
+    state.savedPaymentMethodId = response.saved_payment_method_id?.trim() || null;
+    state.savedPaymentMethodTitle =
+      response.saved_payment_method_title?.trim() || null;
+    state.deliveryAlert = response.delivery_alert ?? null;
+    persistBalanceState(state);
+  } catch {
+    // silently ignore: user still can open balance page manually
+  }
+}
+
 export function PaymentResult(): void {
+  void refreshBalanceAfterReturn();
   document.querySelector<HTMLElement>('.payment-result__primary')?.focus();
 }
