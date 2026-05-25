@@ -240,26 +240,6 @@ const moderatorCasePage = createLazyPage(
   (pageModule) => pageModule.renderModeratorCasePage,
   (pageModule) => pageModule.ModeratorCasePage,
 );
-const moderatorAppealsPage = createLazyPage(
-  () => import(/* webpackChunkName: "page-moderator" */ 'pages/moderator-appeals'),
-  (pageModule) => pageModule.renderModeratorAppealsPage,
-  (pageModule) => pageModule.ModeratorAppealsPage,
-);
-const moderatorMessagesPage = createLazyPage(
-  () => import(/* webpackChunkName: "page-moderator" */ 'pages/moderator-messages'),
-  (pageModule) => pageModule.renderModeratorMessagesPage,
-  (pageModule) => pageModule.ModeratorMessagesPage,
-);
-const moderatorPoliciesPage = createLazyPage(
-  () => import(/* webpackChunkName: "page-moderator" */ 'pages/moderator-policies'),
-  (pageModule) => pageModule.renderModeratorPoliciesPage,
-  (pageModule) => pageModule.ModeratorPoliciesPage,
-);
-const moderatorAuditPage = createLazyPage(
-  () => import(/* webpackChunkName: "page-moderator" */ 'pages/moderator-audit'),
-  (pageModule) => pageModule.renderModeratorAuditPage,
-  (pageModule) => pageModule.ModeratorAuditPage,
-);
 
 const renderHomePage = homePage.render;
 const Home = homePage.init;
@@ -327,14 +307,6 @@ const renderModeratorQueuePage = moderatorQueuePage.render;
 const ModeratorQueuePage = moderatorQueuePage.init;
 const renderModeratorCasePage = moderatorCasePage.render;
 const ModeratorCasePage = moderatorCasePage.init;
-const renderModeratorAppealsPage = moderatorAppealsPage.render;
-const ModeratorAppealsPage = moderatorAppealsPage.init;
-const renderModeratorMessagesPage = moderatorMessagesPage.render;
-const ModeratorMessagesPage = moderatorMessagesPage.init;
-const renderModeratorPoliciesPage = moderatorPoliciesPage.render;
-const ModeratorPoliciesPage = moderatorPoliciesPage.init;
-const renderModeratorAuditPage = moderatorAuditPage.render;
-const ModeratorAuditPage = moderatorAuditPage.init;
 const renderOfertaPage = createLazyRender(
   () => import(/* webpackChunkName: "page-legal" */ 'pages/oferta'),
   (pageModule) => pageModule.renderOfertaPage,
@@ -746,34 +718,7 @@ const routes: Record<string, RouteDefinition> = {
     protected: true,
     requiresModerator: true,
   },
-  '/moderator/appeals': {
-    render: renderModeratorAppealsPage,
-    layout: 'moderator',
-    init: ModeratorAppealsPage,
-    protected: true,
-    requiresModerator: true,
-  },
-  '/moderator/messages': {
-    render: renderModeratorMessagesPage,
-    layout: 'moderator',
-    init: ModeratorMessagesPage,
-    protected: true,
-    requiresModerator: true,
-  },
-  '/moderator/policies': {
-    render: renderModeratorPoliciesPage,
-    layout: 'moderator',
-    init: ModeratorPoliciesPage,
-    protected: true,
-    requiresModerator: true,
-  },
-  '/moderator/audit': {
-    render: renderModeratorAuditPage,
-    layout: 'moderator',
-    init: ModeratorAuditPage,
-    protected: true,
-    requiresModerator: true,
-  },
+
 };
 
 let activeCleanup: RouteCleanup | null = null;

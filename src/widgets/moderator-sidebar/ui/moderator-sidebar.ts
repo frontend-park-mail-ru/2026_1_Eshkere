@@ -8,9 +8,5 @@ export async function renderModeratorSidebar(pathname = '/moderator'): Promise<s
       pathname === '/moderator' ||
       pathname === '/moderator/queue' ||
       pathname === '/moderator/case',
-    isAppeals: pathname === '/moderator/appeals',
-    isMessages: pathname === '/moderator/messages',
-    isPolicies: pathname === '/moderator/policies',
-    isAudit: pathname === '/moderator/audit',
   });
 }

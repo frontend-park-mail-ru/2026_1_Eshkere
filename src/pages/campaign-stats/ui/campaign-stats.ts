@@ -17,7 +17,10 @@ function getParams() {
 function toProxiedUrl(url: string): string {
   if (!url) return '';
   if (url.startsWith('http://') || url.startsWith('https://')) {
-    try { return '/s3' + new URL(url).pathname; } catch { /* fall through */ }
+    try {
+      const { pathname } = new URL(url);
+      return pathname.startsWith('/s3/') ? pathname : '/s3' + pathname;
+    } catch { /* fall through */ }
   }
   return url;
 }
