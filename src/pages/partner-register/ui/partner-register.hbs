@@ -23,8 +23,8 @@
       <fieldset class="partner-register-form__group">
         <legend class="partner-register-form__legend">Реквизиты</legend>
 
-        <label class="partner-register-form__label">
-          Форма сотрудничества
+        <label class="partner-register-form__label partner-register-form__label--select">
+          <span class="partner-register-form__label-text">Форма сотрудничества</span>
           <select class="partner-register-form__select" name="cooperationForm" required>
             <option value="">— Выберите —</option>
             {{#each cooperationForms}}
@@ -34,8 +34,8 @@
           <span class="partner-register-form__field-error" data-error-for="cooperationForm"></span>
         </label>
 
-        <label class="partner-register-form__label">
-          Страна
+        <label class="partner-register-form__label partner-register-form__label--select">
+          <span class="partner-register-form__label-text">Страна</span>
           <select class="partner-register-form__select" name="countryCode" required>
             <option value="">— Выберите —</option>
             {{#each countries}}
@@ -45,16 +45,16 @@
           <span class="partner-register-form__field-error" data-error-for="countryCode"></span>
         </label>
 
-        <label class="partner-register-form__label">
-          Регион регистрации
+        <label class="partner-register-form__label partner-register-form__label--select">
+          <span class="partner-register-form__label-text">Регион регистрации</span>
           <select class="partner-register-form__select" name="registrationRegionCode" required>
             <option value="">— Выберите страну —</option>
           </select>
           <span class="partner-register-form__field-error" data-error-for="registrationRegionCode"></span>
         </label>
 
-        <label class="partner-register-form__label">
-          Валюта выплат
+        <label class="partner-register-form__label partner-register-form__label--select">
+          <span class="partner-register-form__label-text">Валюта выплат</span>
           <select class="partner-register-form__select" name="payoutCurrency" required>
             {{#each payoutCurrencies}}
             <option value="{{this.code}}">{{this.name}}</option>

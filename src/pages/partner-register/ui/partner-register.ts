@@ -1,7 +1,9 @@
+import './partner-register.scss';
 import { renderTemplate } from 'shared/lib/render';
 import { renderFormField, PasswordVisibilityToggles } from 'shared/ui/form-field/form-field';
 import { renderButton } from 'shared/ui/button/button';
 import { validateEmail, validatePhone, validatePassword, validateRepeatPassword, setFieldState, normalizePhone } from 'shared/validators';
+import { initNativeSelectArrows } from 'shared/lib/native-select-arrow';
 import {
   registerPartner,
   getPartnerCountries,
@@ -102,6 +104,11 @@ export function PartnerRegister(): void | VoidFunction {
   }
 
   PasswordVisibilityToggles(form);
+  initNativeSelectArrows({
+    root: form,
+    selectSelector: '.partner-register-form__label--select > select.partner-register-form__select',
+    fieldSelector: '.partner-register-form__label--select',
+  });
 
   const countrySelect = form.querySelector<HTMLSelectElement>('[name="countryCode"]')!;
   const regionSelect = form.querySelector<HTMLSelectElement>('[name="registrationRegionCode"]')!;

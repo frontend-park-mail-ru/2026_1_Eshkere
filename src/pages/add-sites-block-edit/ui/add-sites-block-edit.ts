@@ -1,4 +1,5 @@
 import '../../../pages/add-sites-site/ui/add-sites-site.scss';
+import './add-sites-block-edit.scss';
 import {
   getPartnerBlock,
   updatePartnerBlockGeneral,

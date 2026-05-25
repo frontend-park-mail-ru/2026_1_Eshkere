@@ -18,16 +18,20 @@
 .stats-header__back {
   min-height: 38px;
   padding: 0 14px;
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-panel-soft);
   border-radius: 999px;
-  background: transparent;
-  color: var(--text-body);
+  background: var(--surface-card-strong);
+  color: var(--text-title);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   flex-shrink: 0;
-  transition: border-color 0.15s, color 0.15s;
-  &:hover { border-color: var(--primary-border); color: var(--primary-active); }
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  &:hover {
+    border-color: var(--primary-border);
+    background: var(--surface-card-hover);
+    color: var(--primary-active);
+  }
 }
 
 .stats-header__info { flex: 1; min-width: 0; }
@@ -282,8 +286,9 @@
   transition: border-color 0.15s, background 0.15s, color 0.15s;
   &--active {
     border-color: var(--primary-border);
-    background: var(--primary-surface);
+    background: var(--primary-surface-strong);
     color: var(--primary-active);
+    box-shadow: var(--shadow-primary-soft);
   }
 }
 

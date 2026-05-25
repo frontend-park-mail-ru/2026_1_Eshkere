@@ -6,6 +6,7 @@ import { authState } from 'entities/user';
 import { LocalStorageKey, localStorageService } from 'shared/lib/local-storage';
 import { getCurrentPath } from 'shared/lib/navigation';
 import { isPartnerCabinet } from 'shared/lib/cabinet';
+import { initNativeSelectArrows } from 'shared/lib/native-select-arrow';
 import { renderTemplate } from 'shared/lib/render';
 import supportTemplate from './support.hbs';
 
@@ -270,6 +271,13 @@ export function Support(): void | VoidFunction {
   const controller = new AbortController();
   supportController = controller;
   const { signal } = controller;
+
+  initNativeSelectArrows({
+    root,
+    signal,
+    selectSelector: '.support-partner-form__select, .support-form__select',
+    fieldSelector: '.support-partner-form__label--select, .support-form__select-wrap',
+  });
 
   // Прикрепление файла — для всех форм
   root.querySelectorAll<HTMLInputElement>('[data-support-screenshot]').forEach(bindFileLabel);

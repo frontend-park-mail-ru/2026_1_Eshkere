@@ -5,7 +5,7 @@
 >
   <div class="add-sites-site__toolbar">
     <div class="add-sites-site__toolbar-card">
-      <a class="campaign-builder__button campaign-builder__button--secondary add-sites-site__back" href="/partner/sites">
+      <a class="add-sites-site__back add-sites-site__back-button" href="/partner/sites">
         ← Площадки
       </a>
       <div class="add-sites-site__toolbar-main">
@@ -34,10 +34,10 @@
       </div>
       {{#if siteId}}
         <div class="add-sites-site__toolbar-actions">
-          <button type="button" class="campaign-builder__button campaign-builder__button--secondary" data-site-edit>
+          <button type="button" class="add-sites-site__toolbar-action add-sites-site__toolbar-action--edit" data-site-edit>
             Редактировать сайт
           </button>
-          <button type="button" class="campaign-builder__button campaign-builder__button--danger" data-site-delete>
+          <button type="button" class="add-sites-site__toolbar-action add-sites-site__toolbar-action--delete" data-site-delete>
             Удалить сайт
           </button>
           <a

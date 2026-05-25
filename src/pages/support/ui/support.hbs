@@ -60,7 +60,7 @@
           </div>
 
           <div class="support-partner-form__row">
-            <label class="support-partner-form__label">
+            <label class="support-partner-form__label support-partner-form__label--select">
               Категория
               <select class="support-partner-form__select" data-support-topic required>
                 <option value="question">Вопрос по площадке</option>
@@ -236,12 +236,14 @@
                 </div>
 
                 <div class="support-form__actions">
-                  <select class="support-form__select" data-support-topic aria-label="Тема вопроса">
-                    <option>Вопрос по модерации</option>
-                    <option>Креативы и текст</option>
-                    <option>Бюджет и списания</option>
-                    <option>Запуск кампании</option>
-                  </select>
+                  <div class="support-form__select-wrap">
+                    <select class="support-form__select" data-support-topic aria-label="Тема вопроса">
+                      <option>Вопрос по модерации</option>
+                      <option>Креативы и текст</option>
+                      <option>Бюджет и списания</option>
+                      <option>Запуск кампании</option>
+                    </select>
+                  </div>
                   <button class="support-form__button" type="submit">Отправить вопрос</button>
                 </div>
               </form>

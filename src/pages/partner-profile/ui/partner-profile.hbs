@@ -83,20 +83,20 @@
         </div>
 
         <div class="partner-profile-form__row">
-          <label class="partner-profile-form__label">
-            Форма сотрудничества
+          <label class="partner-profile-form__label partner-profile-form__label--select">
+            <span class="partner-profile-form__label-text">Форма сотрудничества</span>
             <select class="partner-profile-form__select" name="cooperationForm">
               {{{cooperationFormOptions}}}
             </select>
           </label>
-          <label class="partner-profile-form__label">
-            Страна
+          <label class="partner-profile-form__label partner-profile-form__label--select">
+            <span class="partner-profile-form__label-text">Страна</span>
             <select class="partner-profile-form__select" name="countryCode">
               {{{countryOptions}}}
             </select>
           </label>
-          <label class="partner-profile-form__label">
-            Регион регистрации
+          <label class="partner-profile-form__label partner-profile-form__label--select">
+            <span class="partner-profile-form__label-text">Регион регистрации</span>
             <select class="partner-profile-form__select" name="registrationRegionCode" data-region-select data-current-region="{{regionCode}}">
               <option value="">— Выберите —</option>
             </select>
@@ -104,8 +104,8 @@
         </div>
 
         <div class="partner-profile-form__row">
-          <label class="partner-profile-form__label">
-            Валюта выплат
+          <label class="partner-profile-form__label partner-profile-form__label--select">
+            <span class="partner-profile-form__label-text">Валюта выплат</span>
             <select class="partner-profile-form__select" name="payoutCurrency">
               {{{payoutCurrencyOptions}}}
             </select>

@@ -2,6 +2,7 @@ import './ad-group-create.scss';
 import { createAdGroup, type CreateAdGroupRequest, type GenderType } from 'features/ads/api/ad-groups';
 import { renderTemplate } from 'shared/lib/render';
 import { navigateTo } from 'shared/lib/navigation';
+import { initNativeSelectArrows } from 'shared/lib/native-select-arrow';
 import adGroupCreateTemplate from './ad-group-create.hbs';
 
 function getCampaignId(): number | null {
@@ -21,6 +22,13 @@ export function AdGroupCreate(): VoidFunction {
 
   const controller = new AbortController();
   const { signal } = controller;
+
+  initNativeSelectArrows({
+    root,
+    signal,
+    selectSelector: '.agc__field--select > .agc__select',
+    fieldSelector: '.agc__field--select',
+  });
 
   root.querySelector<HTMLElement>('[data-agc-back]')?.addEventListener('click', () => {
     navigateTo(`/ads/campaign?id=${campaignId}`);

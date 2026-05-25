@@ -82,17 +82,22 @@
 }
 
 .add-sites-page .campaign-row__action-link {
-  min-height: 34px;
-  padding: 0 12px;
-  border: 1px solid var(--border);
-  border-radius: t.$radius-pill;
+  min-height: auto;
+  padding: 0;
+  border: none;
+  border-radius: 0;
   display: inline-flex;
   align-items: center;
   color: var(--text-action);
-  background: var(--surface-muted);
-  font-size: 13px;
-  font-weight: 800;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
   text-decoration: none;
+
+  &:hover {
+    color: var(--primary-active);
+    text-decoration: underline;
+  }
 }
 
 .add-sites-page__empty-steps {

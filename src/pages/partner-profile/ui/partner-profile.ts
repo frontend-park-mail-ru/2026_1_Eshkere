@@ -10,6 +10,7 @@ import {
 } from 'features/partner';
 import { navigateTo } from 'shared/lib/navigation';
 import { renderTemplate } from 'shared/lib/render';
+import { initNativeSelectArrows } from 'shared/lib/native-select-arrow';
 import { normalizePhone } from 'shared/validators';
 import partnerProfileTemplate from './partner-profile.hbs';
 
@@ -116,6 +117,13 @@ export function PartnerProfile(): VoidFunction {
 
   const form = document.getElementById('partner-profile-form');
   if (!(form instanceof HTMLFormElement)) return () => controller.abort();
+
+  initNativeSelectArrows({
+    root: form,
+    signal,
+    selectSelector: '.partner-profile-form__label--select > select.partner-profile-form__select',
+    fieldSelector: '.partner-profile-form__label--select',
+  });
 
   const errorBanner = form.querySelector<HTMLElement>('[data-form-error]')!;
   const successBanner = form.querySelector<HTMLElement>('[data-form-success]')!;

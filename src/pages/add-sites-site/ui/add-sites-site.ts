@@ -218,6 +218,9 @@ export function AddSitesSite(): void | VoidFunction {
       if (confirmBtn) confirmBtn.disabled = true;
       try {
         await deletePartnerSite(siteIdNum);
+        if (siteDeleteModal instanceof HTMLElement) {
+          closeModal(siteDeleteModal);
+        }
         const { navigateTo } = await import('shared/lib/navigation');
         navigateTo('/partner/sites', { replace: true });
       } catch (err) {
