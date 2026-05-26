@@ -1,3 +1,8 @@
+import {
+  getNotificationSettings,
+  updateNotificationSettings,
+} from 'features/ads/api/notification-settings';
+
 export function initNavbarNotifications(signal: AbortSignal, closeProfileMenu: () => void): {
   closeNotifications: () => void;
   closeNotificationsModal: () => void;
@@ -183,46 +188,24 @@ export function initNavbarNotifications(signal: AbortSignal, closeProfileMenu: (
   const settingsOpenBtn = document.getElementById('navbar-notifications-settings-open');
   const settingsCloseBtn = document.getElementById('navbar-notifications-settings-close');
 
-  const NOTIF_SETTINGS_KEY = 'notification_settings';
+  let cachedEmailEnabled: boolean | null = null;
 
-  function loadSettings(): Record<string, boolean> {
-    try {
-      const raw = localStorage.getItem(NOTIF_SETTINGS_KEY);
-      return raw ? (JSON.parse(raw) as Record<string, boolean>) : { inapp: true };
-    } catch {
-      return { inapp: true };
-    }
-  }
-
-  function saveSettings(settings: Record<string, boolean>): void {
-    try {
-      localStorage.setItem(NOTIF_SETTINGS_KEY, JSON.stringify(settings));
-    } catch {
-      // ignore
-    }
-  }
-
-  function syncSettingsToggles(): void {
+  function applyEmailEnabled(enabled: boolean): void {
+    cachedEmailEnabled = enabled;
     if (!settingsModal) return;
-    const settings = loadSettings();
-    settingsModal
-      .querySelectorAll<HTMLInputElement>('[data-notif-channel]')
-      .forEach((input) => {
-        const channel = input.dataset.notifChannel ?? '';
-        if (!input.disabled) {
-          input.checked = settings[channel] ?? false;
-        }
-      });
+    settingsModal.querySelectorAll<HTMLInputElement>('[data-notif-channel="email"]').forEach((input) => {
+      if (!input.disabled) input.checked = enabled;
+    });
   }
 
   const openSettingsModal = (): void => {
     if (!settingsModal) return;
     closeNotifications();
-    syncSettingsToggles();
     settingsModal.hidden = false;
     if (settingsModal.parentElement !== document.body) {
       document.body.appendChild(settingsModal);
     }
+    getNotificationSettings().then((s) => applyEmailEnabled(s.email_enabled)).catch(() => {});
   };
 
   const closeSettingsModal = (): void => {
@@ -241,17 +224,20 @@ export function initNavbarNotifications(signal: AbortSignal, closeProfileMenu: (
   }, { signal });
 
   settingsModal
-    ?.querySelectorAll<HTMLInputElement>('[data-notif-channel]')
+    ?.querySelectorAll<HTMLInputElement>('[data-notif-channel="email"]')
     .forEach((input) => {
       input.addEventListener('change', () => {
         if (input.disabled) return;
-        const settings = loadSettings();
-        settings[input.dataset.notifChannel ?? ''] = input.checked;
-        saveSettings(settings);
+        const newValue = input.checked;
+        updateNotificationSettings({ email_enabled: newValue })
+          .then((s) => applyEmailEnabled(s.email_enabled))
+          .catch(() => {
+            if (cachedEmailEnabled !== null) applyEmailEnabled(cachedEmailEnabled);
+          });
       }, { signal });
     });
 
-  // Threshold cards are hidden — thresholds are now determined by the backend
+  // Threshold cards are hidden — thresholds are determined by the backend
   settingsModal
     ?.querySelectorAll<HTMLElement>('[data-threshold-key]')
     .forEach((card) => {

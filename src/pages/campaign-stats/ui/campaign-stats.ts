@@ -1,6 +1,8 @@
 import { getAds } from 'features/ads/api/get-ads';
 import { getAdGroups } from 'features/ads/api/ad-groups';
 import { getAdsInGroup } from 'features/ads/api/ads';
+import { getCampaignStats, periodDates } from 'features/ads/api/stats';
+import type { StatsPoint } from 'features/ads/api/stats';
 import { renderTemplate } from 'shared/lib/render';
 import { navigateTo } from 'shared/lib/navigation';
 import campaignStatsTemplate from './campaign-stats.hbs';
@@ -39,22 +41,6 @@ function fmtPct(n: number, d = 2): string {
   return n.toFixed(d) + '%';
 }
 
-function seeded(seed: number, min: number, max: number): number {
-  const x = Math.sin(seed + 1) * 10000;
-  return min + (x - Math.floor(x)) * (max - min);
-}
-
-function mockMetrics(seed: number, days: number) {
-  const b = seed % 100;
-  const impressions = Math.round((b + 1) * 1200 * days);
-  const clicks      = Math.round(impressions * (0.018 + b * 0.0002));
-  const spend       = Math.round(clicks * (12 + b * 0.3));
-  const ctr         = (clicks / impressions) * 100;
-  const cpc         = spend / clicks;
-  const conversions = Math.round(clicks * 0.031);
-  return { impressions, clicks, spend, ctr, cpc, conversions };
-}
-
 // ── Line chart ────────────────────────────────────────────────────────────────
 
 type CsMetric = 'impressions' | 'clicks' | 'ctr' | 'spend';
@@ -62,34 +48,36 @@ type CsMetric = 'impressions' | 'clicks' | 'ctr' | 'spend';
 function buildLineChart(
   svgEl: SVGSVGElement,
   labelsEl: HTMLElement,
-  seed: number,
-  days: number,
+  points: StatsPoint[],
   metric: CsMetric,
 ) {
-  const count = Math.min(days === 0 ? 30 : days, 30);
-  const W = 700; const H = 200;
+  const defs = svgEl.querySelector('defs');
+  if (points.length < 2) {
+    svgEl.innerHTML = '';
+    if (defs) svgEl.appendChild(defs);
+    labelsEl.innerHTML = '';
+    return;
+  }
+
+  const count = points.length;
+  const W = 700; const H = 300;
   const PAD = { top: 24, right: 16, bottom: 4, left: 12 };
   const innerW = W - PAD.left - PAD.right;
   const innerH = H - PAD.top - PAD.bottom;
 
-  const base = mockMetrics(seed, 1);
-  const rawVals = Array.from({ length: count }, (_, i) => {
-    const noise = seeded(seed * 17 + i * 11, 0.94, 1.06);
-    const trend = 1 + i * 0.018;
-    if (metric === 'impressions') return base.impressions * noise * trend;
-    if (metric === 'clicks')      return base.clicks * noise * trend;
-    if (metric === 'ctr')         return base.ctr * noise * trend;
-    return base.spend * noise * trend;
+  const rawVals = points.map((p) => {
+    if (metric === 'impressions') return p.impressions;
+    if (metric === 'clicks')      return p.clicks;
+    if (metric === 'ctr')         return p.ctr;
+    return p.spend;
   });
 
   const minV = Math.min(...rawVals) * 0.88;
   const maxV = Math.max(...rawVals) * 1.06;
   const toX = (i: number) => PAD.left + (i / (count - 1)) * innerW;
-  const toY = (v: number) => PAD.top + innerH - ((v - minV) / (maxV - minV)) * innerH;
+  const toY = (v: number) => PAD.top + innerH - ((maxV === minV ? 0.5 : (v - minV) / (maxV - minV)) * innerH);
   const pts = rawVals.map((v, i) => ({ x: toX(i), y: toY(v), v }));
 
-  // rebuild preserving <defs>
-  const defs = svgEl.querySelector('defs');
   svgEl.innerHTML = '';
   if (defs) svgEl.appendChild(defs);
 
@@ -157,13 +145,11 @@ function buildLineChart(
   tipText.textContent = label;
   svgEl.appendChild(tipText);
 
-  // labels
+  // labels from real dates
   labelsEl.innerHTML = '';
   const step = Math.max(1, Math.floor(count / 8));
-  const now = new Date();
   for (let i = 0; i < count; i += step) {
-    const d = new Date(now);
-    d.setDate(d.getDate() - (count - 1 - i));
+    const d = new Date(points[i].date);
     const lbl = document.createElement('span');
     lbl.className = 'as-line-label';
     lbl.textContent = d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
@@ -174,7 +160,11 @@ function buildLineChart(
 // ── Platform bars ─────────────────────────────────────────────────────────────
 
 const PLATFORM_COLORS = ['#0077ff', '#27a7e7', '#f47224'];
-const PLATFORM_ICONS  = ['ВК', 'TG', 'ОК'];
+const PLATFORM_ICONS  = [
+  '<img src="/icons/VK_logo_Blue_40x40.svg" width="18" height="18" alt="VK" />',
+  '<img src="/icons/platforms/telegram.svg" width="18" height="18" alt="Telegram" />',
+  '<img src="/icons/platforms/odnoklassniki.svg" width="18" height="18" alt="OK" />',
+];
 const PLATFORM_ICON_CLS = ['as-platform-icon--vk', 'as-platform-icon--tg', 'as-platform-icon--ok'];
 const PLATFORM_NAMES  = ['ВКонтакте', 'Telegram', 'OK.ru'];
 const PLATFORM_SHARES = [0.68, 0.22, 0.10];
@@ -199,9 +189,32 @@ function buildPlatforms(container: HTMLElement, totalImpr: number) {
   });
 }
 
+function buildPlatformsFromData(container: HTMLElement, placements: Array<{ id: number; name: string; impressions: number }>) {
+  const total = placements.reduce((s, p) => s + p.impressions, 0);
+  const colors = ['#0077ff', '#27a7e7', '#f47224', '#a855f7', '#22c55e'];
+  container.innerHTML = '';
+  placements.forEach((p, i) => {
+    const pct = total > 0 ? p.impressions / total : 0;
+    const row = document.createElement('div');
+    row.className = 'cs-platform-row';
+    row.innerHTML = `
+      <div class="cs-platform-name">${p.name}</div>
+      <div class="cs-platform-bar-wrap">
+        <div class="cs-platform-bar" style="width:${(pct * 100).toFixed(1)}%;background:${colors[i % colors.length]}"></div>
+      </div>
+      <div class="cs-platform-val">${fmtNum(p.impressions)}</div>
+    `;
+    container.appendChild(row);
+  });
+}
+
 // ── Insights ──────────────────────────────────────────────────────────────────
 
-const INSIGHT_ICONS = ['📊', '🔔', '💰'];
+const INSIGHT_ICONS = [
+  '<img src="/icons/statistics.svg" width="18" height="18" alt="" />',
+  '<img src="/icons/Bell.svg" width="18" height="18" alt="" />',
+  '<img src="/icons/wallet.svg" width="18" height="18" alt="" />',
+];
 
 function buildInsights(container: HTMLElement, ctrVal: number, budgetPct: number) {
   const items = [
@@ -253,6 +266,7 @@ export function CampaignStats(): VoidFunction {
   const { signal } = controller;
   let currentDays = 30;
   let currentMetric: CsMetric = 'impressions';
+  let currentTimeline: StatsPoint[] = [];
 
   root.querySelector('[data-cs-back]')?.addEventListener('click', () => {
     navigateTo('/ads');
@@ -287,23 +301,36 @@ export function CampaignStats(): VoidFunction {
       const svgEl = root.querySelector<SVGSVGElement>('[data-cs-line-chart]');
       const labelsEl = root.querySelector<HTMLElement>('[data-cs-line-labels]');
       if (svgEl && labelsEl)
-        buildLineChart(svgEl, labelsEl, campaignId!, currentDays, currentMetric);
+        buildLineChart(svgEl, labelsEl, currentTimeline, currentMetric);
     }, { signal });
   });
 
+  function computeDelta(current: number, prev: number): { text: string; up: boolean } {
+    if (prev === 0) return { text: '—', up: true };
+    const pct = ((current - prev) / prev) * 100;
+    const up = pct >= 0;
+    return { text: `${up ? '+' : ''}${pct.toFixed(0)}%`, up };
+  }
+
   async function refresh() {
     const days = currentDays === 0 ? 30 : currentDays;
+    const { from: fromDate, to: toDate } = periodDates(currentDays);
 
-    const [adsResult, groupsResult] = await Promise.all([
+    const [adsResult, groupsResult, statsResult] = await Promise.all([
       getAds(),
       getAdGroups(campaignId!).catch(() => ({ ad_campaign_id: campaignId!, groups: [] })),
+      getCampaignStats(campaignId!, fromDate, toDate).catch(() => null),
     ]);
 
     const campaign = adsResult.ads.find((a) => a.id === campaignId);
     if (!campaign) return;
 
+    const stats = statsResult;
+    const totals = stats?.totals;
+    const prevTotals = stats?.previous_totals;
+    currentTimeline = stats?.timeline ?? [];
+
     const statusMeta = STATUS_LABELS[campaign.status ?? ''] ?? { label: '—', cls: 'stats-badge--muted' };
-    const m = mockMetrics(campaignId!, days);
 
     // hero
     (root.querySelector('[data-cs-title]') as HTMLElement).textContent = campaign.title ?? '—';
@@ -318,50 +345,48 @@ export function CampaignStats(): VoidFunction {
         : 'Запущена 01.01.2025';
     (root.querySelector('[data-cs-id]') as HTMLElement).textContent = `ID: ${campaignId}`;
 
-    // metrics
-    const deltas: Record<string, { sign: string; text: string; up: boolean }> = {
-      impressions: { sign: '+', text: '+18%',      up: true  },
-      clicks:      { sign: '+', text: '+12%',      up: true  },
-      ctr:         { sign: '+', text: '+0,4 сс',   up: true  },
-      spend:       { sign: '+', text: '+8%',        up: true  },
-      cpc:         { sign: '-', text: '-0,08 ₽',   up: false },
-      conversions: { sign: '+', text: '+24%',       up: true  },
-    };
-
+    // metrics KPIs
     const kpis: Record<string, string> = {
-      impressions: fmtNum(m.impressions),
-      clicks:      fmtNum(m.clicks),
-      ctr:         fmtPct(m.ctr),
-      spend:       fmtMoney(m.spend),
-      cpc:         fmtMoney(m.cpc),
-      conversions: fmtNum(m.conversions),
+      impressions: totals ? fmtNum(totals.impressions)   : '—',
+      clicks:      totals ? fmtNum(totals.clicks)        : '—',
+      ctr:         totals ? fmtPct(totals.ctr)           : '—',
+      spend:       totals ? fmtMoney(totals.spend)       : '—',
+      cpc:         totals ? fmtMoney(totals.cpc)         : '—',
+      conversions: '—',
     };
     Object.entries(kpis).forEach(([k, v]) => {
       const el = root.querySelector<HTMLElement>(`[data-cs-kpi="${k}"]`);
       if (el) el.textContent = v;
     });
-    Object.entries(deltas).forEach(([k, d]) => {
-      const el = root.querySelector<HTMLElement>(`[data-cs-delta="${k}"]`);
+
+    // deltas vs previous period
+    const deltaKeys: Array<{ key: string; curr: number; prev: number }> = totals && prevTotals ? [
+      { key: 'impressions', curr: totals.impressions, prev: prevTotals.impressions },
+      { key: 'clicks',      curr: totals.clicks,      prev: prevTotals.clicks      },
+      { key: 'ctr',         curr: totals.ctr,         prev: prevTotals.ctr         },
+      { key: 'spend',       curr: totals.spend,       prev: prevTotals.spend       },
+      { key: 'cpc',         curr: totals.cpc,         prev: prevTotals.cpc         },
+    ] : [];
+    deltaKeys.forEach(({ key, curr, prev }) => {
+      const el = root.querySelector<HTMLElement>(`[data-cs-delta="${key}"]`);
       if (!el) return;
+      const d = computeDelta(curr, prev);
       el.textContent = d.text;
       el.classList.remove('as-metric__delta--up', 'as-metric__delta--down');
       el.classList.add(d.up ? 'as-metric__delta--up' : 'as-metric__delta--down');
     });
+    const convEl = root.querySelector<HTMLElement>('[data-cs-delta="conversions"]');
+    if (convEl) { convEl.textContent = ''; convEl.className = 'as-metric__delta'; }
 
     // chart subtitle
-    const now = new Date();
-    const from = new Date(now);
-    from.setDate(now.getDate() - (days - 1));
-    const opts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long' };
     const subtitleEl = root.querySelector<HTMLElement>('[data-cs-chart-subtitle]');
-    if (subtitleEl)
-      subtitleEl.textContent = `За последние ${days} дней`;
+    if (subtitleEl) subtitleEl.textContent = `За последние ${days} дней`;
 
     // line chart
     const svgEl = root.querySelector<SVGSVGElement>('[data-cs-line-chart]');
     const labelsEl = root.querySelector<HTMLElement>('[data-cs-line-labels]');
     if (svgEl && labelsEl)
-      buildLineChart(svgEl, labelsEl, campaignId!, currentDays, currentMetric);
+      buildLineChart(svgEl, labelsEl, currentTimeline, currentMetric);
 
     // best creative — try to get from first group
     const firstGroup = groupsResult.groups[0];
@@ -402,7 +427,7 @@ export function CampaignStats(): VoidFunction {
     // campaign params
     const dailyBudget = campaign.price ?? 2000;
     const totalBudget = dailyBudget * days;
-    const spent = Math.min(m.spend, totalBudget);
+    const spent = totals ? Math.min(totals.spend, totalBudget) : 0;
     const remaining = Math.max(0, totalBudget - spent);
     const pct = totalBudget > 0 ? Math.round((spent / totalBudget) * 100) : 0;
 
@@ -429,54 +454,60 @@ export function CampaignStats(): VoidFunction {
     const labelEl = root.querySelector<HTMLElement>('[data-cs-budget-label]');
     if (labelEl) labelEl.textContent = `${pct}% бюджета использовано`;
 
-    // groups table
+    // groups table — merge stats.groups (real metrics) with groupsResult.groups (for navigation)
     const tbody = root.querySelector<HTMLElement>('[data-cs-groups-table]');
     const countEl = root.querySelector<HTMLElement>('[data-cs-groups-count]');
+    const n = groupsResult.groups.length;
     if (countEl)
-      countEl.textContent = `${groupsResult.groups.length} групп${groupsResult.groups.length === 1 ? 'а' : groupsResult.groups.length < 5 ? 'ы' : ''} в кампании`;
+      countEl.textContent = `${n} групп${n === 1 ? 'а' : n < 5 ? 'ы' : ''} в кампании`;
 
     if (tbody) {
-      if (groupsResult.groups.length === 0) {
+      const statGroups = stats?.groups ?? [];
+      const rows = statGroups.length > 0 ? statGroups : groupsResult.groups.map((g) => ({
+        id: g.id, name: g.name, impressions: 0, clicks: 0, ctr: 0, spend: 0, cpc: 0,
+        partner_reward: 0, platform_revenue: 0,
+      }));
+
+      if (rows.length === 0) {
         tbody.innerHTML = `<tr><td colspan="7" class="as-table-loading">Групп нет</td></tr>`;
       } else {
-        const groupStatuses = ['active', 'active', 'active', 'paused'];
-        tbody.innerHTML = groupsResult.groups
-          .map((g, i) => {
-            const gm = mockMetrics(g.id * 7 + i, days);
-            const st = GROUP_STATUS_LABELS[groupStatuses[i % groupStatuses.length]] ?? {
-              label: '—',
-              cls: 'stats-badge--muted',
-            };
-            return `<tr>
+        tbody.innerHTML = rows
+          .map((g) => {
+            const st = GROUP_STATUS_LABELS['active'];
+            return `<tr style="cursor:pointer" data-goto-group="${g.id}">
               <td class="stats-table__name">${g.name}</td>
               <td><span class="stats-badge ${st.cls}">${st.label}</span></td>
-              <td>${fmtNum(gm.impressions)}</td>
-              <td>${fmtNum(gm.clicks)}</td>
-              <td style="color:var(--primary-active);font-weight:700">${fmtPct(gm.ctr)}</td>
-              <td>${fmtMoney(gm.spend)}</td>
-              <td>${fmtMoney(gm.cpc)}</td>
+              <td>${fmtNum(g.impressions)}</td>
+              <td>${fmtNum(g.clicks)}</td>
+              <td style="color:var(--primary-active);font-weight:700">${fmtPct(g.ctr)}</td>
+              <td>${fmtMoney(g.spend)}</td>
+              <td>${fmtMoney(g.cpc)}</td>
             </tr>`;
           })
           .join('');
 
-        root.querySelectorAll<HTMLTableRowElement>('[data-cs-groups-table] tr').forEach((tr, i) => {
-          const g = groupsResult.groups[i];
-          if (!g) return;
-          tr.style.cursor = 'pointer';
+        root.querySelectorAll<HTMLTableRowElement>('[data-goto-group]').forEach((tr) => {
           tr.addEventListener('click', () => {
-            navigateTo(`/ads/stats/group?campaignId=${campaignId}&groupId=${g.id}`);
+            navigateTo(`/ads/stats/group?campaignId=${campaignId}&groupId=${tr.dataset.gotoGroup}`);
           }, { signal });
         });
       }
     }
 
-    // platforms
+    // platforms — use real placements if available
     const platformsEl = root.querySelector<HTMLElement>('[data-cs-platforms]');
-    if (platformsEl) buildPlatforms(platformsEl, m.impressions);
+    if (platformsEl) {
+      const placements = stats?.placements ?? [];
+      if (placements.length > 0) {
+        buildPlatformsFromData(platformsEl, placements);
+      } else {
+        buildPlatforms(platformsEl, totals?.impressions ?? 0);
+      }
+    }
 
     // insights
     const insightsEl = root.querySelector<HTMLElement>('[data-cs-insights]');
-    if (insightsEl) buildInsights(insightsEl, m.ctr, pct);
+    if (insightsEl) buildInsights(insightsEl, totals?.ctr ?? 0, pct);
   }
 
   void refresh();

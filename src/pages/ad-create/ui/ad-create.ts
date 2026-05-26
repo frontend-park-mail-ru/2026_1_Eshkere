@@ -14,6 +14,22 @@ function getParams(): { campaignId: number | null; groupId: number | null } {
   };
 }
 
+function normalizeUrl(url: string): string {
+  const trimmed = url.trim();
+  if (!trimmed) return trimmed;
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+}
+
+function isValidHttpUrl(value: string): boolean {
+  try {
+    const u = new URL(value);
+    return u.protocol === 'http:' || u.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
 function extractDomain(url: string): string {
   try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return url || 'example.com'; }
 }
@@ -231,7 +247,11 @@ export function AdCreate(): VoidFunction {
     const errors: Record<string, string> = {};
     if (!title)      errors['title']      = 'Введите заголовок';
     if (!short_desc) errors['short_desc'] = 'Введите описание';
-    if (!target_url) errors['target_url'] = 'Введите ссылку';
+    if (!target_url) {
+      errors['target_url'] = 'Введите ссылку';
+    } else if (!isValidHttpUrl(normalizeUrl(target_url))) {
+      errors['target_url'] = 'Введите корректную ссылку, например https://example.ru';
+    }
 
     root.querySelectorAll<HTMLElement>('[data-adc-error]').forEach((el) => {
       el.textContent = errors[el.dataset.adcError ?? ''] ?? '';
@@ -239,7 +259,7 @@ export function AdCreate(): VoidFunction {
 
     if (Object.keys(errors).length > 0) return;
 
-    const payload: CreateAdRequest = { title, short_desc, target_url };
+    const payload: CreateAdRequest = { title, short_desc, target_url: normalizeUrl(target_url) };
 
     if (submitBtn) submitBtn.disabled = true;
     if (formError) formError.hidden = true;

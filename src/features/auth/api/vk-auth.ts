@@ -119,6 +119,7 @@ export function initVKAuth(buttonElement: HTMLElement | null): VoidFunction {
             : base.phone,
         balance: profile.balance,
         avatar: profile.avatar_url,
+        role: profile.role,
       });
     }
     navigateTo('/advertiser/overview', { replace: true });
