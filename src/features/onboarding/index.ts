@@ -17,9 +17,16 @@ export function maybeStartAdvertiserTour(): void {
 
   // If this step requires a different page, navigate there first.
   // The pending step stays in localStorage so the destination page resumes it.
-  if (step?.route && !window.location.pathname.startsWith(step.route)) {
-    navigateTo(step.route);
-    return;
+  // Also accept /advertiser/<route> aliases (e.g. /overview ≡ /advertiser/overview).
+  if (step?.route) {
+    const currentPath = window.location.pathname;
+    const onCorrectPage =
+      currentPath.startsWith(step.route) ||
+      currentPath.startsWith('/advertiser' + step.route);
+    if (!onCorrectPage) {
+      navigateTo(step.route);
+      return;
+    }
   }
 
   onboardingState.clearPendingStep();

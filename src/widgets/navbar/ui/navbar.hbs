@@ -32,7 +32,7 @@
     {{#if isAuthenticated}}
       <div class="navbar__actions-user">
         {{#if cabinet.showAdvertiserWallet}}
-        <div class="navbar__balance">{{user.balanceLabel}}</div>
+        <div class="navbar__balance" data-tour="navbar-balance">{{user.balanceLabel}}</div>
 
         <a
           class="navbar__actions-user-icon navbar__actions-user-icon--wallet"
@@ -50,6 +50,7 @@
           class="navbar__actions-user-icon navbar__actions-user-icon--notification"
           type="button"
           id="navbar-notifications-toggle"
+          data-tour="navbar-notifications"
           aria-expanded="false"
           aria-controls="navbar-notifications-menu"
           aria-label="Открыть уведомления"
