@@ -2,6 +2,7 @@ import './moderator-navbar.scss';
 import { navigateTo } from 'shared/lib/navigation';
 import { authState, logoutUser } from 'features/auth';
 import { renderTemplate } from 'shared/lib/render';
+import { renderButton } from 'shared/ui/button/button';
 import moderatorNavbarTemplate from './moderator-navbar.hbs';
 
 const themeStorageKey = 'ui-theme';
@@ -55,10 +56,28 @@ function getSectionMeta(pathname: string): { currentSection: string; currentSect
 }
 
 export async function renderModeratorNavbar(pathname = '/moderator'): Promise<string> {
+  const adsButton = await renderButton({
+    text: 'В продукт',
+    type: 'button',
+    variant: 'secondary',
+    className: 'moderator-navbar__icon-action moderator-navbar__icon-action--secondary',
+    id: 'moderator-navbar-ads-link',
+  });
+
+  const logoutButton = await renderButton({
+    text: 'Выйти',
+    type: 'button',
+    variant: 'primary',
+    className: 'moderator-navbar__icon-action moderator-navbar__icon-action--primary',
+    id: 'moderator-navbar-logout',
+  });
+
   return renderTemplate(moderatorNavbarTemplate, {
     pathname,
     userTitle: getUserTitle(),
     ...getSectionMeta(pathname),
+    adsButton,
+    logoutButton,
   });
 }
 
@@ -74,8 +93,7 @@ export function initModeratorNavbar(): VoidFunction {
 
   adsButton?.addEventListener(
     'click',
-    (event) => {
-      event.preventDefault();
+    () => {
       navigateTo('/ads');
     },
     { signal },

@@ -5,6 +5,7 @@ import {
   getCabinetSupportPath,
   isPartnerCabinet,
 } from 'shared/lib/cabinet';
+import { authState } from 'entities/user';
 import sidebarTemplate from './sidebar.hbs';
 
 /**
@@ -55,6 +56,7 @@ export async function renderSidebar(pathname = '/ads'): Promise<string> {
       pathname === '/support' ||
       pathname === '/advertiser/support' ||
       pathname === '/partner/support',
+    showModeratorLink: authState.canAccessModerator(),
     supportHref: getCabinetSupportPath(cabinet),
   });
 }

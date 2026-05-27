@@ -1,20 +1,28 @@
-<aside class=”moderator-sidebar”>
-  <div class=”moderator-sidebar__section”>
-    <span class=”moderator-sidebar__caption”>Навигация</span>
+<aside class="moderator-sidebar">
+  <div class="moderator-sidebar__section">
+    <span class="moderator-sidebar__caption">Навигация</span>
 
     <a
-      href=”/moderator/queue”
-      class=”moderator-sidebar__link {{#if isQueue}}moderator-sidebar__link--active{{/if}}”
+      href="/moderator/queue"
+      class="moderator-sidebar__link {{#if isQueue}}moderator-sidebar__link--active{{/if}}"
     >
-      <span class=”moderator-sidebar__link-title”>Очередь</span>
-      <span class=”moderator-sidebar__link-text”>Все входящие кейсы и triage.</span>
+      <span class="moderator-sidebar__link-title">Очередь</span>
     </a>
   </div>
 
-  <div class=”moderator-sidebar__section moderator-sidebar__section--note”>
-    <span class=”moderator-sidebar__caption”>Роль модератора</span>
-    <p class=”moderator-sidebar__note”>
-      Не “управлять продуктом”, а быстро принять решение по рекламе, объяснить его клиенту и оставить прозрачный след для команды.
-    </p>
-  </div>
+  <aside class="moderator-sidebar__aside">
+    <div class="moderator-sidebar__aside-section">
+      <span class="moderator-sidebar__aside-caption">Навигация</span>
+      <strong class="moderator-sidebar__aside-title">Очередь</strong>
+      <p class="moderator-sidebar__aside-text">Все входящие кейсы и triage.</p>
+    </div>
+
+    <div class="moderator-sidebar__aside-section">
+      <span class="moderator-sidebar__aside-caption">Роль модератора</span>
+      <p class="moderator-sidebar__aside-text">
+        Не "управлять продуктом", а быстро принять решение по рекламе, объяснить его клиенту и
+        оставить прозрачный след для команды.
+      </p>
+    </div>
+  </aside>
 </aside>

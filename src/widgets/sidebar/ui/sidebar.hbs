@@ -78,6 +78,16 @@
       <img class="sidebar__icon" src="/icons/Question.svg" alt="" aria-hidden="true" />
       Поддержка
     </a>
+    {{#if showModeratorLink}}
+    <a
+      href="/moderator/queue"
+      class="sidebar__link"
+      data-tour="sidebar-moderator"
+    >
+      <img class="sidebar__icon" src="/icons/Chield_check.svg" alt="" aria-hidden="true" />
+      Модерация
+    </a>
+    {{/if}}
     {{/if}}
   </div>
 
@@ -146,6 +156,15 @@
           <img class="mobile-tabbar__sheet-icon" src="/icons/Question.svg" alt="" aria-hidden="true" />
           Поддержка
         </a>
+        {{#if showModeratorLink}}
+        <a
+          class="mobile-tabbar__sheet-item"
+          href="/moderator/queue"
+        >
+          <img class="mobile-tabbar__sheet-icon" src="/icons/Chield_check.svg" alt="" aria-hidden="true" />
+          Модерация
+        </a>
+        {{/if}}
       </div>
     </details>
     {{else}}
@@ -192,6 +211,15 @@
           <img class="mobile-tabbar__sheet-icon" src="/icons/Question.svg" alt="" aria-hidden="true" />
           Поддержка
         </a>
+        {{#if showModeratorLink}}
+        <a
+          class="mobile-tabbar__sheet-item"
+          href="/moderator/queue"
+        >
+          <img class="mobile-tabbar__sheet-icon" src="/icons/Chield_check.svg" alt="" aria-hidden="true" />
+          Модерация
+        </a>
+        {{/if}}
       </div>
     </details>
     {{/if}}

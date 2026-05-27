@@ -2,6 +2,7 @@ import './moderator-appeals.scss';
 import { navigateTo } from 'shared/lib/navigation';
 import { moderationAppeals } from 'features/moderation/model/mock';
 import { renderTemplate } from 'shared/lib/render';
+import { renderButton } from 'shared/ui/button/button';
 import template from './moderator-appeals.hbs';
 
 function getStatusKey(status: string): 'new' | 'pending' {
@@ -15,10 +16,16 @@ function getStatusTone(statusKey: 'new' | 'pending'): string {
 }
 
 export async function renderModeratorAppealsPage(): Promise<string> {
-  const items = moderationAppeals.map((item) => {
+  const items = await Promise.all(moderationAppeals.map(async (item) => {
     const statusKey = getStatusKey(item.status);
-    return { ...item, statusKey, statusTone: getStatusTone(statusKey) };
-  });
+    const openCaseButton = await renderButton({
+      text: 'Открыть кейс',
+      type: 'button',
+      variant: 'secondary',
+      className: 'moderator-appeal-card__open',
+    });
+    return { ...item, statusKey, statusTone: getStatusTone(statusKey), openCaseButton };
+  }));
 
   const newCount = items.filter((i) => i.statusKey === 'new').length;
   const pendingCount = items.filter((i) => i.statusKey === 'pending').length;
@@ -59,9 +66,9 @@ export function ModeratorAppealsPage(): VoidFunction {
   statusFilter?.addEventListener('change', renderState);
 
   root.addEventListener('click', (event) => {
-    const button = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-appeal-open-case]');
-    if (!button) return;
-    const caseId = button.dataset.appealOpenCase;
+    const targetNode = (event.target as HTMLElement).closest<HTMLElement>('[data-appeal-open-case]');
+    if (!targetNode) return;
+    const caseId = targetNode.dataset.appealOpenCase;
     if (caseId) navigateTo(`/moderator/case?id=${encodeURIComponent(caseId)}`);
   });
 

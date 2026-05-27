@@ -1,14 +1,10 @@
 <section class="mq">
   <header class="mq__head">
-    <h1 class="mq__title">Очередь модерации</h1>
-    {{#if stats.total}}<span class="mq__badge">{{stats.total}}</span>{{/if}}
-    <input
-      class="mq__search"
-      type="search"
-      placeholder="Поиск..."
-      data-moderator-queue-search
-      autocomplete="off"
-    />
+    <div class="mq__head-title">
+      <h1 class="mq__title">Очередь модерации</h1>
+      {{#if stats.total}}<span class="mq__badge">{{stats.total}}</span>{{/if}}
+    </div>
+    <div class="mq__search">{{{searchField}}}</div>
   </header>
 
   {{#if loadError}}
@@ -16,24 +12,56 @@
   {{/if}}
 
   <div class="mq__list">
-    {{#each items}}
-      <article
-        class="mq-item"
-        data-open-moderation-case="{{id}}"
-        data-searchable="{{searchText}}"
-        tabindex="0"
+    <div class="mq__list-header">
+      <div>Объявление</div>
+      <div>Описание</div>
+      <div>Домен</div>
+      <div>Статус</div>
+      <div>Управление</div>
+    </div>
+
+    <div class="mq__list-body">
+      {{#each items}}
+        <article
+          class="mq-item"
+          data-searchable="{{searchText}}"
+        >
+          <div class="mq-item__title-cell">
+            <a
+              class="mq-item__title"
+              href="{{caseUrl}}"
+              data-open-moderation-case="{{id}}"
+            >{{title}}</a>
+          </div>
+          <div class="mq-item__desc">{{desc}}</div>
+          <div class="mq-item__domain">{{#if domain}}{{domain}}{{else}}—{{/if}}</div>
+          <div>
+            <span class="mq-item__status mq-item__status--{{statusTone}}">{{statusLabel}}</span>
+          </div>
+          <div class="mq-item__cta-wrap" data-open-moderation-case="{{id}}">{{{openButton}}}</div>
+        </article>
+      {{/each}}
+    </div>
+
+    <div class="mq__list-footer" data-moderator-queue-pagination hidden>
+      <button
+        class="mq__page-nav mq__page-nav--prev"
+        type="button"
+        data-mq-page-prev
       >
-        <div class="mq-item__thumb">
-          {{#if imageUrl}}<img src="{{imageUrl}}" alt="" />{{/if}}
-        </div>
-        <div class="mq-item__body">
-          <strong class="mq-item__title">{{title}}</strong>
-          <p class="mq-item__desc">{{desc}}</p>
-          {{#if domain}}<span class="mq-item__domain">{{domain}}</span>{{/if}}
-        </div>
-        <button class="mq-item__cta" type="button" tabindex="-1">Открыть →</button>
-      </article>
-    {{/each}}
+        ← Предыдущее
+      </button>
+
+      <div class="mq__page-list" data-mq-page-list></div>
+
+      <button
+        class="mq__page-nav mq__page-nav--next"
+        type="button"
+        data-mq-page-next
+      >
+        Следующее →
+      </button>
+    </div>
   </div>
 
   <p class="mq__empty" data-moderator-queue-empty hidden>Очередь пуста — нечего модерировать.</p>

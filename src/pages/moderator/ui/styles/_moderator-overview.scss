@@ -57,6 +57,7 @@
 
   &__primary-action,
   &__secondary-action {
+    width: auto;
     min-height: 54px;
     padding: 0 20px;
     border-radius: 16px;
@@ -211,6 +212,7 @@
   gap: 10px;
 
   &__chip {
+    width: auto;
     min-height: 42px;
     padding: 0 16px;
     border: 1px solid rgba(116, 130, 204, 0.18);

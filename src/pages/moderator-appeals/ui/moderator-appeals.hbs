@@ -73,13 +73,9 @@
           </div>
 
           <div class="moderator-appeal-card__footer">
-            <button
-              class="moderator-appeal-card__open"
-              type="button"
-              data-appeal-open-case="{{caseId}}"
-            >
-              Открыть кейс →
-            </button>
+            <div data-appeal-open-case="{{caseId}}">
+              {{{openCaseButton}}}
+            </div>
           </div>
         </article>
       {{/each}}

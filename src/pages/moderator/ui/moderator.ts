@@ -2,6 +2,7 @@ import './moderator.scss';
 import { navigateTo } from 'shared/lib/navigation';
 import { logoutUser } from 'features/auth';
 import { renderTemplate } from 'shared/lib/render';
+import { renderButton } from 'shared/ui/button/button';
 import moderatorTemplate from './moderator.hbs';
 
 interface ModeratorMetric {
@@ -40,6 +41,11 @@ interface ModeratorRuleItem {
   title: string;
   description: string;
   impact: string;
+}
+
+interface ModeratorFilterChip {
+  stage: 'all' | 'incoming' | 'review' | 'decision' | 'escalation';
+  buttonHtml: string;
 }
 
 const overviewMetrics: ModeratorMetric[] = [
@@ -217,11 +223,80 @@ const ruleUpdates: ModeratorRuleItem[] = [
 ];
 
 export async function renderModeratorPage(): Promise<string> {
+  const primaryActionButton = await renderButton({
+    text: 'Открыть критичные кейсы',
+    type: 'button',
+    variant: 'primary',
+    className: 'moderator-page__primary-action',
+  });
+
+  const secondaryActionButton = await renderButton({
+    text: 'Выгрузить сменный отчёт',
+    type: 'button',
+    variant: 'secondary',
+    className: 'moderator-page__secondary-action',
+  });
+
+  const filterButtons: ModeratorFilterChip[] = await Promise.all(
+    [
+      { stage: 'all', text: 'Все очереди', active: true },
+      { stage: 'incoming', text: 'Новые жалобы', active: false },
+      { stage: 'review', text: 'На разборе', active: false },
+      { stage: 'decision', text: 'Решение', active: false },
+      { stage: 'escalation', text: 'Эскалации', active: false },
+    ].map(async (chip) => ({
+      stage: chip.stage as ModeratorFilterChip['stage'],
+      buttonHtml: await renderButton({
+        text: chip.text,
+        type: 'button',
+        variant: 'secondary',
+        className: `moderator-filters__chip${chip.active ? ' is-active' : ''}`,
+      }),
+    })),
+  );
+
+  const moderationFeedWithActions = await Promise.all(moderationFeed.map(async (item) => ({
+    ...item,
+    openButtonHtml: await renderButton({
+      text: 'Открыть',
+      type: 'button',
+      variant: 'secondary',
+      className: 'moderator-feed__action-button',
+    }),
+    assignButtonHtml: await renderButton({
+      text: 'Назначить',
+      type: 'button',
+      variant: 'secondary',
+      className: 'moderator-feed__action-button',
+    }),
+  })));
+
+  const accessProductButton = await renderButton({
+    text: 'Перейти в рекламный кабинет',
+    type: 'button',
+    variant: 'secondary',
+    className: 'moderator-access__button moderator-access__button--secondary',
+    id: 'moderator-ads-link',
+  });
+
+  const accessLogoutButton = await renderButton({
+    text: 'Выйти из backoffice',
+    type: 'button',
+    variant: 'primary',
+    className: 'moderator-access__button moderator-access__button--primary',
+    id: 'moderator-logout-button',
+  });
+
   return renderTemplate(moderatorTemplate, {
+    primaryActionButton,
+    secondaryActionButton,
+    filterButtons,
     overviewMetrics,
     queueColumns,
-    moderationFeed,
+    moderationFeed: moderationFeedWithActions,
     ruleUpdates,
+    accessProductButton,
+    accessLogoutButton,
   });
 }
 
@@ -237,7 +312,7 @@ export function Moderator(): void {
   }
 
   const filterButtons = Array.from(
-    root.querySelectorAll<HTMLButtonElement>('[data-moderator-filter]'),
+    root.querySelectorAll<HTMLElement>('[data-moderator-filter]'),
   );
   const queueColumnsNodes = Array.from(
     root.querySelectorAll<HTMLElement>('[data-queue-stage]'),
@@ -248,8 +323,9 @@ export function Moderator(): void {
   );
 
   const applyStageFilter = (stage: string): void => {
-    filterButtons.forEach((button) => {
-      button.classList.toggle('is-active', button.dataset.moderatorFilter === stage);
+    filterButtons.forEach((buttonNode) => {
+      const button = buttonNode.querySelector<HTMLButtonElement>('.moderator-filters__chip');
+      button?.classList.toggle('is-active', buttonNode.dataset.moderatorFilter === stage);
     });
 
     queueColumnsNodes.forEach((column) => {
@@ -283,7 +359,6 @@ export function Moderator(): void {
   });
 
   adsButton?.addEventListener('click', (event) => {
-    event.preventDefault();
     navigateTo('/ads');
   });
 

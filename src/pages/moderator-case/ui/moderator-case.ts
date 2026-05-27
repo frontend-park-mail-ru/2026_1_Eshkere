@@ -3,6 +3,7 @@ import { getAdminAd, updateAdModerationStatus, type AdminAdDto } from 'features/
 import { renderTemplate } from 'shared/lib/render';
 import { navigateTo } from 'shared/lib/navigation';
 import { showToast } from 'shared/lib/toast';
+import { renderButton } from 'shared/ui/button/button';
 import caseTemplate from './moderator-case.hbs';
 
 function getAdIdFromLocation(): number | null {
@@ -32,7 +33,31 @@ function checkState(value: string | null | undefined): 'pass' | 'fail' {
   return value?.trim() ? 'pass' : 'fail';
 }
 
-function buildDetail(ad: AdminAdDto) {
+interface DecisionViewModel {
+  id: string;
+  isPressed: boolean;
+  buttonHtml: string;
+}
+
+async function buildDecisionButtons(): Promise<DecisionViewModel[]> {
+  const decisions: Array<{ id: 'approve' | 'disapprove'; label: string; tone: 'success' | 'danger' }> = [
+    { id: 'approve', label: 'Одобрить', tone: 'success' },
+    { id: 'disapprove', label: 'Отклонить', tone: 'danger' },
+  ];
+
+  return await Promise.all(decisions.map(async (decision, index) => ({
+    id: decision.id,
+    isPressed: index === 0,
+    buttonHtml: await renderButton({
+      text: decision.label,
+      type: 'button',
+      variant: 'secondary',
+      className: `mc__decision mc__decision--${decision.tone}${index === 0 ? ' is-active' : ''}`,
+    }),
+  })));
+}
+
+async function buildDetail(ad: AdminAdDto) {
   const title = ad.title?.trim() || `Объявление #${ad.id}`;
   const description = ad.short_desc?.trim() || 'Описание не заполнено.';
   const imageUrl = toProxiedUrl(ad.image_url?.trim() || '');
@@ -54,23 +79,29 @@ function buildDetail(ad: AdminAdDto) {
       { label: 'Целевая ссылка', state: checkState(ad.target_url) },
       { label: 'Изображение', state: hasImage ? 'pass' : 'warning' },
     ],
-    decisions: [
-      { id: 'approve', label: 'Одобрить', tone: 'success' },
-      { id: 'disapprove', label: 'Отклонить', tone: 'danger' },
-    ],
+    decisionButtons: await buildDecisionButtons(),
   };
 }
 
-function buildEmpty(adId: number): ReturnType<typeof buildDetail> {
-  return buildDetail({ id: adId, status: '', title: '', short_desc: '', image_url: '', target_url: '' });
+async function buildEmpty(adId: number): Promise<Awaited<ReturnType<typeof buildDetail>>> {
+  return await buildDetail({ id: adId, status: '', title: '', short_desc: '', image_url: '', target_url: '' });
 }
 
 export async function renderModeratorCasePage(): Promise<string> {
   const adId = getAdIdFromLocation();
+  const applyDecisionButton = await renderButton({
+    text: 'Применить решение',
+    type: 'button',
+    variant: 'primary',
+    className: 'mc__submit',
+    id: 'mc-apply-decision',
+    disabled: adId === null,
+  });
 
   if (adId === null) {
     return renderTemplate(caseTemplate, {
-      detail: buildEmpty(0),
+      detail: await buildEmpty(0),
+      applyDecisionButton,
       initialDecisionId: 'approve',
       canApplyDecision: false,
       loadError: 'Не указан ID объявления.',
@@ -79,16 +110,31 @@ export async function renderModeratorCasePage(): Promise<string> {
 
   try {
     const ad = await getAdminAd(adId);
-    const detail = buildDetail(ad);
+    const detail = await buildDetail(ad);
     return renderTemplate(caseTemplate, {
       detail,
+      applyDecisionButton: await renderButton({
+        text: 'Применить решение',
+        type: 'button',
+        variant: 'primary',
+        className: 'mc__submit',
+        id: 'mc-apply-decision',
+      }),
       initialDecisionId: 'approve',
       canApplyDecision: true,
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Не удалось загрузить объявление.';
     return renderTemplate(caseTemplate, {
-      detail: buildEmpty(adId),
+      detail: await buildEmpty(adId),
+      applyDecisionButton: await renderButton({
+        text: 'Применить решение',
+        type: 'button',
+        variant: 'primary',
+        className: 'mc__submit',
+        id: 'mc-apply-decision',
+        disabled: true,
+      }),
       initialDecisionId: 'approve',
       canApplyDecision: false,
       loadError: message,
@@ -102,25 +148,28 @@ export function ModeratorCasePage(): VoidFunction {
 
   const adId = getAdIdFromLocation();
   const decisionInput = root.querySelector<HTMLInputElement>('[data-decision-input]');
-  const applyButton = root.querySelector<HTMLButtonElement>('[data-apply-decision]');
+  const applyButton = root.querySelector<HTMLButtonElement>('#mc-apply-decision');
   const statusNote = root.querySelector<HTMLElement>('[data-case-status-text]');
   const publicReply = root.querySelector<HTMLTextAreaElement>('[data-public-reply]');
   const canApply = root.dataset.caseCanApply !== 'false';
 
   const syncDecision = (id: string): void => {
-    root.querySelectorAll<HTMLButtonElement>('[data-decision-option]').forEach((btn) => {
-      const active = btn.dataset.decisionOption === id;
-      btn.classList.toggle('is-active', active);
-      btn.setAttribute('aria-pressed', String(active));
+    root.querySelectorAll<HTMLElement>('[data-decision-option]').forEach((optionNode) => {
+      const active = optionNode.dataset.decisionOption === id;
+      const btn = optionNode.querySelector<HTMLButtonElement>('.mc__decision');
+      btn?.classList.toggle('is-active', active);
+      btn?.setAttribute('aria-pressed', String(active));
     });
     if (decisionInput) decisionInput.value = id;
     if (applyButton) applyButton.disabled = !canApply || !id;
   };
 
-  root.querySelectorAll<HTMLButtonElement>('[data-decision-option]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      if (btn.dataset.decisionOption) syncDecision(btn.dataset.decisionOption);
-    });
+  root.addEventListener('click', (event) => {
+    const optionNode = (event.target as HTMLElement).closest<HTMLElement>('[data-decision-option]');
+    if (!optionNode?.dataset.decisionOption) {
+      return;
+    }
+    syncDecision(optionNode.dataset.decisionOption);
   });
 
   syncDecision(decisionInput?.value ?? 'approve');

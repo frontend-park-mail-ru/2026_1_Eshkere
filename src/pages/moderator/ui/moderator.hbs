@@ -11,12 +11,8 @@
     </div>
 
     <div class="moderator-page__hero-actions">
-      <button class="moderator-page__primary-action" type="button">
-        Открыть критичные кейсы
-      </button>
-      <button class="moderator-page__secondary-action" type="button">
-        Выгрузить сменный отчёт
-      </button>
+      {{{primaryActionButton}}}
+      {{{secondaryActionButton}}}
     </div>
 
     <div class="moderator-page__metrics">
@@ -32,21 +28,11 @@
 
   <div class="moderator-page__toolbar">
     <div class="moderator-filters">
-      <button class="moderator-filters__chip is-active" type="button" data-moderator-filter="all">
-        Все очереди
-      </button>
-      <button class="moderator-filters__chip" type="button" data-moderator-filter="incoming">
-        Новые жалобы
-      </button>
-      <button class="moderator-filters__chip" type="button" data-moderator-filter="review">
-        На разборе
-      </button>
-      <button class="moderator-filters__chip" type="button" data-moderator-filter="decision">
-        Решение
-      </button>
-      <button class="moderator-filters__chip" type="button" data-moderator-filter="escalation">
-        Эскалации
-      </button>
+      {{#each filterButtons}}
+        <div data-moderator-filter="{{stage}}">
+          {{{buttonHtml}}}
+        </div>
+      {{/each}}
     </div>
 
     <label class="moderator-search">
@@ -143,8 +129,8 @@
                 <p class="moderator-feed__description">{{description}}</p>
               </div>
               <div class="moderator-feed__actions">
-                <button type="button">Открыть</button>
-                <button type="button">Назначить</button>
+                {{{openButtonHtml}}}
+                {{{assignButtonHtml}}}
               </div>
             </article>
           {{/each}}
@@ -164,12 +150,8 @@
         </div>
 
         <div class="moderator-access">
-          <a href="/ads" class="moderator-access__button moderator-access__button--secondary" id="moderator-ads-link">
-            Перейти в рекламный кабинет
-          </a>
-          <button type="button" class="moderator-access__button moderator-access__button--primary" id="moderator-logout-button">
-            Выйти из backoffice
-          </button>
+          {{{accessProductButton}}}
+          {{{accessLogoutButton}}}
         </div>
       </section>
 

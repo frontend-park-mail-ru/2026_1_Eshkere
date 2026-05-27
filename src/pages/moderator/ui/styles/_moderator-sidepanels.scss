@@ -84,6 +84,7 @@
   }
 
   &__actions button {
+    width: auto;
     min-width: 132px;
     min-height: 40px;
     padding: 0 14px;
@@ -173,6 +174,7 @@
   gap: 12px;
 
   &__button {
+    width: auto;
     min-height: 48px;
     padding: 0 16px;
     border-radius: 14px;
