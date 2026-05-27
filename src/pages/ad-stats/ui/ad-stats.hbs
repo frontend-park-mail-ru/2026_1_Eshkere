@@ -1,7 +1,7 @@
 <div class="as-page" data-ad-stats>
 
   <div class="as-toolbar">
-    <button class="as-back-btn" type="button" data-as-back>← Назад к группе</button>
+    <button class="as-back-btn" type="button" data-as-back>← Назад к группам</button>
     <nav class="as-breadcrumb" aria-label="Навигация">
       <button class="as-breadcrumb__item" type="button" data-as-bc-campaigns>Кампании</button>
       <span class="as-breadcrumb__sep">›</span>
@@ -17,7 +17,9 @@
     <div class="as-hero__main">
       <div class="as-hero__badges">
         <span class="as-best-badge" data-as-best hidden>
-          <span class="as-best-badge__icon">ыб</span>
+          <span class="as-best-badge__icon">
+            <img src="/icons/Star.svg" width="10" height="10" alt="" />
+          </span>
           Лучшее в группе
         </span>
         <span class="stats-badge" data-as-status>—</span>
@@ -37,21 +39,27 @@
     <div class="as-hero__hierarchy">
       <div class="as-hierarchy-label">ИЕРАРХИЯ</div>
       <div class="as-hierarchy-item">
-        <span class="as-hierarchy-icon as-hierarchy-icon--campaign">кп</span>
+        <span class="as-hierarchy-icon as-hierarchy-icon--campaign">
+          <img src="/icons/statistics.svg" width="14" height="14" alt="" />
+        </span>
         <div>
           <div class="as-hierarchy-type">КАМПАНИЯ</div>
           <div class="as-hierarchy-name" data-as-hc-campaign>—</div>
         </div>
       </div>
       <div class="as-hierarchy-item">
-        <span class="as-hierarchy-icon as-hierarchy-icon--group">гр</span>
+        <span class="as-hierarchy-icon as-hierarchy-icon--group">
+          <img src="/icons/Group.svg" width="14" height="14" alt="" />
+        </span>
         <div>
           <div class="as-hierarchy-type">ГРУППА</div>
           <div class="as-hierarchy-name" data-as-hc-group>—</div>
         </div>
       </div>
       <div class="as-hierarchy-item as-hierarchy-item--active">
-        <span class="as-hierarchy-icon as-hierarchy-icon--ad">об</span>
+        <span class="as-hierarchy-icon as-hierarchy-icon--ad">
+          <img src="/icons/Img_box.svg" width="14" height="14" alt="" />
+        </span>
         <div>
           <div class="as-hierarchy-type">ОБЪЯВЛЕНИЕ</div>
           <div class="as-hierarchy-name as-hierarchy-name--link" data-as-hc-ad>—</div>
@@ -145,7 +153,7 @@
     </div>
   </div>
 
-  <div class="stats-card as-ab-card">
+  <div class="stats-card as-ab-card" hidden>
     <div class="stats-card__head">
       <div>
         <h2 class="stats-card__title">A/B-тест</h2>
@@ -155,7 +163,10 @@
     <div class="as-ab-grid">
       <div class="as-ab-variant as-ab-variant--winner">
         <div class="as-ab-variant__head">
-          <span class="as-winner-badge">ыб Победитель</span>
+          <span class="as-winner-badge">
+            <img src="/icons/Star.svg" width="11" height="11" alt="" />
+            Победитель
+          </span>
           <span class="as-variant-label">ВАРИАНТ А</span>
         </div>
         <div class="as-ab-variant__title" data-as-title>—</div>

@@ -30,14 +30,19 @@ function toProxiedUrl(url: string): string {
   return url;
 }
 
+function safeNum(n: number | null | undefined): number {
+  if (n === null || n === undefined || !isFinite(n) || isNaN(n)) return 0;
+  return n;
+}
+
 function fmtNum(n: number) {
-  return new Intl.NumberFormat('ru-RU').format(Math.round(n));
+  return new Intl.NumberFormat('ru-RU').format(Math.round(safeNum(n)));
 }
 function fmtMoney(n: number) {
-  return `${fmtNum(n)} ₽`;
+  return `${fmtNum(safeNum(n))} ₽`;
 }
 function fmtPct(n: number, decimals = 2) {
-  return n.toFixed(decimals) + '%';
+  return safeNum(n).toFixed(decimals) + '%';
 }
 
 function seeded(seed: number, min: number, max: number) {
@@ -284,8 +289,9 @@ export function AdStats(): VoidFunction {
   let currentTimeline: StatsPoint[] = [];
 
   // back / breadcrumb navigation
+  // «← Назад к группам» → список групп (страница статистики кампании)
   root.querySelector('[data-as-back]')?.addEventListener('click', () => {
-    navigateTo(`/ads/stats/group?campaignId=${campaignId}&groupId=${groupId}`);
+    navigateTo(`/ads/stats/campaign?id=${campaignId}`);
   }, { signal });
 
   root.querySelector('[data-as-bc-campaigns]')?.addEventListener('click', () => {
@@ -293,7 +299,7 @@ export function AdStats(): VoidFunction {
   }, { signal });
 
   root.querySelector('[data-as-bc-campaign]')?.addEventListener('click', () => {
-    navigateTo(`/ads/stats/campaign?campaignId=${campaignId}`);
+    navigateTo(`/ads/stats/campaign?id=${campaignId}`);
   }, { signal });
 
   root.querySelector('[data-as-bc-group]')?.addEventListener('click', () => {
@@ -366,13 +372,13 @@ export function AdStats(): VoidFunction {
     (root.querySelector('[data-as-hc-group]') as HTMLElement).textContent = groupName;
     (root.querySelector('[data-as-hc-ad]') as HTMLElement).textContent = ad.title;
 
-    // metrics
+    // metrics — при отсутствии данных показываем 0, а не "—"
     const kpiValues: Record<string, string> = {
-      ctr:         totals ? fmtPct(totals.ctr)         : '—',
-      impressions: totals ? fmtNum(totals.impressions)  : '—',
-      clicks:      totals ? fmtNum(totals.clicks)       : '—',
-      cpc:         totals ? fmtMoney(totals.cpc)        : '—',
-      spend:       totals ? fmtMoney(totals.spend)      : '—',
+      ctr:         fmtPct(totals?.ctr ?? 0),
+      impressions: fmtNum(totals?.impressions ?? 0),
+      clicks:      fmtNum(totals?.clicks ?? 0),
+      cpc:         fmtMoney(totals?.cpc ?? 0),
+      spend:       fmtMoney(totals?.spend ?? 0),
       conversions: '—',
     };
     Object.entries(kpiValues).forEach(([k, v]) => {
@@ -388,7 +394,9 @@ export function AdStats(): VoidFunction {
     deltaKeys.forEach(([key, field]) => {
       const el = root.querySelector<HTMLElement>(`[data-as-delta="${key}"]`);
       if (!el) return;
-      const d = (totals && prev) ? computeDelta(totals[field], prev[field]) : { text: '—', up: true };
+      const d = (totals && prev)
+        ? computeDelta(safeNum(totals[field]), safeNum(prev[field]))
+        : { text: '—', up: true };
       el.textContent = d.text;
       el.classList.remove('as-metric__delta--up', 'as-metric__delta--down');
       el.classList.add(d.up ? 'as-metric__delta--up' : 'as-metric__delta--down');
@@ -438,26 +446,40 @@ export function AdStats(): VoidFunction {
     if (dayVals && barChart && barLabels)
       buildDayChart(dayVals, barChart, barLabels, adId!);
 
-    // A/B test
-    const abA = root.querySelector<HTMLElement>('[data-as-ab-a]');
-    const abB = root.querySelector<HTMLElement>('[data-as-ab-b]');
-    const abBTitle = root.querySelector<HTMLElement>('[data-as-ab-b-title]');
-    const abATitle = root.querySelector<HTMLElement>('.as-ab-variant--winner [data-as-title]');
+    // A/B test — показываем только если в группе больше одного объявления
+    const abCard = root.querySelector<HTMLElement>('.as-ab-card');
+    const hasMultipleAds = adsResult.ads.length > 1;
 
-    if (abATitle) abATitle.textContent = `«${ad.title}»`;
-    if (abBTitle) abBTitle.textContent = '«Новинки сезона — обновите гардероб»';
-
-    if (abA) {
-      fillAbVariant(abA, {
-        ctr:   totals ? fmtPct(totals.ctr)    : '—',
-        clicks: totals ? fmtNum(totals.clicks) : '—',
-        cpc:   totals ? fmtMoney(totals.cpc)  : '—',
-        conv:  '—',
-        spend: totals ? fmtMoney(totals.spend) : '—',
-      });
+    if (abCard) {
+      abCard.hidden = !hasMultipleAds;
     }
-    if (abB) {
-      fillAbVariant(abB, { ctr: '—', clicks: '—', cpc: '—', conv: '—', spend: '—' });
+
+    if (hasMultipleAds) {
+      const abA = root.querySelector<HTMLElement>('[data-as-ab-a]');
+      const abB = root.querySelector<HTMLElement>('[data-as-ab-b]');
+      const abBTitle = root.querySelector<HTMLElement>('[data-as-ab-b-title]');
+      const abATitle = root.querySelector<HTMLElement>('.as-ab-variant--winner [data-as-title]');
+
+      // Вариант A — текущее объявление
+      if (abATitle) abATitle.textContent = `«${ad.title}»`;
+
+      // Вариант B — второе объявление в группе (по убыванию id)
+      const otherAds = adsResult.ads.filter((a) => a.id !== adId);
+      const adB = otherAds[0];
+      if (abBTitle) abBTitle.textContent = adB ? `«${adB.title}»` : '—';
+
+      if (abA) {
+        fillAbVariant(abA, {
+          ctr:    fmtPct(totals?.ctr ?? 0),
+          clicks: fmtNum(totals?.clicks ?? 0),
+          cpc:    fmtMoney(totals?.cpc ?? 0),
+          conv:   '—',
+          spend:  fmtMoney(totals?.spend ?? 0),
+        });
+      }
+      if (abB) {
+        fillAbVariant(abB, { ctr: '—', clicks: '—', cpc: '—', conv: '—', spend: '—' });
+      }
     }
 
     // funnel period label

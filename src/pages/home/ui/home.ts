@@ -12,11 +12,15 @@ export async function renderHomePage() {
 export function Home(): VoidFunction {
   const publicLayout = document.querySelector('.public-layout');
   publicLayout?.classList.add('public-layout--home');
+  document.documentElement.classList.add('is-home-page');
+  document.body.classList.add('is-home-page');
 
   const cleanups = [setupSmoothAnchors(), setupHeroEntrance()];
 
   return () => {
     cleanups.forEach((cleanup) => cleanup());
     publicLayout?.classList.remove('public-layout--home');
+    document.documentElement.classList.remove('is-home-page');
+    document.body.classList.remove('is-home-page');
   };
 }

@@ -203,6 +203,8 @@ export function setStepState(
     submitButton.textContent = step === 'input' ? 'Отправить код' : 'Подтвердить телефон';
   } else if (form.id === 'profile-payment-form') {
     submitButton.textContent = step === 'input' ? 'Продолжить' : 'Сохранить карту';
+  } else if (form.id === 'profile-password-form') {
+    submitButton.textContent = step === 'input' ? 'Отправить код' : 'Сменить пароль';
   }
 }
 

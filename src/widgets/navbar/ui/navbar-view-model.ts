@@ -6,26 +6,6 @@ import {
   getCabinetProfilePath,
 } from 'shared/lib/cabinet';
 
-const navbarNotifications = [
-  {
-    tone: 'primary',
-    title: 'Кампания "iPhone 14" набирает показы',
-    text: 'За последние 24 часа CTR вырос. Есть смысл проверить площадки и бюджет.',
-    time: '5 минут назад',
-  },
-  {
-    tone: 'success',
-    title: 'Баланс пополнен',
-    text: 'На кабинет зачислено 20 000 ₽. Средств достаточно для активных кампаний.',
-    time: 'Сегодня, 11:20',
-  },
-  {
-    tone: 'neutral',
-    title: 'Есть новая рекомендация',
-    text: 'Система предлагает усилить Ленту: там сейчас лучший отклик по кампании.',
-    time: 'Вчера, 18:40',
-  },
-] as const;
 
 function getUserInitials(user: AuthUser): string {
   const source =
@@ -77,6 +57,6 @@ export function getNavbarTemplateContext(pathname: string) {
       showAdvertiserWallet: cabinet === 'advertiser',
     },
     user,
-    notifications: navbarNotifications,
+    notifications: [],
   };
 }

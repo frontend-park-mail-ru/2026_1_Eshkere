@@ -60,7 +60,7 @@ function buildLineChart(
   }
 
   const count = points.length;
-  const W = 700; const H = 300;
+  const W = 700; const H = 420;
   const PAD = { top: 24, right: 16, bottom: 4, left: 12 };
   const innerW = W - PAD.left - PAD.right;
   const innerH = H - PAD.top - PAD.bottom;
@@ -208,33 +208,13 @@ function buildPlatformsFromData(container: HTMLElement, placements: Array<{ id: 
   });
 }
 
-// ── Insights ──────────────────────────────────────────────────────────────────
-
-const INSIGHT_ICONS = [
-  '<img src="/icons/statistics.svg" width="18" height="18" alt="" />',
-  '<img src="/icons/Bell.svg" width="18" height="18" alt="" />',
-  '<img src="/icons/wallet.svg" width="18" height="18" alt="" />',
-];
-
-function buildInsights(container: HTMLElement, ctrVal: number, budgetPct: number) {
-  const items = [
-    `CTR вырос на 0,4 пп по сравнению с прошлым периодом — группа «Женщины 25–35 МСК» показывает лучшие результаты.`,
-    `Группа «Look-alike» на паузе с 28 апреля — возобновите, чтобы не потерять охват похожей аудитории.`,
-    `${Math.round(budgetPct)}% бюджета использовано. При текущем темпе кампания завершится через ~8 дней — пополните бюджет или снизьте дневной лимит.`,
-  ];
-  container.innerHTML = '';
-  items.forEach((text, i) => {
-    const el = document.createElement('div');
-    el.className = 'cs-insight';
-    el.innerHTML = `
-      <div class="cs-insight__icon">${INSIGHT_ICONS[i]}</div>
-      <div class="cs-insight__text">${text}</div>
-    `;
-    container.appendChild(el);
-  });
-}
-
 // ── Status labels ──────────────────────────────────────────────────────────────
+
+const GROUP_STATUS_LABELS: Record<string, { label: string; cls: string }> = {
+  active:  { label: 'Активна', cls: 'stats-badge--success' },
+  paused:  { label: 'Пауза',   cls: 'stats-badge--warning' },
+  draft:   { label: 'Черновик',cls: 'stats-badge--muted'   },
+};
 
 const STATUS_LABELS: Record<string, { label: string; cls: string }> = {
   moderation:       { label: 'На модерации', cls: 'stats-badge--warning' },
@@ -242,12 +222,6 @@ const STATUS_LABELS: Record<string, { label: string; cls: string }> = {
   rejected:         { label: 'Отклонена',    cls: 'stats-badge--danger'  },
   turned_off:       { label: 'Остановлена',  cls: 'stats-badge--muted'   },
   not_enough_money: { label: 'Нет баланса',  cls: 'stats-badge--warning' },
-};
-
-const GROUP_STATUS_LABELS: Record<string, { label: string; cls: string }> = {
-  active:  { label: 'Активна', cls: 'stats-badge--success' },
-  paused:  { label: 'Пауза',   cls: 'stats-badge--warning' },
-  draft:   { label: 'Черновик',cls: 'stats-badge--muted'   },
 };
 
 // ── Page entry points ─────────────────────────────────────────────────────────
@@ -505,9 +479,6 @@ export function CampaignStats(): VoidFunction {
       }
     }
 
-    // insights
-    const insightsEl = root.querySelector<HTMLElement>('[data-cs-insights]');
-    if (insightsEl) buildInsights(insightsEl, totals?.ctr ?? 0, pct);
   }
 
   void refresh();

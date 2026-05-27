@@ -1,8 +1,19 @@
 .public-layout--home {
   --home-light-bg: #efedff;
+  --home-footer-bg: #080b14;
   background-color: var(--home-light-bg);
   background-image: none;
   animation: none;
+}
+
+html.is-home-page,
+body.is-home-page {
+  overscroll-behavior-y: none;
+}
+
+body.is-home-page {
+  --home-footer-bg: #080b14;
+  background-color: var(--home-footer-bg);
 }
 
 .public-layout--home .public-layout__bg {

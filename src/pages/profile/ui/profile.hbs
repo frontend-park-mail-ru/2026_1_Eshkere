@@ -401,90 +401,110 @@
       <div class="modal__inner profile-modal__inner">
         <div class="profile-modal__head">
           <h2 class="profile-modal__title" id="profile-password-title">Смена пароля</h2>
-          <p class="profile-modal__subtitle">Безопасное обновление пароля для входа в аккаунт.</p>
+          <p class="profile-modal__subtitle">Введите текущий и новый пароль — мы отправим код подтверждения на вашу почту.</p>
         </div>
 
         <form class="profile-modal__form" id="profile-password-form" novalidate>
           <div class="profile-modal__banner profile-modal__banner--error" data-form-error hidden></div>
+          <div class="profile-modal__banner profile-modal__banner--success" data-form-success hidden></div>
 
-          <label class="profile-modal__field" data-field="currentPassword">
-            <span class="profile-modal__label">Текущий пароль</span>
-            <span class="ui-field__control ui-field__control--with-toggle profile-modal__input-wrap">
-              <input class="profile-modal__input ui-input--with-toggle" type="password" name="currentPassword" placeholder="Введите текущий пароль" />
-              <button
-                class="ui-field__password-toggle"
-                type="button"
-                data-password-toggle
-                aria-label="Показать пароль"
-                aria-pressed="false"
-                title="Показать пароль"
-              >
-                <svg class="ui-field__icon ui-field__icon--show" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M2 12C3.7 8.5 7.3 6 12 6s8.3 2.5 10 6c-1.7 3.5-5.3 6-10 6s-8.3-2.5-10-6z" />
-                  <circle cx="12" cy="12" r="2.8" />
-                </svg>
-                <svg class="ui-field__icon ui-field__icon--hide" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M2 12C3.7 8.5 7.3 6 12 6s8.3 2.5 10 6c-1.7 3.5-5.3 6-10 6s-8.3-2.5-10-6z" />
-                  <path d="M8 12.5c1.1-1 2.5-1.5 4-1.5s2.9.5 4 1.5" />
-                </svg>
-              </button>
-            </span>
-            <span class="profile-modal__error" data-error-for="currentPassword"></span>
-          </label>
+          <div class="profile-modal__step" data-step="input">
+            <label class="profile-modal__field" data-field="currentPassword">
+              <span class="profile-modal__label">Текущий пароль</span>
+              <span class="ui-field__control ui-field__control--with-toggle profile-modal__input-wrap">
+                <input class="profile-modal__input ui-input--with-toggle" type="password" name="currentPassword" placeholder="Введите текущий пароль" />
+                <button
+                  class="ui-field__password-toggle"
+                  type="button"
+                  data-password-toggle
+                  aria-label="Показать пароль"
+                  aria-pressed="false"
+                  title="Показать пароль"
+                >
+                  <svg class="ui-field__icon ui-field__icon--show" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M2 12C3.7 8.5 7.3 6 12 6s8.3 2.5 10 6c-1.7 3.5-5.3 6-10 6s-8.3-2.5-10-6z" />
+                    <circle cx="12" cy="12" r="2.8" />
+                  </svg>
+                  <svg class="ui-field__icon ui-field__icon--hide" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M2 12C3.7 8.5 7.3 6 12 6s8.3 2.5 10 6c-1.7 3.5-5.3 6-10 6s-8.3-2.5-10-6z" />
+                    <path d="M8 12.5c1.1-1 2.5-1.5 4-1.5s2.9.5 4 1.5" />
+                  </svg>
+                </button>
+              </span>
+              <span class="profile-modal__error" data-error-for="currentPassword"></span>
+            </label>
 
-          <label class="profile-modal__field" data-field="newPassword">
-            <span class="profile-modal__label">Новый пароль</span>
-            <span class="ui-field__control ui-field__control--with-toggle profile-modal__input-wrap">
-              <input class="profile-modal__input ui-input--with-toggle" type="password" name="newPassword" placeholder="Минимум 6 символов" />
-              <button
-                class="ui-field__password-toggle"
-                type="button"
-                data-password-toggle
-                aria-label="Показать пароль"
-                aria-pressed="false"
-                title="Показать пароль"
-              >
-                <svg class="ui-field__icon ui-field__icon--show" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M2 12C3.7 8.5 7.3 6 12 6s8.3 2.5 10 6c-1.7 3.5-5.3 6-10 6s-8.3-2.5-10-6z" />
-                  <circle cx="12" cy="12" r="2.8" />
-                </svg>
-                <svg class="ui-field__icon ui-field__icon--hide" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M2 12C3.7 8.5 7.3 6 12 6s8.3 2.5 10 6c-1.7 3.5-5.3 6-10 6s-8.3-2.5-10-6z" />
-                  <path d="M8 12.5c1.1-1 2.5-1.5 4-1.5s2.9.5 4 1.5" />
-                </svg>
-              </button>
-            </span>
-            <span class="profile-modal__error" data-error-for="newPassword"></span>
-          </label>
+            <label class="profile-modal__field" data-field="newPassword">
+              <span class="profile-modal__label">Новый пароль</span>
+              <span class="ui-field__control ui-field__control--with-toggle profile-modal__input-wrap">
+                <input class="profile-modal__input ui-input--with-toggle" type="password" name="newPassword" placeholder="Минимум 6 символов" />
+                <button
+                  class="ui-field__password-toggle"
+                  type="button"
+                  data-password-toggle
+                  aria-label="Показать пароль"
+                  aria-pressed="false"
+                  title="Показать пароль"
+                >
+                  <svg class="ui-field__icon ui-field__icon--show" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M2 12C3.7 8.5 7.3 6 12 6s8.3 2.5 10 6c-1.7 3.5-5.3 6-10 6s-8.3-2.5-10-6z" />
+                    <circle cx="12" cy="12" r="2.8" />
+                  </svg>
+                  <svg class="ui-field__icon ui-field__icon--hide" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M2 12C3.7 8.5 7.3 6 12 6s8.3 2.5 10 6c-1.7 3.5-5.3 6-10 6s-8.3-2.5-10-6z" />
+                    <path d="M8 12.5c1.1-1 2.5-1.5 4-1.5s2.9.5 4 1.5" />
+                  </svg>
+                </button>
+              </span>
+              <span class="profile-modal__error" data-error-for="newPassword"></span>
+            </label>
 
-          <label class="profile-modal__field" data-field="repeatPassword">
-            <span class="profile-modal__label">Повторите пароль</span>
-            <span class="ui-field__control ui-field__control--with-toggle profile-modal__input-wrap">
-              <input class="profile-modal__input ui-input--with-toggle" type="password" name="repeatPassword" placeholder="Повторите новый пароль" />
-              <button
-                class="ui-field__password-toggle"
-                type="button"
-                data-password-toggle
-                aria-label="Показать пароль"
-                aria-pressed="false"
-                title="Показать пароль"
-              >
-                <svg class="ui-field__icon ui-field__icon--show" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M2 12C3.7 8.5 7.3 6 12 6s8.3 2.5 10 6c-1.7 3.5-5.3 6-10 6s-8.3-2.5-10-6z" />
-                  <circle cx="12" cy="12" r="2.8" />
-                </svg>
-                <svg class="ui-field__icon ui-field__icon--hide" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M2 12C3.7 8.5 7.3 6 12 6s8.3 2.5 10 6c-1.7 3.5-5.3 6-10 6s-8.3-2.5-10-6z" />
-                  <path d="M8 12.5c1.1-1 2.5-1.5 4-1.5s2.9.5 4 1.5" />
-                </svg>
-              </button>
-            </span>
-            <span class="profile-modal__error" data-error-for="repeatPassword"></span>
-          </label>
+            <label class="profile-modal__field" data-field="repeatPassword">
+              <span class="profile-modal__label">Повторите пароль</span>
+              <span class="ui-field__control ui-field__control--with-toggle profile-modal__input-wrap">
+                <input class="profile-modal__input ui-input--with-toggle" type="password" name="repeatPassword" placeholder="Повторите новый пароль" />
+                <button
+                  class="ui-field__password-toggle"
+                  type="button"
+                  data-password-toggle
+                  aria-label="Показать пароль"
+                  aria-pressed="false"
+                  title="Показать пароль"
+                >
+                  <svg class="ui-field__icon ui-field__icon--show" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M2 12C3.7 8.5 7.3 6 12 6s8.3 2.5 10 6c-1.7 3.5-5.3 6-10 6s-8.3-2.5-10-6z" />
+                    <circle cx="12" cy="12" r="2.8" />
+                  </svg>
+                  <svg class="ui-field__icon ui-field__icon--hide" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M2 12C3.7 8.5 7.3 6 12 6s8.3 2.5 10 6c-1.7 3.5-5.3 6-10 6s-8.3-2.5-10-6z" />
+                    <path d="M8 12.5c1.1-1 2.5-1.5 4-1.5s2.9.5 4 1.5" />
+                  </svg>
+                </button>
+              </span>
+              <span class="profile-modal__error" data-error-for="repeatPassword"></span>
+            </label>
+          </div>
+
+          <div class="profile-modal__step" data-step="confirm" hidden>
+            <div class="profile-modal__hint">
+              Код подтверждения отправлен на <strong data-confirm-target>—</strong>. Тестовый код:
+              <strong>123456</strong>
+            </div>
+
+            <label class="profile-modal__field" data-field="code">
+              <span class="profile-modal__label">Код подтверждения</span>
+              <input class="profile-modal__input" type="text" name="code" inputmode="numeric" autocomplete="one-time-code" placeholder="Введите код из письма" />
+              <span class="profile-modal__error" data-error-for="code"></span>
+            </label>
+
+            <button class="profile-modal__link-button" type="button" data-resend-code>
+              Отправить код повторно
+            </button>
+          </div>
 
           <div class="profile-modal__actions">
             <button class="profile-modal__button profile-modal__button--secondary" type="button" data-modal-close>Позже</button>
-            <button class="profile-modal__button profile-modal__button--primary" type="submit">Обновить</button>
+            <button class="profile-modal__button profile-modal__button--primary" type="submit" data-step-submit>Отправить код</button>
           </div>
         </form>
       </div>

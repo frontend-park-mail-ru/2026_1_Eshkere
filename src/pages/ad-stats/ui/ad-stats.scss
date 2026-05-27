@@ -109,12 +109,11 @@
   height: 18px;
   border-radius: 50%;
   background: var(--primary-active);
-  color: #fff;
-  font-size: 8px;
-  font-weight: 800;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+  img { filter: brightness(0) invert(1); display: block; }
 }
 
 .as-hero__id {
@@ -188,10 +187,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 9px;
-  font-weight: 800;
-  color: #fff;
   flex-shrink: 0;
+  img { filter: brightness(0) invert(1); display: block; }
   &--campaign { background: #5855ff; }
   &--group { background: #6b7cff; }
   &--ad { background: linear-gradient(135deg, #5855ff, #9342ff); }
@@ -444,7 +441,7 @@
 }
 
 .as-bar-chart {
-  height: 90px;
+  height: 150px;
   display: flex;
   align-items: flex-end;
   gap: 4px;
@@ -514,6 +511,7 @@
 .as-winner-badge {
   display: inline-flex;
   align-items: center;
+  gap: 5px;
   padding: 3px 10px;
   border-radius: 999px;
   background: var(--primary-surface);
@@ -521,6 +519,11 @@
   color: var(--primary-active);
   font-size: 11px;
   font-weight: 700;
+  img {
+    filter: invert(33%) sepia(99%) saturate(2000%) hue-rotate(233deg) brightness(100%);
+    display: block;
+    flex-shrink: 0;
+  }
 }
 
 .as-variant-label {

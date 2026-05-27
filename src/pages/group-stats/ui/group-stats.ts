@@ -263,8 +263,9 @@ export function GroupStats(): VoidFunction {
   let currentTimeline: StatsPoint[] = [];
 
   // navigation
+  // «← Назад к кампаниям» → список кампаний
   root.querySelector('[data-gs-back]')?.addEventListener('click', () => {
-    navigateTo(`/ads/stats/campaign?id=${campaignId}`);
+    navigateTo('/ads');
   }, { signal });
 
   root.querySelector('[data-gs-bc-campaigns]')?.addEventListener('click', () => {
@@ -505,7 +506,7 @@ export function GroupStats(): VoidFunction {
                   <span style="width:34px;height:34px;border-radius:8px;background:${color};flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff">${i + 1}</span>
                   <div>
                     <div class="stats-table__name">${ad.title}</div>
-                    ${isBest ? '<span class="as-best-badge" style="margin-top:3px;display:inline-flex"><span class="as-best-badge__icon">ыб</span>Лучшее</span>' : ''}
+                    ${isBest ? '<span class="as-best-badge" style="margin-top:3px;display:inline-flex"><span class="as-best-badge__icon"><img src="/icons/Star.svg" width="10" height="10" alt="" style="filter:brightness(0) invert(1);display:block" /></span>Лучшее</span>' : ''}
                   </div>
                 </div>
               </td>

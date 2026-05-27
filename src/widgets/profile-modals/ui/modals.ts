@@ -30,6 +30,7 @@ const TWO_STEP_FORM_IDS = new Set([
   'profile-email-form',
   'profile-phone-form',
   'profile-payment-form',
+  'profile-password-form',
 ]);
 
 function resetProfileModalForm(form: HTMLFormElement): void {
