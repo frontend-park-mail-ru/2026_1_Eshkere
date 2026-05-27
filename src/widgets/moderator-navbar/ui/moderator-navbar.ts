@@ -48,34 +48,6 @@ function getSectionMeta(pathname: string): { currentSection: string; currentSect
     };
   }
 
-  if (pathname === '/moderator/messages') {
-    return {
-      currentSection: 'Диалоги с клиентами',
-      currentSectionHint: 'Правки, документы и объяснение решений клиенту.',
-    };
-  }
-
-  if (pathname === '/moderator/appeals') {
-    return {
-      currentSection: 'Апелляции',
-      currentSectionHint: 'Повторные проверки и спорные кейсы после решения.',
-    };
-  }
-
-  if (pathname === '/moderator/policies') {
-    return {
-      currentSection: 'Policy и правила',
-      currentSectionHint: 'База правил и оснований для решений.',
-    };
-  }
-
-  if (pathname === '/moderator/audit') {
-    return {
-      currentSection: 'Аудит действий',
-      currentSectionHint: 'История решений команды и изменения статусов.',
-    };
-  }
-
   return {
     currentSection: 'Центр модерации',
     currentSectionHint: 'Рабочая зона модератора без логики рекламного кабинета.',

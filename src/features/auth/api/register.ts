@@ -44,8 +44,10 @@ export async function registerUser({ name, email, phone, password }: RegisterUse
       authState.setAuthenticatedUser({
         ...base,
         name: profile.name ?? normalizedName,
+        surname: profile.surname,
         balance: profile.balance,
         avatar: profile.avatar_url,
+        role: profile.role,
       });
     }
 

@@ -6,6 +6,7 @@ import {
   updatePartnerSite,
 } from 'features/sites';
 import { REQUEST_ERROR_EVENT_NAME } from 'widgets/request-error-modal';
+import { closeModal, openModal } from 'shared/ui/modal/modal';
 
 type PendingSiteStatusChange = {
   siteId: number;
@@ -55,7 +56,7 @@ export function bindPartnerSiteStatusModal(signal: AbortSignal): void {
   let pending: PendingSiteStatusChange | null = null;
 
   const closeStatusModal = (): void => {
-    statusModal.hidden = true;
+    closeModal(statusModal);
     statusModalConfirm.removeAttribute('disabled');
     pending = null;
   };
@@ -76,9 +77,9 @@ export function bindPartnerSiteStatusModal(signal: AbortSignal): void {
       : 'Вы сможете снова включить сайт позже — настройки и блоки сохранятся.';
     statusModalConfirm.textContent = isEnabling ? 'Включить' : 'Выключить';
     statusModalImage.src = isEnabling
-      ? '/img/News.png'
-      : '/img/Delete%20Confirmation.png';
-    statusModal.hidden = false;
+      ? '/img/News.webp'
+      : '/img/Delete%20Confirmation.webp';
+    openModal(statusModal);
   };
 
   document.querySelectorAll<HTMLElement>('.add-sites-page .campaign-row').forEach((row) => {
@@ -166,7 +167,10 @@ export function bindPartnerSiteStatusModal(signal: AbortSignal): void {
   statusModal.addEventListener(
     'click',
     (event) => {
-      if (event.target === statusModal) {
+      if (
+        event.target === statusModal ||
+        event.target === statusModal.querySelector('.modal__backdrop')
+      ) {
         closeStatusModal();
       }
     },
@@ -176,7 +180,7 @@ export function bindPartnerSiteStatusModal(signal: AbortSignal): void {
   document.addEventListener(
     'keydown',
     (event) => {
-      if (event.key === 'Escape' && !statusModal.hidden) {
+      if (event.key === 'Escape' && statusModal.classList.contains('modal--open')) {
         closeStatusModal();
       }
     },

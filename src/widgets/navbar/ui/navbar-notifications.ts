@@ -1,3 +1,8 @@
+import {
+  getNotificationSettings,
+  updateNotificationSettings,
+} from 'features/ads/api/notification-settings';
+
 export function initNavbarNotifications(signal: AbortSignal, closeProfileMenu: () => void): {
   closeNotifications: () => void;
   closeNotificationsModal: () => void;
@@ -183,60 +188,24 @@ export function initNavbarNotifications(signal: AbortSignal, closeProfileMenu: (
   const settingsOpenBtn = document.getElementById('navbar-notifications-settings-open');
   const settingsCloseBtn = document.getElementById('navbar-notifications-settings-close');
 
-  const NOTIF_SETTINGS_KEY = 'notification_settings';
+  let cachedEmailEnabled: boolean | null = null;
 
-  function loadSettings(): Record<string, boolean> {
-    try {
-      const raw = localStorage.getItem(NOTIF_SETTINGS_KEY);
-      return raw ? (JSON.parse(raw) as Record<string, boolean>) : { inapp: true };
-    } catch {
-      return { inapp: true };
-    }
-  }
-
-  function saveSettings(settings: Record<string, boolean>): void {
-    try {
-      localStorage.setItem(NOTIF_SETTINGS_KEY, JSON.stringify(settings));
-    } catch {
-      // ignore
-    }
-  }
-
-  function syncSettingsToggles(): void {
+  function applyEmailEnabled(enabled: boolean): void {
+    cachedEmailEnabled = enabled;
     if (!settingsModal) return;
-    const settings = loadSettings();
-    settingsModal
-      .querySelectorAll<HTMLInputElement>('[data-notif-channel]')
-      .forEach((input) => {
-        const channel = input.dataset.notifChannel ?? '';
-        if (!input.disabled) {
-          input.checked = settings[channel] ?? false;
-        }
-      });
+    settingsModal.querySelectorAll<HTMLInputElement>('[data-notif-channel="email"]').forEach((input) => {
+      if (!input.disabled) input.checked = enabled;
+    });
   }
-
-  const syncThresholdDisplays = (): void => {
-    if (!settingsModal) return;
-    const thresholds = loadThresholds();
-    settingsModal
-      .querySelectorAll<HTMLElement>('[data-threshold-display]')
-      .forEach((el) => {
-        const key = el.dataset.thresholdDisplay ?? '';
-        if (thresholds[key] !== undefined) {
-          el.textContent = thresholds[key].toLocaleString('ru-RU');
-        }
-      });
-  };
 
   const openSettingsModal = (): void => {
     if (!settingsModal) return;
     closeNotifications();
-    syncSettingsToggles();
-    syncThresholdDisplays();
     settingsModal.hidden = false;
     if (settingsModal.parentElement !== document.body) {
       document.body.appendChild(settingsModal);
     }
+    getNotificationSettings().then((s) => applyEmailEnabled(s.email_enabled)).catch(() => {});
   };
 
   const closeSettingsModal = (): void => {
@@ -255,114 +224,24 @@ export function initNavbarNotifications(signal: AbortSignal, closeProfileMenu: (
   }, { signal });
 
   settingsModal
-    ?.querySelectorAll<HTMLInputElement>('[data-notif-channel]')
+    ?.querySelectorAll<HTMLInputElement>('[data-notif-channel="email"]')
     .forEach((input) => {
       input.addEventListener('change', () => {
         if (input.disabled) return;
-        const settings = loadSettings();
-        settings[input.dataset.notifChannel ?? ''] = input.checked;
-        saveSettings(settings);
+        const newValue = input.checked;
+        updateNotificationSettings({ email_enabled: newValue })
+          .then((s) => applyEmailEnabled(s.email_enabled))
+          .catch(() => {
+            if (cachedEmailEnabled !== null) applyEmailEnabled(cachedEmailEnabled);
+          });
       }, { signal });
     });
 
-  // ── Threshold editing ──────────────────────────────────────────────────────
-  const THRESHOLD_KEY = 'notification_thresholds';
-
-  function loadThresholds(): Record<string, number> {
-    try {
-      const raw = localStorage.getItem(THRESHOLD_KEY);
-      return raw
-        ? (JSON.parse(raw) as Record<string, number>)
-        : { warning: 500, critical: 100 };
-    } catch {
-      return { warning: 500, critical: 100 };
-    }
-  }
-
-  function saveThresholds(thresholds: Record<string, number>): void {
-    try {
-      localStorage.setItem(THRESHOLD_KEY, JSON.stringify(thresholds));
-    } catch {
-      // ignore
-    }
-  }
-
-
-
-  // ── Threshold inline edit ──────────────────────────────────────────────────
-  const showThresholdError = (card: HTMLElement, message: string): void => {
-    const existing = card.querySelector('.navbar__notif-threshold-error');
-    if (existing) existing.remove();
-    const err = document.createElement('span');
-    err.className = 'navbar__notif-threshold-error';
-    err.textContent = message;
-    card.appendChild(err);
-    setTimeout(() => err.remove(), 2500);
-  };
-
-  const commitThreshold = (key: string, input: HTMLInputElement, display: HTMLElement): void => {
-    const raw = input.value.replace(/\D/g, '');
-    const value = Math.max(0, Math.min(999999, Number(raw) || 0));
-    const thresholds = loadThresholds();
-    const card = input.closest<HTMLElement>('.navbar__notif-threshold');
-
-    if (key === 'warning' && value <= thresholds.critical) {
-      if (card) showThresholdError(card, `Должно быть > ${thresholds.critical.toLocaleString('ru-RU')} ₽`);
-      input.focus();
-      input.select();
-      return;
-    }
-
-    if (key === 'critical' && value >= thresholds.warning) {
-      if (card) showThresholdError(card, `Должно быть < ${thresholds.warning.toLocaleString('ru-RU')} ₽`);
-      input.focus();
-      input.select();
-      return;
-    }
-
-    thresholds[key] = value;
-    saveThresholds(thresholds);
-    display.textContent = value.toLocaleString('ru-RU');
-    input.hidden = true;
-    display.hidden = false;
-    card?.classList.remove('is-editing');
-  };
-
+  // Threshold cards are hidden — thresholds are determined by the backend
   settingsModal
     ?.querySelectorAll<HTMLElement>('[data-threshold-key]')
     .forEach((card) => {
-      const key = card.dataset.thresholdKey ?? '';
-      const display = card.querySelector<HTMLElement>(`[data-threshold-display="${key}"]`);
-      const input = card.querySelector<HTMLInputElement>(`[data-threshold-input="${key}"]`);
-      if (!display || !input) return;
-
-      card.addEventListener('click', (e) => {
-        if (e.target === input) return;
-        if (!input.hidden) return; // уже в режиме редактирования
-        const thresholds = loadThresholds();
-        input.value = String(thresholds[key] ?? 0);
-        display.hidden = true;
-        input.hidden = false;
-        card.classList.add('is-editing');
-        input.focus();
-        input.select();
-      }, { signal });
-
-      input.addEventListener('keydown', (e) => {
-        if (!/[\d]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter', 'Escape'].includes(e.key)) {
-          e.preventDefault();
-        }
-        if (e.key === 'Enter') { e.preventDefault(); commitThreshold(key, input, display); }
-        if (e.key === 'Escape') {
-          input.hidden = true;
-          display.hidden = false;
-          card.classList.remove('is-editing');
-        }
-      }, { signal });
-
-      input.addEventListener('blur', () => {
-        if (!input.hidden) commitThreshold(key, input, display);
-      }, { signal });
+      card.hidden = true;
     });
 
 

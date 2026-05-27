@@ -54,8 +54,8 @@ function splitFullName(name: string): { firstName: string; lastName: string } {
   };
 }
 
-function isEmailLike(value: string): boolean {
-  return /.+@.+\..+/.test(value.trim());
+function normalizeNamePart(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : '';
 }
 
 function formatPhoneForDisplay(value: string): string {
@@ -101,6 +101,7 @@ export async function getProfileState(): Promise<ProfileState> {
     email: '',
     phone: '',
     name: '',
+    surname: '',
     balance: 0,
   };
 
@@ -108,8 +109,11 @@ export async function getProfileState(): Promise<ProfileState> {
     const response = await request<{
       id: number;
       name?: string;
+      surname?: string;
       email?: string;
       phone?: string;
+      company?: string;
+      city?: string;
       balance?: number;
       avatar_url?: string;
       created_at?: string;
@@ -119,11 +123,16 @@ export async function getProfileState(): Promise<ProfileState> {
     currentUser = {
       ...currentUser,
       id: typeof profile?.id === 'number' ? profile.id : currentUser.id,
-      name: typeof profile?.name === 'string' ? profile.name : currentUser.name,
+      name: normalizeNamePart(profile?.name) || currentUser.name,
+      surname: normalizeNamePart(profile?.surname) || currentUser.surname,
       email:
         typeof profile?.email === 'string' ? profile.email : currentUser.email,
       phone:
         typeof profile?.phone === 'string' ? profile.phone : currentUser.phone,
+      company:
+        typeof profile?.company === 'string' ? profile.company : currentUser.company,
+      city:
+        typeof profile?.city === 'string' ? profile.city : currentUser.city,
       balance:
         typeof profile?.balance === 'number'
           ? profile.balance
@@ -138,9 +147,8 @@ export async function getProfileState(): Promise<ProfileState> {
     // используем данные из локального состояния, чтобы не ломать рендер страницы.
   }
 
-  const rawName = typeof currentUser.name === 'string' ? currentUser.name.trim() : '';
-  const fullName = rawName && !isEmailLike(rawName) ? rawName : '';
-  const { firstName, lastName } = splitFullName(fullName);
+  const firstName = normalizeNamePart(currentUser.name);
+  const lastName = normalizeNamePart(currentUser.surname);
   let activeCampaigns = 0;
 
   try {
@@ -208,7 +216,8 @@ export function persistUserState(state: ProfileState): void {
 
   authState.setAuthenticatedUser({
     ...currentUser,
-    name: `${state.firstName} ${state.lastName}`.trim(),
+    name: state.firstName,
+    surname: state.lastName,
     email: state.email,
     phone: state.phone,
     balance: state.balanceValue,

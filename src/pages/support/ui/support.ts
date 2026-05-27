@@ -1,8 +1,12 @@
 import './support.scss';
+import { maybeStartAdvertiserTour } from 'features/onboarding';
 import { getAds, type AdItem } from 'features/ads/api/get-ads';
 import { listAppeals, createAppeal, getAppeal, type AppealResponse, type AppealCategory } from 'features/appeals';
 import { authState } from 'entities/user';
 import { LocalStorageKey, localStorageService } from 'shared/lib/local-storage';
+import { getCurrentPath } from 'shared/lib/navigation';
+import { isPartnerCabinet } from 'shared/lib/cabinet';
+import { initNativeSelectArrows } from 'shared/lib/native-select-arrow';
 import { renderTemplate } from 'shared/lib/render';
 import supportTemplate from './support.hbs';
 
@@ -34,11 +38,25 @@ const TOPIC_TO_CATEGORY: Record<string, AppealCategory> = {
   'Запуск кампании': 'question',
 };
 
+const PARTNER_TOPIC_TO_CATEGORY: Record<string, AppealCategory> = {
+  'question': 'question',
+  'complaint': 'complaint',
+  'bug': 'bug',
+  'suggestion': 'suggestion',
+};
+
 const APPEAL_STATUS_LABELS: Record<string, string> = {
   new: 'Новое',
   in_progress: 'В работе',
   resolved: 'Решено',
   closed: 'Закрыто',
+};
+
+const APPEAL_STATUS_TONES: Record<string, string> = {
+  new: 'warning',
+  in_progress: 'warning',
+  resolved: 'success',
+  closed: 'muted',
 };
 
 function formatAppealDate(iso: string): string {
@@ -152,27 +170,43 @@ function mapCampaigns(ads: AdItem[]): SupportCampaign[] {
   });
 }
 
-export async function renderSupportPage(): Promise<string> {
-  const [adsResult, appealsResult] = await Promise.all([
-    getAds(),
-    listAppeals().catch(() => ({ advertiser_id: 0, appeals: [] as AppealResponse[] })),
-  ]);
-
-  const campaigns = mapCampaigns(adsResult.ads);
-  const selectedCampaign = campaigns.find((campaign) => campaign.isSelected) ?? campaigns[0] ?? null;
-
-  const backendAppeals = appealsResult.appeals.map((a) => ({
+function mapAppeals(appeals: AppealResponse[]) {
+  return appeals.map((a) => ({
     ...a,
     statusLabel: APPEAL_STATUS_LABELS[a.status] ?? a.status,
+    statusTone: APPEAL_STATUS_TONES[a.status] ?? 'muted',
     createdAtFormatted: formatAppealDate(a.created_at),
   }));
+}
+
+export async function renderSupportPage(): Promise<string> {
+  const isPartner = isPartnerCabinet(getCurrentPath());
+  const appealsResult = await listAppeals().catch(() => ({ advertiser_id: 0, appeals: [] as AppealResponse[] }));
+  const backendAppeals = mapAppeals(appealsResult.appeals);
+
+  if (isPartner) {
+    const openAppealsCount = backendAppeals.filter((a) => a.status === 'new' || a.status === 'in_progress').length;
+    const resolvedAppealsCount = backendAppeals.filter((a) => a.status === 'resolved' || a.status === 'closed').length;
+
+    return renderTemplate(supportTemplate, {
+      isPartner: true,
+      backendAppeals,
+      hasBackendAppeals: backendAppeals.length > 0,
+      openAppealsCount,
+      resolvedAppealsCount,
+      loadError: '',
+    });
+  }
+
+  const adsResult = await getAds();
+  const campaigns = mapCampaigns(adsResult.ads);
 
   return renderTemplate(supportTemplate, {
+    isPartner: false,
     campaigns,
-    selectedCampaign,
     hasCampaigns: campaigns.length > 0,
-    pendingCount: campaigns.filter((campaign) => campaign.statusTone === 'warning').length,
-    rejectedCount: campaigns.filter((campaign) => campaign.statusTone === 'danger').length,
+    pendingCount: campaigns.filter((c) => c.statusTone === 'warning').length,
+    rejectedCount: campaigns.filter((c) => c.statusTone === 'danger').length,
     loadError: adsResult.error ? adsResult.message : '',
     backendAppeals,
     hasBackendAppeals: backendAppeals.length > 0,
@@ -199,19 +233,29 @@ function persistMessage(campaignId: string, message: SupportThreadMessage): void
 
 function appendUserMessage(thread: HTMLElement, message: SupportThreadMessage): void {
   const list = thread.querySelector<HTMLElement>('[data-support-messages]');
-  if (!list) {
-    return;
-  }
+  if (!list) return;
 
   const item = document.createElement('article');
   item.className = 'support-message support-message--user';
   item.innerHTML = `
-    <span class="support-message__meta">${message.time}</span>
+    <span class="support-message__meta"></span>
     <p class="support-message__text"></p>
   `;
+  item.querySelector<HTMLElement>('.support-message__meta')!.textContent = message.time;
   item.querySelector<HTMLElement>('.support-message__text')!.textContent = message.text;
   list.appendChild(item);
   item.scrollIntoView({ block: 'nearest' });
+}
+
+function bindFileLabel(fileInput: HTMLInputElement): void {
+  const label = fileInput.closest<HTMLElement>('[data-file-label]')
+    ?? fileInput.parentElement?.querySelector<HTMLElement>('[data-file-label]');
+  if (!label) return;
+
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files?.[0];
+    label.textContent = file ? file.name : 'Прикрепить скриншот';
+  });
 }
 
 export function Support(): void | VoidFunction {
@@ -220,85 +264,25 @@ export function Support(): void | VoidFunction {
   }
 
   const root = document.querySelector<HTMLElement>('[data-support-page]');
-  if (!root) {
-    return;
-  }
+  if (!root) return;
+
+  maybeStartAdvertiserTour();
 
   const controller = new AbortController();
   supportController = controller;
   const { signal } = controller;
 
-  root.querySelectorAll<HTMLElement>('[data-support-campaign]').forEach((card) => {
-    card.addEventListener(
-      'click',
-      () => {
-        const campaignId = card.dataset.supportCampaign;
-        if (campaignId) {
-          setActiveCampaign(root, campaignId);
-        }
-      },
-      { signal },
-    );
+  initNativeSelectArrows({
+    root,
+    signal,
+    selectSelector: '.support-partner-form__select, .support-form__select',
+    fieldSelector: '.support-partner-form__label--select, .support-form__select-wrap',
   });
 
-  root.querySelectorAll<HTMLFormElement>('[data-support-form]').forEach((form) => {
-    form.addEventListener(
-      'submit',
-      async (event) => {
-        event.preventDefault();
+  // Прикрепление файла — для всех форм
+  root.querySelectorAll<HTMLInputElement>('[data-support-screenshot]').forEach(bindFileLabel);
 
-        const thread = form.closest<HTMLElement>('[data-support-thread]');
-        const campaignId = thread?.dataset.supportThread;
-        const textarea = form.querySelector<HTMLTextAreaElement>('[data-support-message]');
-        const select = form.querySelector<HTMLSelectElement>('[data-support-topic]');
-        const submitBtn = form.querySelector<HTMLButtonElement>('[type="submit"]');
-        const value = textarea?.value.trim() ?? '';
-
-        if (!thread || !campaignId || !textarea || !value) {
-          return;
-        }
-
-        const topic = select?.value || 'Вопрос';
-        const message: SupportThreadMessage = {
-          author: 'user',
-          text: value,
-          time: formatNow(topic),
-        };
-
-        // Показываем сообщение в UI и сохраняем в localStorage
-        persistMessage(campaignId, message);
-        appendUserMessage(thread, message);
-        textarea.value = '';
-        textarea.focus();
-
-        // Отправляем реальное обращение на бек
-        const user = authState.getCurrentUser();
-        if (!user) return;
-
-        const category: AppealCategory = TOPIC_TO_CATEGORY[topic] ?? 'question';
-        const title = `${topic}`.slice(0, 100);
-
-        if (submitBtn) submitBtn.disabled = true;
-
-        try {
-          await createAppeal({
-            category,
-            title,
-            description: value,
-            name: user.name || user.email || 'Рекламодатель',
-            email: user.email,
-          });
-        } catch {
-          // Сообщение уже показано в UI — молча игнорируем ошибку отправки
-        } finally {
-          if (submitBtn) submitBtn.disabled = false;
-        }
-      },
-      { signal },
-    );
-  });
-
-  // Раскрытие деталей обращения по клику
+  // Раскрытие деталей обращений по клику
   root.querySelectorAll<HTMLElement>('[data-appeal-id]').forEach((card) => {
     card.addEventListener(
       'click',
@@ -321,10 +305,159 @@ export function Support(): void | VoidFunction {
     );
   });
 
+  // ── Партнёрская форма ─────────────────────────────────────────────────
+  const partnerForm = root.querySelector<HTMLFormElement>('[data-support-partner-form]');
+  if (partnerForm) {
+    const errorBanner = partnerForm.querySelector<HTMLElement>('[data-partner-form-error]')!;
+    const successBanner = partnerForm.querySelector<HTMLElement>('[data-partner-form-success]')!;
+    const submitBtn = partnerForm.querySelector<HTMLButtonElement>('[data-partner-submit]')!;
+
+    partnerForm.addEventListener(
+      'submit',
+      async (event) => {
+        event.preventDefault();
+
+        const topicSelect = partnerForm.querySelector<HTMLSelectElement>('[data-support-topic]');
+        const titleInput = partnerForm.querySelector<HTMLInputElement>('[data-support-title]');
+        const textarea = partnerForm.querySelector<HTMLTextAreaElement>('[data-support-message]');
+        const fileInput = partnerForm.querySelector<HTMLInputElement>('[data-support-screenshot]');
+
+        const topicValue = topicSelect?.value ?? 'question';
+        const title = titleInput?.value.trim() ?? '';
+        const text = textarea?.value.trim() ?? '';
+
+        errorBanner.hidden = true;
+        successBanner.hidden = true;
+
+        if (!title) {
+          errorBanner.textContent = 'Укажите тему обращения';
+          errorBanner.hidden = false;
+          titleInput?.focus();
+          return;
+        }
+
+        if (!text) {
+          errorBanner.textContent = 'Опишите проблему подробнее';
+          errorBanner.hidden = false;
+          textarea?.focus();
+          return;
+        }
+
+        const user = authState.getCurrentUser();
+        if (!user) return;
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Отправляем…';
+
+        try {
+          const category: AppealCategory = PARTNER_TOPIC_TO_CATEGORY[topicValue] ?? 'question';
+          await createAppeal({
+            category,
+            title,
+            description: text,
+            name: user.name || user.email || 'Партнёр',
+            email: user.email,
+            screenshot: fileInput?.files?.[0],
+          });
+
+          partnerForm.reset();
+          const fileLabelEl = partnerForm.querySelector<HTMLElement>('[data-file-label]');
+          if (fileLabelEl) fileLabelEl.textContent = 'Прикрепить скриншот';
+
+          successBanner.hidden = false;
+          successBanner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } catch {
+          errorBanner.textContent = 'Не удалось отправить обращение. Попробуйте ещё раз.';
+          errorBanner.hidden = false;
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Отправить обращение';
+        }
+      },
+      { signal },
+    );
+
+    return () => {
+      if (supportController === controller) supportController = null;
+      controller.abort();
+    };
+  }
+
+  // ── Рекламодательский режим: треды по кампаниям ───────────────────────
+  root.querySelectorAll<HTMLElement>('[data-support-campaign]').forEach((card) => {
+    card.addEventListener(
+      'click',
+      () => {
+        const campaignId = card.dataset.supportCampaign;
+        if (campaignId) setActiveCampaign(root, campaignId);
+      },
+      { signal },
+    );
+  });
+
+  root.querySelectorAll<HTMLFormElement>('[data-support-form]').forEach((form) => {
+    form.addEventListener(
+      'submit',
+      async (event) => {
+        event.preventDefault();
+
+        const thread = form.closest<HTMLElement>('[data-support-thread]');
+        const campaignId = thread?.dataset.supportThread;
+        const textarea = form.querySelector<HTMLTextAreaElement>('[data-support-message]');
+        const select = form.querySelector<HTMLSelectElement>('[data-support-topic]');
+        const fileInput = form.querySelector<HTMLInputElement>('[data-support-screenshot]');
+        const submitBtn = form.querySelector<HTMLButtonElement>('[type="submit"]');
+        const value = textarea?.value.trim() ?? '';
+
+        if (!thread || !campaignId || !textarea || !value) return;
+
+        const topic = select?.value || 'Вопрос';
+        const message: SupportThreadMessage = {
+          author: 'user',
+          text: value,
+          time: formatNow(topic),
+        };
+
+        persistMessage(campaignId, message);
+        appendUserMessage(thread, message);
+        textarea.value = '';
+
+        // Сбрасываем файл и его лейбл
+        if (fileInput) {
+          fileInput.value = '';
+          const fileLabelEl = fileInput.parentElement?.querySelector<HTMLElement>('[data-file-label]');
+          if (fileLabelEl) fileLabelEl.textContent = 'Прикрепить скриншот';
+        }
+
+        textarea.focus();
+
+        const user = authState.getCurrentUser();
+        if (!user) return;
+
+        const category: AppealCategory = TOPIC_TO_CATEGORY[topic] ?? 'question';
+        if (submitBtn) submitBtn.disabled = true;
+
+        try {
+          await createAppeal({
+            category,
+            title: topic.slice(0, 100),
+            description: value,
+            name: user.name || user.email || 'Рекламодатель',
+            email: user.email,
+            screenshot: fileInput?.files?.[0],
+          });
+        } catch {
+          // Сообщение уже показано в UI — молча игнорируем ошибку
+        } finally {
+          if (submitBtn) submitBtn.disabled = false;
+        }
+      },
+      { signal },
+    );
+  });
+
   return () => {
-    if (supportController === controller) {
-      supportController = null;
-    }
+    if (supportController === controller) supportController = null;
     controller.abort();
   };
 }

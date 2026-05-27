@@ -2,6 +2,7 @@ import '../../ad-group-create/ui/ad-group-create.scss';
 import { getAdGroups, updateAdGroup, type AdGroupResponse, type GenderType } from 'features/ads/api/ad-groups';
 import { renderTemplate } from 'shared/lib/render';
 import { navigateTo } from 'shared/lib/navigation';
+import { initNativeSelectArrows } from 'shared/lib/native-select-arrow';
 import adGroupEditTemplate from './ad-group-edit.hbs';
 
 function getParams(): { campaignId: number | null; groupId: number | null } {
@@ -40,6 +41,13 @@ export function AdGroupEdit(): VoidFunction {
 
   const controller = new AbortController();
   const { signal } = controller;
+
+  initNativeSelectArrows({
+    root,
+    signal,
+    selectSelector: '.agc__field--select > .agc__select',
+    fieldSelector: '.agc__field--select',
+  });
 
   if (cachedGroup) {
     const g = cachedGroup;
@@ -89,6 +97,24 @@ export function AdGroupEdit(): VoidFunction {
     const checked = toggle.getAttribute('aria-checked') === 'true';
     toggle.setAttribute('aria-checked', checked ? 'false' : 'true');
   }, { signal });
+
+  const ageFromSelect = root.querySelector<HTMLSelectElement>('[name="age_from"]');
+  const ageToSelect = root.querySelector<HTMLSelectElement>('[name="age_to"]');
+
+  function syncAgeRange(): void {
+    if (!ageFromSelect || !ageToSelect) return;
+    const from = parseInt(ageFromSelect.value, 10);
+    ageToSelect.querySelectorAll('option').forEach((opt) => {
+      opt.disabled = parseInt(opt.value, 10) <= from;
+    });
+    if (parseInt(ageToSelect.value, 10) <= from) {
+      const firstValid = Array.from(ageToSelect.options).find((o) => !o.disabled);
+      if (firstValid) ageToSelect.value = firstValid.value;
+    }
+  }
+
+  ageFromSelect?.addEventListener('change', syncAgeRange, { signal });
+  syncAgeRange();
 
   root.querySelector<HTMLElement>('[data-age-back]')?.addEventListener('click', () => {
     navigateTo(`/ads/campaign?id=${campaignId}`);

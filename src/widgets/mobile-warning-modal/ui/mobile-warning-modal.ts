@@ -39,7 +39,7 @@ function createModal(): HTMLElement {
         <div class="modal__inner mobile-warning-modal__inner">
           <img
             class="mobile-warning-modal__illustration"
-            src="/img/Work From Home.png"
+            src="/img/Work%20From%20Home.webp"
             alt=""
             aria-hidden="true"
           />

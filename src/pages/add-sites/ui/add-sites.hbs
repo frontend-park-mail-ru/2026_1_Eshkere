@@ -105,8 +105,8 @@
       <div class="campaigns-empty">
         <div class="campaigns-empty__illustration" aria-hidden="true">
           <picture>
-            <source srcset="/img/empty-campaign.png" type="image/png" />
-            <img class="campaigns-empty__image" src="/img/empty-campaign.png" alt="" />
+            <source srcset="/img/empty-campaign.webp" type="image/webp" />
+            <img class="campaigns-empty__image" src="/img/empty-campaign.webp" alt="" />
           </picture>
         </div>
         <h3 class="campaigns-empty__title">Подключите первую площадку</h3>
@@ -123,7 +123,8 @@
     {{/if}}
   </div>
 
-  <div class="campaigns-delete-modal" id="campaigns-delete-modal" hidden>
+  <div class="modal campaigns-delete-modal" id="campaigns-delete-modal" aria-hidden="true">
+    <div class="modal__backdrop"></div>
     <div class="campaigns-delete-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="campaigns-delete-modal-title">
       <div class="campaigns-delete-modal__head">
         <h3 class="campaigns-delete-modal__title" id="campaigns-delete-modal-title">
@@ -136,7 +137,7 @@
 
       <div class="campaigns-delete-modal__illustration" aria-hidden="true">
         <span class="campaigns-delete-modal__blob"></span>
-        <img class="campaigns-delete-modal__image" src="/img/trash.png" alt="" />
+        <img class="campaigns-delete-modal__image" src="/img/trash.webp" alt="" />
       </div>
 
       <div class="campaigns-delete-modal__note">
@@ -154,7 +155,8 @@
     </div>
   </div>
 
-  <div class="campaigns-status-modal" id="add-sites-status-modal" hidden>
+  <div class="modal campaigns-status-modal" id="add-sites-status-modal" aria-hidden="true">
+    <div class="modal__backdrop"></div>
     <div
       class="campaigns-status-modal__dialog"
       role="dialog"
@@ -175,7 +177,7 @@
         <img
           class="campaigns-status-modal__image"
           id="add-sites-status-modal-image"
-          src="/img/Bored.png"
+          src="/img/Bored.webp"
           alt=""
         />
       </div>

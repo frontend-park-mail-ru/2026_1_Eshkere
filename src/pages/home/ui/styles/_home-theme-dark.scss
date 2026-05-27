@@ -12,7 +12,7 @@ html[data-theme='dark'] {
 
   // Dark hero background image — spheres at bottom of image, fade upward to dark
   .hero::before {
-    background-image: var(--bg-main-image, url('/img/without.png')) !important;
+    background-image: var(--bg-main-image, url('/img/without.webp')) !important;
     background-position: var(--bg-main-image-position, center top) !important;
     background-repeat: no-repeat !important;
     background-size: var(--bg-main-image-size, max(1440px, 100vw) auto) !important;

@@ -1,5 +1,6 @@
 import './balance.scss';
 import 'shared/ui/modal/modal';
+import { maybeStartAdvertiserTour } from 'features/onboarding';
 import { renderTemplate } from 'shared/lib/render';
 import { createToastController } from 'features/balance/lib/modal';
 import {
@@ -7,6 +8,7 @@ import {
   persistBalanceState,
 } from 'features/balance/model/state';
 import { getBalance } from 'features/balance/api/get-balance';
+import { getAutopaySettings } from 'features/balance/api/autopay';
 import { bindModalShell, closeModal, openModal } from 'shared/ui/modal/modal';
 import type { BalanceHistoryState } from 'features/balance/model/types';
 import {
@@ -70,6 +72,8 @@ export function Balance(): void | VoidFunction {
     return;
   }
 
+  maybeStartAdvertiserTour();
+
   const controller = new AbortController();
   balancePageLifecycleController = controller;
 
@@ -112,11 +116,23 @@ export function Balance(): void | VoidFunction {
   commitState();
 
   getBalance()
-    .then(({ balance }) => {
-      if (balance !== state.balanceValue) {
-        state.balanceValue = balance;
-        commitState();
+    .then(({ balance, delivery_alert, saved_payment_method_id, saved_payment_method_title }) => {
+      state.balanceValue = balance;
+      state.deliveryAlert = delivery_alert ?? null;
+      if (saved_payment_method_id !== undefined) {
+        state.savedPaymentMethodId = saved_payment_method_id || null;
+        state.savedPaymentMethodTitle = saved_payment_method_title || null;
       }
+      commitState();
+    })
+    .catch(() => {});
+
+  getAutopaySettings()
+    .then(({ enabled, threshold, limit }) => {
+      state.autopayEnabled = enabled;
+      state.autopayThreshold = threshold;
+      state.autopayLimit = limit;
+      commitState();
     })
     .catch(() => {});
 

@@ -1,15 +1,14 @@
-﻿@use '../../../../shared/styles/tokens' as t;
-@use '../../../../shared/styles/mixins';
+﻿@use '../../../../shared/styles/mixins';
 
 .campaigns-delete-modal,
 .campaigns-status-modal {
-  @include mixins.modal-overlay(t.$z-modal);
-
-  &[hidden] {
+  &[aria-hidden='true'] {
     display: none;
   }
 
   &__dialog {
+    position: relative;
+    z-index: 1;
     width: min(460px, 100%);
     padding: 24px;
     border: 1px solid var(--border-panel-soft);

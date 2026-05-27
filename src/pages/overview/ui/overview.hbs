@@ -10,7 +10,7 @@
 
     <div class="overview-page__hero-actions">
       <a class="overview-page__secondary-action" href="/advertiser/campaigns" data-overview-link>Кампании</a>
-      <a class="overview-page__primary-action" href="/advertiser/campaigns/create" data-overview-link>Создать кампанию</a>
+      <a class="overview-page__primary-action" href="/advertiser/campaigns/create" data-overview-link data-tour="create-campaign-btn">Создать кампанию</a>
     </div>
   </div>
 
@@ -20,7 +20,7 @@
     </div>
   {{/if}}
 
-  <div class="overview-page__stats">
+  <div class="overview-page__stats" data-tour="overview-stats">
     {{#each stats}}
       <article class="overview-stat overview-stat--{{tone}}">
         <span class="overview-stat__label">{{label}}</span>
@@ -31,7 +31,7 @@
   </div>
 
   <div class="overview-page__grid">
-    <section class="overview-card overview-card--wide">
+    <section class="overview-card overview-card--wide" data-tour="overview-structure">
       <div class="overview-card__head">
         <div>
           <h2 class="overview-card__title">Структура кабинета</h2>
@@ -80,7 +80,7 @@
       {{/if}}
     </section>
 
-    <section class="overview-card">
+    <section class="overview-card" data-tour="overview-attention">
       <div class="overview-card__head">
         <div>
           <h2 class="overview-card__title">Что требует внимания</h2>

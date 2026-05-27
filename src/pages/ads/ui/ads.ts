@@ -1,5 +1,6 @@
 import './ads.scss';
 import { navigateTo } from 'shared/lib/navigation';
+import { maybeStartAdvertiserTour } from 'features/onboarding';
 import { deleteAdCampaign, getAdGroups, getAds, getAdsInGroup } from 'features/ads';
 import { isOfflineErrorMessage } from 'shared/lib/request';
 import { renderTemplate } from 'shared/lib/render';
@@ -19,6 +20,33 @@ import {
 
 let adsPageLifecycleController: AbortController | null = null;
 
+const COMPOSITION_PREFETCH_LIMIT = 7;
+const COMPOSITION_REQUEST_CONCURRENCY = 2;
+
+async function mapWithConcurrency<TItem, TResult>(
+  items: TItem[],
+  concurrency: number,
+  task: (item: TItem) => Promise<TResult>,
+): Promise<TResult[]> {
+  const results: TResult[] = new Array(items.length);
+  let nextIndex = 0;
+
+  const worker = async (): Promise<void> => {
+    while (nextIndex < items.length) {
+      const currentIndex = nextIndex;
+      nextIndex += 1;
+      results[currentIndex] = await task(items[currentIndex]);
+    }
+  };
+
+  const workerCount = Math.min(Math.max(1, concurrency), items.length);
+  await Promise.all(
+    Array.from({ length: workerCount }, () => worker()),
+  );
+
+  return results;
+}
+
 async function enrichCampaignComposition(ad: AdItem): Promise<AdItem> {
   const campaignId = Number(ad.id || '0');
 
@@ -33,11 +61,13 @@ async function enrichCampaignComposition(ad: AdItem): Promise<AdItem> {
 
   try {
     const groupsResult = await getAdGroups(campaignId);
-    const adCounts = await Promise.all(
-      groupsResult.groups.map(async (group) => {
+    const adCounts = await mapWithConcurrency(
+      groupsResult.groups,
+      COMPOSITION_REQUEST_CONCURRENCY,
+      async (group) => {
         const adsResult = await getAdsInGroup(campaignId, group.id);
         return adsResult.ads.length;
-      }),
+      },
     );
 
     return {
@@ -163,12 +193,14 @@ function bindSearch(signal: AbortSignal): void {
   const searchInput = document.getElementById(
     'campaigns-search',
   ) as HTMLInputElement | null;
+  let searchFrameId = 0;
 
   const applySearch = (query: string): void => {
+    const rows = Array.from(document.querySelectorAll<HTMLElement>('.campaign-row'));
     const normalizedQuery = query.trim().toLowerCase();
 
-    document.querySelectorAll<HTMLElement>('.campaign-row').forEach((row) => {
-      const searchableText = [
+    rows.forEach((row) => {
+      row.dataset.searchText ||= [
         row.dataset.campaignTitle || '',
         row.dataset.campaignGoal || '',
         row.textContent || '',
@@ -179,7 +211,7 @@ function bindSearch(signal: AbortSignal): void {
         .toLowerCase();
 
       row.dataset.searchHidden =
-        normalizedQuery && !searchableText.includes(normalizedQuery)
+        normalizedQuery && !row.dataset.searchText.includes(normalizedQuery)
           ? 'true'
           : 'false';
     });
@@ -190,10 +222,82 @@ function bindSearch(signal: AbortSignal): void {
   searchInput?.addEventListener(
     'input',
     () => {
-      applySearch(searchInput.value);
+      if (searchFrameId) {
+        cancelAnimationFrame(searchFrameId);
+      }
+      searchFrameId = requestAnimationFrame(() => {
+        applySearch(searchInput.value);
+        searchFrameId = 0;
+      });
     },
     { signal },
   );
+
+  signal.addEventListener(
+    'abort',
+    () => {
+      if (searchFrameId) {
+        cancelAnimationFrame(searchFrameId);
+      }
+    },
+    { once: true },
+  );
+}
+
+function bindEmptyCreateButton(button: HTMLElement): void {
+  button.addEventListener('click', (event) => {
+    event.preventDefault();
+    navigateTo('/advertiser/campaigns/create');
+  });
+}
+
+function renderEmptyCampaignsState(): HTMLElement {
+  const emptyState = document.createElement('div');
+  emptyState.className = 'campaigns-empty';
+  emptyState.innerHTML = `
+    <div class="campaigns-empty__illustration" aria-hidden="true">
+      <picture>
+        <source srcset="/img/empty-campaign.webp" type="image/webp" />
+        <img class="campaigns-empty__image" src="/img/empty-campaign.webp" alt="" />
+      </picture>
+    </div>
+    <h3 class="campaigns-empty__title">Здесь пока ничего нет...</h3>
+    <button class="campaigns-empty__create-button" type="button">Создать кампанию</button>
+  `;
+
+  const createButton = emptyState.querySelector<HTMLElement>(
+    '.campaigns-empty__create-button',
+  );
+  if (createButton) {
+    bindEmptyCreateButton(createButton);
+  }
+
+  return emptyState;
+}
+
+function removeCampaignRow(campaignId: number): void {
+  const row = document.querySelector<HTMLElement>(
+    `.campaign-row[data-campaign-id="${campaignId}"]`,
+  );
+
+  if (!row) {
+    return;
+  }
+
+  const table = row.closest<HTMLElement>('.campaigns-table');
+  const body = row.closest<HTMLElement>('.campaigns-table__body');
+  const footer = table?.querySelector<HTMLElement>('[data-campaigns-pagination]');
+
+  row.remove();
+
+  if (!body?.querySelector('.campaign-row')) {
+    body?.remove();
+    footer?.remove();
+    table?.appendChild(renderEmptyCampaignsState());
+    return;
+  }
+
+  document.dispatchEvent(new CustomEvent(CAMPAIGNS_PAGINATION_REFRESH_EVENT));
 }
 
 function bindLogoutProxy(signal: AbortSignal): void {
@@ -218,7 +322,7 @@ function initDeleteFlow(signal: AbortSignal): void {
     onConfirm: async (detail: CampaignDeleteModalDetail) => {
       try {
         await deleteAdCampaign(detail.id);
-        window.location.reload();
+        removeCampaignRow(detail.id);
       } catch {
         showCampaignsRequestError(
           'Не удалось удалить кампанию',
@@ -232,9 +336,18 @@ function initDeleteFlow(signal: AbortSignal): void {
 
 export async function renderAdsPage(): Promise<string> {
   const result = await getAds();
-  const adsWithComposition = await Promise.all(
-    result.ads.map(enrichCampaignComposition),
+  const enrichedAds = await mapWithConcurrency(
+    result.ads.slice(0, COMPOSITION_PREFETCH_LIMIT),
+    COMPOSITION_REQUEST_CONCURRENCY,
+    enrichCampaignComposition,
   );
+  const adsWithComposition = [
+    ...enrichedAds,
+    ...result.ads.slice(COMPOSITION_PREFETCH_LIMIT).map((ad) => ({
+      ...ad,
+      compositionLoaded: false,
+    })),
+  ];
   const campaigns = mapAdsToCampaigns(adsWithComposition);
 
   return renderTemplate(adsPageTemplate, {
@@ -256,6 +369,7 @@ export function Ads(): void | VoidFunction {
   adsPageLifecycleController = controller;
   const { signal } = controller;
 
+  maybeStartAdvertiserTour();
   notifyCampaignsLoadError(
     document.querySelector<HTMLElement>('[data-campaigns-load-error]'),
   );

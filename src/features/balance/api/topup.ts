@@ -1,7 +1,9 @@
 import { request } from 'shared/lib/request';
+import type { DeliveryAlert } from '../model/types';
 
 export interface TopUpResponse {
   balance: number;
+  delivery_alert?: DeliveryAlert;
 }
 
 export async function topUpBalance(amount: number): Promise<TopUpResponse> {

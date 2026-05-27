@@ -1,4 +1,5 @@
 ﻿import './campaign-wizard.scss';
+import { initCampaignBuilderSelectArrows } from 'shared/lib/campaign-builder-select-arrow';
 import { showToast } from 'shared/lib/toast';
 import { createAdCampaign } from 'features/ads/api/create-ad-campaign';
 import { createAdGroup } from 'features/ads/api/ad-groups';
@@ -8,6 +9,22 @@ import { navigateTo } from 'shared/lib/navigation';
 import campaignWizardTemplate from './campaign-wizard.hbs';
 
 const DEFAULT_CPM_PRICE = 10000;
+
+function normalizeUrl(url: string): string {
+  const trimmed = url.trim();
+  if (!trimmed) return trimmed;
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+}
+
+function isValidHttpUrl(value: string): boolean {
+  try {
+    const u = new URL(value);
+    return u.protocol === 'http:' || u.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
 
 const STEP_SUBTITLES: Record<number, string> = {
   1: 'Задайте базовые параметры кампании.',
@@ -37,6 +54,8 @@ export function CampaignWizard(): VoidFunction {
 
   const controller = new AbortController();
   const { signal } = controller;
+
+  initCampaignBuilderSelectArrows(root, signal);
 
   let currentStep = 1;
   const TOTAL_STEPS = 4;
@@ -157,7 +176,13 @@ export function CampaignWizard(): VoidFunction {
     if (step === 3) {
       if (!state.ad_title) { setError('ad_title', 'Введите заголовок'); issues.push('Заголовок объявления обязателен'); }
       if (!state.ad_desc)  { setError('ad_desc',  'Введите описание');  issues.push('Заполните описание объявления'); }
-      if (!state.ad_url)   { setError('ad_url',   'Введите ссылку');    issues.push('Целевая ссылка обязательна'); }
+      if (!state.ad_url) {
+        setError('ad_url', 'Введите ссылку');
+        issues.push('Целевая ссылка обязательна');
+      } else if (!isValidHttpUrl(normalizeUrl(state.ad_url))) {
+        setError('ad_url', 'Введите корректную ссылку, например https://example.ru');
+        issues.push('Некорректная целевая ссылка');
+      }
     }
 
     if (issues.length > 0) {
@@ -231,7 +256,7 @@ export function CampaignWizard(): VoidFunction {
       await createAdInGroup(
         campaignId,
         groupId,
-        { title: state.ad_title, short_desc: state.ad_desc, target_url: state.ad_url },
+        { title: state.ad_title, short_desc: state.ad_desc, target_url: normalizeUrl(state.ad_url) },
         state.ad_image ?? undefined,
       );
 

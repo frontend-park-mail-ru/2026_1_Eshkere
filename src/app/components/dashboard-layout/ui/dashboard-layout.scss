@@ -122,7 +122,7 @@
 
 .dashboard-layout {
   position: relative;
-  @include mixins.page-background('/img/without.png');
+  @include mixins.page-background('/img/without.webp');
   overflow: visible;
   isolation: isolate;
 

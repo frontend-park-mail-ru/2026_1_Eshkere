@@ -1,5 +1,5 @@
 import { formatPrice } from 'shared/lib/format';
-import type { BalanceDashboardState } from 'features/balance/model/types';
+import type { BalanceDashboardState, DeliveryAlertLevel } from 'features/balance/model/types';
 import {
   getAutopayHeroLabel,
   getAutopayNote,
@@ -46,7 +46,7 @@ function createEmptyOperationNode(): HTMLElement {
 
   const image = document.createElement('img');
   image.className = 'balance-table__empty-image';
-  image.src = '/img/No Results.png';
+  image.src = '/img/No%20Results.webp';
   image.alt = 'Операции не найдены';
 
   const title = document.createElement('strong');
@@ -119,27 +119,12 @@ function renderRecommendations(state: BalanceDashboardState): void {
 
 const ALERT_DISMISS_KEY = 'balance_alert_dismiss';
 
-function getAlertThresholds(): { warning: number; critical: number } {
-  try {
-    const raw = localStorage.getItem('notification_thresholds');
-    if (!raw) return { warning: 500, critical: 100 };
-    const data = JSON.parse(raw) as { warning?: number; critical?: number };
-    return {
-      warning: typeof data.warning === 'number' ? data.warning : 500,
-      critical: typeof data.critical === 'number' ? data.critical : 100,
-    };
-  } catch {
-    return { warning: 500, critical: 100 };
-  }
-}
-
-function getAlertLevel(balance: number): 'depleted' | 'critical' | 'warning' | null {
-  if (balance <= 0) return 'depleted';
-  const { warning, critical } = getAlertThresholds();
-  if (balance < critical) return 'critical';
-  if (balance < warning) return 'warning';
-  return null;
-}
+const DELIVERY_LEVEL_TO_ALERT: Record<DeliveryAlertLevel, 'warning' | 'critical' | 'depleted'> = {
+  low_balance: 'warning',
+  at_risk: 'critical',
+  partially_stopped: 'critical',
+  fully_stopped: 'depleted',
+};
 
 function isDismissedToday(level: string): boolean {
   try {
@@ -166,7 +151,8 @@ export function dismissAlert(level: string): void {
 }
 
 function syncBalanceAlerts(state: BalanceDashboardState): void {
-  const level = getAlertLevel(state.balanceValue);
+  const { deliveryAlert } = state;
+  const activeLevel = deliveryAlert ? DELIVERY_LEVEL_TO_ALERT[deliveryAlert.level] : null;
   const levels = ['warning', 'critical', 'depleted', 'autopay'] as const;
 
   levels.forEach((l) => {
@@ -176,24 +162,20 @@ function syncBalanceAlerts(state: BalanceDashboardState): void {
     let visible = false;
 
     if (l === 'autopay') {
-      visible = state.autopayEnabled && !!state.savedPaymentMethodId && level === null;
+      visible = !activeLevel && state.autopayEnabled && !!state.savedPaymentMethodId;
     } else {
-      visible = l === level && !isDismissedToday(l);
+      visible = l === activeLevel && !isDismissedToday(l);
     }
 
     el.hidden = !visible;
-  });
 
-  // Обновляем динамические значения в баннерах
-  document.querySelectorAll<HTMLElement>('[data-balance-alert-value]').forEach((el) => {
-    el.textContent = formatPrice(state.balanceValue);
+    if (visible && l !== 'autopay' && deliveryAlert) {
+      const titleEl = el.querySelector<HTMLElement>('.balance-alert__title');
+      const textEl = el.querySelector<HTMLElement>('.balance-alert__text');
+      if (titleEl) titleEl.textContent = deliveryAlert.title;
+      if (textEl) textEl.textContent = deliveryAlert.message;
+    }
   });
-
-  const daysEl = document.querySelector<HTMLElement>('[data-balance-alert-days]');
-  if (daysEl) {
-    const days = getDaysLeft(state);
-    daysEl.textContent = `${days} дн.`;
-  }
 
   const autopayText = document.querySelector<HTMLElement>('[data-balance-alert-autopay-text]');
   if (autopayText && state.autopayEnabled) {

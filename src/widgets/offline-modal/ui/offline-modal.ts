@@ -1,4 +1,5 @@
 import './offline-modal.scss';
+import { APP_ROUTE_REFRESH_EVENT } from 'shared/lib/events';
 import { closeModal, openModal } from 'shared/ui/modal/modal';
 
 const OFFLINE_EVENT_NAME = 'app:offline-error';
@@ -24,7 +25,7 @@ function ensureOfflineModal(): HTMLElement {
           <div class="offline-modal__hero">
             <img
               class="offline-modal__illustration"
-              src="/img/Security.png"
+              src="/img/Security.webp"
               alt=""
             />
             <div class="offline-modal__copy">
@@ -95,7 +96,12 @@ export function initOfflineModal(): void {
     fetch('/manifest.json', { method: 'HEAD', cache: 'no-store' })
       .then((response) => {
         if (response.ok) {
-          window.location.reload();
+          hide();
+          const path = window.location.pathname;
+          const isAuthPage = path === '/login' || path === '/register' || path.startsWith('/login') || path.startsWith('/register');
+          if (!isAuthPage) {
+            window.dispatchEvent(new Event(APP_ROUTE_REFRESH_EVENT));
+          }
         } else {
           show();
         }

@@ -1,0 +1,79 @@
+<section class="auth-page partner-register-page">
+  <div class="auth-card partner-register-card">
+    <h1 class="auth-card__title">Регистрация партнёра</h1>
+    <p class="auth-card__subtitle">Подключите свой сайт и зарабатывайте на рекламе</p>
+
+    <form class="auth-form partner-register-form" id="partner-register-form" novalidate>
+      <div class="partner-register-form__banner" data-form-error hidden></div>
+
+      <fieldset class="partner-register-form__group">
+        <legend class="partner-register-form__legend">Личные данные</legend>
+        {{{lastNameField}}}
+        {{{firstNameField}}}
+        {{{middleNameField}}}
+        {{{birthDateField}}}
+      </fieldset>
+
+      <fieldset class="partner-register-form__group">
+        <legend class="partner-register-form__legend">Контакты</legend>
+        {{{emailField}}}
+        {{{phoneField}}}
+      </fieldset>
+
+      <fieldset class="partner-register-form__group">
+        <legend class="partner-register-form__legend">Реквизиты</legend>
+
+        <label class="partner-register-form__label partner-register-form__label--select">
+          <span class="partner-register-form__label-text">Форма сотрудничества</span>
+          <select class="partner-register-form__select" name="cooperationForm" required>
+            <option value="">— Выберите —</option>
+            {{#each cooperationForms}}
+            <option value="{{this.code}}">{{this.name}}</option>
+            {{/each}}
+          </select>
+          <span class="partner-register-form__field-error" data-error-for="cooperationForm"></span>
+        </label>
+
+        <label class="partner-register-form__label partner-register-form__label--select">
+          <span class="partner-register-form__label-text">Страна</span>
+          <select class="partner-register-form__select" name="countryCode" required>
+            <option value="">— Выберите —</option>
+            {{#each countries}}
+            <option value="{{this.code}}">{{this.name}}</option>
+            {{/each}}
+          </select>
+          <span class="partner-register-form__field-error" data-error-for="countryCode"></span>
+        </label>
+
+        <label class="partner-register-form__label partner-register-form__label--select">
+          <span class="partner-register-form__label-text">Регион регистрации</span>
+          <select class="partner-register-form__select" name="registrationRegionCode" required>
+            <option value="">— Выберите страну —</option>
+          </select>
+          <span class="partner-register-form__field-error" data-error-for="registrationRegionCode"></span>
+        </label>
+
+        <label class="partner-register-form__label partner-register-form__label--select">
+          <span class="partner-register-form__label-text">Валюта выплат</span>
+          <select class="partner-register-form__select" name="payoutCurrency" required>
+            {{#each payoutCurrencies}}
+            <option value="{{this.code}}">{{this.name}}</option>
+            {{/each}}
+          </select>
+          <span class="partner-register-form__field-error" data-error-for="payoutCurrency"></span>
+        </label>
+      </fieldset>
+
+      <fieldset class="partner-register-form__group">
+        <legend class="partner-register-form__legend">Пароль</legend>
+        {{{passwordField}}}
+        {{{repeatPasswordField}}}
+      </fieldset>
+
+      <div class="auth-form-not-input">
+        {{{submitButton}}}
+        <a class="auth-form__link" href="/login">Уже есть аккаунт? Войти</a>
+      </div>
+    </form>
+  </div>
+</section>

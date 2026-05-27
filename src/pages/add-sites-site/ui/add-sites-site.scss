@@ -36,11 +36,27 @@
   text-decoration: none;
 }
 
-/* Кнопка «Назад» в шапке: те же токены, что и у кабинета в тёмной теме */
-.add-sites-site__toolbar-card .add-sites-site__back.campaign-builder__button--secondary {
+.add-sites-site__back-button {
+  min-width: 152px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--border-panel);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
   border-color: var(--border-panel);
   color: var(--text-body);
   background: var(--surface-button-secondary);
+  box-shadow: none;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
 
   &:hover {
     border-color: var(--primary-border-soft);
@@ -53,6 +69,59 @@
 .add-sites-site__toolbar-main {
   flex: 1;
   min-width: min(100%, 220px);
+}
+
+.add-sites-site__toolbar-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.add-sites-site__toolbar-action {
+  min-height: auto;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transform: none;
+  text-decoration: none;
+}
+
+.add-sites-site__toolbar-action--edit {
+  color: var(--text-body);
+
+  &:hover,
+  &:focus-visible,
+  &:active {
+    color: var(--primary-active);
+    text-decoration: underline;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    transform: none;
+  }
+}
+
+.add-sites-site__toolbar-action--delete {
+  color: var(--danger-soft);
+
+  &:hover,
+  &:focus-visible,
+  &:active {
+    color: var(--danger-strong);
+    text-decoration: underline;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    transform: none;
+  }
 }
 
 .add-sites-site__toolbar-headline {
@@ -432,6 +501,13 @@ button.add-sites-site__link--action {
   margin-bottom: 18px;
 }
 
+.add-sites-site-embed-modal__section-hint {
+  margin: 0 0 14px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text-body);
+}
+
 .add-sites-site-embed-modal__section-title {
   margin: 0 0 8px;
   font-size: 14px;
@@ -483,6 +559,7 @@ button.add-sites-site__link--action {
 .add-sites-site-embed-modal__footer {
   display: flex;
   justify-content: flex-end;
+  gap: 10px;
   margin-top: 8px;
   padding-top: 12px;
   border-top: 1px solid var(--border-subtle);
@@ -504,11 +581,119 @@ button.add-sites-site__link--action {
   }
 }
 
+#add-sites-site-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.add-sites-site-edit-modal #add-sites-site-edit-form {
+  align-items: stretch;
+}
+
+.add-sites-site-edit-modal__banner {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--danger-border-soft);
+  background: var(--danger-badge);
+  color: var(--danger-soft);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.add-sites-site-edit-modal__label {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  width: 100%;
+  color: var(--text-soft);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.add-sites-site-edit-modal__input {
+  display: block;
+  width: 100%;
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  background: var(--surface-panel-alt);
+  color: var(--text-body);
+  font-size: 14px;
+  transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+
+  &:focus {
+    outline: none;
+    border-color: rgba(78, 103, 255, 0.62);
+    box-shadow: 0 0 0 4px rgba(90, 84, 255, 0.08);
+    background: #fff;
+  }
+}
+
 /* Тёмная тема: карточки и модалки в духе остального кабинета */
-html[data-theme='dark'] {
+html[data-theme='dark'],
+[data-theme='dark'] {
   .add-sites-site__toolbar-card,
   .add-sites-site__table-wrap {
     box-shadow: var(--shadow-floating), var(--shadow-inset-highlight);
+  }
+
+  .add-sites-site__toolbar-card {
+    background: var(--gradient-menu-surface);
+    border-color: var(--border-panel-soft);
+  }
+
+  .add-sites-site__title {
+    color: var(--text-title);
+  }
+
+  .add-sites-site__domain {
+    color: var(--text-soft);
+  }
+
+  .add-sites-site__back-button {
+    min-width: 152px !important;
+    border-color: var(--border-panel-soft);
+    background: rgba(22, 31, 57, 0.9);
+    color: var(--text-main);
+
+    &:hover {
+      border-color: var(--primary-border-soft);
+      background: rgba(32, 43, 73, 0.94);
+      color: var(--text-main);
+    }
+  }
+
+  .add-sites-site__toolbar-action--edit {
+    color: var(--text-main);
+
+    &:hover,
+    &:focus-visible,
+    &:active {
+      color: var(--primary-active);
+      background: transparent;
+      border: none;
+      box-shadow: none;
+    }
+  }
+
+  .add-sites-site__toolbar-action--delete {
+    color: var(--danger-soft);
+
+    &:hover,
+    &:focus-visible,
+    &:active {
+      color: #ffd1ce;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+    }
+  }
+
+  .add-sites-site__create-block {
+    color: #fff;
   }
 
   .add-sites-site-embed-modal__inner {
@@ -517,5 +702,23 @@ html[data-theme='dark'] {
 
   .add-sites-site-embed-modal__mono {
     color: var(--text-label);
+  }
+
+  .add-sites-site-edit-modal__label {
+    color: var(--text-muted);
+  }
+
+  .add-sites-site-edit-modal__input {
+    border-color: var(--border-panel-soft);
+    background: rgba(22, 31, 57, 0.9);
+    color: var(--text-main);
+
+    &:focus {
+      background: rgba(18, 24, 44, 0.95);
+      border-color: rgba(125, 110, 255, 0.62);
+      box-shadow:
+        0 0 0 4px rgba(90, 84, 255, 0.08),
+        0 18px 30px rgba(0, 0, 0, 0.2);
+    }
   }
 }

@@ -65,7 +65,7 @@ function createEmptyHistoryNode(): HTMLElement {
 
   const image = document.createElement('img');
   image.className = 'balance-log__empty-image';
-  image.src = '/img/No Results.png';
+  image.src = '/img/No%20Results.webp';
   image.alt = 'Операции не найдены';
 
   const title = document.createElement('strong');

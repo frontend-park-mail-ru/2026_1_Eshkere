@@ -1,4 +1,6 @@
 import { getAdsInGroup } from 'features/ads/api/ads';
+import { getAdStats, periodDates } from 'features/ads/api/stats';
+import type { StatsPoint } from 'features/ads/api/stats';
 import { renderTemplate } from 'shared/lib/render';
 import { navigateTo } from 'shared/lib/navigation';
 import adStatsTemplate from './ad-stats.hbs';
@@ -17,6 +19,17 @@ function getParams() {
   };
 }
 
+function toProxiedUrl(url: string): string {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    try {
+      const { pathname } = new URL(url);
+      return pathname.startsWith('/s3/') ? pathname : '/s3' + pathname;
+    } catch { /* fall through */ }
+  }
+  return url;
+}
+
 function fmtNum(n: number) {
   return new Intl.NumberFormat('ru-RU').format(Math.round(n));
 }
@@ -32,22 +45,11 @@ function seeded(seed: number, min: number, max: number) {
   return min + ((x - Math.floor(x)) * (max - min));
 }
 
-function mockMetrics(adId: number, days: number) {
-  const b = adId % 100;
-  const impressions = Math.round((b + 1) * 600 * days);
-  const clicks = Math.round(impressions * (0.012 + b * 0.0003));
-  const spend = Math.round(clicks * (9 + b * 0.2));
-  const ctr = (clicks / impressions) * 100;
-  const cpc = spend / clicks;
-  const conversions = Math.round(clicks * 0.044);
-  return { impressions, clicks, spend, ctr, cpc, conversions };
-}
-
-function mockDeltas(adId: number) {
-  const signs = ['+', '+', '+', '-', '+', '+'];
-  const vals = [0.8, 22, 18, 0.19, 15, 31];
-  const units = [' сс', '%', '%', ' ₽', '%', '%'];
-  return { signs, vals, units };
+function computeDelta(current: number, prev: number): { text: string; up: boolean } {
+  if (prev === 0) return { text: '—', up: true };
+  const pct = ((current - prev) / prev) * 100;
+  const sign = pct >= 0 ? '+' : '';
+  return { text: `${sign}${pct.toFixed(1)}%`, up: pct >= 0 };
 }
 
 // ── Line chart (SVG) ──────────────────────────────────────────────────────────
@@ -57,43 +59,44 @@ type ChartMetric = 'ctr' | 'impressions' | 'clicks';
 function buildLineChart(
   svgEl: SVGSVGElement,
   labelsEl: HTMLElement,
-  adId: number,
-  days: number,
+  points: StatsPoint[],
   metric: ChartMetric,
 ) {
-  const count = Math.min(days === 0 ? 30 : days, 30);
+  const defs = svgEl.querySelector('defs');
+  if (points.length < 2) {
+    svgEl.innerHTML = '';
+    if (defs) svgEl.appendChild(defs);
+    labelsEl.innerHTML = '';
+    return;
+  }
+
+  const count = points.length;
   const W = 360;
   const H = 140;
   const PAD = { top: 10, right: 8, bottom: 4, left: 8 };
   const innerW = W - PAD.left - PAD.right;
   const innerH = H - PAD.top - PAD.bottom;
 
-  const base = mockMetrics(adId, 1);
-  const rawVals = Array.from({ length: count }, (_, i) => {
-    const noise = seeded(adId * 31 + i * 7, 0.94, 1.06);
-    const trend = 1 + i * 0.018;
-    if (metric === 'ctr') return base.ctr * noise * trend;
-    if (metric === 'impressions') return base.impressions * noise * trend;
-    return base.clicks * noise * trend;
+  const rawVals = points.map((p) => {
+    if (metric === 'ctr') return p.ctr;
+    if (metric === 'impressions') return p.impressions;
+    return p.clicks;
   });
 
   const minV = Math.min(...rawVals) * 0.9;
   const maxV = Math.max(...rawVals) * 1.05;
 
   const toX = (i: number) => PAD.left + (i / (count - 1)) * innerW;
-  const toY = (v: number) => PAD.top + innerH - ((v - minV) / (maxV - minV)) * innerH;
+  const toY = (v: number) => PAD.top + innerH - (maxV === minV ? 0.5 : (v - minV) / (maxV - minV)) * innerH;
 
   const pts = rawVals.map((v, i) => ({ x: toX(i), y: toY(v) }));
 
   const lineD = pts.map((p, i) => (i === 0 ? `M${p.x},${p.y}` : `L${p.x},${p.y}`)).join(' ');
   const areaD = `${lineD} L${pts[pts.length - 1].x},${H} L${pts[0].x},${H} Z`;
 
-  // preserve defs
-  const defs = svgEl.querySelector('defs');
   svgEl.innerHTML = '';
   if (defs) svgEl.appendChild(defs);
 
-  // grid lines
   [0.25, 0.5, 0.75, 1].forEach((f) => {
     const y = PAD.top + innerH * (1 - f);
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -124,13 +127,10 @@ function buildLineChart(
     svgEl.appendChild(dot);
   });
 
-  // labels — show up to 6 evenly spaced
   labelsEl.innerHTML = '';
   const step = Math.max(1, Math.floor(count / 6));
-  const now = new Date();
   for (let i = 0; i < count; i += step) {
-    const d = new Date(now);
-    d.setDate(d.getDate() - (count - 1 - i));
+    const d = new Date(points[i].date);
     const lbl = document.createElement('span');
     lbl.className = 'as-line-label';
     lbl.textContent = d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
@@ -230,42 +230,26 @@ function buildFunnel(container: HTMLElement, impressions: number, clicks: number
 
 // ── Platform table ────────────────────────────────────────────────────────────
 
-interface PlatformRow {
-  name: string;
-  iconClass: string;
-  iconText: string;
-  impressions: number;
-  clicks: number;
-  spend: number;
-}
+const PLATFORM_ICON: Record<string, { cls: string; text: string }> = {
+  'ВКонтакте': { cls: 'as-platform-icon--vk', text: 'ВК' },
+  'Telegram':  { cls: 'as-platform-icon--tg', text: 'TG' },
+};
 
-function buildPlatformTable(tbody: HTMLElement, adId: number, totalImpr: number, totalClicks: number, totalSpend: number) {
-  const platforms: PlatformRow[] = [
-    { name: 'ВКонтакте', iconClass: 'as-platform-icon--vk', iconText: 'ВК',
-      impressions: Math.round(totalImpr * 0.677),
-      clicks: Math.round(totalClicks * 0.7),
-      spend: Math.round(totalSpend * 0.7) },
-    { name: 'Telegram', iconClass: 'as-platform-icon--tg', iconText: 'TG',
-      impressions: totalImpr - Math.round(totalImpr * 0.677),
-      clicks: totalClicks - Math.round(totalClicks * 0.7),
-      spend: totalSpend - Math.round(totalSpend * 0.7) },
-  ];
-
+function buildPlatformTable(tbody: HTMLElement, rows: Array<{ name: string; impressions: number; clicks: number; ctr: number; spend: number; cpc: number }>) {
   tbody.innerHTML = '';
-  platforms.forEach((p) => {
-    const ctr = (p.clicks / p.impressions) * 100;
-    const cpc = p.spend / p.clicks;
+  rows.forEach((p) => {
+    const icon = PLATFORM_ICON[p.name] ?? { cls: '', text: p.name.slice(0, 2) };
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>
-        <span class="as-platform-icon ${p.iconClass}">${p.iconText}</span>
+        <span class="as-platform-icon ${icon.cls}">${icon.text}</span>
         <span class="stats-table__name">${p.name}</span>
       </td>
       <td>${fmtNum(p.impressions)}</td>
       <td>${fmtNum(p.clicks)}</td>
-      <td style="color:var(--primary-active);font-weight:700">${fmtPct(ctr)}</td>
+      <td style="color:var(--primary-active);font-weight:700">${fmtPct(p.ctr)}</td>
       <td>${fmtMoney(p.spend)}</td>
-      <td>${fmtMoney(cpc)}</td>
+      <td>${fmtMoney(p.cpc)}</td>
     `;
     tbody.appendChild(tr);
   });
@@ -297,6 +281,7 @@ export function AdStats(): VoidFunction {
   const { signal } = controller;
   let currentDays = 7;
   let currentMetric: ChartMetric = 'ctr';
+  let currentTimeline: StatsPoint[] = [];
 
   // back / breadcrumb navigation
   root.querySelector('[data-as-back]')?.addEventListener('click', () => {
@@ -341,20 +326,22 @@ export function AdStats(): VoidFunction {
       currentMetric = (btn.dataset.metric as ChartMetric) ?? 'ctr';
       const svgEl = root.querySelector<SVGSVGElement>('[data-as-line-chart]');
       const labelsEl = root.querySelector<HTMLElement>('[data-as-line-labels]');
-      if (svgEl && labelsEl) buildLineChart(svgEl, labelsEl, adId!, currentDays, currentMetric);
+      if (svgEl && labelsEl) buildLineChart(svgEl, labelsEl, currentTimeline, currentMetric);
     }, { signal });
   });
 
   async function refresh() {
-    const adsResult = await getAdsInGroup(campaignId!, groupId!).catch(() => ({
-      group_id: groupId!,
-      ads: [],
-    }));
+    const { from: fromDate, to: toDate } = periodDates(currentDays);
+    const [adsResult, stats] = await Promise.all([
+      getAdsInGroup(campaignId!, groupId!).catch(() => ({ group_id: groupId!, ads: [] })),
+      getAdStats(campaignId!, groupId!, adId!, fromDate, toDate).catch(() => null),
+    ]);
     const ad = adsResult.ads.find((a) => a.id === adId);
     if (!ad) return;
 
     const days = currentDays === 0 ? 30 : currentDays;
-    const m = mockMetrics(adId!, days);
+    const totals = stats?.totals ?? null;
+    const prev   = stats?.previous_totals ?? null;
     const statusMeta = STATUS_LABELS[ad.status ?? ''] ?? { label: '—', cls: 'stats-badge--muted' };
 
     // hero
@@ -380,30 +367,31 @@ export function AdStats(): VoidFunction {
     (root.querySelector('[data-as-hc-ad]') as HTMLElement).textContent = ad.title;
 
     // metrics
-    const deltasMeta = mockDeltas(adId!);
     const kpiValues: Record<string, string> = {
-      ctr:         fmtPct(m.ctr),
-      impressions: fmtNum(m.impressions),
-      clicks:      fmtNum(m.clicks),
-      cpc:         fmtMoney(m.cpc),
-      spend:       fmtMoney(m.spend),
-      conversions: fmtNum(m.conversions),
+      ctr:         totals ? fmtPct(totals.ctr)         : '—',
+      impressions: totals ? fmtNum(totals.impressions)  : '—',
+      clicks:      totals ? fmtNum(totals.clicks)       : '—',
+      cpc:         totals ? fmtMoney(totals.cpc)        : '—',
+      spend:       totals ? fmtMoney(totals.spend)      : '—',
+      conversions: '—',
     };
     Object.entries(kpiValues).forEach(([k, v]) => {
       const el = root.querySelector<HTMLElement>(`[data-as-kpi="${k}"]`);
       if (el) el.textContent = v;
     });
 
-    const deltaKeys = ['ctr', 'impressions', 'clicks', 'cpc', 'spend', 'conversions'];
-    deltaKeys.forEach((k, i) => {
-      const el = root.querySelector<HTMLElement>(`[data-as-delta="${k}"]`);
+    type MetricKey = 'ctr' | 'impressions' | 'clicks' | 'cpc' | 'spend';
+    const deltaKeys: Array<[string, MetricKey]> = [
+      ['ctr', 'ctr'], ['impressions', 'impressions'], ['clicks', 'clicks'],
+      ['cpc', 'cpc'], ['spend', 'spend'],
+    ];
+    deltaKeys.forEach(([key, field]) => {
+      const el = root.querySelector<HTMLElement>(`[data-as-delta="${key}"]`);
       if (!el) return;
-      const sign = deltasMeta.signs[i];
-      const val = deltasMeta.vals[i];
-      const unit = deltasMeta.units[i];
-      el.textContent = `${sign}${val}${unit}`;
+      const d = (totals && prev) ? computeDelta(totals[field], prev[field]) : { text: '—', up: true };
+      el.textContent = d.text;
       el.classList.remove('as-metric__delta--up', 'as-metric__delta--down');
-      el.classList.add(sign === '+' ? 'as-metric__delta--up' : 'as-metric__delta--down');
+      el.classList.add(d.up ? 'as-metric__delta--up' : 'as-metric__delta--down');
     });
 
     // creative
@@ -414,7 +402,7 @@ export function AdStats(): VoidFunction {
     const imgContainer = root.querySelector<HTMLElement>('[data-as-img]');
     if (imgContainer) {
       if (ad.image_url) {
-        imgContainer.innerHTML = `<img src="${ad.image_url}" alt="" />`;
+        imgContainer.innerHTML = `<img src="${toProxiedUrl(ad.image_url)}" alt="" />`;
       } else {
         imgContainer.textContent = 'Изображение не загружено';
       }
@@ -437,10 +425,11 @@ export function AdStats(): VoidFunction {
       from.toLocaleDateString('ru-RU', opts);
 
     // line chart
+    currentTimeline = stats?.timeline ?? [];
     const svgEl = root.querySelector<SVGSVGElement>('[data-as-line-chart]');
     const lineLabelsEl = root.querySelector<HTMLElement>('[data-as-line-labels]');
     if (svgEl && lineLabelsEl)
-      buildLineChart(svgEl, lineLabelsEl, adId!, days, currentMetric);
+      buildLineChart(svgEl, lineLabelsEl, currentTimeline, currentMetric);
 
     // day activity chart
     const dayVals = root.querySelector<HTMLElement>('[data-as-day-values]');
@@ -460,22 +449,15 @@ export function AdStats(): VoidFunction {
 
     if (abA) {
       fillAbVariant(abA, {
-        ctr:   fmtPct(m.ctr),
-        clicks: fmtNum(m.clicks),
-        cpc:   fmtMoney(m.cpc),
-        conv:  fmtNum(m.conversions),
-        spend: fmtMoney(m.spend),
+        ctr:   totals ? fmtPct(totals.ctr)    : '—',
+        clicks: totals ? fmtNum(totals.clicks) : '—',
+        cpc:   totals ? fmtMoney(totals.cpc)  : '—',
+        conv:  '—',
+        spend: totals ? fmtMoney(totals.spend) : '—',
       });
     }
     if (abB) {
-      const bm = mockMetrics(adId! + 500, days);
-      fillAbVariant(abB, {
-        ctr:   fmtPct(bm.ctr * 0.68),
-        clicks: fmtNum(Math.round(m.clicks * 0.624)),
-        cpc:   fmtMoney(bm.cpc * 1.44),
-        conv:  fmtNum(Math.round(m.conversions * 0.547)),
-        spend: fmtMoney(Math.round(m.spend * 0.898)),
-      });
+      fillAbVariant(abB, { ctr: '—', clicks: '—', cpc: '—', conv: '—', spend: '—' });
     }
 
     // funnel period label
@@ -486,12 +468,18 @@ export function AdStats(): VoidFunction {
 
     // funnel
     const funnelEl = root.querySelector<HTMLElement>('[data-as-funnel]');
-    if (funnelEl) buildFunnel(funnelEl, m.impressions, m.clicks);
+    if (funnelEl) buildFunnel(funnelEl, totals?.impressions ?? 0, totals?.clicks ?? 0);
 
     // platform table
     const platformsTbody = root.querySelector<HTMLElement>('[data-as-platforms]');
-    if (platformsTbody)
-      buildPlatformTable(platformsTbody, adId!, m.impressions, m.clicks, m.spend);
+    if (platformsTbody) {
+      const placements = stats?.placements ?? [];
+      if (placements.length > 0) {
+        buildPlatformTable(platformsTbody, placements);
+      } else {
+        buildPlatformTable(platformsTbody, []);
+      }
+    }
   }
 
   void refresh();

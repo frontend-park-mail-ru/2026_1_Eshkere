@@ -1,6 +1,8 @@
 import { getAdGroups } from 'features/ads/api/ad-groups';
 import { getAdsInGroup } from 'features/ads/api/ads';
 import { getAds } from 'features/ads/api/get-ads';
+import { getGroupStats, periodDates } from 'features/ads/api/stats';
+import type { StatsPoint } from 'features/ads/api/stats';
 import { renderTemplate } from 'shared/lib/render';
 import { navigateTo } from 'shared/lib/navigation';
 import groupStatsTemplate from './group-stats.hbs';
@@ -33,16 +35,6 @@ function seeded(seed: number, min: number, max: number): number {
   return min + (x - Math.floor(x)) * (max - min);
 }
 
-function mockMetrics(seed: number, days: number) {
-  const b = seed % 100;
-  const impressions = Math.round((b + 1) * 900 * days);
-  const clicks      = Math.round(impressions * (0.015 + b * 0.0002));
-  const spend       = Math.round(clicks * (10 + b * 0.3));
-  const ctr         = (clicks / impressions) * 100;
-  const cpc         = spend / clicks;
-  return { impressions, clicks, spend, ctr, cpc };
-}
-
 // ── Line chart (green) ────────────────────────────────────────────────────────
 
 type GsMetric = 'impressions' | 'clicks' | 'ctr' | 'spend';
@@ -50,33 +42,36 @@ type GsMetric = 'impressions' | 'clicks' | 'ctr' | 'spend';
 function buildLineChart(
   svgEl: SVGSVGElement,
   labelsEl: HTMLElement,
-  seed: number,
-  days: number,
+  points: StatsPoint[],
   metric: GsMetric,
 ) {
-  const count = Math.min(days === 0 ? 30 : days, 30);
+  const defs = svgEl.querySelector('defs');
+  if (points.length < 2) {
+    svgEl.innerHTML = '';
+    if (defs) svgEl.appendChild(defs);
+    labelsEl.innerHTML = '';
+    return;
+  }
+
+  const count = points.length;
   const W = 700; const H = 200;
   const PAD = { top: 24, right: 16, bottom: 4, left: 12 };
   const innerW = W - PAD.left - PAD.right;
   const innerH = H - PAD.top - PAD.bottom;
 
-  const base = mockMetrics(seed, 1);
-  const rawVals = Array.from({ length: count }, (_, i) => {
-    const noise = seeded(seed * 13 + i * 9, 0.94, 1.06);
-    const trend = 1 + i * 0.018;
-    if (metric === 'impressions') return base.impressions * noise * trend;
-    if (metric === 'clicks')      return base.clicks * noise * trend;
-    if (metric === 'ctr')         return base.ctr * noise * trend;
-    return base.spend * noise * trend;
+  const rawVals = points.map((p) => {
+    if (metric === 'impressions') return p.impressions;
+    if (metric === 'clicks')      return p.clicks;
+    if (metric === 'ctr')         return p.ctr;
+    return p.spend;
   });
 
   const minV = Math.min(...rawVals) * 0.88;
   const maxV = Math.max(...rawVals) * 1.06;
   const toX = (i: number) => PAD.left + (i / (count - 1)) * innerW;
-  const toY = (v: number) => PAD.top + innerH - ((v - minV) / (maxV - minV)) * innerH;
+  const toY = (v: number) => PAD.top + innerH - (maxV === minV ? 0.5 : (v - minV) / (maxV - minV)) * innerH;
   const pts = rawVals.map((v, i) => ({ x: toX(i), y: toY(v), v }));
 
-  const defs = svgEl.querySelector('defs');
   svgEl.innerHTML = '';
   if (defs) svgEl.appendChild(defs);
 
@@ -145,10 +140,8 @@ function buildLineChart(
 
   labelsEl.innerHTML = '';
   const step = Math.max(1, Math.floor(count / 8));
-  const now = new Date();
   for (let i = 0; i < count; i += step) {
-    const d = new Date(now);
-    d.setDate(d.getDate() - (count - 1 - i));
+    const d = new Date(points[i].date);
     const lbl = document.createElement('span');
     lbl.className = 'as-line-label';
     lbl.textContent = d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
@@ -271,6 +264,7 @@ export function GroupStats(): VoidFunction {
   const { signal } = controller;
   let currentDays = 30;
   let currentMetric: GsMetric = 'ctr';
+  let currentTimeline: StatsPoint[] = [];
 
   // navigation
   root.querySelector('[data-gs-back]')?.addEventListener('click', () => {
@@ -318,17 +312,26 @@ export function GroupStats(): VoidFunction {
       };
       if (titleEl) titleEl.textContent = metricLabel[currentMetric];
       if (svgEl && labelsEl)
-        buildLineChart(svgEl, labelsEl, groupId!, currentDays, currentMetric);
+        buildLineChart(svgEl, labelsEl, currentTimeline, currentMetric);
     }, { signal });
   });
 
+  function computeDelta(current: number, prev: number): { text: string; up: boolean } {
+    if (prev === 0) return { text: '—', up: true };
+    const pct = ((current - prev) / prev) * 100;
+    const sign = pct >= 0 ? '+' : '';
+    return { text: `${sign}${pct.toFixed(1)}%`, up: pct >= 0 };
+  }
+
   async function refresh() {
     const days = currentDays === 0 ? 30 : currentDays;
+    const { from: fromDate, to: toDate } = periodDates(currentDays);
 
-    const [groupsResult, adsResult, adsListResult] = await Promise.all([
+    const [groupsResult, adsResult, adsListResult, stats] = await Promise.all([
       getAdGroups(campaignId!).catch(() => ({ ad_campaign_id: campaignId!, groups: [] })),
       getAdsInGroup(campaignId!, groupId!).catch(() => ({ group_id: groupId!, ads: [] })),
       getAds(),
+      getGroupStats(campaignId!, groupId!, fromDate, toDate).catch(() => null),
     ]);
 
     const group = groupsResult.groups.find((g) => g.id === groupId);
@@ -367,28 +370,32 @@ export function GroupStats(): VoidFunction {
     }
 
     // metrics
-    const m = mockMetrics(groupId! * 3, days);
+    const totals = stats?.totals ?? null;
+    const prev   = stats?.previous_totals ?? null;
+
     const kpis: Record<string, string> = {
-      impressions: fmtNum(m.impressions),
-      clicks:      fmtNum(m.clicks),
-      ctr:         fmtPct(m.ctr),
-      spend:       fmtMoney(m.spend),
-      cpc:         fmtMoney(m.cpc),
+      impressions: totals ? fmtNum(totals.impressions) : '—',
+      clicks:      totals ? fmtNum(totals.clicks)      : '—',
+      ctr:         totals ? fmtPct(totals.ctr)         : '—',
+      spend:       totals ? fmtMoney(totals.spend)     : '—',
+      cpc:         totals ? fmtMoney(totals.cpc)       : '—',
     };
     Object.entries(kpis).forEach(([k, v]) => {
       const el = root.querySelector<HTMLElement>(`[data-gs-kpi="${k}"]`);
       if (el) el.textContent = v;
     });
 
-    const deltas: Record<string, { text: string; up: boolean }> = {
-      impressions: { text: '+14%',      up: true  },
-      clicks:      { text: '+9%',       up: true  },
-      spend:       { text: '+6%',       up: true  },
-      cpc:         { text: '-0,09 ₽',  up: false },
-    };
-    Object.entries(deltas).forEach(([k, d]) => {
-      const el = root.querySelector<HTMLElement>(`[data-gs-delta="${k}"]`);
+    type MetricKey = 'impressions' | 'clicks' | 'spend' | 'cpc';
+    const deltaKeys: Array<[string, MetricKey]> = [
+      ['impressions', 'impressions'],
+      ['clicks',      'clicks'],
+      ['spend',       'spend'],
+      ['cpc',         'cpc'],
+    ];
+    deltaKeys.forEach(([key, field]) => {
+      const el = root.querySelector<HTMLElement>(`[data-gs-delta="${key}"]`);
       if (!el) return;
+      const d = (totals && prev) ? computeDelta(totals[field], prev[field]) : { text: '—', up: true };
       el.textContent = d.text;
       el.classList.remove('as-metric__delta--up', 'as-metric__delta--down');
       el.classList.add(d.up ? 'as-metric__delta--up' : 'as-metric__delta--down');
@@ -407,10 +414,11 @@ export function GroupStats(): VoidFunction {
     if (subtitleEl) subtitleEl.textContent = `За последние ${days} дней`;
 
     // line chart
+    currentTimeline = stats?.timeline ?? [];
     const svgEl = root.querySelector<SVGSVGElement>('[data-gs-line-chart]');
     const labelsEl = root.querySelector<HTMLElement>('[data-gs-line-labels]');
     if (svgEl && labelsEl)
-      buildLineChart(svgEl, labelsEl, groupId!, currentDays, currentMetric);
+      buildLineChart(svgEl, labelsEl, currentTimeline, currentMetric);
 
     // audience
     const ageEl = root.querySelector<HTMLElement>('[data-gs-age]');
@@ -444,12 +452,13 @@ export function GroupStats(): VoidFunction {
     // stat cards (donut charts)
     const dailyBudget = campaign?.price ?? 800;
     const totalBudget = dailyBudget * days;
-    const spent = Math.min(m.spend, totalBudget);
+    const spendVal = totals?.spend ?? 0;
+    const spent = Math.min(spendVal, totalBudget);
     const budgetPct = totalBudget > 0 ? spent / totalBudget : 0;
 
     setDonutArc(root.querySelector('[data-gs-donut-arc="budget"]'), budgetPct);
     setDonutArc(root.querySelector('[data-gs-donut-arc="freq"]'), 0.48);
-    setDonutArc(root.querySelector('[data-gs-donut-arc="pace"]'), Math.min(1, (m.spend / days) / (dailyBudget * 1.2)));
+    setDonutArc(root.querySelector('[data-gs-donut-arc="pace"]'), Math.min(1, (spendVal / days) / (dailyBudget * 1.2)));
 
     const budgetPctEl = root.querySelector<HTMLElement>('[data-gs-stat="budget-pct"]');
     if (budgetPctEl) budgetPctEl.textContent = `${Math.round(budgetPct * 100)}%`;
@@ -460,7 +469,7 @@ export function GroupStats(): VoidFunction {
     if (freqEl) freqEl.textContent = '2,4×';
 
     const paceEl = root.querySelector<HTMLElement>('[data-gs-stat="pace"]');
-    if (paceEl) paceEl.textContent = fmtMoney(Math.round(m.spend / days));
+    if (paceEl) paceEl.textContent = fmtMoney(Math.round(spendVal / days));
     const paceSubEl = root.querySelector<HTMLElement>('[data-gs-stat="pace-sub"]');
     if (paceSubEl) paceSubEl.textContent = `В среднем в день · план ${fmtMoney(dailyBudget)}`;
 
@@ -481,11 +490,14 @@ export function GroupStats(): VoidFunction {
         tbody.innerHTML = `<tr><td colspan="7" class="as-table-loading">Объявлений нет</td></tr>`;
       } else {
         const sorted = [...adsResult.ads].sort((a, b) => b.id - a.id);
-        const bestId = sorted[0]?.id;
+        const statsAds = stats?.ads ?? [];
+        const bestId = statsAds.length > 0
+          ? statsAds.reduce((best, ad) => (ad.impressions > best.impressions ? ad : best), statsAds[0]).id
+          : sorted[0]?.id;
 
         tbody.innerHTML = sorted
           .map((ad, i) => {
-            const am = mockMetrics(ad.id * 11, days);
+            const am = statsAds.find((s) => s.id === ad.id) ?? null;
             const sm = AD_STATUS_LABELS[ad.status ?? ''] ?? { label: '—', cls: 'stats-badge--muted' };
             const isActive = ad.status === 'working';
             const color = AD_THUMB_COLORS[i % AD_THUMB_COLORS.length];
@@ -502,11 +514,11 @@ export function GroupStats(): VoidFunction {
                 </div>
               </td>
               <td><span class="stats-badge ${sm.cls}">${sm.label}</span></td>
-              <td>${fmtNum(am.impressions)}</td>
-              <td>${fmtNum(am.clicks)}</td>
-              <td style="${isActive ? 'color:var(--primary-active);font-weight:700' : ''}">${fmtPct(am.ctr)}</td>
-              <td>${fmtMoney(am.spend)}</td>
-              <td>${fmtMoney(am.cpc)}</td>
+              <td>${am ? fmtNum(am.impressions) : '—'}</td>
+              <td>${am ? fmtNum(am.clicks) : '—'}</td>
+              <td style="${isActive ? 'color:var(--primary-active);font-weight:700' : ''}">${am ? fmtPct(am.ctr) : '—'}</td>
+              <td>${am ? fmtMoney(am.spend) : '—'}</td>
+              <td>${am ? fmtMoney(am.cpc) : '—'}</td>
             </tr>`;
           })
           .join('');

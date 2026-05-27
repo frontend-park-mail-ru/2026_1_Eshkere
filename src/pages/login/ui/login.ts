@@ -102,25 +102,12 @@ export async function renderLoginPage(): Promise<string> {
     iconAlt: '',
   });
 
-  const yandexLoginButton = await renderButton({
-    text: 'Яндекс ID',
-    type: 'button',
-    variant: 'secondary',
-    className: 'social-button social-button--yandex',
-    title: 'Скоро будет доступно',
-    disabled: true,
-    ariaDisabled: true,
-    iconSrc: '/icons/yandex-id.svg',
-    iconAlt: '',
-  });
-
   return renderTemplate(loginPageTemplate, {
     loginField,
     passwordField,
     submitButton,
     registerLinkButton,
     vkLoginButton,
-    yandexLoginButton,
   });
 }
 

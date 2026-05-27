@@ -11,8 +11,10 @@
   gap: 14px;
   padding: 18px 20px;
   border-radius: 16px;
-  border: 1px solid transparent;
+  border: none;
   position: relative;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   animation: alert-appear 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
 
   &[hidden] { display: none !important; }
@@ -158,11 +160,10 @@
 
   // ── Warning (< 500 ₽) ──────────────────────────────────────────────────────
   &--warning {
-    background: rgba(255, 181, 71, 0.1);
-    border-color: rgba(255, 181, 71, 0.35);
+    background: rgba(255, 233, 207, 0.94);
 
     .balance-alert__icon {
-      background: rgba(255, 181, 71, 0.2);
+      background: rgba(255, 181, 71, 0.28);
       &::before {
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e68a00'%3E%3Cpath d='M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2Zm0 14.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm1-4.5h-2V7h2v5Z'/%3E%3C/svg%3E");
       }
@@ -178,11 +179,10 @@
 
   // ── Critical (< 100 ₽) ────────────────────────────────────────────────────
   &--critical {
-    background: rgba(255, 77, 77, 0.08);
-    border-color: rgba(255, 77, 77, 0.3);
+    background: rgba(255, 216, 216, 0.94);
 
     .balance-alert__icon {
-      background: rgba(255, 77, 77, 0.15);
+      background: rgba(255, 77, 77, 0.25);
       &::before {
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cc2200'%3E%3Cpath d='M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2Zm0 14.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm1-4.5h-2V7h2v5Z'/%3E%3C/svg%3E");
       }
@@ -194,21 +194,20 @@
 
   // ── Depleted (= 0 ₽) ──────────────────────────────────────────────────────
   &--depleted {
-    background: rgba(180, 0, 0, 0.07);
-    border-color: rgba(180, 0, 0, 0.25);
+    background: rgba(240, 205, 211, 0.94);
 
     .balance-alert__icon {
-      background: rgba(180, 0, 0, 0.12);
+      background: rgba(180, 0, 0, 0.24);
       &::before {
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23b00000'%3E%3Cpath d='M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2Zm0 14.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm1-4.5h-2V7h2v5Z'/%3E%3C/svg%3E");
       }
     }
 
-    .balance-alert__title { color: #8a0000; }
-    .balance-alert__text { color: #6b0000; }
-    .balance-alert__stat { background: rgba(180, 0, 0, 0.08); }
-    .balance-alert__stat-label { color: #8a0000; }
-    .balance-alert__stat-value { color: #8a0000; }
+    .balance-alert__title { color: #7d0a16; }
+    .balance-alert__text { color: #5b1b24; }
+    .balance-alert__stat { background: #e7bcc4; }
+    .balance-alert__stat-label { color: #7d0a16; opacity: 0.72; }
+    .balance-alert__stat-value { color: #7d0a16; }
 
     .balance-alert__button--primary {
       background: #b00000;
@@ -217,11 +216,10 @@
 
   // ── Autopay active ─────────────────────────────────────────────────────────
   &--autopay {
-    background: rgba(49, 210, 124, 0.08);
-    border-color: rgba(49, 210, 124, 0.3);
+    background: rgba(215, 245, 229, 0.94);
 
     .balance-alert__icon {
-      background: rgba(49, 210, 124, 0.15);
+      background: rgba(49, 210, 124, 0.24);
       &::before {
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231a8c50'%3E%3Cpath d='M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2Zm-1 14.41-4.7-4.71 1.41-1.41L11 13.59l6.29-6.3 1.41 1.42L11 16.41Z'/%3E%3C/svg%3E");
       }
@@ -229,6 +227,55 @@
 
     .balance-alert__title { color: #1a6b3e; }
     .balance-alert__text { color: #1a5c38; }
+  }
+}
+
+html[data-theme='dark'] {
+  .balance-alert {
+    &--warning {
+      background: rgba(66, 49, 27, 0.94);
+
+      .balance-alert__title { color: #ffdcae; }
+      .balance-alert__text { color: #f2cfa0; }
+      .balance-alert__stat { background: rgba(96, 70, 39, 0.72); }
+      .balance-alert__stat-label { color: #ffdcae; opacity: 0.74; }
+      .balance-alert__stat-value { color: #ffe8c6; }
+    }
+
+    &--critical {
+      background: rgba(67, 32, 39, 0.94);
+
+      .balance-alert__title { color: #ffc5cd; }
+      .balance-alert__text { color: #f3b3bf; }
+      .balance-alert__stat { background: rgba(95, 45, 56, 0.72); }
+      .balance-alert__stat-label { color: #ffc5cd; opacity: 0.74; }
+      .balance-alert__stat-value { color: #ffd7de; }
+    }
+
+    &--depleted {
+      background: rgba(74, 30, 41, 0.94);
+
+      .balance-alert__title { color: #ffd0d9; }
+      .balance-alert__text { color: #f5bcc9; }
+      .balance-alert__stat { background: rgba(106, 42, 58, 0.72); }
+      .balance-alert__stat-label { color: #ffd0d9; opacity: 0.74; }
+      .balance-alert__stat-value { color: #ffe1e7; }
+      .balance-alert__button--ghost { background: rgba(119, 53, 72, 0.7); }
+    }
+
+    &--autopay {
+      background: rgba(28, 59, 43, 0.94);
+
+      .balance-alert__title { color: #c1f6da; }
+      .balance-alert__text { color: #afe9c9; }
+      .balance-alert__stat { background: rgba(42, 88, 64, 0.72); }
+      .balance-alert__stat-label { color: #c1f6da; opacity: 0.74; }
+      .balance-alert__stat-value { color: #d6fbe8; }
+      .balance-alert__button--ghost-green {
+        background: rgba(47, 108, 75, 0.72);
+        color: #d0fde7;
+      }
+    }
   }
 }
 

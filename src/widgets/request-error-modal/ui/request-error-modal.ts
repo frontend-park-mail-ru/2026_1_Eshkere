@@ -1,4 +1,5 @@
 import './request-error-modal.scss';
+import { APP_ROUTE_REFRESH_EVENT } from 'shared/lib/events';
 import { closeModal, openModal } from 'shared/ui/modal/modal';
 
 export const REQUEST_ERROR_EVENT_NAME = 'app:request-error';
@@ -104,7 +105,8 @@ export function initRequestErrorModal(): void {
 
   closeButton?.addEventListener('click', hide);
   retryButton?.addEventListener('click', () => {
-    window.location.reload();
+    hide();
+    window.dispatchEvent(new Event(APP_ROUTE_REFRESH_EVENT));
   });
 
   modal.addEventListener('click', (event) => {

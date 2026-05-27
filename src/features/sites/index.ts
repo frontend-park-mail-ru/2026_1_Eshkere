@@ -1,16 +1,24 @@
 export {
   createPartnerBlock,
   deletePartnerBlock,
+  getPartnerBlock,
   getPartnerBlockEmbed,
   listPartnerBlocks,
+  updatePartnerBlockGeneral,
+  updatePartnerBlockGeography,
   updatePartnerBlockMeta,
+  updatePartnerBlockSelfAd,
 } from './api/partner-blocks';
 export type {
   CreatePartnerBlockBody,
   CreatePartnerBlockResponse,
+  GeoRule,
   ListPartnerBlocksResponse,
+  PartnerBlockDetailsDto,
   PartnerBlockEmbedDto,
   PartnerBlockListItemDto,
+  UpdatePartnerBlockGeneralBody,
+  UpdatePartnerBlockGeographyBody,
   UpdatePartnerBlockMetaBody,
   UpdatePartnerBlockMetaResponse,
 } from './api/partner-blocks';

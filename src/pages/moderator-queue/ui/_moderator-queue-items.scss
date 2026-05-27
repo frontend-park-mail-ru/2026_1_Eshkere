@@ -1,6 +1,97 @@
 ﻿@use '../../../shared/styles/tokens' as t;
 @use '../../../shared/styles/mixins';
 
+.mq-item {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  background: var(--surface-card);
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-border);
+    outline-offset: -2px;
+  }
+
+  &:hover {
+    background: var(--surface-card-hover);
+
+    .mq-item__cta {
+      background: var(--primary-surface);
+      border-color: var(--primary-border);
+    }
+  }
+
+  &__thumb {
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+    background: var(--surface-card-strong);
+    border: 1px solid var(--border-subtle);
+    overflow: hidden;
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+  }
+
+  &__body {
+    min-width: 0;
+  }
+
+  &__title {
+    display: block;
+    font: 700 15px/1.3 t.$font-family-body;
+    color: var(--text-title);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__desc {
+    margin: 2px 0 4px;
+    font-size: 13px;
+    color: var(--text-body);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__domain {
+    font-size: 12px;
+    color: var(--text-soft);
+  }
+
+  &__cta {
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--primary-active);
+    font: 700 13px/1 t.$font-family-body;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, border-color 0.15s;
+    flex-shrink: 0;
+  }
+
+  @include mixins.media-max(t.$bp-sm) {
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 10px;
+
+    &__thumb { width: 44px; height: 44px; }
+    &__cta { display: none; }
+  }
+}
+
+// Legacy — unused, kept to avoid breakage if referenced elsewhere
 .moderator-work-item {
   padding: 14px 16px;
   border-radius: 18px;

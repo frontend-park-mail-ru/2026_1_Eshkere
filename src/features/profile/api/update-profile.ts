@@ -22,7 +22,9 @@ export interface AdvertiserProfileResponse {
   company?: string;
   city?: string;
   tariff?: string;
+  role?: string;
   created_at?: string;
+  is_moderator?: boolean;
 }
 
 export async function getMe(): Promise<AdvertiserProfileResponse> {

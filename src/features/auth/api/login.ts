@@ -36,8 +36,11 @@ export async function loginUser({ identifier, password }: LoginUserParams) {
       authState.setAuthenticatedUser({
         ...base,
         name: profile.name,
+        surname: profile.surname,
         balance: profile.balance,
         avatar: profile.avatar_url,
+        isModerator: profile.is_moderator,
+        role: profile.role,
       });
     }
 

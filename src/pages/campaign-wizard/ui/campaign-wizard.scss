@@ -110,6 +110,7 @@ html[data-theme='dark'] {
     background: rgba(14, 19, 36, 0.8);
     border-color: rgba(68, 84, 130, 0.5);
     color: #d4dcf5;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
 
     &::placeholder { color: #4a5578; }
 

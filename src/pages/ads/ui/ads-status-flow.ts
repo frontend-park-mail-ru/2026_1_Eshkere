@@ -5,8 +5,10 @@ import {
   updateAdInGroup,
   type AdCampaignStatus,
 } from 'features/ads';
+import { pauseAdCampaign } from 'features/ads/api/update-ad-campaign-status';
 import { showToast } from 'shared/lib/toast';
 import { REQUEST_ERROR_EVENT_NAME } from 'widgets/request-error-modal';
+import { closeModal, openModal } from 'shared/ui/modal/modal';
 import {
   campaignStatusMap,
   mapBackendStatusToCampaignStatus,
@@ -182,7 +184,7 @@ export function bindCampaignStatusModal(signal: AbortSignal): void {
   let pending: PendingStatusChange | null = null;
 
   const closeStatusModal = (): void => {
-    statusModal.hidden = true;
+    closeModal(statusModal);
     statusModalConfirm.removeAttribute('disabled');
     pending = null;
   };
@@ -201,9 +203,9 @@ export function bindCampaignStatusModal(signal: AbortSignal): void {
       'Объявления на модерации и отклоненные объявления не изменятся.';
     statusModalConfirm.textContent = isEnabling ? 'Включить' : 'Остановить';
     statusModalImage.src = isEnabling
-      ? '/img/News.png'
-      : '/img/Delete%20Confirmation.png';
-    statusModal.hidden = false;
+      ? '/img/News.webp'
+      : '/img/Delete%20Confirmation.webp';
+    openModal(statusModal);
   };
 
   document.querySelectorAll<HTMLElement>('.campaign-row').forEach((row) => {
@@ -264,6 +266,14 @@ export function bindCampaignStatusModal(signal: AbortSignal): void {
       statusModalConfirm.setAttribute('disabled', 'true');
 
       try {
+        if (nextStatus === 'stopped') {
+          await pauseAdCampaign(campaignId);
+          await refreshCampaignRowStatus(campaignId, row, toggle, badge).catch(() => false);
+          closeStatusModal();
+          showToast('Кампания остановлена', 'Все активные объявления приостановлены.');
+          return;
+        }
+
         const targets = await getCampaignAdTargets(campaignId, nextStatus);
 
         if (targets.length === 0) {
@@ -294,10 +304,7 @@ export function bindCampaignStatusModal(signal: AbortSignal): void {
           return;
         }
 
-        showToast(
-          nextStatus === 'active' ? 'Кампания включена' : 'Кампания остановлена',
-          `Обновлено объявлений: ${result.updated}.`,
-        );
+        showToast('Кампания включена', `Запущено объявлений: ${result.updated}.`);
       } catch {
         if (isCampaignToggleStatus(currentStatus)) {
           toggle.checked = campaignStatusMap[currentStatus].enabled;
@@ -315,7 +322,10 @@ export function bindCampaignStatusModal(signal: AbortSignal): void {
   statusModal.addEventListener(
     'click',
     (event) => {
-      if (event.target === statusModal) {
+      if (
+        event.target === statusModal ||
+        event.target === statusModal.querySelector('.modal__backdrop')
+      ) {
         closeStatusModal();
       }
     },
@@ -325,7 +335,7 @@ export function bindCampaignStatusModal(signal: AbortSignal): void {
   document.addEventListener(
     'keydown',
     (event) => {
-      if (event.key === 'Escape' && !statusModal.hidden) {
+      if (event.key === 'Escape' && statusModal.classList.contains('modal--open')) {
         closeStatusModal();
       }
     },

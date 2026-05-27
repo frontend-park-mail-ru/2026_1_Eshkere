@@ -46,6 +46,7 @@
       href="/advertiser/overview"
       class="sidebar__link {{#if isOverview}}sidebar__link--active{{/if}}"
       {{#if isOverview}}aria-current="page"{{/if}}
+      data-tour="sidebar-overview"
     >
       <img class="sidebar__icon" src="/icons/darhboard.svg" alt="" aria-hidden="true" />
       Обзор
@@ -54,6 +55,7 @@
       href="/advertiser/campaigns"
       class="sidebar__link {{#if isCampaigns}}sidebar__link--active{{/if}}"
       {{#if isCampaigns}}aria-current="page"{{/if}}
+      data-tour="sidebar-campaigns"
     >
       <img class="sidebar__icon" src="/icons/statistics.svg" alt="" aria-hidden="true" />
       Кампании
@@ -62,6 +64,7 @@
       href="/advertiser/balance"
       class="sidebar__link {{#if isBalance}}sidebar__link--active{{/if}}"
       {{#if isBalance}}aria-current="page"{{/if}}
+      data-tour="sidebar-balance"
     >
       <img class="sidebar__icon" src="/icons/wallet.svg" alt="" aria-hidden="true" />
       Баланс
@@ -70,6 +73,7 @@
       href="{{supportHref}}"
       class="sidebar__link {{#if isSupport}}sidebar__link--active{{/if}}"
       {{#if isSupport}}aria-current="page"{{/if}}
+      data-tour="sidebar-support"
     >
       <img class="sidebar__icon" src="/icons/Question.svg" alt="" aria-hidden="true" />
       Поддержка
@@ -78,14 +82,6 @@
   </div>
 
   <div class="sidebar__footer">
-    <a
-      href="{{profileHref}}"
-      class="sidebar__link {{#if isProfile}}sidebar__link--active{{/if}}"
-      {{#if isProfile}}aria-current="page"{{/if}}
-    >
-      <img class="sidebar__icon" src="/icons/User.svg" alt="" aria-hidden="true" />
-      Профиль
-    </a>
     <button
       type="button"
       class="sidebar__link sidebar__button"
@@ -143,14 +139,6 @@
       <div class="mobile-tabbar__sheet">
         <span class="mobile-tabbar__sheet-title">Еще разделы</span>
         <a
-          class="mobile-tabbar__sheet-item {{#if isProfile}}mobile-tabbar__sheet-item--active{{/if}}"
-          href="{{profileHref}}"
-          {{#if isProfile}}aria-current="page"{{/if}}
-        >
-          <img class="mobile-tabbar__sheet-icon" src="/icons/User.svg" alt="" aria-hidden="true" />
-          Профиль
-        </a>
-        <a
           class="mobile-tabbar__sheet-item {{#if isSupport}}mobile-tabbar__sheet-item--active{{/if}}"
           href="{{supportHref}}"
           {{#if isSupport}}aria-current="page"{{/if}}
@@ -186,15 +174,6 @@
     >
       <img class="mobile-tabbar__icon" src="/icons/wallet.svg" alt="" aria-hidden="true" />
       <span>Баланс</span>
-    </a>
-
-    <a
-      href="{{profileHref}}"
-      class="mobile-tabbar__item {{#if isProfile}}mobile-tabbar__item--active{{/if}}"
-      {{#if isProfile}}aria-current="page"{{/if}}
-    >
-      <img class="mobile-tabbar__icon" src="/icons/User.svg" alt="" aria-hidden="true" />
-      <span>Профиль</span>
     </a>
 
     <details class="mobile-tabbar__more">

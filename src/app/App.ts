@@ -5,7 +5,11 @@ import { initOfflineModal } from 'widgets/offline-modal';
 import { initRequestErrorModal } from 'widgets/request-error-modal';
 import { initMobileWarningModal } from 'widgets/mobile-warning-modal';
 import { initSwUpdateToast } from 'widgets/sw-update-toast';
-import { SW_UPDATE_EVENT } from 'shared/lib/events';
+import {
+  APP_ROUTE_REFRESH_EVENT,
+  SW_UPDATE_EVENT,
+  type SwUpdateReadyDetail,
+} from 'shared/lib/events';
 import './styles/main.scss';
 
 /**
@@ -21,6 +25,9 @@ export async function initApp(): Promise<void> {
   initRequestErrorModal();
   initMobileWarningModal();
   initSwUpdateToast();
+  window.addEventListener(APP_ROUTE_REFRESH_EVENT, () => {
+    void renderRoute();
+  });
   await registerServiceWorker();
   authState.syncDevModeratorAccessFromLocation();
   await authState.hasActiveSession();
@@ -51,12 +58,16 @@ async function registerServiceWorker(): Promise<void> {
 }
 
 function watchForSwUpdate(registration: ServiceWorkerRegistration): void {
-  const notifyUpdate = (): void => {
-    window.dispatchEvent(new CustomEvent(SW_UPDATE_EVENT));
+  const notifyUpdate = (waitingWorker: ServiceWorker | null): void => {
+    window.dispatchEvent(
+      new CustomEvent<SwUpdateReadyDetail>(SW_UPDATE_EVENT, {
+        detail: { waitingWorker },
+      }),
+    );
   };
 
   if (registration.waiting && navigator.serviceWorker.controller) {
-    notifyUpdate();
+    notifyUpdate(registration.waiting);
     return;
   }
 
@@ -68,7 +79,7 @@ function watchForSwUpdate(registration: ServiceWorkerRegistration): void {
 
     newWorker.addEventListener('statechange', () => {
       if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-        notifyUpdate();
+        notifyUpdate(registration.waiting || newWorker);
       }
     });
   });

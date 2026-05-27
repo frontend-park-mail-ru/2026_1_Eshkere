@@ -15,6 +15,7 @@ import {
 } from 'shared/validators';
 import { initVKAuth, registerUser } from 'features/auth';
 import { navigateTo } from 'shared/lib/navigation';
+import { onboardingState } from 'features/onboarding';
 import registerPageTemplate from './register.hbs';
 
 /**
@@ -190,18 +191,6 @@ export async function renderRegisterPage(): Promise<string> {
     iconAlt: '',
   });
 
-  const yandexRegisterButton = await renderButton({
-    text: 'Яндекс ID',
-    type: 'button',
-    variant: 'secondary',
-    className: 'social-button social-button--yandex',
-    title: 'Скоро будет доступно',
-    disabled: true,
-    ariaDisabled: true,
-    iconSrc: '/icons/yandex-id.svg',
-    iconAlt: '',
-  });
-
   return renderTemplate(registerPageTemplate, {
     nameField,
     emailField,
@@ -211,7 +200,6 @@ export async function renderRegisterPage(): Promise<string> {
     submitButton,
     loginLinkButton,
     vkRegisterButton,
-    yandexRegisterButton,
   });
 }
 
@@ -364,6 +352,7 @@ export function Register(): void | VoidFunction {
         return;
       }
 
+      onboardingState.reset();
       navigateTo('/advertiser/overview', { replace: true });
     } finally {
       isSubmitting = false;

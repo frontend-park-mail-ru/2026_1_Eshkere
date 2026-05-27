@@ -1,89 +1,10 @@
 import { authState } from 'features/auth';
-import { renderAdsPage, Ads } from 'pages/ads';
-import { renderBalancePage, Balance } from 'pages/balance';
-import {
-  renderCampaignCreatePage,
-  CampaignCreate,
-} from 'pages/campaign-create';
-import {
-  renderForgotPasswordPage,
-  ForgotPassword,
-} from 'pages/forgot-password';
-import { renderHomePage, Home } from 'pages/home';
-import { renderLoginPage, Login } from 'pages/login';
-import { renderNotFoundPage } from 'pages/not-found';
-import { renderOverviewPage, Overview } from 'pages/overview';
-import {
-  renderModeratorQueuePage,
-  ModeratorQueuePage,
-} from 'pages/moderator-queue';
-import {
-  renderModeratorCasePage,
-  ModeratorCasePage,
-} from 'pages/moderator-case';
-import {
-  renderModeratorAppealsPage,
-  ModeratorAppealsPage,
-} from 'pages/moderator-appeals';
-import {
-  renderModeratorMessagesPage,
-  ModeratorMessagesPage,
-} from 'pages/moderator-messages';
-import {
-  renderModeratorPoliciesPage,
-  ModeratorPoliciesPage,
-} from 'pages/moderator-policies';
-import {
-  renderModeratorAuditPage,
-  ModeratorAuditPage,
-} from 'pages/moderator-audit';
-import { renderProfilePage, Profile } from 'pages/profile';
-import {
-  renderCampaignWizardPage,
-  CampaignWizard,
-} from 'pages/campaign-wizard';
-import { renderCampaignStatsPage, CampaignStats } from 'pages/campaign-stats';
-import { renderGroupStatsPage, GroupStats } from 'pages/group-stats';
-import { renderAdStatsPage, AdStats } from 'pages/ad-stats';
-import {
-  renderCampaignDetailPage,
-  CampaignDetail,
-} from 'pages/campaign-detail';
-import { renderAdGroupCreatePage, AdGroupCreate } from 'pages/ad-group-create';
-import { renderAdGroupEditPage, AdGroupEdit } from 'pages/ad-group-edit';
-import { renderAdCreatePage, AdCreate } from 'pages/ad-create';
-import { renderAdEditPage, AdEdit } from 'pages/ad-edit';
-import {
-  renderCampaignEditFormPage,
-  CampaignEditForm,
-} from 'pages/campaign-edit-form';
-import { renderRegisterPage, Register } from 'pages/register';
-import { renderAddSitesPage, AddSites } from 'pages/add-sites';
-import {
-  renderAddSitesCreatePage,
-  AddSitesCreate,
-} from 'pages/add-sites-create';
-import { renderAddSitesBlockPage, AddSitesBlock } from 'pages/add-sites-block';
-import { renderAddSitesSitePage, AddSitesSite } from 'pages/add-sites-site';
-import {
-  renderPartnerOverviewPage,
-  PartnerOverview,
-} from 'pages/partner-overview';
-import { renderPartnerIncomePage, PartnerIncome } from 'pages/partner-income';
-import {
-  renderPartnerPayoutsPage,
-  PartnerPayouts,
-} from 'pages/partner-payouts';
-import {
-  renderPartnerProfilePage,
-  PartnerProfile,
-} from 'pages/partner-profile';
-import { renderSupportPage, Support } from 'pages/support';
-import { renderOfertaPage } from 'pages/oferta';
-import { renderPrivacyPage } from 'pages/privacy';
-import { Navbar } from 'widgets/navbar';
 import { getCurrentPath, navigateTo } from 'shared/lib/navigation';
-import { triggerPageEnter, setupReveal } from 'shared/lib/animations';
+import {
+  triggerPageEnter,
+  setupReveal,
+  setupMotionEnhancements,
+} from 'shared/lib/animations';
 import { syncGlobalBalanceAlert } from 'shared/lib/balance-global-alert';
 import { isAdvertiserCabinet } from 'shared/lib/cabinet';
 import {
@@ -97,6 +18,307 @@ import {
 
 type RouteCleanup = VoidFunction;
 type RouteInit = () => void | RouteCleanup;
+type RouteRender = () => Promise<string>;
+type PageModule = Record<string, unknown>;
+type NavbarModule = typeof import('widgets/navbar');
+
+interface LazyPage {
+  render: RouteRender;
+  init: RouteInit;
+}
+
+let navbarModulePromise: Promise<NavbarModule> | null = null;
+
+async function initNavbar(): Promise<RouteCleanup | void> {
+  navbarModulePromise ??= import(
+    /* webpackChunkName: "widget-navbar" */ 'widgets/navbar'
+  );
+  const { Navbar } = await navbarModulePromise;
+  return Navbar();
+}
+
+function createLazyPage<TModule extends PageModule>(
+  loadPageModule: () => Promise<TModule>,
+  selectRender: (pageModule: TModule) => RouteRender,
+  selectInit?: (pageModule: TModule) => RouteInit,
+): LazyPage {
+  let pageModulePromise: Promise<TModule> | null = null;
+  let activePageModule: TModule | null = null;
+
+  const getPageModule = async (): Promise<TModule> => {
+    pageModulePromise ??= loadPageModule();
+    activePageModule = await pageModulePromise;
+    return activePageModule;
+  };
+
+  return {
+    render: async () => selectRender(await getPageModule())(),
+    init: () => {
+      if (!activePageModule || !selectInit) {
+        return;
+      }
+
+      return selectInit(activePageModule)();
+    },
+  };
+}
+
+function createLazyRender<TModule extends PageModule>(
+  loadPageModule: () => Promise<TModule>,
+  selectRender: (pageModule: TModule) => RouteRender,
+): RouteRender {
+  return async () => selectRender(await loadPageModule())();
+}
+
+const homePage = createLazyPage(
+  () => import(/* webpackChunkName: "page-home" */ 'pages/home'),
+  (pageModule) => pageModule.renderHomePage,
+  (pageModule) => pageModule.Home,
+);
+const loginPage = createLazyPage(
+  () => import(/* webpackChunkName: "page-auth" */ 'pages/login'),
+  (pageModule) => pageModule.renderLoginPage,
+  (pageModule) => pageModule.Login,
+);
+const forgotPasswordPage = createLazyPage(
+  () => import(/* webpackChunkName: "page-auth" */ 'pages/forgot-password'),
+  (pageModule) => pageModule.renderForgotPasswordPage,
+  (pageModule) => pageModule.ForgotPassword,
+);
+const registerPage = createLazyPage(
+  () => import(/* webpackChunkName: "page-auth" */ 'pages/register'),
+  (pageModule) => pageModule.renderRegisterPage,
+  (pageModule) => pageModule.Register,
+);
+const partnerRegisterPage = createLazyPage(
+  () => import(/* webpackChunkName: "page-partner-auth" */ 'pages/partner-register'),
+  (pageModule) => pageModule.renderPartnerRegisterPage,
+  (pageModule) => pageModule.PartnerRegister,
+);
+const adsPage = createLazyPage(
+  () => import(/* webpackChunkName: "page-advertiser-campaigns" */ 'pages/ads'),
+  (pageModule) => pageModule.renderAdsPage,
+  (pageModule) => pageModule.Ads,
+);
+const campaignWizardPage = createLazyPage(
+  () => import(/* webpackChunkName: "page-campaign-wizard" */ 'pages/campaign-wizard'),
+  (pageModule) => pageModule.renderCampaignWizardPage,
+  (pageModule) => pageModule.CampaignWizard,
+);
+const campaignCreatePage = createLazyPage(
+  () => import(/* webpackChunkName: "page-campaign-create" */ 'pages/campaign-create'),
+  (pageModule) => pageModule.renderCampaignCreatePage,
+  (pageModule) => pageModule.CampaignCreate,
+);
+const campaignStatsPage = createLazyPage(
+  () => import(/* webpackChunkName: "page-campaign-stats" */ 'pages/campaign-stats'),
+  (pageModule) => pageModule.renderCampaignStatsPage,
+  (pageModule) => pageModule.CampaignStats,
+);
+const groupStatsPage = createLazyPage(
+  () => import(/* webpackChunkName: "page-group-stats" */ 'pages/group-stats'),
+  (pageModule) => pageModule.renderGroupStatsPage,
+  (pageModule) => pageModule.GroupStats,
+);
+const adStatsPage = createLazyPage(
+  () => import(/* webpackChunkName: "page-ad-stats" */ 'pages/ad-stats'),
+  (pageModule) => pageModule.renderAdStatsPage,
+  (pageModule) => pageModule.AdStats,
+);
+const campaignDetailPage = createLazyPage(
+  () => import(/* webpackChunkName: "page-campaign-detail" */ 'pages/campaign-detail'),
+  (pageModule) => pageModule.renderCampaignDetailPage,
+  (pageModule) => pageModule.CampaignDetail,
+);
+const campaignEditFormPage = createLazyPage(
+  () => import(/* webpackChunkName: "page-campaign-edit" */ 'pages/campaign-edit-form'),
+  (pageModule) => pageModule.renderCampaignEditFormPage,
+  (pageModule) => pageModule.CampaignEditForm,
+);
+const adGroupCreatePage = createLazyPage(
+  () => import(/* webpackChunkName: "page-ad-group-create" */ 'pages/ad-group-create'),
+  (pageModule) => pageModule.renderAdGroupCreatePage,
+  (pageModule) => pageModule.AdGroupCreate,
+);
+const adGroupEditPage = createLazyPage(
+  () => import(/* webpackChunkName: "page-ad-group-edit" */ 'pages/ad-group-edit'),
+  (pageModule) => pageModule.renderAdGroupEditPage,
+  (pageModule) => pageModule.AdGroupEdit,
+);
+const adCreatePage = createLazyPage(
+  () => import(/* webpackChunkName: "page-ad-create" */ 'pages/ad-create'),
+  (pageModule) => pageModule.renderAdCreatePage,
+  (pageModule) => pageModule.AdCreate,
+);
+const adEditPage = createLazyPage(
+  () => import(/* webpackChunkName: "page-ad-edit" */ 'pages/ad-edit'),
+  (pageModule) => pageModule.renderAdEditPage,
+  (pageModule) => pageModule.AdEdit,
+);
+const overviewPage = createLazyPage(
+  () => import(/* webpackChunkName: "page-overview" */ 'pages/overview'),
+  (pageModule) => pageModule.renderOverviewPage,
+  (pageModule) => pageModule.Overview,
+);
+const balancePage = createLazyPage(
+  () => import(/* webpackChunkName: "page-balance" */ 'pages/balance'),
+  (pageModule) => pageModule.renderBalancePage,
+  (pageModule) => pageModule.Balance,
+);
+const paymentSuccessPage = createLazyPage(
+  () => import(/* webpackChunkName: "page-payment-result" */ 'pages/payment-result'),
+  (pageModule) => pageModule.renderPaymentSuccessPage,
+  (pageModule) => pageModule.PaymentResult,
+);
+const paymentFailPage = createLazyPage(
+  () => import(/* webpackChunkName: "page-payment-result" */ 'pages/payment-result'),
+  (pageModule) => pageModule.renderPaymentFailPage,
+  (pageModule) => pageModule.PaymentResult,
+);
+const profilePage = createLazyPage(
+  () => import(/* webpackChunkName: "page-profile" */ 'pages/profile'),
+  (pageModule) => pageModule.renderProfilePage,
+  (pageModule) => pageModule.Profile,
+);
+const supportPage = createLazyPage(
+  () => import(/* webpackChunkName: "page-support" */ 'pages/support'),
+  (pageModule) => pageModule.renderSupportPage,
+  (pageModule) => pageModule.Support,
+);
+const addSitesPage = createLazyPage(
+  () => import(/* webpackChunkName: "page-partner-sites" */ 'pages/add-sites'),
+  (pageModule) => pageModule.renderAddSitesPage,
+  (pageModule) => pageModule.AddSites,
+);
+const addSitesCreatePage = createLazyPage(
+  () => import(/* webpackChunkName: "page-partner-site-create" */ 'pages/add-sites-create'),
+  (pageModule) => pageModule.renderAddSitesCreatePage,
+  (pageModule) => pageModule.AddSitesCreate,
+);
+const addSitesBlockPage = createLazyPage(
+  () => import(/* webpackChunkName: "page-partner-block" */ 'pages/add-sites-block'),
+  (pageModule) => pageModule.renderAddSitesBlockPage,
+  (pageModule) => pageModule.AddSitesBlock,
+);
+const addSitesSitePage = createLazyPage(
+  () => import(/* webpackChunkName: "page-partner-site" */ 'pages/add-sites-site'),
+  (pageModule) => pageModule.renderAddSitesSitePage,
+  (pageModule) => pageModule.AddSitesSite,
+);
+const addSitesBlockEditPage = createLazyPage(
+  () => import(/* webpackChunkName: "page-partner-block-edit" */ 'pages/add-sites-block-edit'),
+  (pageModule) => pageModule.renderAddSitesBlockEditPage,
+  (pageModule) => pageModule.AddSitesBlockEdit,
+);
+const partnerOverviewPage = createLazyPage(
+  () => import(/* webpackChunkName: "page-partner-overview" */ 'pages/partner-overview'),
+  (pageModule) => pageModule.renderPartnerOverviewPage,
+  (pageModule) => pageModule.PartnerOverview,
+);
+const partnerIncomePage = createLazyPage(
+  () => import(/* webpackChunkName: "page-partner-income" */ 'pages/partner-income'),
+  (pageModule) => pageModule.renderPartnerIncomePage,
+  (pageModule) => pageModule.PartnerIncome,
+);
+const partnerPayoutsPage = createLazyPage(
+  () => import(/* webpackChunkName: "page-partner-payouts" */ 'pages/partner-payouts'),
+  (pageModule) => pageModule.renderPartnerPayoutsPage,
+  (pageModule) => pageModule.PartnerPayouts,
+);
+const partnerProfilePage = createLazyPage(
+  () => import(/* webpackChunkName: "page-partner-profile" */ 'pages/partner-profile'),
+  (pageModule) => pageModule.renderPartnerProfilePage,
+  (pageModule) => pageModule.PartnerProfile,
+);
+const moderatorQueuePage = createLazyPage(
+  () => import(/* webpackChunkName: "page-moderator" */ 'pages/moderator-queue'),
+  (pageModule) => pageModule.renderModeratorQueuePage,
+  (pageModule) => pageModule.ModeratorQueuePage,
+);
+const moderatorCasePage = createLazyPage(
+  () => import(/* webpackChunkName: "page-moderator" */ 'pages/moderator-case'),
+  (pageModule) => pageModule.renderModeratorCasePage,
+  (pageModule) => pageModule.ModeratorCasePage,
+);
+
+const renderHomePage = homePage.render;
+const Home = homePage.init;
+const renderLoginPage = loginPage.render;
+const Login = loginPage.init;
+const renderForgotPasswordPage = forgotPasswordPage.render;
+const ForgotPassword = forgotPasswordPage.init;
+const renderRegisterPage = registerPage.render;
+const Register = registerPage.init;
+const renderPartnerRegisterPage = partnerRegisterPage.render;
+const PartnerRegister = partnerRegisterPage.init;
+const renderAdsPage = adsPage.render;
+const Ads = adsPage.init;
+const renderCampaignWizardPage = campaignWizardPage.render;
+const CampaignWizard = campaignWizardPage.init;
+const renderCampaignCreatePage = campaignCreatePage.render;
+const CampaignCreate = campaignCreatePage.init;
+const renderCampaignStatsPage = campaignStatsPage.render;
+const CampaignStats = campaignStatsPage.init;
+const renderGroupStatsPage = groupStatsPage.render;
+const GroupStats = groupStatsPage.init;
+const renderAdStatsPage = adStatsPage.render;
+const AdStats = adStatsPage.init;
+const renderCampaignDetailPage = campaignDetailPage.render;
+const CampaignDetail = campaignDetailPage.init;
+const renderCampaignEditFormPage = campaignEditFormPage.render;
+const CampaignEditForm = campaignEditFormPage.init;
+const renderAdGroupCreatePage = adGroupCreatePage.render;
+const AdGroupCreate = adGroupCreatePage.init;
+const renderAdGroupEditPage = adGroupEditPage.render;
+const AdGroupEdit = adGroupEditPage.init;
+const renderAdCreatePage = adCreatePage.render;
+const AdCreate = adCreatePage.init;
+const renderAdEditPage = adEditPage.render;
+const AdEdit = adEditPage.init;
+const renderOverviewPage = overviewPage.render;
+const Overview = overviewPage.init;
+const renderBalancePage = balancePage.render;
+const Balance = balancePage.init;
+const renderPaymentSuccessPage = paymentSuccessPage.render;
+const PaymentSuccess = paymentSuccessPage.init;
+const renderPaymentFailPage = paymentFailPage.render;
+const PaymentFail = paymentFailPage.init;
+const renderProfilePage = profilePage.render;
+const Profile = profilePage.init;
+const renderSupportPage = supportPage.render;
+const Support = supportPage.init;
+const renderAddSitesPage = addSitesPage.render;
+const AddSites = addSitesPage.init;
+const renderAddSitesCreatePage = addSitesCreatePage.render;
+const AddSitesCreate = addSitesCreatePage.init;
+const renderAddSitesBlockPage = addSitesBlockPage.render;
+const AddSitesBlock = addSitesBlockPage.init;
+const renderAddSitesSitePage = addSitesSitePage.render;
+const AddSitesSite = addSitesSitePage.init;
+const renderPartnerOverviewPage = partnerOverviewPage.render;
+const PartnerOverview = partnerOverviewPage.init;
+const renderPartnerIncomePage = partnerIncomePage.render;
+const PartnerIncome = partnerIncomePage.init;
+const renderPartnerPayoutsPage = partnerPayoutsPage.render;
+const PartnerPayouts = partnerPayoutsPage.init;
+const renderPartnerProfilePage = partnerProfilePage.render;
+const PartnerProfile = partnerProfilePage.init;
+const renderModeratorQueuePage = moderatorQueuePage.render;
+const ModeratorQueuePage = moderatorQueuePage.init;
+const renderModeratorCasePage = moderatorCasePage.render;
+const ModeratorCasePage = moderatorCasePage.init;
+const renderOfertaPage = createLazyRender(
+  () => import(/* webpackChunkName: "page-legal" */ 'pages/oferta'),
+  (pageModule) => pageModule.renderOfertaPage,
+);
+const renderPrivacyPage = createLazyRender(
+  () => import(/* webpackChunkName: "page-legal" */ 'pages/privacy'),
+  (pageModule) => pageModule.renderPrivacyPage,
+);
+const renderNotFoundPage = createLazyRender(
+  () => import(/* webpackChunkName: "page-not-found" */ 'pages/not-found'),
+  (pageModule) => pageModule.renderNotFoundPage,
+);
 
 interface RouteDefinition {
   render: () => Promise<string>;
@@ -129,6 +351,12 @@ const routes: Record<string, RouteDefinition> = {
     render: renderRegisterPage,
     layout: 'public',
     init: Register,
+    guestOnly: true,
+  },
+  '/partner/register': {
+    render: renderPartnerRegisterPage,
+    layout: 'public',
+    init: PartnerRegister,
     guestOnly: true,
   },
   '/ads': {
@@ -311,6 +539,42 @@ const routes: Record<string, RouteDefinition> = {
     init: Balance,
     protected: true,
   },
+  '/payment/success': {
+    render: renderPaymentSuccessPage,
+    layout: 'advertiser-dashboard',
+    init: PaymentSuccess,
+    protected: true,
+  },
+  '/advertiser/payment/success': {
+    render: renderPaymentSuccessPage,
+    layout: 'advertiser-dashboard',
+    init: PaymentSuccess,
+    protected: true,
+  },
+  '/payment/fail': {
+    render: renderPaymentFailPage,
+    layout: 'advertiser-dashboard',
+    init: PaymentFail,
+    protected: true,
+  },
+  '/payment/failure': {
+    render: renderPaymentFailPage,
+    layout: 'advertiser-dashboard',
+    init: PaymentFail,
+    protected: true,
+  },
+  '/payment/cancel': {
+    render: renderPaymentFailPage,
+    layout: 'advertiser-dashboard',
+    init: PaymentFail,
+    protected: true,
+  },
+  '/advertiser/payment/fail': {
+    render: renderPaymentFailPage,
+    layout: 'advertiser-dashboard',
+    init: PaymentFail,
+    protected: true,
+  },
   '/add-sites': {
     render: renderAddSitesPage,
     layout: 'partner-dashboard',
@@ -383,6 +647,12 @@ const routes: Record<string, RouteDefinition> = {
     init: AddSitesSite,
     protected: true,
   },
+  '/partner/sites/block-edit': {
+    render: addSitesBlockEditPage.render,
+    layout: 'partner-dashboard',
+    init: addSitesBlockEditPage.init,
+    protected: true,
+  },
   '/profile': {
     render: renderProfilePage,
     layout: 'advertiser-dashboard',
@@ -448,34 +718,7 @@ const routes: Record<string, RouteDefinition> = {
     protected: true,
     requiresModerator: true,
   },
-  '/moderator/appeals': {
-    render: renderModeratorAppealsPage,
-    layout: 'moderator',
-    init: ModeratorAppealsPage,
-    protected: true,
-    requiresModerator: true,
-  },
-  '/moderator/messages': {
-    render: renderModeratorMessagesPage,
-    layout: 'moderator',
-    init: ModeratorMessagesPage,
-    protected: true,
-    requiresModerator: true,
-  },
-  '/moderator/policies': {
-    render: renderModeratorPoliciesPage,
-    layout: 'moderator',
-    init: ModeratorPoliciesPage,
-    protected: true,
-    requiresModerator: true,
-  },
-  '/moderator/audit': {
-    render: renderModeratorAuditPage,
-    layout: 'moderator',
-    init: ModeratorAuditPage,
-    protected: true,
-    requiresModerator: true,
-  },
+
 };
 
 let activeCleanup: RouteCleanup | null = null;
@@ -555,6 +798,7 @@ export async function renderRoute(): Promise<void> {
 
     outlet.innerHTML = content;
     triggerPageEnter(outlet);
+    setupMotionEnhancements(outlet);
 
     const cleanups: RouteCleanup[] = [setupReveal()];
 
@@ -578,16 +822,18 @@ export async function renderRoute(): Promise<void> {
       route.layout === 'advertiser-dashboard' ||
       route.layout === 'partner-dashboard'
     ) {
-      const navbarCleanup = Navbar();
+      const navbarCleanup = await initNavbar();
       if (typeof navbarCleanup === 'function') {
         cleanups.push(navbarCleanup);
       }
     } else if (route.layout === 'moderator') {
-      const moderatorNavbarCleanup = initModeratorNavbar();
+      const moderatorNavbarCleanup = await initModeratorNavbar();
       if (typeof moderatorNavbarCleanup === 'function') {
         cleanups.push(moderatorNavbarCleanup);
       }
     }
+
+    setupMotionEnhancements(document);
 
     if (cleanups.length > 0) {
       activeCleanup = () => {

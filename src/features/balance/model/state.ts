@@ -7,6 +7,7 @@ import {
 import type {
   BalanceDashboardState,
   BalanceOperationTone,
+  DeliveryAlert,
 } from './types';
 
 const BALANCE_STORAGE_KEY = LocalStorageKey.BalanceDashboardState;
@@ -37,6 +38,7 @@ function getInitialState(): BalanceDashboardState {
     vatEnabled: true,
     selectedAmount: 10000,
     operations: [],
+    deliveryAlert: null,
   };
 }
 
@@ -66,6 +68,20 @@ function normalizeOperations(
     details:
       typeof item?.details === 'string' ? item.details.trim() : '',
   }));
+}
+
+const DELIVERY_ALERT_LEVELS = new Set([
+  'low_balance', 'at_risk', 'partially_stopped', 'fully_stopped',
+]);
+
+function isDeliveryAlert(v: unknown): v is DeliveryAlert {
+  if (!v || typeof v !== 'object') return false;
+  const a = v as Record<string, unknown>;
+  return (
+    typeof a.level === 'string' && DELIVERY_ALERT_LEVELS.has(a.level) &&
+    typeof a.title === 'string' &&
+    typeof a.message === 'string'
+  );
 }
 
 function normalizeState(raw: unknown): BalanceDashboardState {
@@ -119,6 +135,7 @@ function normalizeState(raw: unknown): BalanceDashboardState {
         ? data.selectedAmount
         : initial.selectedAmount,
     operations: normalizeOperations(data.operations),
+    deliveryAlert: isDeliveryAlert(data.deliveryAlert) ? data.deliveryAlert : null,
   };
 }
 

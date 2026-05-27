@@ -43,6 +43,12 @@ export function initCampaignActionMenus(signal: AbortSignal): void {
         menu.hidden = true;
       });
 
+    document
+      .querySelectorAll<HTMLElement>('.campaign-row__actions.is-open')
+      .forEach((actions) => {
+        actions.classList.remove('is-open');
+      });
+
     triggerButtons.forEach((button) => {
       button.setAttribute('aria-expanded', 'false');
     });
@@ -107,6 +113,9 @@ export function initCampaignActionMenus(signal: AbortSignal): void {
         closeAll();
         menu.hidden = !willOpen;
         button.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        if (willOpen) {
+          button.closest<HTMLElement>('.campaign-row__actions')?.classList.add('is-open');
+        }
       },
       { signal },
     );

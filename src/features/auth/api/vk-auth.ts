@@ -1,6 +1,7 @@
 import { request } from 'shared/lib/request';
 import { getMe } from 'features/profile/api/update-profile';
 import { authState, type AuthUser } from '../model/storage';
+import { navigateTo } from 'shared/lib/navigation';
 
 const VK_ID_SDK_URL = 'https://unpkg.com/@vkid/sdk@latest/dist-sdk/umd/index.js';
 
@@ -8,8 +9,8 @@ let sdkLoader: Promise<void> | null = null;
 
 interface VKAuthResponse {
   id: number;
-  email: string;
-  phone: string;
+  email?: string;
+  phone?: string;
 }
 
 function loadVKScript(): Promise<void> {
@@ -41,32 +42,41 @@ export function initVKAuth(buttonElement: HTMLElement | null): VoidFunction {
   let isVkConfigInitialized = false;
 
   async function vkidOnSuccess(data: unknown): Promise<void> {
-    const src = (data ?? {}) as Record<string, unknown>;
+    
+    let src = (data ?? {}) as Record<string, unknown>;
+    
+    if (src.type === 'code_v2') {
+      
+      const code = String(src.code ?? '').trim(); 
+      const deviceId = String(src.device_id ?? src.deviceId ?? '').trim();
+      
+      if (!code || !deviceId) {
+        console.error('VK code payload invalid:', data);
+        return;
+      }
 
+      
+      const VKID = (window as Window & { VKIDSDK?: any }).VKIDSDK;
+      if (!VKID?.Auth?.exchangeCode) {
+        console.error('VK exchangeCode is unavailable');
+        return;
+      }
+
+      src = (await VKID.Auth.exchangeCode(code, deviceId)) as Record<string, unknown>;
+    
+    }
     const accessToken = String(src.access_token ?? src.accessToken ?? '').trim();
     const userId = Number(src.user_id ?? src.userId ?? 0);
-
+    
     if (!accessToken || !Number.isFinite(userId) || userId <= 0) {
-      console.error('VK payload invalid:', data);
+      console.error('VK payload invalid:', src);
       return;
     }
+    
+
     const body = {
       access_token: accessToken,
       user_id: userId,
-      email: typeof src.email === 'string' ? src.email : '',
-      phone: typeof src.phone === 'string' ? src.phone : '',
-      first_name:
-        typeof src.first_name === 'string'
-          ? src.first_name
-          : typeof src.firstName === 'string'
-            ? src.firstName
-            : '',
-      last_name:
-        typeof src.last_name === 'string'
-          ? src.last_name
-          : typeof src.lastName === 'string'
-            ? src.lastName
-            : '',
     };
     const response = await request<VKAuthResponse>('/advertisers/login/vk', {
       method: 'POST',
@@ -75,19 +85,45 @@ export function initVKAuth(buttonElement: HTMLElement | null): VoidFunction {
 
     const base: AuthUser = {
       ...response.data,
-      name: body.first_name,
+      email:
+        typeof response.data.email === 'string' && response.data.email.trim()
+          ? response.data.email
+          : '',
+      phone:
+        typeof response.data.phone === 'string' && response.data.phone.trim()
+          ? response.data.phone
+          : '',
     };
+    
     authState.setAuthenticatedUser(base);
 
     const profile = await getMe().catch(() => null);
     if (profile) {
       authState.setAuthenticatedUser({
         ...base,
-        name: profile.name ?? body.first_name,
+        name:
+          typeof profile.name === 'string' && profile.name.trim()
+            ? profile.name.trim()
+            : base.name,
+        surname:
+          typeof profile.surname === 'string' && profile.surname.trim()
+            ? profile.surname.trim()
+            : base.surname,
+        email:
+          typeof profile.email === 'string' && profile.email.trim()
+            ? profile.email
+            : base.email,
+        phone:
+          typeof profile.phone === 'string' && profile.phone.trim()
+            ? profile.phone
+            : base.phone,
         balance: profile.balance,
         avatar: profile.avatar_url,
+        role: profile.role,
       });
     }
+    navigateTo('/advertiser/overview', { replace: true });
+
   }
 
   function vkidOnError(error: unknown): string {
@@ -133,7 +169,7 @@ export function initVKAuth(buttonElement: HTMLElement | null): VoidFunction {
           .catch(vkidOnError);
       })
       .catch((error) => {
-        const message = vkidOnError(error);
+        vkidOnError(error);
       });
   };
 

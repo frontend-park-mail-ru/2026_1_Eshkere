@@ -4,6 +4,8 @@
 @use '../../campaign-create/ui/styles/campaign-builder/shell-steps';
 @use '../../campaign-create/ui/styles/campaign-builder/layout-shell';
 @use '../../campaign-create/ui/styles/campaign-builder/form';
+@use '../../campaign-create/ui/styles/campaign-preview-responsive-dark/builder-surfaces';
+@use '../../campaign-create/ui/styles/campaign-preview-responsive-dark/builder-states';
 
 .add-sites-block {
   .campaign-builder__toolbar {
@@ -412,6 +414,16 @@
 }
 
 html[data-theme='dark'] {
+  .add-sites-block .campaign-builder__step-index {
+    background: rgba(125, 110, 255, 0.26);
+    color: #e7ecff;
+  }
+
+  .add-sites-block .campaign-builder__step--active .campaign-builder__step-index {
+    background: #8b84ff;
+    color: #fff;
+  }
+
   .block-type-picker__heading {
     color: #eef2ff;
   }

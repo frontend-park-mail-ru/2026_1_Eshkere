@@ -11,7 +11,6 @@ import { API_BASE_URL } from '../config/api';
  * @throws {Error} Если статус ответа неуспешный.
  */
 
-const API_CACHE_NAME = 'api-responses-v1';
 const OFFLINE_EVENT_NAME = 'app:offline-error';
 export const OFFLINE_ERROR_MESSAGE =
   'Нет подключения к интернету. Проверьте сеть и попробуйте снова.';
@@ -48,10 +47,6 @@ function normalizeResponse<T>(payload: unknown): ApiResponse<T> {
   }
 
   return { data: payload as T };
-}
-
-function isGetRequest(options: RequestOptions): boolean {
-  return (options.method || 'GET').toUpperCase() === 'GET';
 }
 
 function isUnsafeMethod(method: string): boolean {
@@ -91,45 +86,12 @@ export function isOfflineErrorMessage(message: unknown): boolean {
   return String(message || '').trim() === OFFLINE_ERROR_MESSAGE;
 }
 
-async function getCache(): Promise<Cache | null> {
-  if (typeof window === 'undefined' || !('caches' in window)) {
-    return null;
-  }
-
-  return await window.caches.open(API_CACHE_NAME);
-}
-
-async function readCachedResponse<T>(url: string): Promise<ApiResponse<T> | null> {
-  const cache = await getCache();
-  if (!cache) {
-    return null;
-  }
-
-  const cachedResponse = await cache.match(url);
-  if (!cachedResponse) {
-    return null;
-  }
-
-  const payload = await cachedResponse.json().catch(() => null);
-  return normalizeResponse<T>(payload);
-}
-
-async function writeCachedResponse(url: string, response: Response): Promise<void> {
-  const cache = await getCache();
-  if (!cache) {
-    return;
-  }
-
-  await cache.put(url, response);
-}
-
 export async function request<T = unknown>(
   path: string,
   options: RequestOptions = {},
 ): Promise<ApiResponse<T>> {
   const { body, headers: customHeaders, ...rest } = options;
   const url = `${API_BASE_URL}${path}`;
-  const isGet = isGetRequest(options);
   const method = String(options.method || 'GET').toUpperCase();
 
   const isFormData = body instanceof FormData;
@@ -163,21 +125,15 @@ export async function request<T = unknown>(
 
   try {
     let response = await execute();
-    let responseClone = response.clone();
     let payload = await response.json().catch(() => null);
 
     if (!response.ok && isUnsafeMethod(method) && isCsrfError(getErrorMessage(payload))) {
       response = await execute();
-      responseClone = response.clone();
       payload = await response.json().catch(() => null);
     }
 
     if (!response.ok) {
       throw new Error(getErrorMessage(payload));
-    }
-
-    if (isGet) {
-      await writeCachedResponse(url, responseClone);
     }
 
     return normalizeResponse<T>(payload);
@@ -189,13 +145,6 @@ export async function request<T = unknown>(
             detail: { message: OFFLINE_ERROR_MESSAGE },
           }),
         );
-      }
-
-      if (isGet) {
-        const cachedResponse = await readCachedResponse<T>(url);
-        if (cachedResponse) {
-          return cachedResponse;
-        }
       }
 
       throw new Error(OFFLINE_ERROR_MESSAGE);

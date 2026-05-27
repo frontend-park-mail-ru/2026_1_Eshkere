@@ -1,16 +1,3 @@
-import {
-  renderPublicLayout,
-  updatePublicNavbarSlot,
-} from 'app/components/public-layout';
-import {
-  renderDashboardLayout,
-  updateDashboardLayoutSlots,
-} from 'app/components/dashboard-layout';
-import {
-  initModeratorNavbar,
-  renderModeratorLayout,
-  updateModeratorLayoutSlots,
-} from 'app/components/moderator-layout';
 /**
  * @typedef {'public' | 'dashboard'} LayoutKind
  */
@@ -28,6 +15,35 @@ export type LayoutKind =
   | 'partner-dashboard'
   | 'moderator';
 
+type PublicLayoutModule = typeof import('app/components/public-layout');
+type DashboardLayoutModule = typeof import('app/components/dashboard-layout');
+type ModeratorLayoutModule = typeof import('app/components/moderator-layout');
+
+let publicLayoutModulePromise: Promise<PublicLayoutModule> | null = null;
+let dashboardLayoutModulePromise: Promise<DashboardLayoutModule> | null = null;
+let moderatorLayoutModulePromise: Promise<ModeratorLayoutModule> | null = null;
+
+function loadPublicLayout(): Promise<PublicLayoutModule> {
+  publicLayoutModulePromise ??= import(
+    /* webpackChunkName: "layout-public" */ 'app/components/public-layout'
+  );
+  return publicLayoutModulePromise;
+}
+
+function loadDashboardLayout(): Promise<DashboardLayoutModule> {
+  dashboardLayoutModulePromise ??= import(
+    /* webpackChunkName: "layout-dashboard" */ 'app/components/dashboard-layout'
+  );
+  return dashboardLayoutModulePromise;
+}
+
+function loadModeratorLayout(): Promise<ModeratorLayoutModule> {
+  moderatorLayoutModulePromise ??= import(
+    /* webpackChunkName: "layout-moderator" */ 'app/components/moderator-layout'
+  );
+  return moderatorLayoutModulePromise;
+}
+
 export async function renderLayoutShell(
   layout: LayoutKind,
   pathname: string = '/',
@@ -36,14 +52,39 @@ export async function renderLayoutShell(
     layout === 'advertiser-dashboard' ||
     layout === 'partner-dashboard'
   ) {
+    const { renderDashboardLayout } = await loadDashboardLayout();
     return renderDashboardLayout('', pathname);
   }
   if (layout === 'moderator') {
+    const { renderModeratorLayout } = await loadModeratorLayout();
     return renderModeratorLayout('', pathname);
   }
+  const { renderPublicLayout } = await loadPublicLayout();
   return renderPublicLayout('', pathname);
 }
-export { updatePublicNavbarSlot };
-export { updateDashboardLayoutSlots };
-export { updateModeratorLayoutSlots };
-export { initModeratorNavbar };
+
+export async function updatePublicNavbarSlot(
+  pathname: string = '/',
+): Promise<void> {
+  const { updatePublicNavbarSlot: updateSlot } = await loadPublicLayout();
+  await updateSlot(pathname);
+}
+
+export async function updateDashboardLayoutSlots(
+  pathname: string = '/ads',
+): Promise<void> {
+  const { updateDashboardLayoutSlots: updateSlots } = await loadDashboardLayout();
+  await updateSlots(pathname);
+}
+
+export async function updateModeratorLayoutSlots(
+  pathname: string = '/moderator',
+): Promise<void> {
+  const { updateModeratorLayoutSlots: updateSlots } = await loadModeratorLayout();
+  await updateSlots(pathname);
+}
+
+export async function initModeratorNavbar(): Promise<VoidFunction | void> {
+  const { initModeratorNavbar: initNavbar } = await loadModeratorLayout();
+  return initNavbar();
+}
