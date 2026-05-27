@@ -9,7 +9,6 @@ export interface RegisterUserParams {
 }
 
 interface RegisterResponse {
-  id: number;
   email: string;
   phone: string;
   verification_required?: boolean;
@@ -22,7 +21,7 @@ interface VerifyRegisterResponse {
 
 type RegisterUserResult =
   | { data: RegisterResponse; status: number; error?: false }
-  | { error: true; message: string };
+  | { error: true; message: string; status?: number };
 
 type VerifyRegisterEmailResult =
   | { data: VerifyRegisterResponse; status: number; error?: false }
@@ -63,11 +62,16 @@ export async function registerUser({
       status: registerResponse.status,
     };
   } catch (error) {
+    if (error instanceof ApiRequestError) {
+      if (error.status === 409) {
+        return { error: true, message: 'Почта или телефон уже заняты', status: 409 };
+      }
+      if (error.status === 400) {
+        return { error: true, message: normalizeAuthErrorMessage(error.message), status: 400 };
+      }
+    }
     const msg = error instanceof Error ? error.message : String(error);
-    return {
-      error: true,
-      message: normalizeAuthErrorMessage(msg),
-    };
+    return { error: true, message: normalizeAuthErrorMessage(msg) };
   }
 }
 

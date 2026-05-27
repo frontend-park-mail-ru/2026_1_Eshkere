@@ -428,7 +428,12 @@ export function Register(): void | VoidFunction {
       const result = await registerUser(payload);
 
       if (result.error) {
-        applyRegisterServerError(form, result.message);
+        if (result.status === 409) {
+          setFieldState(form, 'email', 'Почта или телефон уже заняты');
+          setFieldState(form, 'phone', 'Почта или телефон уже заняты');
+        } else {
+          applyRegisterServerError(form, result.message);
+        }
         return;
       }
 

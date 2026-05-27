@@ -94,7 +94,7 @@
     const container = document.getElementById(config.container);
     if (!container) return;
 
-    fetch(BASE_URL + '/feed/' + config.token)
+    fetch(BASE_URL + '/api/feed/' + config.token)
       .then(function (res) {
         if (!res.ok) throw new Error('no ad');
         return res.json();

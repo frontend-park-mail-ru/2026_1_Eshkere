@@ -107,10 +107,37 @@ class AuthState {
     }
 
     const user = this.readStoredUser();
-    const sessionEndpoint = user?.userType === 'partner' ? '/partners/me' : '/ad_campaigns';
+    const isPartner = user?.userType === 'partner';
+    const sessionEndpoint = isPartner ? '/partners/me' : '/advertisers/me';
 
     try {
-      await request(sessionEndpoint, { method: 'GET' });
+      const response = await request<{
+        role?: string;
+        is_moderator?: boolean;
+        balance?: number;
+        name?: string;
+        surname?: string;
+        avatar_url?: string;
+        can_change_password?: boolean;
+      }>(sessionEndpoint, { method: 'GET' });
+
+      const profile = response.data;
+      if (profile && !isPartner) {
+        const current = this.readStoredUser();
+        if (current) {
+          this.writeStoredUser({
+            ...current,
+            name: profile.name ?? current.name,
+            surname: profile.surname ?? current.surname,
+            balance: profile.balance ?? current.balance,
+            avatar: profile.avatar_url ?? current.avatar,
+            isModerator: profile.is_moderator ?? current.isModerator,
+            role: profile.role ?? current.role,
+            canChangePassword: profile.can_change_password ?? current.canChangePassword,
+          });
+        }
+      }
+
       this.confirmedSession = true;
       return true;
     } catch (error: unknown) {
