@@ -117,6 +117,7 @@ export async function getProfileState(): Promise<ProfileState> {
       balance?: number;
       avatar_url?: string;
       created_at?: string;
+      can_change_password?: boolean;
     }>('/advertisers/me', { method: 'GET' });
     const profile = response.data;
 
@@ -139,6 +140,10 @@ export async function getProfileState(): Promise<ProfileState> {
           : currentUser.balance,
       avatar:
         typeof profile?.avatar_url === 'string' ? profile.avatar_url : currentUser.avatar,
+      canChangePassword:
+        typeof profile?.can_change_password === 'boolean'
+          ? profile.can_change_password
+          : currentUser.canChangePassword,
     };
 
     authState.setAuthenticatedUser(currentUser);
@@ -176,6 +181,7 @@ export async function getProfileState(): Promise<ProfileState> {
     cardMasked: getBalanceState().savedPaymentMethodTitle ?? 'Не привязана',
     lastTopUp: currentUser.lastTopUp || '—',
     passwordStatus: currentUser.passwordStatus || 'Добавить',
+    canChangePassword: currentUser.canChangePassword !== false,
   };
 }
 
@@ -205,6 +211,7 @@ export function toTemplateContext(state: ProfileState): TemplateContext {
         ? 'profile-hero__badge--success'
         : 'profile-hero__badge--warning',
     accountActionText: getAccountActionText(state.accountStatus),
+    canChangePassword: state.canChangePassword,
   };
 }
 
@@ -231,5 +238,6 @@ export function persistUserState(state: ProfileState): void {
     cardMasked: state.cardMasked,
     lastTopUp: state.lastTopUp,
     passwordStatus: state.passwordStatus,
+    canChangePassword: state.canChangePassword,
   });
 }

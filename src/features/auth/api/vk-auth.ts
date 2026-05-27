@@ -120,6 +120,7 @@ export function initVKAuth(buttonElement: HTMLElement | null): VoidFunction {
         balance: profile.balance,
         avatar: profile.avatar_url,
         role: profile.role,
+        canChangePassword: profile.can_change_password,
       });
     }
     navigateTo('/advertiser/overview', { replace: true });

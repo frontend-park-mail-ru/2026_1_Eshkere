@@ -33,6 +33,7 @@ export interface ProfileState {
   cardMasked: string;
   lastTopUp: string;
   passwordStatus: string;
+  canChangePassword: boolean;
 }
 
 export interface TemplateContext {
@@ -55,6 +56,7 @@ export interface TemplateContext {
   accountStatusLabel: string;
   accountStatusClass: string;
   accountActionText: string;
+  canChangePassword: boolean;
 }
 
 export type { ToastPayload } from 'shared/lib/toast';

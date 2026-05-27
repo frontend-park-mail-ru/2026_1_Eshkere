@@ -87,6 +87,26 @@ function syncAvatarView({
   avatarButton?.classList.toggle('profile-hero__avatar--image', hasAvatar);
 }
 
+function syncPasswordChangeAvailability(state: ProfileState): void {
+  const section = document.querySelector<HTMLElement>('[data-profile-password-section]');
+  if (!section) {
+    return;
+  }
+
+  const text = section.querySelector<HTMLElement>('.profile-security__text');
+  if (text) {
+    text.textContent = state.canChangePassword
+      ? 'Рекомендуется обновлять каждые 90 дней'
+      : 'Для аккаунта VK ID смена пароля недоступна.';
+  }
+
+  section
+    .querySelectorAll<HTMLElement>('[data-open-password-modal]')
+    .forEach((button) => {
+      button.hidden = !state.canChangePassword;
+    });
+}
+
 export function syncProfileView({
   getAccountActionText,
   getAccountStatusLabel,
@@ -159,4 +179,5 @@ export function syncProfileView({
   });
 
   syncAvatarView({ getInitials, state });
+  syncPasswordChangeAvailability(state);
 }

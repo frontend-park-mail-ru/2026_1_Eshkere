@@ -3,6 +3,10 @@ import { createAdGroup, type CreateAdGroupRequest, type GenderType } from 'featu
 import { renderTemplate } from 'shared/lib/render';
 import { navigateTo } from 'shared/lib/navigation';
 import { initNativeSelectArrows } from 'shared/lib/native-select-arrow';
+import {
+  getRegionPayloadValue,
+  getTopicPayloadValue,
+} from 'features/ads/model/targeting';
 import adGroupCreateTemplate from './ad-group-create.hbs';
 
 function getCampaignId(): number | null {
@@ -135,8 +139,8 @@ export function AdGroupCreate(): VoidFunction {
       age_from:  parseInt(data.get('age_from') as string, 10),
       age_to:    parseInt(data.get('age_to') as string, 10),
       gender:    data.get('gender') as GenderType,
-      region_id: parseInt(data.get('region_id') as string, 10),
-      topic_id:  parseInt(data.get('topic_id') as string, 10),
+      region:    getRegionPayloadValue(data.get('region_id') as string),
+      topic:     getTopicPayloadValue(data.get('topic_id') as string),
     };
 
     if (submitBtn) submitBtn.disabled = true;

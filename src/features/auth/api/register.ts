@@ -1,7 +1,5 @@
-import { request } from 'shared/lib/request';
+import { ApiRequestError, request } from 'shared/lib/request';
 import { normalizeAuthErrorMessage } from '../lib/normalize-auth-error';
-import { authState, type AuthUser } from '../model/storage';
-import { getMe } from 'features/profile/api/update-profile';
 
 export interface RegisterUserParams {
   name: string;
@@ -14,9 +12,33 @@ interface RegisterResponse {
   id: number;
   email: string;
   phone: string;
+  verification_required?: boolean;
+  message?: string;
 }
 
-export async function registerUser({ name, email, phone, password }: RegisterUserParams) {
+interface VerifyRegisterResponse {
+  message?: string;
+}
+
+type RegisterUserResult =
+  | { data: RegisterResponse; status: number; error?: false }
+  | { error: true; message: string };
+
+type VerifyRegisterEmailResult =
+  | { data: VerifyRegisterResponse; status: number; error?: false }
+  | { error: true; message: string };
+
+export interface VerifyRegisterEmailParams {
+  email: string;
+  code: string;
+}
+
+export async function registerUser({
+  name,
+  email,
+  phone,
+  password,
+}: RegisterUserParams): Promise<RegisterUserResult> {
   try {
     const normalizedName = name.trim();
     const normalizedEmail = email.trim().toLowerCase();
@@ -36,23 +58,47 @@ export async function registerUser({ name, email, phone, password }: RegisterUse
       },
     );
 
-    const base: AuthUser = { ...registerResponse.data, name: normalizedName };
-    authState.setAuthenticatedUser(base);
+    return {
+      data: registerResponse.data,
+      status: registerResponse.status,
+    };
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    return {
+      error: true,
+      message: normalizeAuthErrorMessage(msg),
+    };
+  }
+}
 
-    const profile = await getMe().catch(() => null);
-    if (profile) {
-      authState.setAuthenticatedUser({
-        ...base,
-        name: profile.name ?? normalizedName,
-        surname: profile.surname,
-        balance: profile.balance,
-        avatar: profile.avatar_url,
-        role: profile.role,
-      });
+export async function verifyRegisterEmail({
+  email,
+  code,
+}: VerifyRegisterEmailParams): Promise<VerifyRegisterEmailResult> {
+  try {
+    const response = await request<VerifyRegisterResponse>(
+      '/advertisers/register/verify',
+      {
+        method: 'POST',
+        body: {
+          email: email.trim().toLowerCase(),
+          code: code.trim(),
+        },
+      },
+    );
+
+    return {
+      data: response.data,
+      status: response.status,
+    };
+  } catch (error) {
+    if (error instanceof ApiRequestError && error.status === 400) {
+      return {
+        error: true,
+        message: 'Неверный или истекший код',
+      };
     }
 
-    return { user: authState.getCurrentUser()! };
-  } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     return {
       error: true,

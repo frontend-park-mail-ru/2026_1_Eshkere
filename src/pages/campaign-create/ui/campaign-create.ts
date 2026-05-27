@@ -175,6 +175,7 @@ function createSubmitBuilder() {
         const group = await createAdGroup(
           campaignId,
           toGroupPayload(currentState),
+          { rollbackCampaignOnError: true },
         );
         groupId = group.id;
 

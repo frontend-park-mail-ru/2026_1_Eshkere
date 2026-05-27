@@ -21,5 +21,49 @@
       </div>
     </form>
   </div>
-</section>
 
+  <div class="modal register-verify-modal" id="register-verify-modal" aria-hidden="true">
+    <div class="modal__backdrop" data-modal-close></div>
+    <div class="modal__content register-verify-modal__content" role="dialog" aria-modal="true" aria-labelledby="register-verify-title">
+      <div class="modal__inner register-verify-modal__inner">
+        <button class="register-verify-modal__close" type="button" aria-label="Закрыть" data-register-back>
+          &times;
+        </button>
+
+        <h2 class="register-verify-modal__title" id="register-verify-title">Введите код из письма</h2>
+        <p class="register-verification__text">
+          Код подтверждения отправлен на <strong data-register-verify-email></strong>.
+        </p>
+
+        <form class="auth-form register-verification" id="register-verify-form">
+          <label class="register-code-field" data-field="code">
+            <span class="register-code-field__label">Код из письма</span>
+            <input
+              class="register-code-field__input"
+              type="text"
+              name="code"
+              inputmode="numeric"
+              autocomplete="one-time-code"
+              maxlength="6"
+              placeholder="123456"
+              aria-describedby="register-code-error"
+            />
+            <span class="register-code-field__error" id="register-code-error" data-error-for="code"></span>
+          </label>
+
+          <p class="register-verification__message" data-register-verify-message hidden></p>
+
+          <div class="auth-form-not-input">
+            <button class="ui-button ui-button--primary" type="submit">Подтвердить почту</button>
+            <button class="ui-button ui-button--secondary" type="button" data-register-resend>
+              Отправить код ещё раз
+            </button>
+            <button class="register-verification__back" type="button" data-register-back>
+              Изменить данные регистрации
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>

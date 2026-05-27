@@ -5,6 +5,7 @@ import { getGroupStats, periodDates } from 'features/ads/api/stats';
 import type { StatsPoint } from 'features/ads/api/stats';
 import { renderTemplate } from 'shared/lib/render';
 import { navigateTo } from 'shared/lib/navigation';
+import { getRegionDisplayLabel } from 'features/ads/model/targeting';
 import groupStatsTemplate from './group-stats.hbs';
 import '../../../pages/stats-shared/stats.scss';
 import '../../../pages/ad-stats/ui/ad-stats.scss';
@@ -241,11 +242,6 @@ const AD_STATUS_LABELS: Record<string, { label: string; cls: string }> = {
 
 const AD_THUMB_COLORS = ['#5855ff', '#f59e0b', '#22c55e', '#ef4444', '#06b6d4', '#a855f7'];
 
-const REGION_LABELS: Record<number, string> = {
-  1: 'Москва', 2: 'Санкт-Петербург', 3: 'Казань', 4: 'Екатеринбург',
-  5: 'Новосибирск', 6: 'Краснодар', 7: 'Нижний Новгород', 10: 'Весь РФ',
-};
-
 const GENDER_LABELS: Record<string, string> = { male: 'Мужчины', female: 'Женщины', any: 'Все' };
 
 // ── Page entry points ─────────────────────────────────────────────────────────
@@ -349,7 +345,7 @@ export function GroupStats(): VoidFunction {
     const metaEl = root.querySelector<HTMLElement>('[data-gs-meta]');
     if (metaEl) {
       const genderShort = group.gender === 'female' ? 'Ж' : group.gender === 'male' ? 'М' : 'Все';
-      const regionName = REGION_LABELS[group.region_id] ?? `Регион ${group.region_id}`;
+      const regionName = getRegionDisplayLabel(group.region ?? group.region_id);
       const dailyBudget = campaign?.price ?? 800;
       const metaItems = [
         { text: campaignName },

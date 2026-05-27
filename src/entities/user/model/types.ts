@@ -25,4 +25,5 @@ export interface AuthUser {
   cardMasked?: string;
   lastTopUp?: string;
   passwordStatus?: string;
+  canChangePassword?: boolean;
 }

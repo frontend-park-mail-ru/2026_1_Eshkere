@@ -22,6 +22,16 @@ export function normalizeAuthErrorMessage(message: unknown): string {
   }
 
   if (
+    normalized.includes('verification') ||
+    normalized.includes('verified') ||
+    normalized.includes('verify email') ||
+    normalized.includes('confirm email') ||
+    normalized.includes('подтверд')
+  ) {
+    return 'Сначала подтвердите почту';
+  }
+
+  if (
     normalized.includes('invalid credentials') ||
     normalized.includes('invalid identifier or password') ||
     normalized.includes('unauthorized') ||

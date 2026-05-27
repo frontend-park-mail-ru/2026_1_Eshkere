@@ -1,4 +1,4 @@
-<section class="profile-page">
+<section class="profile-page" data-can-change-password="{{canChangePassword}}">
   <div class="profile-hero">
     <div class="profile-hero__identity">
       <button class="profile-hero__avatar{{#if hasAvatar}} profile-hero__avatar--image{{/if}}" type="button" data-open-avatar-modal data-profile-avatar-button aria-label="Изменить аватар">
@@ -176,14 +176,20 @@
           </button>
         </article>
 
-        <article class="profile-security__item">
+        <article class="profile-security__item" data-profile-password-section>
           <div class="profile-security__main">
             <strong class="profile-security__title">Пароль</strong>
-            <p class="profile-security__text">Рекомендуется обновлять каждые 90 дней</p>
+            {{#if canChangePassword}}
+              <p class="profile-security__text">Рекомендуется обновлять каждые 90 дней</p>
+            {{else}}
+              <p class="profile-security__text">Для аккаунта VK ID смена пароля недоступна.</p>
+            {{/if}}
           </div>
-          <button class="profile-security__action" type="button" data-open-password-modal>
-            <span data-profile-password-status>Сменить</span>
-          </button>
+          {{#if canChangePassword}}
+            <button class="profile-security__action" type="button" data-open-password-modal>
+              <span data-profile-password-status>Сменить</span>
+            </button>
+          {{/if}}
         </article>
 
         <article class="profile-security__item">

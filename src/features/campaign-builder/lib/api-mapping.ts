@@ -4,65 +4,71 @@ import type {
   GenderType,
 } from 'features/ads/api/ad-groups';
 import type { CreateAdCampaignRequest } from 'features/ads/api/contracts';
+import {
+  ANY_TARGETING_VALUE,
+  getRegionPayloadValue,
+  getTopicPayloadValue,
+} from 'features/ads/model/targeting';
 import type { BuilderState, GenderKey, GoalKey } from '../model/types';
 
-export const CITY_REGION_ID: Record<string, number> = {
-  Москва: 1,
-  'Санкт-Петербург': 2,
-  Казань: 3,
-  Екатеринбург: 4,
-  Новосибирск: 5,
-  Краснодар: 6,
-  'Нижний Новгород': 7,
-  Самара: 8,
-  'Ростов-на-Дону': 9,
-  Уфа: 10,
-  Челябинск: 11,
-  Пермь: 12,
-  Воронеж: 13,
-  Волгоград: 14,
-  Красноярск: 15,
-  Омск: 16,
-  Тюмень: 17,
-  Ижевск: 18,
-  Сочи: 19,
-  Владивосток: 20,
+export const CITY_REGION_ID: Record<string, string> = {
+  Москва: 'Москва',
+  'Санкт-Петербург': 'Санкт-Петербург',
+  Казань: 'Казань',
+  Екатеринбург: 'Екатеринбург',
+  Новосибирск: 'Новосибирск',
+  Краснодар: 'Краснодар',
+  'Нижний Новгород': 'Нижний Новгород',
+  Самара: 'Самара',
+  'Ростов-на-Дону': 'Ростов-на-Дону',
+  Уфа: 'Любой',
+  Челябинск: 'Любой',
+  Пермь: 'Любой',
+  Воронеж: 'Любой',
+  Волгоград: 'Любой',
+  Красноярск: 'Любой',
+  Омск: 'Любой',
+  Тюмень: 'Любой',
+  Ижевск: 'Любой',
+  Сочи: 'Любой',
+  Владивосток: 'Любой',
 };
 
-export const TOPIC_LABELS: Record<number, string> = {
-  1: 'Технологии',
-  2: 'Бизнес',
-  3: 'Красота и здоровье',
-  4: 'Авто',
-  5: 'Недвижимость',
-  6: 'Еда и рестораны',
-  7: 'Путешествия',
-  8: 'Спорт',
-  9: 'Мода',
-  10: 'Образование',
+export const TOPIC_LABELS: Record<string, string> = {
+  Технологии: 'Технологии',
+  Бизнес: 'Бизнес',
+  'Красота и здоровье': 'Красота и здоровье',
+  Авто: 'Авто',
+  Недвижимость: 'Недвижимость',
+  'Еда и рестораны': 'Еда и рестораны',
+  Путешествия: 'Путешествия',
+  Спорт: 'Спорт',
+  Мода: 'Мода',
+  Образование: 'Образование',
+  [ANY_TARGETING_VALUE]: ANY_TARGETING_VALUE,
 };
 
-export const PROFILE_TOPIC_ID: Record<string, number> = {
-  'Активная городская аудитория': 2,
-  'Средний доход': 2,
-  'Покупатели маркетплейсов': 2,
-  'Retail / e-com': 2,
-  Маркетологи: 2,
-  'Владельцы SMB': 2,
-  'Sales ops': 2,
-  'Look-alike': 1,
-  'Похожие на текущую клиентскую базу': 1,
-  'Молодая аудитория': 10,
-  'Digital / product': 1,
-  'Семейная аудитория': 3,
-  Предприниматели: 2,
-  Фрилансеры: 2,
-  'Premium-сегмент': 3,
-  'B2B decision makers': 2,
+export const PROFILE_TOPIC_ID: Record<string, string> = {
+  'Активная городская аудитория': 'Бизнес',
+  'Средний доход': 'Бизнес',
+  'Покупатели маркетплейсов': 'Бизнес',
+  'Retail / e-com': 'Бизнес',
+  Маркетологи: 'Бизнес',
+  'Владельцы SMB': 'Бизнес',
+  'Sales ops': 'Бизнес',
+  'Look-alike': 'Технологии',
+  'Похожие на текущую клиентскую базу': 'Технологии',
+  'Молодая аудитория': 'Образование',
+  'Digital / product': 'Технологии',
+  'Семейная аудитория': 'Красота и здоровье',
+  Предприниматели: 'Бизнес',
+  Фрилансеры: 'Бизнес',
+  'Premium-сегмент': 'Красота и здоровье',
+  'B2B decision makers': 'Бизнес',
 };
 
-const DEFAULT_TOPIC_ID = 1;
-const DEFAULT_REGION_ID = 1;
+const DEFAULT_TOPIC_ID = 'Технологии';
+const DEFAULT_REGION_ID = 'Москва';
 
 const GOAL_MAIN_ACTION: Record<GoalKey, 'click' | 'look'> = {
   website: 'click',
@@ -103,33 +109,38 @@ export function getPrimaryCity(state: BuilderState): string {
   return state.audienceConfig.cities[0] || '';
 }
 
-export function getRegionId(state: BuilderState): number {
+export function getRegionId(state: BuilderState): string {
   const city = getPrimaryCity(state);
-  const regionId = city ? CITY_REGION_ID[city] : undefined;
+  const regionId =
+    state.audienceConfig.cities.includes(ANY_TARGETING_VALUE) ||
+    state.audienceConfig.cities.length > 1 ||
+    city === 'Весь РФ'
+      ? ANY_TARGETING_VALUE
+      : city
+        ? CITY_REGION_ID[city]
+        : undefined;
 
   if (!regionId) {
     throw new BuilderPayloadError('Выберите город для основной группы.');
   }
 
-  return regionId;
+  return getRegionPayloadValue(regionId);
 }
 
-function getSafeRegionId(state: BuilderState): number {
-  getRegionId(state);
-  return DEFAULT_REGION_ID;
+function getSafeRegionId(state: BuilderState): string {
+  return getRegionId(state) || DEFAULT_REGION_ID;
 }
 
-export function getTopicId(state: BuilderState): number {
+export function getTopicId(state: BuilderState): string {
   const topicId = state.audienceConfig.profileTags
     .map((tag) => PROFILE_TOPIC_ID[tag])
-    .find((id): id is number => Number.isFinite(id));
+    .find((id): id is string => Boolean(id));
 
-  return topicId || DEFAULT_TOPIC_ID;
+  return getTopicPayloadValue(topicId || DEFAULT_TOPIC_ID);
 }
 
-function getSafeTopicId(state: BuilderState): number {
-  getTopicId(state);
-  return DEFAULT_TOPIC_ID;
+function getSafeTopicId(state: BuilderState): string {
+  return getTopicId(state) || DEFAULT_TOPIC_ID;
 }
 
 export function getTopicLabel(state: BuilderState): string {
@@ -202,8 +213,8 @@ export function toGroupPayload(state: BuilderState): CreateAdGroupRequest {
     age_from: ageFrom,
     age_to: ageTo,
     gender: 'any' as GenderType,
-    region_id: getSafeRegionId(state),
-    topic_id: getSafeTopicId(state),
+    region: getSafeRegionId(state),
+    topic: getSafeTopicId(state),
   };
 }
 

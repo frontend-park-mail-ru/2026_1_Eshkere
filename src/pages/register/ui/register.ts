@@ -6,16 +6,15 @@ import {
 } from 'shared/ui/form-field/form-field';
 import { renderButton } from 'shared/ui/button/button';
 import {
-  normalizePhone,
   validateEmail,
   validatePhone,
   validatePassword,
   validateRepeatPassword,
   setFieldState,
 } from 'shared/validators';
-import { initVKAuth, registerUser } from 'features/auth';
+import { initVKAuth, registerUser, verifyRegisterEmail } from 'features/auth';
 import { navigateTo } from 'shared/lib/navigation';
-import { onboardingState } from 'features/onboarding';
+import { closeModal, openModal } from 'shared/ui/modal/modal';
 import registerPageTemplate from './register.hbs';
 
 /**
@@ -34,6 +33,19 @@ type RegisterFormElement = HTMLFormElement & {
     repeatPassword: HTMLInputElement;
   };
 };
+
+type VerifyFormElement = HTMLFormElement & {
+  readonly elements: HTMLFormControlsCollection & {
+    code: HTMLInputElement;
+  };
+};
+
+interface PendingRegistration {
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+}
 
 function normalizePhoneInput(value: string): string {
   let digits = value.replace(/\D/g, '');
@@ -111,6 +123,25 @@ function applyRegisterServerError(
   }
 
   setFieldState(form, 'email', message);
+}
+
+function normalizeRegisterPhoneForApi(value: string): string {
+  const digits = normalizePhoneInput(value);
+  return digits ? `+7${digits}` : '';
+}
+
+function setCodeFieldState(form: HTMLFormElement, message: string): void {
+  const input = form.elements.namedItem('code');
+  const errorElement = form.querySelector<HTMLElement>('[data-error-for="code"]');
+
+  if (input instanceof HTMLInputElement) {
+    input.classList.toggle('register-code-field__input--error', Boolean(message));
+    input.setAttribute('aria-invalid', message ? 'true' : 'false');
+  }
+
+  if (errorElement) {
+    errorElement.textContent = message;
+  }
 }
 
 /**
@@ -220,8 +251,23 @@ export function Register(): void | VoidFunction {
     };
   }
   const form = el as RegisterFormElement;
+  const verifyEl = document.getElementById('register-verify-form');
+  const verifyForm = verifyEl instanceof HTMLFormElement
+    ? (verifyEl as VerifyFormElement)
+    : null;
+  const verifyModal = document.getElementById('register-verify-modal');
+  const verifyEmailEl = document.querySelector<HTMLElement>('[data-register-verify-email]');
+  const verifyMessageEl = document.querySelector<HTMLElement>('[data-register-verify-message]');
+  const resendButton = document.querySelector<HTMLButtonElement>('[data-register-resend]');
+  const backButton = document.querySelector<HTMLButtonElement>('[data-register-back]');
   const vkRegisterButton = document.getElementById('vk-register-button');
   const cleanupVKAuth = initVKAuth(vkRegisterButton);
+
+  if (verifyModal instanceof HTMLElement) {
+    verifyModal.querySelectorAll<HTMLElement>('[data-modal-close]').forEach((node) => {
+      node.addEventListener('click', showRegisterStep);
+    });
+  }
 
   PasswordVisibilityToggles(form);
 
@@ -231,6 +277,40 @@ export function Register(): void | VoidFunction {
   const submitDebounceMs = 400;
   let submitDebounceTimer: ReturnType<typeof setTimeout> | null = null;
   let isSubmitting = false;
+  let isVerifying = false;
+  let pendingRegistration: PendingRegistration | null = null;
+
+  function setVerifyMessage(message: string, tone: 'info' | 'success' | 'error' = 'info'): void {
+    if (!verifyMessageEl) {
+      return;
+    }
+
+    verifyMessageEl.textContent = message;
+    verifyMessageEl.hidden = !message;
+    verifyMessageEl.dataset.tone = tone;
+  }
+
+  function showVerificationStep(email: string, message = 'Код подтверждения отправлен на почту'): void {
+    if (verifyEmailEl) verifyEmailEl.textContent = email;
+    setVerifyMessage(message, 'info');
+    if (verifyForm) {
+      verifyForm.elements.code.value = '';
+      setCodeFieldState(verifyForm, '');
+    }
+    if (verifyModal instanceof HTMLElement) {
+      openModal(verifyModal);
+    }
+    verifyForm?.elements.code.focus();
+  }
+
+  function showRegisterStep(): void {
+    setVerifyMessage('');
+    setCodeFieldState(verifyForm ?? form, '');
+    if (verifyModal instanceof HTMLElement) {
+      closeModal(verifyModal);
+    }
+    form.elements.email.focus();
+  }
 
   function validateNameField(): boolean {
     const value = form.elements.name.value.trim();
@@ -339,21 +419,28 @@ export function Register(): void | VoidFunction {
     }
 
     try {
-      const normalizedPhone = normalizePhone(form.elements.phone.value);
-      const result = await registerUser({
+      const payload: PendingRegistration = {
         name: form.elements.name.value.trim(),
         email: form.elements.email.value,
-        phone: normalizedPhone,
+        phone: normalizeRegisterPhoneForApi(form.elements.phone.value),
         password: form.elements.password.value,
-      });
+      };
+      const result = await registerUser(payload);
 
       if (result.error) {
         applyRegisterServerError(form, result.message);
         return;
       }
 
-      onboardingState.reset();
-      navigateTo('/advertiser/overview', { replace: true });
+      pendingRegistration = {
+        ...payload,
+        email: result.data.email || payload.email.trim().toLowerCase(),
+        phone: result.data.phone || payload.phone,
+      };
+      showVerificationStep(
+        pendingRegistration.email,
+        result.data.message || 'Код подтверждения отправлен на почту',
+      );
     } finally {
       isSubmitting = false;
       if (submitButton) {
@@ -373,8 +460,101 @@ export function Register(): void | VoidFunction {
     }, submitDebounceMs);
   });
 
+  verifyForm?.elements.code.addEventListener('input', () => {
+    verifyForm.elements.code.value = verifyForm.elements.code.value
+      .replace(/\D/g, '')
+      .slice(0, 6);
+    setCodeFieldState(verifyForm, '');
+    setVerifyMessage('');
+  });
+
+  verifyForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    if (isVerifying || !pendingRegistration) {
+      return;
+    }
+
+    const code = verifyForm.elements.code.value.trim();
+    if (!/^\d{6}$/.test(code)) {
+      setCodeFieldState(verifyForm, 'Введите 6-значный код');
+      return;
+    }
+
+    isVerifying = true;
+    const submit = verifyForm.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (submit) submit.disabled = true;
+
+    try {
+      const result = await verifyRegisterEmail({
+        email: pendingRegistration.email,
+        code,
+      });
+
+      if (result.error) {
+        setCodeFieldState(verifyForm, result.message);
+        setVerifyMessage(result.message, 'error');
+        return;
+      }
+
+      setCodeFieldState(verifyForm, '');
+      setVerifyMessage('Почта подтверждена. Сейчас откроем страницу входа.', 'success');
+      window.setTimeout(() => {
+        navigateTo(`/login?email=${encodeURIComponent(pendingRegistration?.email ?? '')}`, {
+          replace: true,
+        });
+      }, 900);
+    } finally {
+      isVerifying = false;
+      if (submit) submit.disabled = false;
+    }
+  });
+
+  resendButton?.addEventListener('click', async () => {
+    if (isSubmitting || !pendingRegistration) {
+      return;
+    }
+
+    isSubmitting = true;
+    resendButton.disabled = true;
+    setCodeFieldState(verifyForm ?? form, '');
+    setVerifyMessage('');
+
+    try {
+      const result = await registerUser(pendingRegistration);
+
+      if (result.error) {
+        setVerifyMessage(result.message, 'error');
+        return;
+      }
+
+      pendingRegistration = {
+        ...pendingRegistration,
+        email: result.data.email || pendingRegistration.email,
+        phone: result.data.phone || pendingRegistration.phone,
+      };
+      setVerifyMessage(result.data.message || 'Код отправлен ещё раз', 'success');
+    } finally {
+      isSubmitting = false;
+      resendButton.disabled = false;
+    }
+  });
+
+  backButton?.addEventListener('click', showRegisterStep);
+
+  const handleEscape = (event: KeyboardEvent): void => {
+    if (event.key === 'Escape' && verifyModal instanceof HTMLElement) {
+      showRegisterStep();
+    }
+  };
+  document.addEventListener('keydown', handleEscape);
+
   return () => {
     cleanupVKAuth();
+    document.removeEventListener('keydown', handleEscape);
+    if (verifyModal instanceof HTMLElement && verifyModal.parentElement === document.body) {
+      verifyModal.remove();
+    }
     publicLayout?.classList.remove('public-layout--auth');
   };
 }

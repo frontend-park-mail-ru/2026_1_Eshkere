@@ -19,6 +19,20 @@ export type RequestOptions = Omit<RequestInit, 'body'> & { body?: unknown };
 
 export interface ApiResponse<T> {
   data: T;
+  status: number;
+}
+
+export class ApiRequestError extends Error {
+  public readonly status: number;
+
+  public readonly payload: unknown;
+
+  constructor(message: string, status: number, payload: unknown) {
+    super(message);
+    this.name = 'ApiRequestError';
+    this.status = status;
+    this.payload = payload;
+  }
 }
 
 function getErrorMessage(payload: unknown): string {
@@ -41,12 +55,15 @@ function getErrorMessage(payload: unknown): string {
   return 'Ошибка запроса';
 }
 
-function normalizeResponse<T>(payload: unknown): ApiResponse<T> {
+function normalizeResponse<T>(payload: unknown, status: number): ApiResponse<T> {
   if (payload && typeof payload === 'object' && 'data' in payload) {
-    return payload as ApiResponse<T>;
+    return {
+      ...(payload as ApiResponse<T>),
+      status,
+    };
   }
 
-  return { data: payload as T };
+  return { data: payload as T, status };
 }
 
 function isUnsafeMethod(method: string): boolean {
@@ -133,10 +150,10 @@ export async function request<T = unknown>(
     }
 
     if (!response.ok) {
-      throw new Error(getErrorMessage(payload));
+      throw new ApiRequestError(getErrorMessage(payload), response.status, payload);
     }
 
-    return normalizeResponse<T>(payload);
+    return normalizeResponse<T>(payload, response.status);
   } catch (error: unknown) {
     if (isNetworkError(error)) {
       if (typeof window !== 'undefined') {

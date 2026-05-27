@@ -7,35 +7,13 @@ import { openFeedLinkModal } from 'widgets/feed-link-modal';
 import { showToast } from 'shared/lib/toast';
 import { renderTemplate } from 'shared/lib/render';
 import { navigateTo } from 'shared/lib/navigation';
+import {
+  getRegionDisplayLabel,
+  getTopicDisplayLabel,
+} from 'features/ads/model/targeting';
 import campaignDetailTemplate from './campaign-detail.hbs';
 
 const GROUPS_PER_PAGE = 4;
-
-const REGION_LABELS: Record<number, string> = {
-  1: 'Москва',
-  2: 'Санкт-Петербург',
-  3: 'Казань',
-  4: 'Екатеринбург',
-  5: 'Новосибирск',
-  6: 'Краснодар',
-  7: 'Нижний Новгород',
-  8: 'Самара',
-  9: 'Ростов-на-Дону',
-  10: 'Весь РФ',
-};
-
-const TOPIC_LABELS: Record<number, string> = {
-  1: 'Технологии',
-  2: 'Бизнес',
-  3: 'Красота и здоровье',
-  4: 'Авто',
-  5: 'Недвижимость',
-  6: 'Еда и рестораны',
-  7: 'Путешествия',
-  8: 'Спорт',
-  9: 'Мода',
-  10: 'Образование',
-};
 
 const STATUS_META: Record<string, { label: string; tone: string }> = {
   moderation: { label: 'На модерации', tone: 'warning' },
@@ -166,8 +144,8 @@ export async function renderCampaignDetailPage(): Promise<string> {
       return {
         ...group,
         indexLabel: `Группа ${index + 1}`,
-        regionLabel: REGION_LABELS[group.region_id] ?? `Регион ${group.region_id}`,
-        topicLabel: TOPIC_LABELS[group.topic_id] ?? `Тематика ${group.topic_id}`,
+        regionLabel: getRegionDisplayLabel(group.region ?? group.region_id),
+        topicLabel: getTopicDisplayLabel(group.topic ?? group.topic_id),
         genderLabel: GENDER_LABELS[group.gender] ?? group.gender,
         adCount: ads.length,
         hasAds: ads.length > 0,

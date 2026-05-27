@@ -70,6 +70,7 @@ function getTariffKeyFromDom(): ProfileState['tariffKey'] {
 function readProfileStateFromDom(): ProfileState {
   const avatarImage = document.querySelector<HTMLImageElement>('[data-profile-avatar-image]');
   const avatar = avatarImage?.hidden ? '' : avatarImage?.getAttribute('src') || '';
+  const profileRoot = document.querySelector<HTMLElement>('.profile-page');
 
   return {
     avatar,
@@ -90,6 +91,7 @@ function readProfileStateFromDom(): ProfileState {
     cardMasked: document.querySelector('[data-profile-card]')?.textContent || '',
     lastTopUp: document.querySelector('[data-profile-last-top-up]')?.textContent || '—',
     passwordStatus: document.querySelector('[data-profile-password-status]')?.textContent || 'Добавить',
+    canChangePassword: profileRoot?.dataset.canChangePassword !== 'false',
   };
 }
 

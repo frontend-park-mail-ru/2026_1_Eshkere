@@ -3,6 +3,10 @@ import { getAdGroups, updateAdGroup, type AdGroupResponse, type GenderType } fro
 import { renderTemplate } from 'shared/lib/render';
 import { navigateTo } from 'shared/lib/navigation';
 import { initNativeSelectArrows } from 'shared/lib/native-select-arrow';
+import {
+  getRegionPayloadValue,
+  getTopicPayloadValue,
+} from 'features/ads/model/targeting';
 import adGroupEditTemplate from './ad-group-edit.hbs';
 
 function getParams(): { campaignId: number | null; groupId: number | null } {
@@ -57,9 +61,9 @@ export function AdGroupEdit(): VoidFunction {
     };
     setSelect('age_from', g.age_from);
     setSelect('age_to', g.age_to);
-    setSelect('gender', g.gender);
-    setSelect('region_id', g.region_id);
-    setSelect('topic_id', g.topic_id);
+    setSelect('gender', g.gender === 'man' ? 'male' : g.gender === 'woman' ? 'female' : g.gender);
+    setSelect('region_id', getRegionPayloadValue(g.region ?? g.region_id));
+    setSelect('topic_id', getTopicPayloadValue(g.topic ?? g.topic_id));
   }
 
   root.querySelectorAll<HTMLButtonElement>('[data-agc-devices] [data-stub]').forEach((btn) => {
@@ -146,8 +150,8 @@ export function AdGroupEdit(): VoidFunction {
         age_from: parseInt(data.get('age_from') as string, 10),
         age_to: parseInt(data.get('age_to') as string, 10),
         gender: data.get('gender') as GenderType,
-        region_id: parseInt(data.get('region_id') as string, 10),
-        topic_id: parseInt(data.get('topic_id') as string, 10),
+        region: getRegionPayloadValue(data.get('region_id') as string),
+        topic: getTopicPayloadValue(data.get('topic_id') as string),
       });
       navigateTo(`/ads/campaign?id=${campaignId}`);
     } catch {

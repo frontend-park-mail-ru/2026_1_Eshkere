@@ -1,6 +1,8 @@
-import { clearFormState, setFieldError, setFormMessage, validateRequired, watchFormState } from 'features/profile/lib/form';
+import { updatePassword } from 'features/profile/api/update-profile';
+import { clearFormState, setFieldError, setFormMessage, setSubmitting, validateRequired, watchFormState } from 'features/profile/lib/form';
 import { validatePassword, validateRepeatPassword } from 'shared/validators';
 import { showProfileFeedback } from 'shared/lib/toast';
+import { ApiRequestError } from 'shared/lib/request';
 
 import type { InitProfileAccountSectionParams } from './account-types';
 
@@ -22,7 +24,7 @@ export function initProfilePasswordForm({
     return Boolean(currentPassword || newPassword || repeatPassword);
   });
 
-  passwordForm.addEventListener('submit', (event) => {
+  passwordForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     clearFormState(passwordForm);
 
@@ -45,11 +47,6 @@ export function initProfilePasswordForm({
       }
     });
 
-    if (currentPassword === 'wrongpass') {
-      hasErrors = true;
-      setFormMessage(passwordForm, '[data-form-error]', 'Текущий пароль введен неверно');
-    }
-
     if (hasErrors) {
       if (!passwordForm.querySelector('[data-form-error]')?.textContent) {
         setFormMessage(passwordForm, '[data-form-error]', 'Не удалось обновить пароль. Проверьте форму');
@@ -57,12 +54,44 @@ export function initProfilePasswordForm({
       return;
     }
 
-    state.passwordStatus = 'Пароль обновлен';
-    onStateChange(state);
-    showProfileFeedback({
-      title: 'Пароль обновлен',
-      description: 'Используйте новый пароль при следующем входе в рекламный кабинет.',
-    });
-    closeModalById('profile-password-modal');
+    setSubmitting(passwordForm, true);
+
+    try {
+      await updatePassword({ currentPassword, newPassword });
+
+      state.passwordStatus = 'Пароль обновлён';
+      onStateChange(state);
+      showProfileFeedback({
+        title: 'Пароль обновлён',
+        description: 'Используйте новый пароль при следующем входе в рекламный кабинет.',
+      });
+      passwordForm.reset();
+      closeModalById('profile-password-modal');
+    } catch (error: unknown) {
+      if (error instanceof ApiRequestError && error.status === 401) {
+        setFieldError(passwordForm, 'currentPassword', 'Текущий пароль введен неверно');
+        setFormMessage(passwordForm, '[data-form-error]', 'Текущий пароль введен неверно');
+        return;
+      }
+
+      if (error instanceof ApiRequestError && error.status === 422) {
+        setFormMessage(
+          passwordForm,
+          '[data-form-error]',
+          'Смена пароля недоступна для аккаунтов, зарегистрированных через VK ID.',
+        );
+        return;
+      }
+
+      if (error instanceof ApiRequestError && error.status === 400) {
+        setFieldError(passwordForm, 'newPassword', 'Новый пароль должен быть не короче 6 символов');
+        setFormMessage(passwordForm, '[data-form-error]', 'Не удалось обновить пароль. Проверьте форму');
+        return;
+      }
+
+      setFormMessage(passwordForm, '[data-form-error]', 'Не удалось обновить пароль. Попробуйте ещё раз.');
+    } finally {
+      setSubmitting(passwordForm, false);
+    }
   }, { signal });
 }

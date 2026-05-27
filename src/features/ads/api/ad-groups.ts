@@ -1,6 +1,8 @@
 import { request } from 'shared/lib/request';
+import type { TargetingValue } from '../model/targeting';
 
-export type GenderType = 'male' | 'female' | 'any';
+export type GenderType = 'male' | 'female' | 'man' | 'woman' | 'any';
+type ApiGenderType = 'man' | 'woman' | 'any';
 
 export interface AdGroupResponse {
   id: number;
@@ -8,8 +10,10 @@ export interface AdGroupResponse {
   age_from: number;
   age_to: number;
   gender: GenderType;
-  region_id: number;
-  topic_id: number;
+  region: TargetingValue;
+  topic: TargetingValue;
+  region_id?: TargetingValue;
+  topic_id?: TargetingValue;
 }
 
 export interface ListAdGroupsResponse {
@@ -22,12 +26,16 @@ export interface CreateAdGroupRequest {
   age_from: number;
   age_to: number;
   gender: GenderType;
-  region_id: number;
-  topic_id: number;
+  region: string;
+  topic: string;
 }
 
 export interface CreateAdGroupResponse {
   id: number;
+}
+
+export interface CreateAdGroupOptions {
+  rollbackCampaignOnError?: boolean;
 }
 
 export interface UpdateAdGroupRequest {
@@ -35,8 +43,36 @@ export interface UpdateAdGroupRequest {
   age_from?: number;
   age_to?: number;
   gender?: GenderType;
-  region_id?: number;
-  topic_id?: number;
+  region?: string;
+  topic?: string;
+}
+
+function normalizeGender(gender: GenderType): ApiGenderType {
+  if (gender === 'male') return 'man';
+  if (gender === 'female') return 'woman';
+  if (gender === 'woman') return 'woman';
+  if (gender === 'man') return 'man';
+  return 'any';
+}
+
+function toCreateRequestBody(
+  payload: CreateAdGroupRequest,
+): Omit<CreateAdGroupRequest, 'gender'> & { gender: ApiGenderType } {
+  return {
+    ...payload,
+    gender: normalizeGender(payload.gender),
+  };
+}
+
+function toUpdateRequestBody(payload: UpdateAdGroupRequest): UpdateAdGroupRequest {
+  if (!payload.gender) {
+    return payload;
+  }
+
+  return {
+    ...payload,
+    gender: normalizeGender(payload.gender),
+  };
 }
 
 export async function getAdGroups(campaignId: number): Promise<ListAdGroupsResponse> {
@@ -50,10 +86,14 @@ export async function getAdGroups(campaignId: number): Promise<ListAdGroupsRespo
 export async function createAdGroup(
   campaignId: number,
   payload: CreateAdGroupRequest,
+  options: CreateAdGroupOptions = {},
 ): Promise<CreateAdGroupResponse> {
+  const rollbackQuery = options.rollbackCampaignOnError
+    ? '?rollback_campaign_on_error=true'
+    : '';
   const response = await request<CreateAdGroupResponse>(
-    `/ad_campaigns/${campaignId}/ad_groups`,
-    { method: 'POST', body: payload },
+    `/ad_campaigns/${campaignId}/ad_groups${rollbackQuery}`,
+    { method: 'POST', body: toCreateRequestBody(payload) },
   );
   return response.data;
 }
@@ -65,7 +105,7 @@ export async function updateAdGroup(
 ): Promise<void> {
   await request(`/ad_campaigns/${campaignId}/ad_groups/${groupId}`, {
     method: 'PUT',
-    body: payload,
+    body: toUpdateRequestBody(payload),
   });
 }
 

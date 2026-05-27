@@ -25,6 +25,12 @@ export interface AdvertiserProfileResponse {
   role?: string;
   created_at?: string;
   is_moderator?: boolean;
+  can_change_password?: boolean;
+}
+
+export interface UpdatePasswordParams {
+  currentPassword: string;
+  newPassword: string;
 }
 
 export async function getMe(): Promise<AdvertiserProfileResponse> {
@@ -84,4 +90,17 @@ export async function updateProfile(params: UpdateProfileParams): Promise<Advert
 
     throw error;
   }
+}
+
+export async function updatePassword({
+  currentPassword,
+  newPassword,
+}: UpdatePasswordParams): Promise<void> {
+  await request('/advertisers/me/password', {
+    method: 'PUT',
+    body: {
+      current_password: currentPassword,
+      new_password: newPassword,
+    },
+  });
 }

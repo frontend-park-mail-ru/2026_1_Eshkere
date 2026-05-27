@@ -1,4 +1,5 @@
 import { PROFILE_TAG_RULES } from 'features/campaign-builder/model/config';
+import { ANY_TARGETING_VALUE } from 'features/ads/model/targeting';
 import type { AudienceDetailKey, BuilderState } from 'features/campaign-builder/model/types';
 import { renderAudienceModalOptions, syncProfileSelectionUI } from './modal-view';
 
@@ -112,7 +113,9 @@ export function handleAudienceModalSelectionChange(
   ).map((input) => input.value);
 
   if (runtimeState.activeAudienceModal === 'geo') {
-    runtimeState.draftAudienceConfig.cities = selectedValues;
+    runtimeState.draftAudienceConfig.cities = selectedValues.includes(ANY_TARGETING_VALUE)
+      ? [ANY_TARGETING_VALUE]
+      : selectedValues;
     return;
   }
 

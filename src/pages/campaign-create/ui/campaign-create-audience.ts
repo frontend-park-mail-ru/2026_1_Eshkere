@@ -20,6 +20,7 @@ import {
   LocalStorageKey,
   localStorageService,
 } from 'shared/lib/local-storage';
+import { ANY_TARGETING_VALUE } from 'features/ads/model/targeting';
 
 const PROFILE_TAG_OPTIONS = [
   {
@@ -242,8 +243,12 @@ export function getAudienceStateSummary(state: BuilderState): AudienceSummary {
 
   return {
     ...summary,
-    cities: state.audienceConfig.cities.join(', '),
-    regionsLabel: `${state.audienceConfig.cities.length} региона`,
+    cities: state.audienceConfig.cities.includes(ANY_TARGETING_VALUE)
+      ? 'Весь РФ'
+      : state.audienceConfig.cities.join(', '),
+    regionsLabel: state.audienceConfig.cities.includes(ANY_TARGETING_VALUE)
+      ? ANY_TARGETING_VALUE
+      : `${state.audienceConfig.cities.length} региона`,
     ageRange: state.audienceConfig.ageRange,
     profile: state.audienceConfig.profileTags.join(', '),
     profileLabel: `${state.audienceConfig.profileTags.length} тега`,
@@ -463,6 +468,7 @@ export function getAudienceModalConfig(
         description: 'Выберите города, в которых хотите показывать объявление.',
         selectionType: 'multiple',
         options: [
+          { value: ANY_TARGETING_VALUE, label: 'Весь РФ' },
           { value: 'Москва', label: 'Москва' },
           { value: 'Санкт-Петербург', label: 'Санкт-Петербург' },
           { value: 'Казань', label: 'Казань' },

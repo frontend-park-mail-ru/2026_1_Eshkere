@@ -6,42 +6,24 @@ import { createAdGroup } from 'features/ads/api/ad-groups';
 import { createAdInGroup } from 'features/ads/api/ads';
 import { renderTemplate } from 'shared/lib/render';
 import { navigateTo } from 'shared/lib/navigation';
+import {
+  createInitialWizardState,
+  getWizardReviewData,
+  normalizeUrl,
+  readWizardStateFromFields,
+  STEP_NAMES,
+  STEP_SUBTITLES,
+  toAdPayload,
+  toCampaignPayload,
+  toGroupPayload,
+  TOTAL_STEPS,
+  validateWizardStep,
+  type WizardAdFormat,
+  type WizardMainAction,
+  type WizardObjective,
+  type WizardStep,
+} from '../model/wizard';
 import campaignWizardTemplate from './campaign-wizard.hbs';
-
-const DEFAULT_CPM_PRICE = 10000;
-
-function normalizeUrl(url: string): string {
-  const trimmed = url.trim();
-  if (!trimmed) return trimmed;
-  if (/^https?:\/\//i.test(trimmed)) return trimmed;
-  return `https://${trimmed}`;
-}
-
-function isValidHttpUrl(value: string): boolean {
-  try {
-    const u = new URL(value);
-    return u.protocol === 'http:' || u.protocol === 'https:';
-  } catch {
-    return false;
-  }
-}
-
-const STEP_SUBTITLES: Record<number, string> = {
-  1: 'Задайте базовые параметры кампании.',
-  2: 'Настройте аудиторию первой группы объявлений.',
-  3: 'Загрузите креатив и заполните текст первого объявления.',
-  4: 'Проверьте данные и создайте кампанию.',
-};
-
-const REGION_LABELS: Record<number, string> = {
-  1: 'Москва', 2: 'Санкт-Петербург', 3: 'Казань', 4: 'Екатеринбург',
-  5: 'Новосибирск', 6: 'Краснодар', 7: 'Нижний Новгород',
-  8: 'Самара', 9: 'Ростов-на-Дону', 10: 'Весь РФ',
-};
-
-const GENDER_LABELS: Record<string, string> = {
-  male: 'Мужчины', female: 'Женщины', any: 'Все',
-};
 
 export async function renderCampaignWizardPage(): Promise<string> {
   return renderTemplate(campaignWizardTemplate, {});
@@ -57,38 +39,18 @@ export function CampaignWizard(): VoidFunction {
 
   initCampaignBuilderSelectArrows(root, signal);
 
-  let currentStep = 1;
-  const TOTAL_STEPS = 4;
-
-  // State
-  const state = {
-    name: '',
-    objective: 'leads' as string,
-    main_action: 'click' as 'click' | 'look',
-    daily_budget: undefined as number | undefined,
-    group_name: '',
-    age_from: 18,
-    age_to: 34,
-    gender: 'any' as 'male' | 'female' | 'any',
-    region_id: 1,
-    topic_id: 1,
-    ad_title: '',
-    ad_desc: '',
-    ad_url: '',
-    ad_cta: 'Узнать подробнее',
-    ad_format: 'feed' as 'feed' | 'stories' | 'banner' | 'fullscreen',
-    ad_image: null as File | null,
-  };
+  let currentStep: WizardStep = 1;
+  const state = createInitialWizardState();
 
   const subtitle    = root.querySelector<HTMLElement>('[data-cw-step-subtitle]');
   const stepBtns    = root.querySelectorAll<HTMLButtonElement>('[data-cw-step-btn]');
   const submitError = root.querySelector<HTMLElement>('[data-cw-error="submit"]');
 
-  function getPanel(step: number): HTMLElement | null {
+  function getPanel(step: WizardStep): HTMLElement | null {
     return root.querySelector(`[data-cw-panel="${step}"]`);
   }
 
-  function goToStep(step: number): void {
+  function goToStep(step: WizardStep): void {
     getPanel(currentStep)?.setAttribute('hidden', '');
     currentStep = step;
     getPanel(currentStep)?.removeAttribute('hidden');
@@ -124,18 +86,7 @@ export function CampaignWizard(): VoidFunction {
   }
 
   function syncStateFromFields(): void {
-    state.name         = getFieldValue('name').trim();
-    state.group_name   = getFieldValue('group_name').trim();
-    state.age_from     = parseInt(getFieldValue('age_from'), 10) || 18;
-    state.age_to       = parseInt(getFieldValue('age_to'), 10) || 34;
-    state.gender       = (getFieldValue('gender') || 'any') as typeof state.gender;
-    state.region_id    = parseInt(getFieldValue('region_id'), 10) || 1;
-    state.topic_id     = parseInt(getFieldValue('topic_id'), 10) || 1;
-    state.ad_title     = getFieldValue('ad_title').trim();
-    state.ad_desc      = getFieldValue('ad_desc').trim();
-    state.ad_url       = getFieldValue('ad_url').trim();
-    const budget       = getFieldValue('daily_budget');
-    state.daily_budget = budget ? parseInt(budget, 10) : undefined;
+    Object.assign(state, readWizardStateFromFields(getFieldValue, state));
   }
 
   function clearErrors(): void {
@@ -150,51 +101,64 @@ export function CampaignWizard(): VoidFunction {
     if (el) { el.textContent = msg; el.hidden = false; }
   }
 
-  const STEP_NAMES: Record<number, string> = {
-    1: 'Кампания', 2: 'Аудитория', 3: 'Объявление', 4: 'Итог',
-  };
+  function clearError(key: string): void {
+    const el = root.querySelector<HTMLElement>(`[data-cw-error="${key}"]`);
+    if (el) {
+      el.textContent = '';
+      el.hidden = true;
+    }
+  }
 
-  function validateStep(step: number): boolean {
+  function validateStep(step: WizardStep): boolean {
     clearErrors();
     syncStateFromFields();
-    const issues: string[] = [];
+    const result = validateWizardStep(state, step);
 
-    if (step === 1) {
-      if (!state.name) {
-        setError('name', 'Введите название кампании');
-        issues.push('Укажите название кампании');
-      }
-      if (state.daily_budget === undefined) {
-        setError('daily_budget', 'Укажите дневной бюджет');
-        issues.push('Укажите дневной бюджет');
-      } else if (state.daily_budget < 100) {
-        setError('daily_budget', 'Минимальный бюджет — 100 ₽');
-        issues.push('Минимальный бюджет — 100 ₽');
-      }
-    }
+    Object.entries(result.errors).forEach(([key, message]) => {
+      if (message) setError(key, message);
+    });
 
-    if (step === 3) {
-      if (!state.ad_title) { setError('ad_title', 'Введите заголовок'); issues.push('Заголовок объявления обязателен'); }
-      if (!state.ad_desc)  { setError('ad_desc',  'Введите описание');  issues.push('Заполните описание объявления'); }
-      if (!state.ad_url) {
-        setError('ad_url', 'Введите ссылку');
-        issues.push('Целевая ссылка обязательна');
-      } else if (!isValidHttpUrl(normalizeUrl(state.ad_url))) {
-        setError('ad_url', 'Введите корректную ссылку, например https://example.ru');
-        issues.push('Некорректная целевая ссылка');
-      }
-    }
-
-    if (issues.length > 0) {
+    if (!result.ok) {
       showToast(
         `Заполните раздел «${STEP_NAMES[step]}»`,
-        issues.join(' · '),
+        result.issues.join(' · '),
         'error',
       );
       return false;
     }
 
     return true;
+  }
+
+  const ageFromSelect = root.querySelector<HTMLSelectElement>('[data-cw-field="age_from"]');
+  const ageToSelect = root.querySelector<HTMLSelectElement>('[data-cw-field="age_to"]');
+
+  function syncAgeRangeOptions(): void {
+    if (!ageFromSelect || !ageToSelect) return;
+
+    const ageFrom = parseInt(ageFromSelect.value, 10);
+    const ageTo = parseInt(ageToSelect.value, 10);
+
+    ageToSelect.querySelectorAll<HTMLOptionElement>('option').forEach((option) => {
+      option.disabled = parseInt(option.value, 10) <= ageFrom;
+    });
+
+    if (ageTo <= ageFrom) {
+      const firstValidOption = Array.from(ageToSelect.options).find(
+        (option) => !option.disabled,
+      );
+
+      if (firstValidOption) {
+        ageToSelect.value = firstValidOption.value;
+        clearError('age_range');
+      } else {
+        setError('age_range', 'Выберите корректный возрастной диапазон');
+      }
+    } else {
+      clearError('age_range');
+    }
+
+    syncStateFromFields();
   }
 
   function updateReview(): void {
@@ -206,57 +170,44 @@ export function CampaignWizard(): VoidFunction {
       if (el) el.textContent = val || '—';
     };
 
-    const OBJECTIVE_LABELS: Record<string, string> = {
-      leads:     'Заявки и лиды',
-      traffic:   'Трафик на сайт',
-      awareness: 'Узнаваемость бренда',
-      installs:  'Установки приложения',
-    };
-    const goalLabel = OBJECTIVE_LABELS[state.objective] ?? 'Заявки и лиды';
-    const audienceLabel = `${GENDER_LABELS[state.gender]}, ${state.age_from}–${state.age_to} лет`;
-
-    set('name',       state.name);
-    set('goal',       goalLabel);
-    set('budget',     state.daily_budget ? `${state.daily_budget.toLocaleString('ru-RU')} ₽/день` : 'Не задан');
-    set('group_name', state.group_name || `Группа — ${audienceLabel}`);
-    set('audience',   audienceLabel);
-    set('region',     REGION_LABELS[state.region_id] ?? '—');
-    set('ad_title',   state.ad_title);
-    set('ad_url',     state.ad_url);
-    set('ad_image',   state.ad_image?.name ?? 'Не загружено');
+    const review = getWizardReviewData(state);
+    set('name', review.name);
+    set('goal', review.goal);
+    set('budget', review.budget);
+    set('group_name', review.groupName);
+    set('audience', review.audience);
+    set('region', review.region);
+    set('ad_title', review.adTitle);
+    set('ad_url', review.adUrl);
+    set('ad_image', review.adImage);
   }
 
   async function handleSubmit(): Promise<void> {
-    if (!validateStep(3)) { goToStep(3); return; }
+    for (const step of [1, 2, 3] as WizardStep[]) {
+      if (!validateStep(step)) {
+        goToStep(step);
+        return;
+      }
+    }
+
     syncStateFromFields();
 
     root!.querySelectorAll<HTMLButtonElement>('[data-cw-next]').forEach((b) => { b.disabled = true; });
     if (submitError) submitError.hidden = true;
 
-    const groupName = state.group_name.trim() ||
-      `${GENDER_LABELS[state.gender]}, ${state.age_from}–${state.age_to} лет, ${REGION_LABELS[state.region_id]}`;
-
     try {
-      const { id: campaignId } = await createAdCampaign({
-        name: state.name,
-        main_action: state.main_action,
-        daily_budget: state.daily_budget ?? 0,
-        cpm_price: DEFAULT_CPM_PRICE,
-      });
+      const { id: campaignId } = await createAdCampaign(toCampaignPayload(state));
 
-      const { id: groupId } = await createAdGroup(campaignId, {
-        name: groupName,
-        age_from:  state.age_from,
-        age_to:    state.age_to,
-        gender:    state.gender,
-        region_id: state.region_id,
-        topic_id:  state.topic_id,
-      });
+      const { id: groupId } = await createAdGroup(
+        campaignId,
+        toGroupPayload(state),
+        { rollbackCampaignOnError: true },
+      );
 
       await createAdInGroup(
         campaignId,
         groupId,
-        { title: state.ad_title, short_desc: state.ad_desc, target_url: normalizeUrl(state.ad_url) },
+        toAdPayload(state),
         state.ad_image ?? undefined,
       );
 
@@ -276,7 +227,7 @@ export function CampaignWizard(): VoidFunction {
     btn.addEventListener('click', () => {
       if (currentStep < TOTAL_STEPS) {
         if (!validateStep(currentStep)) return;
-        goToStep(currentStep + 1);
+        goToStep((currentStep + 1) as WizardStep);
       } else {
         void handleSubmit();
       }
@@ -285,7 +236,7 @@ export function CampaignWizard(): VoidFunction {
 
   root.querySelectorAll<HTMLButtonElement>('[data-cw-prev]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      if (currentStep > 1) goToStep(currentStep - 1);
+      if (currentStep > 1) goToStep((currentStep - 1) as WizardStep);
     }, { signal });
   });
 
@@ -295,7 +246,7 @@ export function CampaignWizard(): VoidFunction {
 
   stepBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
-      const target = parseInt(btn.dataset.cwStepBtn ?? '0', 10);
+      const target = parseInt(btn.dataset.cwStepBtn ?? '0', 10) as WizardStep;
       if (target === currentStep) return;
       if (target < currentStep) {
         goToStep(target);
@@ -311,10 +262,13 @@ export function CampaignWizard(): VoidFunction {
         b.classList.remove('cw-objective--active'),
       );
       btn.classList.add('cw-objective--active');
-      state.main_action = btn.dataset.goal as 'click' | 'look';
-      state.objective   = btn.dataset.objective ?? 'leads';
+      state.main_action = btn.dataset.goal as WizardMainAction;
+      state.objective = (btn.dataset.objective ?? 'leads') as WizardObjective;
     }, { signal });
   });
+
+  ageFromSelect?.addEventListener('change', syncAgeRangeOptions, { signal });
+  ageToSelect?.addEventListener('change', syncAgeRangeOptions, { signal });
 
   // ── Контейнер превью ──────────────────────────────────────────
   const containerWInput = root.querySelector<HTMLInputElement>('[data-cw-container-w]');
@@ -369,7 +323,7 @@ export function CampaignWizard(): VoidFunction {
         b.classList.remove('cw-format--active'),
       );
       btn.classList.add('cw-format--active');
-      state.ad_format = btn.dataset.format as typeof state.ad_format;
+      state.ad_format = btn.dataset.format as WizardAdFormat;
 
       const badgeEl = root.querySelector<HTMLElement>('.cw-preview-badge');
       if (badgeEl) badgeEl.textContent = FORMAT_BADGE_LABELS[state.ad_format] ?? state.ad_format;
@@ -408,7 +362,11 @@ export function CampaignWizard(): VoidFunction {
     if (f) showFile(f);
   }, { signal });
 
-  removeBtn?.addEventListener('click', (e) => { e.stopPropagation(); clearFile(); }, { signal });
+  removeBtn?.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    clearFile();
+  }, { signal });
 
   uploadZone?.addEventListener('dragover', (e) => {
     e.preventDefault();
@@ -524,6 +482,7 @@ export function CampaignWizard(): VoidFunction {
   }, { signal });
 
   // Инициализация
+  syncAgeRangeOptions();
   updateAdPreview();
   goToStep(1);
 

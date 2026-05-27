@@ -62,12 +62,16 @@ function setFieldErrorHighlight(
  * @return {Promise<string>} Сгенерированная строка HTML.
  */
 export async function renderLoginPage(): Promise<string> {
+  const emailFromQuery = typeof window !== 'undefined'
+    ? new URLSearchParams(window.location.search).get('email') ?? ''
+    : '';
   const loginField = await renderFormField({
     id: 'login-email',
     name: 'email',
     type: 'text',
     label: 'Почта или телефон',
     placeholder: 'Ваша почта или телефон',
+    value: emailFromQuery,
     required: true,
   });
 
@@ -131,6 +135,10 @@ export function Login(): void | VoidFunction {
   const cleanupVKAuth = initVKAuth(vkLoginButton);
 
   PasswordVisibilityToggles(form);
+
+  if (form.elements.email.value) {
+    form.elements.password.focus();
+  }
 
   /**
    * Валидирует поле email или телефона.
