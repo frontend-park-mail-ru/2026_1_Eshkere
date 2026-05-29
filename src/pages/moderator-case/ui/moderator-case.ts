@@ -1,5 +1,6 @@
 import './moderator-case.scss';
 import { getAdminAd, updateAdModerationStatus, type AdminAdDto } from 'features/admin';
+import { sendModeratorSupportMessage } from 'features/support-chat';
 import { renderTemplate } from 'shared/lib/render';
 import { navigateTo } from 'shared/lib/navigation';
 import { showToast } from 'shared/lib/toast';
@@ -182,13 +183,31 @@ export function ModeratorCasePage(): VoidFunction {
       return;
     }
 
+    const comment = publicReply?.value.trim() ?? '';
+
     applyButton.disabled = true;
 
     try {
       await updateAdModerationStatus(adId, decisionId);
 
+      if (comment) {
+        const delivered = await sendModeratorSupportMessage(adId, comment);
+        if (!delivered) {
+          showToast(
+            'Внимание',
+            'Решение сохранено, но комментарий не удалось отправить в чат поддержки.',
+            'error',
+            5000,
+          );
+        }
+      }
+
       const label = decisionId === 'approve' ? 'Одобрено' : 'Отклонено';
-      if (statusNote) statusNote.textContent = `Решение зафиксировано: ${label.toLowerCase()}.`;
+      if (statusNote) {
+        statusNote.textContent = comment
+          ? `Решение зафиксировано: ${label.toLowerCase()}. Комментарий отправлен.`
+          : `Решение зафиксировано: ${label.toLowerCase()}.`;
+      }
 
       showToast('Готово', `Объявление ${label.toLowerCase()}.`, 'success', 3000);
       setTimeout(() => navigateTo('/moderator/queue'), 1500);

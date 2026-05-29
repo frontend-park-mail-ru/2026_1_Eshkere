@@ -38,13 +38,25 @@
     pointer-events: none;
   }
 
+  &__control:has(.ui-input:-webkit-autofill),
+  &__control:has(.ui-input:autofill) {
+    .ui-field__prefix {
+      color: #32384b;
+    }
+  }
+
   &__password-toggle {
     position: absolute;
-    top: 50%;
+    top: 0;
     right: 10px;
+    bottom: 0;
     width: 30px;
     height: 30px;
-    transform: translateY(-50%);
+    margin-block: auto;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     border: none;
     border-radius: t.$radius-xs;
     background: transparent;
@@ -72,12 +84,10 @@
   }
 
   &__icon {
-    position: absolute;
-    top: 50%;
-    left: 50%;
+    display: block;
     width: 18px;
     height: 18px;
-    transform: translate(-50%, -50%);
+    flex-shrink: 0;
     fill: none;
     stroke: currentColor;
     stroke-width: 1.8;
@@ -133,6 +143,13 @@ html[data-theme='dark'] {
   .ui-field {
     &__prefix {
       color: var(--text-main);
+    }
+
+    &__control:has(.ui-input:-webkit-autofill),
+    &__control:has(.ui-input:autofill) {
+      .ui-field__prefix {
+        color: #32384b;
+      }
     }
 
     &__password-toggle {

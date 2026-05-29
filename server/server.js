@@ -75,7 +75,7 @@ if (isDevelopment) {
  * @return {void}
  */
 function proxyApiRequest(req, res) {
-  const target = new URL(`http://localhost:8000${req.originalUrl.replace(/^\/api/, '')}`);
+  const target = new URL(`http://localhost:8000${req.originalUrl}`);
   const headers = {...req.headers};
   headers.host = req.headers.host || 'localhost:8081';
 
@@ -136,6 +136,7 @@ function proxyFeedRequest(req, res) {
 }
 
 app.use('/feed', proxyFeedRequest);
+
 
 /**
  * Проксирует публичные backend-маршруты без изменения пути.
@@ -279,6 +280,7 @@ function isCompressibleContent(contentType) {
   );
 }
 
+
 function canUseGzip(headers, contentType, body) {
   const acceptEncoding = String(headers['accept-encoding'] || '');
   return (
@@ -367,7 +369,7 @@ function isStaticRequest(pathname) {
 
 function getProxyTarget(pathWithQuery, pathname) {
   if (pathname.startsWith('/api')) {
-    return new URL(`${BACKEND_ORIGIN}${pathWithQuery.replace(/^\/api/, '') || '/'}`);
+    return new URL(`${BACKEND_ORIGIN}${pathWithQuery}`);
   }
 
   if (
@@ -600,6 +602,7 @@ async function startServer() {
     allowHTTP1: true,
   });
 
+  
   server.on('stream', (stream, headers) => {
     handleHttp2Stream(stream, headers).catch(() => {
       respondHttp2Error(stream, 500, 'frontend server error');

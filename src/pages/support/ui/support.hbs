@@ -192,26 +192,26 @@
                   <span class="support-thread__kicker">Кампания</span>
                   <h2 class="support-thread__title">{{title}}</h2>
                 </div>
-                <span class="support-thread__status support-thread__status--{{statusTone}}">{{statusLabel}}</span>
+                <div class="support-thread__meta">
+                  <span class="support-thread__chat-status" data-support-chat-status hidden></span>
+                  <span class="support-thread__status support-thread__status--{{statusTone}}">{{statusLabel}}</span>
+                </div>
               </div>
 
-              <div class="support-moderator-note">
+              <div class="support-moderator-note" data-support-moderator-note hidden>
                 <span class="support-moderator-note__label">Сообщение модератора</span>
-                <p>{{moderatorMessage}}</p>
+                <p data-support-moderator-text></p>
               </div>
 
-              <div class="support-messages" data-support-messages>
-                {{#each messages}}
-                  <article class="support-message support-message--{{author}}">
-                    <span class="support-message__meta">{{time}}</span>
-                    <p class="support-message__text">{{text}}</p>
-                  </article>
-                {{/each}}
-              </div>
+              <div class="support-messages" data-support-messages aria-live="polite"></div>
+
+              <p class="support-chat-empty" data-support-chat-empty hidden>
+                Пока нет сообщений. Напишите вопрос по этой кампании — модератор увидит его в чате.
+              </p>
 
               <form class="support-form" data-support-form novalidate>
                 <label class="support-form__field">
-                  <span>Что хотите уточнить?</span>
+                  <span>Сообщение</span>
                   <textarea
                     data-support-message
                     rows="4"
@@ -219,32 +219,8 @@
                   ></textarea>
                 </label>
 
-                <div class="support-form__attach">
-                  <label class="support-form__file-label" for="adv-screenshot-{{id}}">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                      <path d="M2 10.5V13h2.5l7.07-7.07-2.5-2.5L2 10.5zM13.71 4.04a.667.667 0 0 0 0-.943l-1.83-1.83a.667.667 0 0 0-.943 0l-1.43 1.43 2.5 2.5 1.706-1.157z" fill="currentColor"/>
-                    </svg>
-                    <span data-file-label>Прикрепить скриншот</span>
-                    <input
-                      class="support-form__file"
-                      id="adv-screenshot-{{id}}"
-                      type="file"
-                      accept="image/*"
-                      data-support-screenshot
-                    />
-                  </label>
-                </div>
-
-                <div class="support-form__actions">
-                  <div class="support-form__select-wrap">
-                    <select class="support-form__select" data-support-topic aria-label="Тема вопроса">
-                      <option>Вопрос по модерации</option>
-                      <option>Креативы и текст</option>
-                      <option>Бюджет и списания</option>
-                      <option>Запуск кампании</option>
-                    </select>
-                  </div>
-                  <button class="support-form__button" type="submit">Отправить вопрос</button>
+                <div class="support-form__actions support-form__actions--chat">
+                  <button class="support-form__button" type="submit" data-support-submit>Отправить</button>
                 </div>
               </form>
             </section>
