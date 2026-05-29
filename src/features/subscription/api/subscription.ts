@@ -10,13 +10,13 @@ export interface SubscriptionResponse {
 }
 
 export async function getSubscription(): Promise<SubscriptionResponse> {
-  const res = await request<{ data: SubscriptionResponse }>('/subscription', { method: 'GET' });
-  return res.data.data;
+  const res = await request<SubscriptionResponse>('/subscription', { method: 'GET' });
+  return res.data;
 }
 
 // Активирует Pro за счёт баланса. Возвращает обновлённую подписку.
 // Бросает ApiRequestError(402) если на балансе меньше 3 900 ₽.
 export async function activateProFromBalance(): Promise<SubscriptionResponse> {
-  const res = await request<{ data: SubscriptionResponse }>('/subscription', { method: 'POST' });
-  return res.data.data;
+  const res = await request<SubscriptionResponse>('/subscription', { method: 'POST' });
+  return res.data;
 }
