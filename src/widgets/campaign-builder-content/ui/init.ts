@@ -8,7 +8,7 @@ import type {
   ToastPayload,
 } from 'features/campaign-builder/model/types';
 import { openImageCropModal, type ImageCropRatio } from 'widgets/image-crop-modal';
-import { generateAdImages, type AiImageStyle } from 'features/ads/api/ai-image';
+import { generateAdImage, type AiImageStyle } from 'features/ads/api/ai-image';
 import { ApiRequestError } from 'shared/lib/request';
 
 interface InitCampaignBuilderContentControlsParams {
@@ -395,6 +395,9 @@ export function initCampaignBuilderContentControls({
   const aiImageSection = document.querySelector<HTMLElement>('[data-cb-ai-image-section]');
 
   let currentCbStyle: AiImageStyle = 'clean';
+  const cbGenerationKey = crypto.randomUUID();
+  const CB_MAX_REGEN = 3;
+  let cbRegenLeft = CB_MAX_REGEN;
 
   // Показываем секцию только для feed/stories (не для video)
   function updateAiImageSectionVisibility(): void {
@@ -432,71 +435,6 @@ export function initCampaignBuilderContentControls({
     }, { signal });
   });
 
-  function selectCbVariant(index: number, imageUrl: string): void {
-    aiVariants?.querySelectorAll('.campaign-builder__ai-variant--selected').forEach((el) => {
-      el.classList.remove('campaign-builder__ai-variant--selected');
-    });
-    aiVariants?.querySelectorAll<HTMLElement>('[data-variant-index]').item(index)
-      ?.classList.add('campaign-builder__ai-variant--selected');
-
-    // Определяем слот по текущему creative
-    const slotKey: CreativeAssetKey = state.creative === 'stories' ? 'storyVisual' : 'feedVisual';
-
-    // Асинхронно конвертируем URL → File и сохраняем в state
-    void (async () => {
-      try {
-        const res = await fetch(imageUrl);
-        const blob = await res.blob();
-        const filename = `ai_${slotKey}_${Date.now()}.jpg`;
-        const file = new File([blob], filename, { type: blob.type || 'image/jpeg' });
-
-        state.creativeAssets[slotKey] = filename;
-        state.creativeFiles[slotKey]  = file;
-        persistState(state);
-        syncBuilder(state);
-        showToast({ title: 'Изображение выбрано', description: `ИИ-изображение сохранено для ${slotKey === 'feedVisual' ? 'Ленты' : 'Stories'}.` });
-      } catch {
-        showToast({ title: 'Не удалось загрузить изображение', description: 'Скачайте картинку вручную и загрузите через кнопку.' });
-      }
-    })();
-  }
-
-  function renderCbVariants(imageUrls: string[]): void {
-    if (!aiVariants) return;
-    aiVariants.innerHTML = '';
-
-    imageUrls.forEach((url, i) => {
-      const card = document.createElement('div');
-      card.className = 'campaign-builder__ai-variant';
-      card.dataset.variantIndex = String(i);
-      card.tabIndex = 0;
-      card.setAttribute('role', 'button');
-      card.setAttribute('aria-label', `Вариант ${i + 1}`);
-
-      const img = document.createElement('img');
-      img.src = url;
-      img.alt = `Вариант ${i + 1}`;
-      img.loading = 'lazy';
-      card.appendChild(img);
-
-      const check = document.createElement('span');
-      check.className = 'campaign-builder__ai-variant-check';
-      check.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-      card.appendChild(check);
-
-      card.addEventListener('click', () => selectCbVariant(i, url));
-      card.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectCbVariant(i, url); }
-      });
-      aiVariants.appendChild(card);
-    });
-
-    const note = document.createElement('p');
-    note.className = 'campaign-builder__ai-variants-note';
-    note.textContent = 'Нажмите на вариант, чтобы выбрать';
-    aiVariants.appendChild(note);
-  }
-
   genImageBtn?.addEventListener('click', () => {
     void (async () => {
       if (!genImageBtn || !aiVariants) return;
@@ -518,14 +456,50 @@ export function initCampaignBuilderContentControls({
         <div class="campaign-builder__ai-variant campaign-builder__ai-variant--skeleton"></div>`;
 
       try {
-        const images = await generateAdImages({ prompt, style: currentCbStyle, format, count: 3 });
-        if (images.length === 0) throw new Error('empty');
+        const image = await generateAdImage({
+          prompt,
+          style:          currentCbStyle,
+          format,
+          generation_key: cbGenerationKey,
+        });
 
-        renderCbVariants(images.map((img) => img.image_url));
+        cbRegenLeft = Math.max(0, cbRegenLeft - 1);
+
+        const slotKey: CreativeAssetKey = state.creative === 'stories' ? 'storyVisual' : 'feedVisual';
+
+        aiVariants.hidden = false;
+        aiVariants.innerHTML = `
+          <div class="campaign-builder__ai-variant campaign-builder__ai-variant--selected" style="aspect-ratio:${format === 'stories' ? '9/16' : '1.91'}; max-height:180px;">
+            <img src="${image.image_url}" alt="Сгенерированное изображение" loading="lazy" />
+            <span class="campaign-builder__ai-variant-check">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </div>`;
 
         genImageBtn.classList.remove('is-loading');
-        genImageBtn.disabled = false;
-        if (genImageLabel) genImageLabel.textContent = 'Перегенерировать';
+        genImageBtn.disabled = cbRegenLeft === 0;
+        if (genImageLabel) {
+          genImageLabel.textContent = cbRegenLeft > 0
+            ? `Перегенерировать (осталось ${cbRegenLeft})`
+            : 'Лимит регенераций исчерпан';
+        }
+
+        // Сохраняем в state
+        void (async () => {
+          try {
+            const res = await fetch(image.image_url);
+            const blob = await res.blob();
+            const filename = `ai_${slotKey}_${Date.now()}.jpg`;
+            const file = new File([blob], filename, { type: blob.type || 'image/jpeg' });
+            state.creativeAssets[slotKey] = filename;
+            state.creativeFiles[slotKey]  = file;
+            persistState(state);
+            syncBuilder(state);
+            showToast({ title: 'Изображение выбрано', description: `Сохранено для ${slotKey === 'feedVisual' ? 'Ленты' : 'Stories'}.` });
+          } catch {
+            showToast({ title: 'Не удалось сохранить', description: 'Скачайте картинку и загрузите вручную.' });
+          }
+        })();
       } catch (err) {
         aiVariants.hidden = true;
         aiVariants.innerHTML = '';

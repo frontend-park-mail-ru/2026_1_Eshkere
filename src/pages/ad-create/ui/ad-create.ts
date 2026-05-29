@@ -1,6 +1,6 @@
 import './ad-create.scss';
 import { createAdInGroup, type CreateAdRequest } from 'features/ads/api/ads';
-import { generateAdImages, type AiImageStyle } from 'features/ads/api/ai-image';
+import { generateAdImage, type AiImageStyle } from 'features/ads/api/ai-image';
 import { renderTemplate } from 'shared/lib/render';
 import { navigateTo } from 'shared/lib/navigation';
 import { openImageCropModal } from 'widgets/image-crop-modal';
@@ -57,6 +57,11 @@ export function AdCreate(): VoidFunction {
   let currentFormat: 'feed' | 'stories' = 'feed';
   let selectedFile: File | null = null;
   let selectedAiImageUrl: string | null = null;
+
+  // Один ключ на весь черновик объявления
+  const generationKey = crypto.randomUUID();
+  const MAX_REGEN = 3;
+  let regenLeft = MAX_REGEN;
 
   root.querySelector<HTMLElement>('[data-adc-back]')?.addEventListener('click', () => {
     navigateTo(`/ads/campaign?id=${campaignId}`);
@@ -398,111 +403,69 @@ export function AdCreate(): VoidFunction {
     if (genImageBtn) genImageBtn.disabled = !hasDesc;
   }
 
-function selectVariant(index: number, imageUrl: string): void {
-    clearUploadZone();
-    clearVariantSelection();
-    aiVariants?.querySelectorAll<HTMLElement>('[data-variant-index]').item(index)?.classList.add('adc__ai-variant--selected');
-    setPreviewImage(imageUrl);
-    // selectedFile остаётся null — при сабмите бэк получит image_url отдельным полем
-    selectedAiImageUrl = imageUrl;
-  }
-
-  function renderVariants(imageUrls: string[]): void {
-    if (!aiVariants) return;
-    aiVariants.innerHTML = '';
-
-    imageUrls.forEach((url, i) => {
-      const card = document.createElement('div');
-      card.className = 'adc__ai-variant';
-      card.dataset.variantIndex = String(i);
-      card.tabIndex = 0;
-      card.setAttribute('role', 'button');
-      card.setAttribute('aria-label', `Вариант ${i + 1}`);
-
-      const img = document.createElement('img');
-      img.src = url;
-      img.alt = `Вариант ${i + 1}`;
-      img.loading = 'lazy';
-      card.appendChild(img);
-
-      const check = document.createElement('span');
-      check.className = 'adc__ai-variant-check';
-      check.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M20 6L9 17l-5-5" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>`;
-      card.appendChild(check);
-
-      card.addEventListener('click', () => selectVariant(i, url));
-      card.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectVariant(i, url); }
-      });
-
-      aiVariants.appendChild(card);
-    });
-
-    const note = document.createElement('p');
-    note.className = 'adc__ai-variants-note';
-    note.textContent = 'Нажмите на вариант, чтобы выбрать';
-    aiVariants.appendChild(note);
-  }
-
   async function handleGenImages(): Promise<void> {
-    if (!genImageBtn || !aiVariants) return;
+    if (!genImageBtn) return;
 
     const prompt = (descInput?.value.trim() || titleInput?.value.trim() || '').substring(0, 400);
     if (!prompt) return;
 
     if (genErrorEl) genErrorEl.hidden = true;
+    if (aiVariants) { aiVariants.hidden = true; aiVariants.innerHTML = ''; }
 
     genImageBtn.disabled = true;
     genImageBtn.classList.add('is-loading');
-    if (genImageLabel) genImageLabel.textContent = 'Генерирую варианты...';
-
-    aiVariants.hidden = false;
-    aiVariants.innerHTML = `
-      <div class="adc__ai-variant adc__ai-variant--skeleton"></div>
-      <div class="adc__ai-variant adc__ai-variant--skeleton"></div>
-      <div class="adc__ai-variant adc__ai-variant--skeleton"></div>
-    `;
+    if (genImageLabel) genImageLabel.textContent = 'Генерирую...';
 
     try {
-      const images = await generateAdImages({
+      const image = await generateAdImage({
         prompt,
-        style:  currentStyle,
-        format: currentFormat,
-        count:  3,
+        style:          currentStyle,
+        format:         currentFormat,
+        generation_key: generationKey,
       });
 
-      if (images.length === 0) throw new Error('empty');
+      regenLeft = Math.max(0, regenLeft - 1);
 
-      renderVariants(images.map((img) => img.image_url));
+      selectedAiImageUrl = image.image_url;
+      clearUploadZone();
+      setPreviewImage(image.image_url);
 
       genImageBtn.classList.remove('is-loading');
-      genImageBtn.disabled = false;
-      if (genImageLabel) genImageLabel.textContent = 'Перегенерировать';
+      genImageBtn.disabled = regenLeft === 0;
+      if (genImageLabel) {
+        genImageLabel.textContent = regenLeft > 0
+          ? `Перегенерировать (осталось ${regenLeft})`
+          : 'Лимит регенераций исчерпан';
+      }
+
+      if (aiVariants) {
+        aiVariants.hidden = false;
+        aiVariants.innerHTML = `
+          <div class="adc__ai-variant adc__ai-variant--selected" style="aspect-ratio:${currentFormat === 'stories' ? '9/16' : '1.91'}; max-height:180px;">
+            <img src="${image.image_url}" alt="Сгенерированное изображение" />
+            <span class="adc__ai-variant-check">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </div>`;
+      }
     } catch (err) {
-      aiVariants.hidden = true;
-      aiVariants.innerHTML = '';
       genImageBtn.classList.remove('is-loading');
       genImageBtn.disabled = false;
       if (genImageLabel) genImageLabel.textContent = 'Сгенерировать из описания';
 
-      let msg = 'Не удалось сгенерировать изображения. Попробуйте ещё раз.';
+      let msg = 'Не удалось сгенерировать изображение. Попробуйте ещё раз.';
       if (err instanceof ApiRequestError) {
         if (err.status === 402) {
           msg = 'Генерация изображений доступна только на тарифе Pro.';
           navigateTo('/subscription');
         } else if (err.status === 401) {
-          msg = 'Для генерации изображений необходимо войти в аккаунт.';
+          msg = 'Для генерации необходимо войти в аккаунт.';
         } else if (err.status >= 500) {
           msg = 'Сервис генерации временно недоступен. Попробуйте позже.';
         }
       }
 
-      if (genErrorEl) {
-        genErrorEl.textContent = msg;
-        genErrorEl.hidden = false;
-      }
+      if (genErrorEl) { genErrorEl.textContent = msg; genErrorEl.hidden = false; }
       showToast('Ошибка генерации', msg, 'error');
     }
   }

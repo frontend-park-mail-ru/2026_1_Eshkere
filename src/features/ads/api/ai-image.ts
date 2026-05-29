@@ -7,15 +7,17 @@ export interface AiImageResult {
   image_url: string;
 }
 
-export async function generateAdImages(params: {
-  prompt:  string;
-  style:   AiImageStyle;
-  format:  AiImageFormat;
-  count:   number;
-}): Promise<AiImageResult[]> {
+export async function generateAdImage(params: {
+  prompt:          string;
+  style:           AiImageStyle;
+  format:          AiImageFormat;
+  generation_key:  string;
+}): Promise<AiImageResult> {
   const res = await request<{ images: AiImageResult[] }>('/ai/ad-image', {
     method: 'POST',
     body: params,
   });
-  return res.data.images;
+  const first = res.data.images?.[0];
+  if (!first) throw new Error('empty');
+  return first;
 }
