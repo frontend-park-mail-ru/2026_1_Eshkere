@@ -76,6 +76,15 @@
 
           <div class="adc__ai-or"><span>или</span></div>
 
+          <div class="adc__ai-style-row">
+            <span class="adc__ai-style-label">Стиль:</span>
+            <div class="adc__ai-style-chips" role="group" aria-label="Стиль изображения">
+              <button class="adc__ai-style-chip adc__ai-style-chip--active" type="button" data-adc-style="clean">Чистый</button>
+              <button class="adc__ai-style-chip" type="button" data-adc-style="bold">Яркий</button>
+              <button class="adc__ai-style-chip" type="button" data-adc-style="minimal">Минимал</button>
+            </div>
+          </div>
+
           <button class="adc__ai-gen-image-btn" type="button" data-adc-gen-image disabled>
             <svg class="adc__ai-sparkle-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
@@ -87,6 +96,7 @@
           </button>
 
           <div class="adc__ai-variants" data-adc-ai-variants hidden></div>
+          <p class="adc__ai-gen-error" data-adc-gen-error hidden></p>
         </div>
 
         {{!-- Текст --}}

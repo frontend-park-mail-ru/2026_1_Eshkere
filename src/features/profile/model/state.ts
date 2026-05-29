@@ -207,6 +207,17 @@ export async function getProfileState(): Promise<ProfileState> {
   };
 }
 
+function formatExpiryDate(iso: string | null): string | null {
+  if (!iso) return null;
+  try {
+    return new Date(iso).toLocaleDateString('ru-RU', {
+      day: 'numeric', month: 'long', year: 'numeric',
+    });
+  } catch {
+    return null;
+  }
+}
+
 export function toTemplateContext(state: ProfileState): TemplateContext {
   const tariff = getTariffMeta(state.tariffKey);
 
@@ -221,7 +232,7 @@ export function toTemplateContext(state: ProfileState): TemplateContext {
     tariff: tariff.label,
     tariffDescription: tariff.description,
     isProActive: state.isProActive,
-    tariffExpiresAt: state.tariffExpiresAt,
+    tariffExpiresAt: formatExpiryDate(state.tariffExpiresAt),
     activeCampaigns: state.activeCampaigns,
     lastAction: state.lastAction,
     profileFields: buildProfileFields(state),

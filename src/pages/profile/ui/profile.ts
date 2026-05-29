@@ -19,6 +19,7 @@ import { populateProfileForms, refreshProfileFormStates } from 'widgets/profile-
 import { initProfileModals } from 'widgets/profile-modals';
 import { syncProfileView } from 'widgets/profile-view';
 import { openAvatarCropModal } from 'widgets/avatar-crop-modal';
+import { openSubscriptionModal } from 'widgets/subscription-modal';
 import profileTemplate from './profile.hbs';
 
 export type {
@@ -158,12 +159,8 @@ export function Profile(): VoidFunction | void {
   populateForms(state);
   refreshModalSubmitStates(state);
 
-  // SPA-навигация для ссылки "Управлять подпиской"
-  root.querySelector<HTMLAnchorElement>('[data-profile-subscription-link]')
-    ?.addEventListener('click', (e) => {
-      e.preventDefault();
-      navigateTo('/subscription');
-    }, { signal: controller.signal });
+  root.querySelector<HTMLButtonElement>('[data-open-subscription-modal]')
+    ?.addEventListener('click', () => openSubscriptionModal(), { signal: controller.signal });
 
   const restartTourBtn = root.querySelector<HTMLButtonElement>('[data-restart-tour]');
   restartTourBtn?.addEventListener(

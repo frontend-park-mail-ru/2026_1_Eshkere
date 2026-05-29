@@ -1,9 +1,11 @@
 import './ad-create.scss';
 import { createAdInGroup, type CreateAdRequest } from 'features/ads/api/ads';
+import { generateAdImages, type AiImageStyle } from 'features/ads/api/ai-image';
 import { renderTemplate } from 'shared/lib/render';
 import { navigateTo } from 'shared/lib/navigation';
 import { openImageCropModal } from 'widgets/image-crop-modal';
 import { showToast } from 'shared/lib/toast';
+import { ApiRequestError } from 'shared/lib/request';
 import adCreateTemplate from './ad-create.hbs';
 
 function getParams(): { campaignId: number | null; groupId: number | null } {
@@ -54,6 +56,7 @@ export function AdCreate(): VoidFunction {
 
   let currentFormat: 'feed' | 'stories' = 'feed';
   let selectedFile: File | null = null;
+  let selectedAiImageUrl: string | null = null;
 
   root.querySelector<HTMLElement>('[data-adc-back]')?.addEventListener('click', () => {
     navigateTo(`/ads/campaign?id=${campaignId}`);
@@ -86,6 +89,17 @@ export function AdCreate(): VoidFunction {
   const genImageBtn   = root.querySelector<HTMLButtonElement>('[data-adc-gen-image]');
   const genImageLabel = root.querySelector<HTMLElement>('[data-adc-gen-image-label]');
   const aiVariants    = root.querySelector<HTMLElement>('[data-adc-ai-variants]');
+  const genErrorEl    = root.querySelector<HTMLElement>('[data-adc-gen-error]');
+
+  let currentStyle: AiImageStyle = 'clean';
+
+  root.querySelectorAll<HTMLButtonElement>('[data-adc-style]').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      root.querySelectorAll('[data-adc-style]').forEach((c) => c.classList.remove('adc__ai-style-chip--active'));
+      chip.classList.add('adc__ai-style-chip--active');
+      currentStyle = chip.dataset.adcStyle as AiImageStyle;
+    }, { signal });
+  });
 
   // ─── Предпросмотр ────────────────────────────────────────────────────────
 
@@ -199,6 +213,7 @@ export function AdCreate(): VoidFunction {
 
   function showFile(file: File, dataUrl: string): void {
     selectedFile = file;
+    selectedAiImageUrl = null;
     clearVariantSelection();
 
     if (uploadPlaceholder) uploadPlaceholder.hidden = true;
@@ -383,71 +398,20 @@ export function AdCreate(): VoidFunction {
     if (genImageBtn) genImageBtn.disabled = !hasDesc;
   }
 
-  const PALETTES = [
-    { from: '#667eea', to: '#764ba2' },
-    { from: '#f093fb', to: '#f5576c' },
-    { from: '#4facfe', to: '#00f2fe' },
-  ];
-
-  function buildVariantCanvas(index: number): Promise<{ dataUrl: string; file: File }> {
-    return new Promise((resolve) => {
-      const canvas = document.createElement('canvas');
-      canvas.width = 1200;
-      canvas.height = 628;
-      const ctx = canvas.getContext('2d')!;
-
-      const { from, to } = PALETTES[index % PALETTES.length];
-      const grad = ctx.createLinearGradient(0, 0, 1200, 628);
-      grad.addColorStop(0, from);
-      grad.addColorStop(1, to);
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, 1200, 628);
-
-      // Декоративные круги
-      ctx.beginPath();
-      ctx.arc(180, 140, 320, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(255,255,255,0.07)';
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(1050, 500, 260, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(255,255,255,0.07)';
-      ctx.fill();
-
-      ctx.textAlign = 'center';
-      ctx.font = 'bold 52px -apple-system, BlinkMacSystemFont, sans-serif';
-      ctx.fillStyle = 'rgba(255,255,255,0.2)';
-      ctx.fillText('AI', 600, 260);
-
-      ctx.font = 'bold 40px -apple-system, BlinkMacSystemFont, sans-serif';
-      ctx.fillStyle = 'rgba(255,255,255,0.92)';
-      ctx.fillText(`Вариант ${index + 1}`, 600, 340);
-
-      ctx.font = '22px -apple-system, BlinkMacSystemFont, sans-serif';
-      ctx.fillStyle = 'rgba(255,255,255,0.55)';
-      ctx.fillText('Сгенерировано ИИ', 600, 390);
-
-      canvas.toBlob((blob) => {
-        if (!blob) return;
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-        const file = new File([blob], `ai_variant_${index + 1}.jpg`, { type: 'image/jpeg' });
-        resolve({ dataUrl, file });
-      }, 'image/jpeg', 0.85);
-    });
-  }
-
-  function selectVariant(index: number, variant: { dataUrl: string; file: File }): void {
-    selectedFile = variant.file;
+function selectVariant(index: number, imageUrl: string): void {
     clearUploadZone();
     clearVariantSelection();
     aiVariants?.querySelectorAll<HTMLElement>('[data-variant-index]').item(index)?.classList.add('adc__ai-variant--selected');
-    setPreviewImage(variant.dataUrl);
+    setPreviewImage(imageUrl);
+    // selectedFile остаётся null — при сабмите бэк получит image_url отдельным полем
+    selectedAiImageUrl = imageUrl;
   }
 
-  function renderVariants(variants: Array<{ dataUrl: string; file: File }>): void {
+  function renderVariants(imageUrls: string[]): void {
     if (!aiVariants) return;
     aiVariants.innerHTML = '';
 
-    variants.forEach((v, i) => {
+    imageUrls.forEach((url, i) => {
       const card = document.createElement('div');
       card.className = 'adc__ai-variant';
       card.dataset.variantIndex = String(i);
@@ -456,8 +420,9 @@ export function AdCreate(): VoidFunction {
       card.setAttribute('aria-label', `Вариант ${i + 1}`);
 
       const img = document.createElement('img');
-      img.src = v.dataUrl;
+      img.src = url;
       img.alt = `Вариант ${i + 1}`;
+      img.loading = 'lazy';
       card.appendChild(img);
 
       const check = document.createElement('span');
@@ -467,9 +432,9 @@ export function AdCreate(): VoidFunction {
       </svg>`;
       card.appendChild(check);
 
-      card.addEventListener('click', () => selectVariant(i, v));
+      card.addEventListener('click', () => selectVariant(i, url));
       card.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectVariant(i, v); }
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectVariant(i, url); }
       });
 
       aiVariants.appendChild(card);
@@ -484,11 +449,15 @@ export function AdCreate(): VoidFunction {
   async function handleGenImages(): Promise<void> {
     if (!genImageBtn || !aiVariants) return;
 
+    const prompt = (descInput?.value.trim() || titleInput?.value.trim() || '').substring(0, 400);
+    if (!prompt) return;
+
+    if (genErrorEl) genErrorEl.hidden = true;
+
     genImageBtn.disabled = true;
     genImageBtn.classList.add('is-loading');
     if (genImageLabel) genImageLabel.textContent = 'Генерирую варианты...';
 
-    // Скелетон
     aiVariants.hidden = false;
     aiVariants.innerHTML = `
       <div class="adc__ai-variant adc__ai-variant--skeleton"></div>
@@ -496,15 +465,46 @@ export function AdCreate(): VoidFunction {
       <div class="adc__ai-variant adc__ai-variant--skeleton"></div>
     `;
 
-    await delay(2000);
+    try {
+      const images = await generateAdImages({
+        prompt,
+        style:  currentStyle,
+        format: currentFormat,
+        count:  3,
+      });
 
-    const variants = await Promise.all([0, 1, 2].map((i) => buildVariantCanvas(i)));
+      if (images.length === 0) throw new Error('empty');
 
-    renderVariants(variants);
+      renderVariants(images.map((img) => img.image_url));
 
-    genImageBtn.classList.remove('is-loading');
-    genImageBtn.disabled = false;
-    if (genImageLabel) genImageLabel.textContent = 'Другие варианты';
+      genImageBtn.classList.remove('is-loading');
+      genImageBtn.disabled = false;
+      if (genImageLabel) genImageLabel.textContent = 'Перегенерировать';
+    } catch (err) {
+      aiVariants.hidden = true;
+      aiVariants.innerHTML = '';
+      genImageBtn.classList.remove('is-loading');
+      genImageBtn.disabled = false;
+      if (genImageLabel) genImageLabel.textContent = 'Сгенерировать из описания';
+
+      let msg = 'Не удалось сгенерировать изображения. Попробуйте ещё раз.';
+      if (err instanceof ApiRequestError) {
+        if (err.status === 402) {
+          msg = 'Генерация изображений доступна только на тарифе Pro.';
+          navigateTo('/subscription');
+        } else if (err.status === 401) {
+          msg = 'Для генерации изображений необходимо войти в аккаунт.';
+        } else if (err.status >= 500) {
+          msg = 'Сервис генерации временно недоступен. Попробуйте позже.';
+        }
+      }
+
+      if (genErrorEl) {
+        genErrorEl.textContent = msg;
+        genErrorEl.hidden = false;
+      }
+      showToast('Ошибка генерации', msg, 'error');
+    }
   }
 
   genImageBtn?.addEventListener('click', () => void handleGenImages(), { signal });

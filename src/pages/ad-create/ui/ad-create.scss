@@ -724,6 +724,57 @@
   }
 }
 
+// Style picker
+
+.adc__ai-style-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.adc__ai-style-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-soft);
+  flex-shrink: 0;
+}
+
+.adc__ai-style-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.adc__ai-style-chip {
+  padding: 5px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-card-strong);
+  color: var(--text-body);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+
+  &:hover { border-color: var(--primary-border-soft); color: var(--primary-active); }
+
+  &--active {
+    border-color: var(--primary-border);
+    background: var(--primary-surface);
+    color: var(--primary-active);
+  }
+}
+
+.adc__ai-gen-error {
+  margin: 0;
+  font-size: 13px;
+  color: var(--danger-soft);
+  line-height: 1.4;
+
+  &[hidden] { display: none; }
+}
+
 // "или" divider
 
 .adc__ai-or {
