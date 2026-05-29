@@ -334,24 +334,48 @@ function formatRubles(value: number): string {
   return `${new Intl.NumberFormat('ru-RU').format(value)} ₽`;
 }
 
+const CPM_BY_STRATEGY_LOCAL: Record<string, number> = {
+  aggressive: 185,
+  smart:      155,
+  even:       125,
+};
+const CTR_BY_GOAL_LOCAL: Record<string, number> = {
+  awareness: 0.0008,
+  website:   0.003,
+  leads:     0.005,
+};
+
 export function getBudgetForecast(state: BuilderState): {
   reach: string;
   clicks: string;
+  cpm: string;
   cpc: string;
   note: string;
   goalBadge: string;
 } {
-  const total = Math.max(state.totalBudget, state.dailyBudget);
-  const reach = Math.round(total * 2.45);
-  const clicksMin = Math.max(Math.round(total / 24), 1800);
-  const clicksMax = clicksMin + Math.round(clicksMin * 0.36);
-  const cpc = Math.max(Math.round(total / clicksMax), 12);
+  const total    = Math.max(state.totalBudget, state.dailyBudget);
+  const baseCpm  = CPM_BY_STRATEGY_LOCAL[state.strategy] ?? 155;
+  const baseCtr  = CTR_BY_GOAL_LOCAL[state.goal] ?? 0.003;
+
+  const reach    = Math.max(1, Math.round((total / baseCpm) * 1000));
+  const clicks   = Math.max(1, Math.round(reach * baseCtr));
+  const cpcValue = Math.round(baseCpm / (baseCtr * 1000));
+
+  const cpmMin    = Math.round(baseCpm * 0.83);
+  const cpmMax    = Math.round(baseCpm * 1.17);
+  const clicksMin = Math.round(clicks * 0.82);
+  const clicksMax = Math.round(clicks * 1.18);
+  const cpcMin    = Math.max(10, Math.round(cpcValue * 0.85));
+  const cpcMax    = Math.round(cpcValue * 1.15);
+
+  const fmt = (n: number) => new Intl.NumberFormat('ru-RU').format(n);
 
   return {
-    reach: new Intl.NumberFormat('ru-RU').format(reach),
-    clicks: `${new Intl.NumberFormat('ru-RU').format(clicksMin)} - ${new Intl.NumberFormat('ru-RU').format(clicksMax)}`,
-    cpc: `${cpc} - ${cpc + 4} ₽`,
-    note: `При текущих настройках система прогнозирует от ${new Intl.NumberFormat('ru-RU').format(clicksMin)} до ${new Intl.NumberFormat('ru-RU').format(clicksMax)} переходов за весь период кампании.`,
+    reach:  fmt(reach),
+    clicks: `${fmt(clicksMin)} − ${fmt(clicksMax)}`,
+    cpm:    `${cpmMin} − ${cpmMax} ₽`,
+    cpc:    `${cpcMin} − ${cpcMax} ₽`,
+    note:   `Деньги списываются за каждый показ (CPM ${cpmMin}–${cpmMax} ₽). Прогноз: ${fmt(clicksMin)}–${fmt(clicksMax)} переходов за период кампании.`,
     goalBadge:
       state.goal === 'website'
         ? 'CTR / CPC'
@@ -704,6 +728,7 @@ export function getTemplateContext(state: BuilderState) {
       strategyLabel: STRATEGY_LABELS[state.strategy],
       reach: budget.reach,
       clicks: budget.clicks,
+      cpm: budget.cpm,
       cpc: budget.cpc,
       goalBadge: budget.goalBadge,
     },

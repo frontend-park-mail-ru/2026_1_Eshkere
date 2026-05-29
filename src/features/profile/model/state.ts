@@ -20,19 +20,19 @@ import type {
 const TARIFFS: Record<TariffKey, TariffMeta> = {
   basic: {
     label: 'Basic',
-    description: 'Базовый кабинет и до 5 активных кампаний',
+    description: 'До 5 активных кампаний, ручное создание и email-уведомления',
     limit: 5,
-    price: '990 ₽ / мес',
+    price: '0 ₽ / мес',
   },
   pro: {
     label: 'Pro',
-    description: 'Расширенная аналитика и до 20 активных кампаний',
+    description: 'До 20 кампаний, AI-генерация, приоритетная модерация и Telegram',
     limit: 20,
     price: '3 900 ₽ / мес',
   },
   business: {
     label: 'Business',
-    description: 'Приоритетная поддержка и до 50 активных кампаний',
+    description: 'До 50 кампаний, приоритетная поддержка и расширенная аналитика',
     limit: 50,
     price: '8 900 ₽ / мес',
   },
@@ -83,8 +83,16 @@ export function getInitials(firstName: string, lastName: string): string {
   return `${firstName[0] || 'Н'}${lastName[0] || 'П'}`.toUpperCase();
 }
 
+// "noob" и "cheater" — внутренние значения бэкенда, маппим на basic
+function normalizeTariffKey(raw: string | undefined): TariffKey | undefined {
+  if (raw === 'pro')                          return 'pro';
+  if (raw === 'business')                     return 'business';
+  if (raw === 'basic' || raw === 'noob' || raw === 'cheater') return 'basic';
+  return undefined;
+}
+
 export function getTariffMeta(tariffKey: TariffKey): TariffMeta {
-  return TARIFFS[tariffKey];
+  return TARIFFS[tariffKey] ?? TARIFFS.basic;
 }
 
 export function getAccountStatusLabel(status: AccountStatus): string {
@@ -118,6 +126,9 @@ export async function getProfileState(): Promise<ProfileState> {
       avatar_url?: string;
       created_at?: string;
       can_change_password?: boolean;
+      tariff?: string;
+      is_pro_active?: boolean;
+      tariff_expires_at?: string | null;
     }>('/advertisers/me', { method: 'GET' });
     const profile = response.data;
 
@@ -144,6 +155,15 @@ export async function getProfileState(): Promise<ProfileState> {
         typeof profile?.can_change_password === 'boolean'
           ? profile.can_change_password
           : currentUser.canChangePassword,
+      tariffKey: normalizeTariffKey(profile?.tariff) ?? currentUser.tariffKey,
+      isProActive:
+        typeof profile?.is_pro_active === 'boolean'
+          ? profile.is_pro_active
+          : currentUser.isProActive,
+      tariffExpiresAt:
+        profile?.tariff_expires_at !== undefined
+          ? profile.tariff_expires_at
+          : currentUser.tariffExpiresAt,
     };
 
     authState.setAuthenticatedUser(currentUser);
@@ -174,6 +194,8 @@ export async function getProfileState(): Promise<ProfileState> {
     inn: currentUser.inn || '',
     balanceValue: typeof currentUser.balance === 'number' ? currentUser.balance : 0,
     tariffKey: currentUser.tariffKey || 'basic',
+    isProActive: currentUser.isProActive ?? false,
+    tariffExpiresAt: currentUser.tariffExpiresAt ?? null,
     accountStatus: currentUser.accountStatus || 'pending',
     activeCampaigns,
     lastAction: '—',
@@ -195,10 +217,11 @@ export function toTemplateContext(state: ProfileState): TemplateContext {
     fullName: `${state.firstName} ${state.lastName}`.trim() || 'Новый профиль',
     role: 'Рекламодатель · Основной аккаунт',
     accountId: `ID ${authState.getCurrentUser()?.id || '—'}`,
-    memberSince: 'С нами с 14 апреля 2026',
     balance: formatPrice(state.balanceValue),
     tariff: tariff.label,
     tariffDescription: tariff.description,
+    isProActive: state.isProActive,
+    tariffExpiresAt: state.tariffExpiresAt,
     activeCampaigns: state.activeCampaigns,
     lastAction: state.lastAction,
     profileFields: buildProfileFields(state),
@@ -233,6 +256,8 @@ export function persistUserState(state: ProfileState): void {
     city: state.city,
     inn: state.inn,
     tariffKey: state.tariffKey,
+    isProActive: state.isProActive,
+    tariffExpiresAt: state.tariffExpiresAt,
     accountStatus: state.accountStatus,
     contactHandle: state.contactHandle,
     cardMasked: state.cardMasked,

@@ -2,6 +2,7 @@ import riskListItemsTemplate from 'features/campaign-builder/ui/risk-list-items.
 
 interface BudgetForecastView {
   clicks: string;
+  cpm: string;
   cpc: string;
   note: string;
   reach: string;
@@ -66,6 +67,7 @@ export function syncCampaignBuilderBudgetView({
 }: SyncCampaignBuilderBudgetParams): void {
   setText('[data-budget-reach]', budget.reach);
   setText('[data-budget-clicks]', budget.clicks);
+  setText('[data-budget-cpm]', budget.cpm);
   setText('[data-budget-cpc]', budget.cpc);
   setText('[data-budget-note]', budget.note);
   setTextAll('[data-final-daily-budget]', `${dailyBudget.toLocaleString('ru-RU')} ₽`);

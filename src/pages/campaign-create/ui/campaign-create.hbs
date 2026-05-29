@@ -469,7 +469,7 @@
               </div>
             </div>
 
-            <div class="campaign-builder__note" data-budget-note>При текущих настройках система прогнозирует от {{budget.clicks}} переходов за весь период кампании.</div>
+            <div class="campaign-builder__note" data-budget-note>Деньги списываются за каждый показ (CPM {{budget.cpm}}). Прогноз: {{budget.clicks}} переходов за период.</div>
           </div>
 
           <div class="campaign-builder__card">
@@ -484,12 +484,13 @@
                 <strong class="campaign-builder__metric-value" data-budget-reach>{{budget.reach}}</strong>
               </div>
               <div class="campaign-builder__metric">
-                <span class="campaign-builder__metric-label">Переходы</span>
-                <strong class="campaign-builder__metric-value" data-budget-clicks>{{budget.clicks}}</strong>
+                <span class="campaign-builder__metric-label">CPM</span>
+                <strong class="campaign-builder__metric-value" data-budget-cpm>{{budget.cpm}}</strong>
               </div>
               <div class="campaign-builder__metric">
-                <span class="campaign-builder__metric-label">Средний CPC</span>
-                <strong class="campaign-builder__metric-value" data-budget-cpc>{{budget.cpc}}</strong>
+                <span class="campaign-builder__metric-label">Переходы</span>
+                <strong class="campaign-builder__metric-value" data-budget-clicks>{{budget.clicks}}</strong>
+                <span class="campaign-builder__metric-sub">≈ <span data-budget-cpc>{{budget.cpc}}</span> / переход</span>
               </div>
             </div>
           </div>

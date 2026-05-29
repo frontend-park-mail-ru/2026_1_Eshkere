@@ -26,6 +26,8 @@ export interface ProfileState {
   inn: string;
   balanceValue: number;
   tariffKey: TariffKey;
+  isProActive: boolean;
+  tariffExpiresAt: string | null;
   accountStatus: AccountStatus;
   activeCampaigns: number;
   lastAction: string;
@@ -43,10 +45,11 @@ export interface TemplateContext {
   fullName: string;
   role: string;
   accountId: string;
-  memberSince: string;
   balance: string;
   tariff: string;
   tariffDescription: string;
+  isProActive: boolean;
+  tariffExpiresAt: string | null;
   activeCampaigns: number;
   lastAction: string;
   profileFields: ProfileField[];

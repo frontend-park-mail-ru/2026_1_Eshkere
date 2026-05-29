@@ -11,6 +11,7 @@ import {
   LocalStorageKey,
   localStorageService,
 } from 'shared/lib/local-storage';
+import { ApiRequestError } from 'shared/lib/request';
 import { REQUEST_ERROR_EVENT_NAME } from 'widgets/request-error-modal';
 import campaignCreateTemplate from './campaign-create.hbs';
 import {
@@ -190,7 +191,27 @@ function createSubmitBuilder() {
 
       localStorageService.removeItem(LocalStorageKey.CampaignBuilderDraft);
       navigateTo(`/advertiser/campaign?id=${campaignId}`);
-    } catch {
+    } catch (error) {
+      if (error instanceof ApiRequestError && error.status === 402) {
+        const isExpired = String(error.message).toLowerCase().includes('истек') ||
+          String(error.message).toLowerCase().includes('expired');
+        window.dispatchEvent(
+          new CustomEvent(REQUEST_ERROR_EVENT_NAME, {
+            detail: {
+              title: isExpired
+                ? 'Подписка Pro истекла'
+                : 'Достигнут лимит кампаний',
+              message: isExpired
+                ? 'Ваша подписка Pro истекла, лимит снова 5 кампаний. Продлите Pro, чтобы продолжить.'
+                : 'Достигнут лимит активных кампаний (5) для тарифа Basic. Перейдите на Pro, чтобы создавать больше кампаний.',
+              note: '',
+              actionLabel: isExpired ? 'Продлить Pro' : 'Перейти на Pro',
+              actionHref: '/subscription',
+            },
+          }),
+        );
+        return;
+      }
       showCreateError(stage, campaignId, groupId);
     }
   };

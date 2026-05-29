@@ -2,7 +2,9 @@ import './ads.scss';
 import { navigateTo } from 'shared/lib/navigation';
 import { maybeStartAdvertiserTour } from 'features/onboarding';
 import { deleteAdCampaign, getAdGroups, getAds, getAdsInGroup } from 'features/ads';
+import { getSubscription } from 'features/subscription';
 import { isOfflineErrorMessage } from 'shared/lib/request';
+import { showToast } from 'shared/lib/toast';
 import { renderTemplate } from 'shared/lib/render';
 import type { AdItem } from 'features/ads/api/get-ads';
 import type { CampaignDeleteModalDetail } from 'widgets/ads-delete-modal';
@@ -94,6 +96,15 @@ function bindCreateButtons(signal: AbortSignal): void {
         'click',
         (event) => {
           event.preventDefault();
+          if (button.dataset.atLimit === 'true') {
+            showToast(
+              'Лимит кампаний',
+              'Достигнут лимит активных кампаний для тарифа Basic. Перейдите на Pro.',
+              'warning',
+            );
+            navigateTo('/subscription');
+            return;
+          }
           navigateTo('/advertiser/campaigns/create');
         },
         { signal },
@@ -335,7 +346,11 @@ function initDeleteFlow(signal: AbortSignal): void {
 }
 
 export async function renderAdsPage(): Promise<string> {
-  const result = await getAds();
+  const [result, subs] = await Promise.all([
+    getAds(),
+    getSubscription().catch(() => null),
+  ]);
+
   const enrichedAds = await mapWithConcurrency(
     result.ads.slice(0, COMPOSITION_PREFETCH_LIMIT),
     COMPOSITION_REQUEST_CONCURRENCY,
@@ -350,6 +365,10 @@ export async function renderAdsPage(): Promise<string> {
   ];
   const campaigns = mapAdsToCampaigns(adsWithComposition);
 
+  const usedCampaigns  = subs?.used_campaigns  ?? campaigns.length;
+  const maxCampaigns   = subs?.max_campaigns   ?? 0;
+  const atLimit        = maxCampaigns > 0 && usedCampaigns >= maxCampaigns;
+
   return renderTemplate(adsPageTemplate, {
     campaigns,
     hasCampaigns: campaigns.length > 0,
@@ -357,6 +376,10 @@ export async function renderAdsPage(): Promise<string> {
       result.error && !isOfflineErrorMessage(result.message)
         ? (result.message ?? '')
         : '',
+    usedCampaigns,
+    maxCampaigns,
+    atLimit,
+    campaignLimitLabel: maxCampaigns > 0 ? `${usedCampaigns} / ${maxCampaigns} кампаний` : '',
   });
 }
 
@@ -383,6 +406,25 @@ export function Ads(): void | VoidFunction {
   initCampaignPagination(signal);
   bindSearch(signal);
   bindCampaignStatusModal(signal);
+
+  // Async: помечаем кнопки создания как заблокированные если лимит исчерпан
+  getSubscription().then((subs) => {
+    if (signal.aborted) return;
+
+    const limitEl = document.querySelector<HTMLElement>('[data-campaigns-limit]');
+    if (limitEl && subs.max_campaigns > 0) {
+      limitEl.textContent = `${subs.used_campaigns} / ${subs.max_campaigns}`;
+    }
+
+    if (subs.max_campaigns > 0 && subs.used_campaigns >= subs.max_campaigns) {
+      document.querySelectorAll<HTMLElement>(
+        '.campaigns-page__create-button, .campaigns-empty__create-button',
+      ).forEach((btn) => {
+        btn.dataset.atLimit = 'true';
+        btn.setAttribute('title', `Лимит ${subs.used_campaigns}/${subs.max_campaigns} — перейдите на Pro`);
+      });
+    }
+  }).catch(() => null);
 
   return () => {
     if (adsPageLifecycleController === controller) {

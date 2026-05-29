@@ -80,6 +80,14 @@
     text-align: right;
   }
 
+  &__metric-sub {
+    display: block;
+    margin-top: 4px;
+    font-size: 11px;
+    color: #9ba5be;
+    line-height: 1.3;
+  }
+
   &__metric-note {
     margin: 8px 0 0;
     font-family: t.$font-family-body;

@@ -7,6 +7,8 @@ import {
   type StatisticsPeriodKey,
 } from './mock';
 
+export type { StatisticsPeriodData };
+
 export type StatisticsMetricKey =
   | 'impressions'
   | 'clicks'
@@ -250,6 +252,17 @@ function buildInsights(
   totals: Totals,
   period: StatisticsPeriodData,
 ): CampaignStatisticsTemplateContext['insights'] {
+  if (period.placements.length === 0) {
+    return [
+      {
+        label: 'Данных пока нет',
+        value: 'Кампания ещё не накопила статистику',
+        text: 'После первых показов здесь появятся рекомендации по оффингу, каналам и темпу.',
+        tone: 'neutral',
+      },
+    ];
+  }
+
   const bestPlacement = [...period.placements]
     .map((item) => ({
       ...item,
@@ -301,6 +314,7 @@ function buildInsights(
 export function buildCampaignStatisticsContext(
   seed: CampaignStatisticsSeed | null,
   uiState: CampaignStatisticsUiState,
+  liveData?: Partial<Record<StatisticsPeriodKey, StatisticsPeriodData>>,
 ): CampaignStatisticsTemplateContext {
   const mock = cloneDefaultMock();
 
@@ -316,7 +330,8 @@ export function buildCampaignStatisticsContext(
     mock.goal = seed.goal.trim();
   }
 
-  if (typeof seed?.budgetValue === 'number' && Number.isFinite(seed.budgetValue)) {
+  // Scale mock data by budget only when no live data available
+  if (!liveData && typeof seed?.budgetValue === 'number' && Number.isFinite(seed.budgetValue)) {
     const spendScale = Math.max(seed.budgetValue / 74900, 0.5);
 
     (Object.keys(mock.periods) as StatisticsPeriodKey[]).forEach((periodKey) => {
@@ -344,7 +359,7 @@ export function buildCampaignStatisticsContext(
     });
   }
 
-  const period = mock.periods[uiState.period];
+  const period = liveData?.[uiState.period] ?? mock.periods[uiState.period];
   const totals = sumPeriod(period);
   const previousCtr =
     period.previousTotals.impressions > 0

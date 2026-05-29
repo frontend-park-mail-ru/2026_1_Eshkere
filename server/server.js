@@ -75,7 +75,7 @@ if (isDevelopment) {
  * @return {void}
  */
 function proxyApiRequest(req, res) {
-  const target = new URL(`http://localhost:8000${req.originalUrl.replace(/^\/api/, '')}`);
+  const target = new URL(`http://localhost:8000${req.originalUrl}`);
   const headers = {...req.headers};
   headers.host = req.headers.host || 'localhost:8081';
 
@@ -367,7 +367,7 @@ function isStaticRequest(pathname) {
 
 function getProxyTarget(pathWithQuery, pathname) {
   if (pathname.startsWith('/api')) {
-    return new URL(`${BACKEND_ORIGIN}${pathWithQuery.replace(/^\/api/, '') || '/'}`);
+    return new URL(`${BACKEND_ORIGIN}${pathWithQuery}`);
   }
 
   if (

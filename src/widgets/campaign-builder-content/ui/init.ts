@@ -7,6 +7,7 @@ import type {
   StrategyKey,
   ToastPayload,
 } from 'features/campaign-builder/model/types';
+import { openImageCropModal, type ImageCropRatio } from 'widgets/image-crop-modal';
 
 interface InitCampaignBuilderContentControlsParams {
   clampText: (value: string, limit: number) => string;
@@ -209,56 +210,71 @@ export function initCampaignBuilderContentControls({
       );
     });
 
+  const IMAGE_SLOT_RATIOS: Partial<Record<CreativeAssetKey, ImageCropRatio>> = {
+    feedVisual:  'feed',
+    storyVisual: 'stories',
+    videoCover:  'feed',
+  };
+
   document
     .querySelectorAll<HTMLInputElement>('[data-builder-slot-input]')
     .forEach((input) => {
       input.addEventListener(
         'change',
         () => {
-          const key = input.dataset.builderSlotInput as CreativeAssetKey | undefined;
-          const files = input.files ? Array.from(input.files) : [];
+          void (async () => {
+            const key = input.dataset.builderSlotInput as CreativeAssetKey | undefined;
+            const files = input.files ? Array.from(input.files) : [];
 
-          if (!key || files.length === 0) {
-            return;
-          }
+            if (!key || files.length === 0) {
+              return;
+            }
 
-          const firstFile = files[0];
-          const expectsVideo = key === 'mainVideo' || key === 'verticalVideo';
-          const expectsImage = key === 'videoCover';
+            const firstFile = files[0];
+            const expectsVideo = key === 'mainVideo' || key === 'verticalVideo';
 
-          if (expectsVideo && !firstFile.type.startsWith('video/')) {
-            input.value = '';
+            if (expectsVideo && !firstFile.type.startsWith('video/')) {
+              input.value = '';
+              showToast({
+                title: 'Нужен видеофайл',
+                description:
+                  'Для этого слота загрузите MP4, MOV или другой видеофайл.',
+              });
+              return;
+            }
+
+            if (!expectsVideo && !firstFile.type.startsWith('image/')) {
+              input.value = '';
+              showToast({
+                title: 'Нужно изображение',
+                description:
+                  'Для этого слота загрузите PNG, JPG или другое изображение.',
+              });
+              return;
+            }
+
+            let fileToUse = firstFile;
+            const cropRatio = IMAGE_SLOT_RATIOS[key];
+            if (cropRatio) {
+              const cropResult = await openImageCropModal(firstFile, cropRatio);
+              if (!cropResult) {
+                input.value = '';
+                return;
+              }
+              fileToUse = cropResult.file;
+            }
+
+            state.creativeAssets[key] = fileToUse.name;
+            state.creativeFiles[key] = fileToUse;
+
+            persistState(state);
+            syncBuilder(state);
             showToast({
-              title: 'Нужен видеофайл',
-              description:
-                'Для этого слота загрузите MP4, MOV или другой видеофайл.',
+              title: 'Креатив обновлён',
+              description: `Файл "${fileToUse.name}" сохранён в черновике кампании.`,
             });
-            return;
-          }
-
-          if (expectsImage && !firstFile.type.startsWith('image/')) {
             input.value = '';
-            showToast({
-              title: 'Нужна обложка',
-              description:
-                'Для обложки загрузите PNG, JPG или другое изображение.',
-            });
-            return;
-          }
-
-          state.creativeAssets[key] =
-            files.length === 1
-              ? firstFile.name
-              : `${files.length} файла, первый: ${firstFile.name}`;
-          state.creativeFiles[key] = firstFile;
-
-          persistState(state);
-          syncBuilder(state);
-          showToast({
-            title: 'Креатив обновлён',
-            description: `Файл "${firstFile.name}" сохранён в черновике кампании.`,
-          });
-          input.value = '';
+          })();
         },
         { signal },
       );

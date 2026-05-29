@@ -24,6 +24,8 @@ let steps: TourStep[] = [];
 let currentStep = 0;
 let resizeObserver: ResizeObserver | null = null;
 let scrollCleanup: (() => void) | null = null;
+let scrollLockCleanup: (() => void) | null = null;
+let routeChangeCleanup: (() => void) | null = null;
 let onComplete: (() => void) | null = null;
 let onRouteChange: ((route: string, stepIndex: number) => void) | null = null;
 
@@ -77,24 +79,70 @@ function createElement(): TourElements {
   el.nextBtn.addEventListener('click', () => next());
   el.prevBtn.addEventListener('click', () => prev());
   el.skipBtn.addEventListener('click', () => stop());
+  el.overlay.addEventListener('click', handleOverlayClick);
 
   document.addEventListener('keydown', handleKeydown);
-  document.addEventListener('click', handleDocumentClick);
 
   return el;
 }
 
-function handleDocumentClick(e: MouseEvent): void {
-  if (!elements) return;
-  if (!elements.tooltip.contains(e.target as Node)) {
-    stop();
-  }
+function handleOverlayClick(e: MouseEvent): void {
+  e.preventDefault();
+  e.stopPropagation();
 }
 
 function handleKeydown(e: KeyboardEvent): void {
-  if (e.key === 'Escape') stop();
-  if (e.key === 'ArrowRight') next();
-  if (e.key === 'ArrowLeft') prev();
+  if (e.key === 'Escape') {
+    e.preventDefault();
+    stop();
+  }
+  if (e.key === 'ArrowRight') {
+    e.preventDefault();
+    next();
+  }
+  if (e.key === 'ArrowLeft') {
+    e.preventDefault();
+    prev();
+  }
+}
+
+function lockPageScroll(): void {
+  if (scrollLockCleanup) return;
+
+  const scrollY = window.scrollY;
+  const previousBodyStyles = {
+    position: document.body.style.position,
+    top: document.body.style.top,
+    left: document.body.style.left,
+    right: document.body.style.right,
+    width: document.body.style.width,
+    overflow: document.body.style.overflow,
+  };
+  const previousHtmlOverflow = document.documentElement.style.overflow;
+
+  document.documentElement.style.overflow = 'hidden';
+  document.body.style.position = 'fixed';
+  document.body.style.top = `-${scrollY}px`;
+  document.body.style.left = '0';
+  document.body.style.right = '0';
+  document.body.style.width = '100%';
+  document.body.style.overflow = 'hidden';
+
+  scrollLockCleanup = () => {
+    document.documentElement.style.overflow = previousHtmlOverflow;
+    document.body.style.position = previousBodyStyles.position;
+    document.body.style.top = previousBodyStyles.top;
+    document.body.style.left = previousBodyStyles.left;
+    document.body.style.right = previousBodyStyles.right;
+    document.body.style.width = previousBodyStyles.width;
+    document.body.style.overflow = previousBodyStyles.overflow;
+    scrollLockCleanup = null;
+    window.scrollTo(0, scrollY);
+  };
+}
+
+function unlockPageScroll(): void {
+  scrollLockCleanup?.();
 }
 
 function positionSpotlight(target: Element): void {
@@ -217,8 +265,10 @@ function renderStep(index: number): void {
     };
 
     if (alreadyInView) {
+      lockPageScroll();
       requestAnimationFrame(doPosition);
     } else {
+      unlockPageScroll();
       target.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
       let done = false;
@@ -226,6 +276,7 @@ function renderStep(index: number): void {
         if (done) return;
         done = true;
         window.removeEventListener('scrollend', settle);
+        lockPageScroll();
         doPosition();
       };
 
@@ -235,6 +286,7 @@ function renderStep(index: number): void {
       setTimeout(settle, 420);
     }
   } else {
+    lockPageScroll();
     elements.spotlight.hidden = true;
     elements.overlay.style.background = 'rgba(0, 0, 0, 0.6)';
     positionTooltip(null, 'center');
@@ -247,11 +299,13 @@ function cleanup(): void {
   if (!elements) return;
 
   document.removeEventListener('keydown', handleKeydown);
-  document.removeEventListener('click', handleDocumentClick);
   resizeObserver?.disconnect();
   resizeObserver = null;
   scrollCleanup?.();
   scrollCleanup = null;
+  routeChangeCleanup?.();
+  routeChangeCleanup = null;
+  unlockPageScroll();
 
   elements.overlay.remove();
   elements.spotlight.remove();
@@ -259,6 +313,12 @@ function cleanup(): void {
   elements = null;
   currentStep = 0;
   onRouteChange = null;
+}
+
+export function cancelTour(): void {
+  if (!elements) return;
+  cleanup();
+  onComplete = null;
 }
 
 function next(): void {
@@ -301,7 +361,7 @@ export function startTour(
   onDone?: () => void,
   navigateFn?: (route: string, stepIndex: number) => void,
 ): void {
-  if (elements) stop();
+  if (elements) cancelTour();
 
   steps = tourSteps;
   currentStep = fromStep;
@@ -315,6 +375,10 @@ export function startTour(
     const onScroll = () => repositionCurrent();
     window.addEventListener('scroll', onScroll, { passive: true });
     scrollCleanup = () => window.removeEventListener('scroll', onScroll);
+
+    const handleRouteChange = () => cancelTour();
+    window.addEventListener('locationchange', handleRouteChange);
+    routeChangeCleanup = () => window.removeEventListener('locationchange', handleRouteChange);
 
     // Re-render on resize / orientation change
     resizeObserver = new ResizeObserver(() => {

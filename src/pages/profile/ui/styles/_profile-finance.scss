@@ -129,6 +129,18 @@
       color: #2ea360;
       background: rgba(214, 244, 221, 0.9);
     }
+
+    &--pro {
+      gap: 5px;
+      color: #6c5ce7;
+      background: rgba(108, 92, 231, 0.1);
+    }
+  }
+
+  &__text--note {
+    margin-top: 2px;
+    font-size: 11px;
+    color: #9ba5be;
   }
 
   &__action {

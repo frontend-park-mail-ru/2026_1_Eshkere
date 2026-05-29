@@ -19,7 +19,6 @@
             {{accountStatusLabel}}
           </span>
           <span class="profile-hero__badge">{{accountId}}</span>
-          <span class="profile-hero__badge">{{memberSince}}</span>
         </div>
       </div>
     </div>
@@ -133,14 +132,26 @@
           <div>
             <strong class="profile-stack__title">Текущий тариф</strong>
             <p class="profile-stack__text" data-profile-tariff-description>{{tariffDescription}}</p>
+            {{#if tariffExpiresAt}}
+            <p class="profile-stack__text profile-stack__text--note">Активен до {{tariffExpiresAt}}</p>
+            {{/if}}
           </div>
           <div class="profile-stack__meta">
-            <span class="profile-stack__pill profile-stack__pill--success" data-profile-tariff>
-              {{tariff}}
-            </span>
-            <button class="profile-stack__action" type="button" data-open-tariff-modal>
-              Сменить
-            </button>
+            {{#if isProActive}}
+              <span class="profile-stack__pill profile-stack__pill--pro" data-profile-tariff>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 2l2.4 7.2H22l-6.2 4.5 2.4 7.2L12 17.4l-6.2 4.5 2.4-7.2L2 9.2h7.6L12 2z"/>
+                </svg>
+                Pro
+              </span>
+            {{else}}
+              <span class="profile-stack__pill profile-stack__pill--success" data-profile-tariff>
+                {{tariff}}
+              </span>
+            {{/if}}
+            <a class="profile-stack__action" href="/subscription" data-profile-subscription-link>
+              {{#if isProActive}}Управлять{{else}}Перейти на Pro{{/if}}
+            </a>
           </div>
         </article>
 
@@ -575,22 +586,20 @@
             <label class="profile-modal__tariff-card">
               <input class="profile-modal__tariff-input" type="radio" name="nextTariff" value="basic" />
               <span class="profile-modal__tariff-label">Basic</span>
-              <span class="profile-modal__tariff-price">990 ₽ / мес</span>
-              <span class="profile-modal__tariff-text">До 5 активных кампаний и базовая аналитика</span>
+              <span class="profile-modal__tariff-price">0 ₽ / мес</span>
+              <span class="profile-modal__tariff-text">До 5 активных кампаний, ручное создание и email-уведомления</span>
             </label>
 
             <label class="profile-modal__tariff-card">
-              <input class="profile-modal__tariff-input" type="radio" name="nextTariff" value="pro" checked />
-              <span class="profile-modal__tariff-label">Pro</span>
+              <input class="profile-modal__tariff-input" type="radio" name="nextTariff" value="pro" />
+              <span class="profile-modal__tariff-label">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="color:#a29bfe;vertical-align:-1px">
+                  <path d="M12 2l2.4 7.2H22l-6.2 4.5 2.4 7.2L12 17.4l-6.2 4.5 2.4-7.2L2 9.2h7.6L12 2z"/>
+                </svg>
+                Pro
+              </span>
               <span class="profile-modal__tariff-price">3 900 ₽ / мес</span>
-              <span class="profile-modal__tariff-text">До 20 кампаний и расширенная аналитика</span>
-            </label>
-
-            <label class="profile-modal__tariff-card">
-              <input class="profile-modal__tariff-input" type="radio" name="nextTariff" value="business" />
-              <span class="profile-modal__tariff-label">Business</span>
-              <span class="profile-modal__tariff-price">8 900 ₽ / мес</span>
-              <span class="profile-modal__tariff-text">До 50 кампаний и приоритетная поддержка</span>
+              <span class="profile-modal__tariff-text">До 20 кампаний, AI-генерация, приоритетная модерация и Telegram-уведомления</span>
             </label>
           </div>
 

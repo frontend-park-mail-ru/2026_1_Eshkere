@@ -29,24 +29,51 @@ export function formatBudgetPeriod(days: number): string {
   return `${Math.max(1, Math.round(days))} дней`;
 }
 
+// CPM (₽ за 1000 показов) по стратегии
+const CPM_BY_STRATEGY: Record<string, number> = {
+  aggressive: 185,
+  smart:      155,
+  even:       125,
+};
+
+// CTR по цели кампании
+const CTR_BY_GOAL: Record<string, number> = {
+  awareness: 0.0008,
+  website:   0.003,
+  leads:     0.005,
+};
+
 export function getBudgetForecast(state: BuilderState): {
   reach: string;
   clicks: string;
+  cpm: string;
   cpc: string;
   note: string;
   goalBadge: string;
 } {
   const total = Math.max(state.totalBudget, state.dailyBudget);
-  const reach = Math.round(total * 2.45);
-  const clicksMin = Math.max(Math.round(total / 24), 1800);
-  const clicksMax = clicksMin + Math.round(clicksMin * 0.36);
-  const cpc = Math.max(Math.round(total / clicksMax), 12);
+  const baseCpm = CPM_BY_STRATEGY[state.strategy] ?? 155;
+  const baseCtr = CTR_BY_GOAL[state.goal] ?? 0.003;
+
+  const reach    = Math.max(1, Math.round((total / baseCpm) * 1000));
+  const clicks   = Math.max(1, Math.round(reach * baseCtr));
+  const cpcValue = Math.round(baseCpm / (baseCtr * 1000));
+
+  const cpmMin    = Math.round(baseCpm * 0.83);
+  const cpmMax    = Math.round(baseCpm * 1.17);
+  const clicksMin = Math.round(clicks * 0.82);
+  const clicksMax = Math.round(clicks * 1.18);
+  const cpcMin    = Math.max(10, Math.round(cpcValue * 0.85));
+  const cpcMax    = Math.round(cpcValue * 1.15);
+
+  const fmt = (n: number) => new Intl.NumberFormat('ru-RU').format(n);
 
   return {
-    reach: new Intl.NumberFormat('ru-RU').format(reach),
-    clicks: `${new Intl.NumberFormat('ru-RU').format(clicksMin)} - ${new Intl.NumberFormat('ru-RU').format(clicksMax)}`,
-    cpc: `${cpc} - ${cpc + 4} ₽`,
-    note: `При текущих настройках система прогнозирует от ${new Intl.NumberFormat('ru-RU').format(clicksMin)} до ${new Intl.NumberFormat('ru-RU').format(clicksMax)} переходов за весь период кампании.`,
+    reach:  fmt(reach),
+    clicks: `${fmt(clicksMin)} − ${fmt(clicksMax)}`,
+    cpm:    `${cpmMin} − ${cpmMax} ₽`,
+    cpc:    `${cpcMin} − ${cpcMax} ₽`,
+    note:   `Деньги списываются за каждый показ (CPM ${cpmMin}–${cpmMax} ₽). Прогноз: ${fmt(clicksMin)}–${fmt(clicksMax)} переходов за период кампании.`,
     goalBadge:
       state.goal === 'website'
         ? 'CTR / CPC'
@@ -78,10 +105,10 @@ export function getBudgetInsights(state: BuilderState): {
         : 'Ровный темп';
   const paceNote =
     state.strategy === 'aggressive'
-      ? 'Бюджет будет расходоваться активнее в первые дни. Хорошо для быстрого теста и скорого набора статистики.'
+      ? 'Бюджет расходуется активнее в первые дни — выше CPM, но быстрее набирается статистика.'
       : state.strategy === 'smart'
-        ? 'Система будет гибко перераспределять открутку между днями в поиске более дешёвого результата.'
-        : 'Открутка распределяется равномерно. Удобно для стабильного контроля расхода и частоты.';
+        ? 'Система гибко перераспределяет показы между днями, ища более дешёвый CPM.'
+        : 'Открутка распределяется равномерно. Стабильный CPM и предсказуемый расход.';
   const reserveLabel =
     coverageDays >= plannedDays + 5
       ? 'Запас высокий'
@@ -92,8 +119,8 @@ export function getBudgetInsights(state: BuilderState): {
     coverageDays >= plannedDays + 5
       ? `Бюджета хватает примерно на ${coverageDays} дней при плане на ${plannedDays}. Есть запас на тест и дообучение.`
       : coverageDays >= plannedDays
-        ? `Текущего лимита хватает примерно на ${coverageDays} дней. Этого достаточно, чтобы пройти запланированный период без резкого обрыва.`
-        : `При текущем соотношении лимит закончится примерно через ${coverageDays} дн., а плановый период выглядит длиннее. Нужен больший общий бюджет или короче период.`;
+        ? `Текущего лимита хватает примерно на ${coverageDays} дней. Этого достаточно для запланированного периода.`
+        : `При текущем дневном лимите бюджет закончится через ~${coverageDays} дн., план — ${plannedDays} дн. Нужен больший общий лимит или более короткий период.`;
   const warnings = [
     coverageDays < plannedDays
       ? 'Плановый период длиннее, чем позволяет общий лимит. Кампания может остановиться раньше срока.'
@@ -102,11 +129,11 @@ export function getBudgetInsights(state: BuilderState): {
       ? 'Общий лимит меньше недели открутки. Для устойчивой оценки кампании обычно нужен более длинный горизонт.'
       : 'Горизонт открутки выглядит достаточным для первого запуска.',
     state.strategy === 'aggressive'
-      ? 'Агрессивная стратегия быстрее соберёт данные, но может поднять цену клика в начале.'
+      ? 'Ускоренный старт даёт больше показов в первые дни, но CPM обычно выше среднего.'
       : 'Текущая стратегия не выглядит рискованной по расходу.',
     state.dailyBudget < 3000
-      ? 'Низкий дневной бюджет может замедлить обучение и дать менее стабильный прогноз.'
-      : 'Дневной лимит достаточен, чтобы система набирала статистику без сильной задержки.',
+      ? 'Низкий дневной бюджет даёт мало показов в сутки — алгоритму сложнее обучиться быстро.'
+      : 'Дневной лимит достаточен для стабильного набора статистики.',
   ];
 
   return {

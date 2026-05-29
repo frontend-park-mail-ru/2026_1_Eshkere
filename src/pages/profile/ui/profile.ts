@@ -92,6 +92,8 @@ function readProfileStateFromDom(): ProfileState {
     lastTopUp: document.querySelector('[data-profile-last-top-up]')?.textContent || '—',
     passwordStatus: document.querySelector('[data-profile-password-status]')?.textContent || 'Добавить',
     canChangePassword: profileRoot?.dataset.canChangePassword !== 'false',
+    isProActive: profileRoot?.dataset.isProActive === 'true',
+    tariffExpiresAt: profileRoot?.dataset.tariffExpiresAt || null,
   };
 }
 
@@ -155,6 +157,13 @@ export function Profile(): VoidFunction | void {
 
   populateForms(state);
   refreshModalSubmitStates(state);
+
+  // SPA-навигация для ссылки "Управлять подпиской"
+  root.querySelector<HTMLAnchorElement>('[data-profile-subscription-link]')
+    ?.addEventListener('click', (e) => {
+      e.preventDefault();
+      navigateTo('/subscription');
+    }, { signal: controller.signal });
 
   const restartTourBtn = root.querySelector<HTMLButtonElement>('[data-restart-tour]');
   restartTourBtn?.addEventListener(

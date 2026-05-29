@@ -563,6 +563,310 @@
   line-height: 1.45;
 }
 
+// ─── AI helpers ──────────────────────────────────────────────────────────────
+
+@keyframes adc-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes adc-record-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.35); }
+  50%       { box-shadow: 0 0 0 5px rgba(239, 68, 68, 0); }
+}
+
+@keyframes adc-skeleton-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.adc__spinner {
+  display: none;
+  flex-shrink: 0;
+  animation: adc-spin 0.7s linear infinite;
+}
+
+.is-loading {
+  .adc__spinner      { display: block; }
+  .adc__ai-sparkle-icon { display: none; }
+}
+
+// Field header with AI action buttons
+
+.adc__field-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.adc__ai-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.adc__ai-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-card-strong);
+  color: var(--text-soft);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+
+  &:hover {
+    border-color: var(--primary-border-soft);
+    color: var(--primary-active);
+    background: var(--primary-surface);
+  }
+
+  &.is-active {
+    border-color: var(--primary-border);
+    background: var(--primary-surface);
+    color: var(--primary-active);
+  }
+
+  &.is-recording {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.07);
+    color: #ef4444;
+    animation: adc-record-pulse 1.3s ease-in-out infinite;
+  }
+}
+
+// AI context panel
+
+.adc__ai-panel {
+  background: var(--primary-surface);
+  border: 1px solid var(--primary-border-soft);
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  &[hidden] { display: none; }
+}
+
+.adc__ai-panel-title {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary-active);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.adc__ai-context-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--primary-border-soft);
+  border-radius: 10px;
+  background: var(--surface-card);
+  color: var(--text-body);
+  font: inherit;
+  font-size: 14px;
+  resize: none;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+
+  &:focus-visible {
+    border-color: var(--primary-border);
+    box-shadow: 0 0 0 3px var(--primary-surface);
+  }
+
+  &::placeholder { color: var(--text-note); }
+}
+
+.adc__ai-panel-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.adc__ai-panel-hint {
+  font-size: 11px;
+  color: var(--text-note);
+  line-height: 1.4;
+}
+
+.adc__ai-gen-text-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 10px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+
+  &:hover { opacity: 0.85; }
+
+  &:disabled,
+  &.is-loading {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+// "или" divider
+
+.adc__ai-or {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  span {
+    font-size: 12px;
+    color: var(--text-note);
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+}
+
+// Generate-image button
+
+.adc__ai-gen-image-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1.5px dashed var(--border);
+  border-radius: 14px;
+  background: transparent;
+  color: var(--text-body);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+
+  &:not(:disabled):hover {
+    border-color: var(--primary-border);
+    background: var(--primary-surface);
+    color: var(--primary-active);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  &.is-loading {
+    pointer-events: none;
+    cursor: wait;
+    opacity: 0.7;
+  }
+}
+
+.adc__ai-sparkle-icon {
+  flex-shrink: 0;
+  color: var(--primary-active);
+  opacity: 0.8;
+}
+
+// Variants grid
+
+.adc__ai-variants {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+
+  &[hidden] { display: none; }
+}
+
+.adc__ai-variant {
+  position: relative;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  aspect-ratio: 1.91 / 1;
+  background: var(--surface-card-strong);
+  transition: border-color 0.15s, box-shadow 0.15s;
+  outline: none;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--primary-border-soft);
+  }
+
+  &--selected {
+    border-color: var(--primary-border);
+    box-shadow: 0 0 0 3px var(--primary-surface);
+  }
+
+  &--skeleton {
+    background: linear-gradient(
+      90deg,
+      var(--surface-card-strong) 25%,
+      var(--border-subtle) 37%,
+      var(--surface-card-strong) 63%
+    );
+    background-size: 400% 100%;
+    animation: adc-skeleton-shimmer 1.4s ease-in-out infinite;
+    pointer-events: none;
+    cursor: default;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+.adc__ai-variant-check {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--primary);
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  .adc__ai-variant--selected & { display: flex; }
+}
+
+.adc__ai-variants-note {
+  grid-column: 1 / -1;
+  margin: 2px 0 0;
+  font-size: 11px;
+  color: var(--text-note);
+  text-align: center;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 @include mixins.media-max(t.$bp-lg) {
   .adc__toolbar {
     position: static;
