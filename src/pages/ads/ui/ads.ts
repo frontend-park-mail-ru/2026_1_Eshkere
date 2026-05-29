@@ -1,5 +1,6 @@
 import './ads.scss';
 import { navigateTo } from 'shared/lib/navigation';
+import { setupMotionEnhancements } from 'shared/lib/animations';
 import { maybeStartAdvertiserTour } from 'features/onboarding';
 import { deleteAdCampaign, getAdGroups, getAds, getAdsInGroup } from 'features/ads';
 import { getSubscription } from 'features/subscription';
@@ -304,7 +305,9 @@ function removeCampaignRow(campaignId: number): void {
   if (!body?.querySelector('.campaign-row')) {
     body?.remove();
     footer?.remove();
-    table?.appendChild(renderEmptyCampaignsState());
+    const emptyState = renderEmptyCampaignsState();
+    table?.appendChild(emptyState);
+    setupMotionEnhancements(emptyState);
     return;
   }
 

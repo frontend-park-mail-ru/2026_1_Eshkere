@@ -103,6 +103,60 @@
   }
 }
 
+@keyframes motion-status-in {
+  from {
+    opacity: 0;
+    transform: translateY(5px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes motion-status-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(94, 114, 255, 0);
+  }
+
+  45% {
+    box-shadow: 0 0 0 6px rgba(94, 114, 255, 0.11);
+  }
+}
+
+@keyframes motion-empty-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes motion-chart-grow {
+  from {
+    transform: scaleY(0.18);
+  }
+
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes motion-shimmer {
+  from {
+    transform: translateX(-120%);
+  }
+
+  to {
+    transform: translateX(120%);
+  }
+}
+
 #app-layout-outlet.page-entering {
   animation: page-enter 0.42s var(--motion-ease) both;
 }
@@ -135,6 +189,69 @@
 .motion-list-item {
   animation: motion-list-in 0.34s var(--motion-ease) both;
   animation-delay: calc(var(--motion-item-i, 0) * 36ms);
+}
+
+.motion-chart {
+  transform-origin: bottom;
+  animation: motion-chart-grow 0.62s var(--motion-ease) both;
+}
+
+.motion-count-up {
+  font-variant-numeric: tabular-nums;
+}
+
+.motion-empty-state {
+  animation: motion-card-in 0.42s var(--motion-ease) both;
+
+  img,
+  picture,
+  [class*='__illustration'] {
+    animation: motion-empty-float 4.8s ease-in-out 0.45s infinite;
+  }
+}
+
+.motion-status {
+  animation: motion-status-in 0.24s var(--motion-ease) both;
+  transition:
+    transform var(--motion-fast) var(--motion-ease),
+    box-shadow var(--motion-base) var(--motion-ease),
+    filter var(--motion-base) var(--motion-ease);
+}
+
+.motion-status--working,
+.motion-status--success,
+.motion-status--active,
+.motion-status--autopay {
+  animation:
+    motion-status-in 0.24s var(--motion-ease) both,
+    motion-status-pulse 2.8s ease-in-out 0.38s infinite;
+}
+
+.motion-status--pending,
+.motion-status--moderation,
+.motion-status--warning,
+.motion-status--critical,
+.motion-status--depleted,
+.motion-status--danger {
+  position: relative;
+  overflow: hidden;
+}
+
+.motion-status--pending::after,
+.motion-status--moderation::after,
+.motion-status--warning::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 45%,
+    transparent 72%
+  );
+  animation: motion-shimmer 2.4s ease-in-out 0.55s infinite;
+  pointer-events: none;
 }
 
 .motion-dropdown:not([hidden]) {
@@ -174,7 +291,15 @@
   [data-reveal],
   .hero-stagger,
   .motion-card,
+  .motion-chart,
+  .motion-count-up,
+  .motion-empty-state,
+  .motion-empty-state img,
+  .motion-empty-state picture,
+  .motion-empty-state [class*='__illustration'],
   .motion-list-item,
+  .motion-status,
+  .motion-status::after,
   .motion-dropdown,
   .motion-modal,
   .motion-modal > [class*='__dialog'],
