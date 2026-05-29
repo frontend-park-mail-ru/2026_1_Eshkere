@@ -126,18 +126,13 @@
             <p class="campaign-builder__card-subtitle">Задайте дневной лимит расходов.</p>
           </div>
           <div class="campaign-builder__form">
-            <div class="campaign-builder__row campaign-builder__row--double">
+            <div class="campaign-builder__row">
               <label class="campaign-builder__field">
                 <span class="campaign-builder__label">Дневной бюджет, ₽</span>
-                <input class="campaign-builder__input" type="number" min="100" step="100"
+                <input class="campaign-builder__input" type="number" min="100" max="10000000" step="100"
                   placeholder="1 000" data-cw-field="daily_budget" />
                 <span class="campaign-builder__hint">Минимум 100 ₽ в день.</span>
                 <span class="campaign-builder__error" data-cw-error="daily_budget"></span>
-              </label>
-              <label class="campaign-builder__field">
-                <span class="campaign-builder__label">Общий бюджет, ₽ <span class="cw-soon">Скоро</span></span>
-                <input class="campaign-builder__input" type="number" placeholder="30 000" disabled />
-                <span class="campaign-builder__hint">Кампания остановится при достижении лимита.</span>
               </label>
             </div>
           </div>

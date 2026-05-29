@@ -38,6 +38,8 @@ import {
 } from 'features/campaign-builder/lib/api-mapping';
 import { getAudienceStateSummary } from './campaign-create-audience';
 
+const MAX_DAILY_BUDGET = 10_000_000;
+
 export function clampText(value: string, limit: number): string {
   return value.slice(0, limit);
 }
@@ -83,6 +85,8 @@ export function getFieldErrors(state: BuilderState): FieldErrors {
 
   if (!Number.isFinite(state.dailyBudget) || state.dailyBudget < 1000) {
     errors.dailyBudget = 'Минимальный дневной бюджет: 1 000 ₽.';
+  } else if (state.dailyBudget > MAX_DAILY_BUDGET) {
+    errors.dailyBudget = `Максимальный дневной бюджет: ${new Intl.NumberFormat('ru-RU').format(MAX_DAILY_BUDGET)} ₽.`;
   }
 
   if (!Number.isFinite(state.totalBudget) || state.totalBudget < 1000) {

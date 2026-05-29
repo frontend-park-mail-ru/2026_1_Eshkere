@@ -7,6 +7,11 @@ import {
   getRegionPayloadValue,
   getTopicPayloadValue,
 } from 'features/ads/model/targeting';
+import {
+  computeAudienceForecast,
+  formatClickRange,
+  formatReachRange,
+} from 'features/ads/lib/audience-forecast';
 import adGroupEditTemplate from './ad-group-edit.hbs';
 
 function getParams(): { campaignId: number | null; groupId: number | null } {
@@ -66,44 +71,38 @@ export function AdGroupEdit(): VoidFunction {
     setSelect('topic_id', getTopicPayloadValue(g.topic ?? g.topic_id));
   }
 
-  root.querySelectorAll<HTMLButtonElement>('[data-agc-devices] [data-stub]').forEach((btn) => {
-    btn.addEventListener('click', () => btn.classList.toggle('agc__device--active'), { signal });
-  });
-
-  root.querySelectorAll<HTMLButtonElement>('[data-agc-bidding] [data-stub]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      root.querySelectorAll('[data-agc-bidding] [data-stub]').forEach((b) => b.classList.remove('agc__bid-option--active'));
-      btn.classList.add('agc__bid-option--active');
-    }, { signal });
-  });
-
-  root.querySelectorAll<HTMLButtonElement>('[data-agc-platforms] [data-stub]').forEach((btn) => {
-    btn.addEventListener('click', () => btn.classList.toggle('agc__platform--active'), { signal });
-  });
-
-  root.querySelectorAll<HTMLButtonElement>('[data-agc-days] [data-stub]').forEach((btn) => {
-    btn.addEventListener('click', () => btn.classList.toggle('agc__day--active'), { signal });
-  });
-
-  root.querySelectorAll<HTMLButtonElement>('[data-agc-tags] [data-stub]').forEach((chip) => {
-    chip.addEventListener('click', () => chip.classList.toggle('agc__chip--active'), { signal });
-  });
-
-  root.querySelectorAll<HTMLLabelElement>('.agc__match-mode').forEach((mode) => {
-    mode.addEventListener('click', () => {
-      root.querySelectorAll('.agc__match-mode').forEach((m) => m.classList.remove('agc__match-mode--active'));
-      mode.classList.add('agc__match-mode--active');
-    }, { signal });
-  });
-
-  const toggle = root.querySelector<HTMLButtonElement>('.agc__toggle[data-stub]');
-  toggle?.addEventListener('click', () => {
-    const checked = toggle.getAttribute('aria-checked') === 'true';
-    toggle.setAttribute('aria-checked', checked ? 'false' : 'true');
-  }, { signal });
-
   const ageFromSelect = root.querySelector<HTMLSelectElement>('[name="age_from"]');
   const ageToSelect = root.querySelector<HTMLSelectElement>('[name="age_to"]');
+  const genderSelect = root.querySelector<HTMLSelectElement>('[name="gender"]');
+  const regionSelect = root.querySelector<HTMLSelectElement>('[name="region_id"]');
+  const topicSelect = root.querySelector<HTMLSelectElement>('[name="topic_id"]');
+  const reachEl = root.querySelector<HTMLElement>('[data-age-reach]');
+  const clicksEl = root.querySelector<HTMLElement>('[data-age-clicks]');
+  const widthEl = root.querySelector<HTMLElement>('[data-age-width]');
+  const qualityEl = root.querySelector<HTMLElement>('[data-age-quality]');
+  const reachBarEl = root.querySelector<HTMLElement>('[data-age-reach-bar]');
+
+  function updateAudienceForecast(): void {
+    if (!ageFromSelect || !ageToSelect || !genderSelect || !regionSelect || !topicSelect) return;
+
+    const forecast = computeAudienceForecast({
+      ageFrom: parseInt(ageFromSelect.value, 10),
+      ageTo: parseInt(ageToSelect.value, 10),
+      gender: genderSelect.value,
+      region: regionSelect.value,
+      topic: topicSelect.value,
+    });
+
+    if (reachEl) reachEl.textContent = formatReachRange(forecast.reachMin, forecast.reachMax);
+    if (clicksEl) clicksEl.textContent = formatClickRange(forecast.clicksMin, forecast.clicksMax);
+    if (widthEl) widthEl.textContent = forecast.widthLabel;
+    if (qualityEl) {
+      qualityEl.textContent = forecast.qualityLabel;
+      qualityEl.classList.remove('agc__reach-value--good', 'agc__reach-value--medium', 'agc__reach-value--low');
+      qualityEl.classList.add(`agc__reach-value--${forecast.qualityTone}`);
+    }
+    if (reachBarEl) reachBarEl.style.width = `${forecast.barPercent}%`;
+  }
 
   function syncAgeRange(): void {
     if (!ageFromSelect || !ageToSelect) return;
@@ -115,9 +114,14 @@ export function AdGroupEdit(): VoidFunction {
       const firstValid = Array.from(ageToSelect.options).find((o) => !o.disabled);
       if (firstValid) ageToSelect.value = firstValid.value;
     }
+    updateAudienceForecast();
   }
 
   ageFromSelect?.addEventListener('change', syncAgeRange, { signal });
+  ageToSelect?.addEventListener('change', updateAudienceForecast, { signal });
+  genderSelect?.addEventListener('change', updateAudienceForecast, { signal });
+  regionSelect?.addEventListener('change', updateAudienceForecast, { signal });
+  topicSelect?.addEventListener('change', updateAudienceForecast, { signal });
   syncAgeRange();
 
   root.querySelector<HTMLElement>('[data-age-back]')?.addEventListener('click', () => {

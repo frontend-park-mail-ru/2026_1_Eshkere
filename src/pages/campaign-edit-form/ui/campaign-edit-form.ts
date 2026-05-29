@@ -1,9 +1,13 @@
 import '../../ad-group-create/ui/ad-group-create.scss';
+import './campaign-edit-form.scss';
 import { getAds } from 'features/ads/api/get-ads';
 import { updateAdCampaign } from 'features/ads/api/update-ad-campaign';
 import { renderTemplate } from 'shared/lib/render';
 import { navigateTo } from 'shared/lib/navigation';
 import campaignEditFormTemplate from './campaign-edit-form.hbs';
+
+const MIN_DAILY_BUDGET = 100;
+const MAX_DAILY_BUDGET = 10_000_000;
 
 function getCampaignId(): number | null {
   const id = new URLSearchParams(window.location.search).get('id');
@@ -58,7 +62,8 @@ export function CampaignEditForm(): VoidFunction {
 
     const data = new FormData(form);
     const name = (data.get('name') as string).trim();
-    const daily_budget = parseFloat(data.get('daily_budget') as string);
+    const dailyBudgetRaw = Number(data.get('daily_budget'));
+    const daily_budget = Math.round(dailyBudgetRaw);
     const main_action = data.get('main_action') as 'click' | 'look';
 
     const nameError = root.querySelector<HTMLElement>('[data-cef-field-error="name"]');
@@ -71,8 +76,11 @@ export function CampaignEditForm(): VoidFunction {
       if (nameError) nameError.textContent = 'Введите название кампании';
       hasError = true;
     }
-    if (!Number.isFinite(daily_budget) || daily_budget < 100) {
-      if (budgetError) budgetError.textContent = 'Минимальный бюджет — 100 ₽';
+    if (!Number.isFinite(daily_budget) || daily_budget < MIN_DAILY_BUDGET) {
+      if (budgetError) budgetError.textContent = `Минимальный бюджет — ${MIN_DAILY_BUDGET.toLocaleString('ru-RU')} ₽`;
+      hasError = true;
+    } else if (daily_budget > MAX_DAILY_BUDGET) {
+      if (budgetError) budgetError.textContent = `Максимальный бюджет — ${MAX_DAILY_BUDGET.toLocaleString('ru-RU')} ₽`;
       hasError = true;
     }
     if (hasError) return;

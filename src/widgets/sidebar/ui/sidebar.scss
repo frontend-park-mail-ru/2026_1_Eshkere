@@ -297,7 +297,13 @@ html[data-theme='dark'] {
 
     &[open] .mobile-tabbar__item--more {
       color: #fff;
-      background: rgba(90, 84, 255, 0.92);
+      background: t.$primary-gradient;
+      box-shadow: 0 10px 18px rgba(90, 84, 255, 0.24);
+
+      .mobile-tabbar__icon {
+        filter: brightness(0) invert(1);
+        opacity: 1;
+      }
     }
   }
 

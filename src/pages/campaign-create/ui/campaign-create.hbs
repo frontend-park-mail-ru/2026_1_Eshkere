@@ -96,7 +96,7 @@
               <div class="campaign-builder__row campaign-builder__row--double">
                 <label class="campaign-builder__field">
                   <span class="campaign-builder__label">Дневной бюджет</span>
-                  <input class="campaign-builder__input" type="number" min="1000" step="100" value="{{budget.dailyBudget}}" data-builder-budget="dailyBudget" />
+                  <input class="campaign-builder__input" type="number" min="1000" max="10000000" step="100" value="{{budget.dailyBudget}}" data-builder-budget="dailyBudget" />
                   <span class="campaign-builder__hint">Минимум 1 000 ₽. Бюджет пока хранится в мастере и не влияет на API кампании.</span>
                   <span class="campaign-builder__error" data-builder-error="dailyBudget"></span>
                 </label>
@@ -487,7 +487,7 @@
               <div class="campaign-builder__row campaign-builder__row--double">
                 <label class="campaign-builder__field">
                   <span class="campaign-builder__label">Дневной бюджет</span>
-                  <input class="campaign-builder__input" type="number" min="1000" step="100" value="{{budget.dailyBudget}}" data-builder-budget="dailyBudget" />
+                  <input class="campaign-builder__input" type="number" min="1000" max="10000000" step="100" value="{{budget.dailyBudget}}" data-builder-budget="dailyBudget" />
                   <span class="campaign-builder__error" data-builder-error="dailyBudget"></span>
                 </label>
                 <label class="campaign-builder__field">

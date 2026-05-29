@@ -1,0 +1,24 @@
+.agc[data-cef] {
+  .agc__budget-field {
+    background: var(--surface-card);
+    color: var(--text-body);
+    cursor: text;
+    opacity: 1;
+    appearance: textfield;
+    -moz-appearance: textfield;
+    transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+
+    &:focus-visible {
+      border-color: var(--primary-border-soft);
+      box-shadow: 0 0 0 3px var(--primary-surface);
+      background: var(--surface-card);
+    }
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      appearance: none;
+      margin: 0;
+    }
+  }
+}

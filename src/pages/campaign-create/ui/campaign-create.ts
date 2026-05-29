@@ -69,6 +69,8 @@ import {
 } from './campaign-create-sync';
 
 let campaignCreateLifecycleController: AbortController | null = null;
+const MIN_DAILY_BUDGET = 1000;
+const MAX_DAILY_BUDGET = 10_000_000;
 
 type SubmitStage = 'campaign' | 'group' | 'ad';
 
@@ -163,7 +165,10 @@ function createSubmitBuilder() {
 
         await updateAdCampaign(campaignId, {
           ...toCampaignPayload(currentState),
-          daily_budget: Math.max(1000, Math.round(currentState.dailyBudget)),
+          daily_budget: Math.min(
+            MAX_DAILY_BUDGET,
+            Math.max(MIN_DAILY_BUDGET, Math.round(currentState.dailyBudget)),
+          ),
         });
         localStorageService.removeItem(LocalStorageKey.CampaignBuilderDraft);
         navigateTo('/advertiser/campaigns');

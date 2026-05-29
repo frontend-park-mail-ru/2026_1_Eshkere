@@ -195,12 +195,19 @@ export function getPrimaryCreativeFile(state: BuilderState): File | undefined {
 
 // CPM в копейках: 10 000 = 10 руб. за 1000 показов (1 коп. за показ)
 const DEFAULT_CPM_PRICE = 10000;
+const MIN_DAILY_BUDGET = 1000;
+const MAX_DAILY_BUDGET = 10_000_000;
 
 export function toCampaignPayload(state: BuilderState): CreateAdCampaignRequest {
+  const normalizedDailyBudget = Math.min(
+    MAX_DAILY_BUDGET,
+    Math.max(MIN_DAILY_BUDGET, Math.round(state.dailyBudget)),
+  );
+
   return {
     name: state.name.trim(),
     main_action: GOAL_MAIN_ACTION[state.goal],
-    daily_budget: state.dailyBudget,
+    daily_budget: normalizedDailyBudget,
     cpm_price: DEFAULT_CPM_PRICE,
   };
 }

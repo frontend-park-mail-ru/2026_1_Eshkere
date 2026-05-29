@@ -1,4 +1,4 @@
-﻿@use '../../../../../shared/styles/tokens' as t;
+@use '../../../../../shared/styles/tokens' as t;
 @use '../../../../../shared/styles/mixins';
 
 .campaign-builder {
@@ -80,6 +80,20 @@
     }
   }
 
+  &__input[type='number'] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      appearance: none;
+      -webkit-appearance: none;
+      appearance: none;
+      display: none;
+      margin: 0;
+    }
+  }
+
   &__input--textarea {
     min-height: 112px;
     padding: 14px 16px;
@@ -100,13 +114,6 @@
 
   &__input--days {
     padding-right: 86px;
-    appearance: textfield;
-
-    &::-webkit-outer-spin-button,
-    &::-webkit-inner-spin-button {
-      appearance: none;
-      margin: 0;
-    }
   }
 
   &__input-suffix {
