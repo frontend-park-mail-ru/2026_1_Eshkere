@@ -2,8 +2,6 @@ import './campaign-detail.scss';
 import { getAds } from 'features/ads/api/get-ads';
 import { getAdGroups, deleteAdGroup, type AdGroupResponse } from 'features/ads/api/ad-groups';
 import { getAdsInGroup, deleteAdInGroup, type AdResponse } from 'features/ads/api/ads';
-import { generateFeedLink } from 'features/feed-link/api/generate';
-import { openFeedLinkModal } from 'widgets/feed-link-modal';
 import { showToast } from 'shared/lib/toast';
 import { renderTemplate } from 'shared/lib/render';
 import { navigateTo } from 'shared/lib/navigation';
@@ -286,23 +284,6 @@ export function CampaignDetail(): VoidFunction {
         navigateTo(
           `/advertiser/stats/ad?campaignId=${campaignId}&groupId=${groupId}&adId=${adId}`,
         );
-      }
-    }, { signal });
-  });
-
-  // Получить фид для объявления
-  root.querySelectorAll<HTMLElement>('[data-feed-ad]').forEach((btn) => {
-    btn.addEventListener('click', async () => {
-      btn.textContent = 'Загрузка…';
-      (btn as HTMLButtonElement).disabled = true;
-      try {
-        const { url } = await generateFeedLink(campaignId);
-        openFeedLinkModal(url);
-      } catch {
-        showToast('Ошибка', 'Не удалось получить код интеграции', 'error');
-      } finally {
-        btn.textContent = 'Получить фид';
-        (btn as HTMLButtonElement).disabled = false;
       }
     }, { signal });
   });
