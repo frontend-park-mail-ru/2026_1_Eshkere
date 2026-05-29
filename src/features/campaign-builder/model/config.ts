@@ -106,6 +106,7 @@ export const DEFAULT_STATE: BuilderState = {
   totalBudget: 90000,
   period: '15 мар - 15 апр',
   strategy: 'even',
+  cpmPrice: 100,
 };
 
 export const STEP_ORDER: StepKey[] = ['content', 'audience', 'budget', 'publication'];

@@ -79,6 +79,9 @@ export function initCampaignBuilderBudgetControls({
           } else {
             state.totalBudget = Math.max(1000, normalized);
           }
+        } else if (key === 'cpmPrice') {
+          const parsed = Number(field.value);
+          state.cpmPrice = Number.isFinite(parsed) ? Math.max(1, Math.round(parsed)) : 100;
         } else if (key === 'periodDays') {
           const parsed = Number(field.value);
           const clamped = Math.max(

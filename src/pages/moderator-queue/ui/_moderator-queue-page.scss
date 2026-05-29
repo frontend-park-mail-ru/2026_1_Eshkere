@@ -85,12 +85,19 @@
     box-shadow: var(--shadow);
   }
 
+  &__list-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex: 1;
+  }
+
   &__list-header,
   .mq-item {
     display: grid;
     grid-template-columns: minmax(200px, 2fr) minmax(180px, 1.4fr) minmax(120px, 1fr) minmax(120px, 0.8fr) minmax(140px, 0.9fr);
     gap: 16px;
     align-items: center;
+    min-width: 760px;
   }
 
   &__list-header {

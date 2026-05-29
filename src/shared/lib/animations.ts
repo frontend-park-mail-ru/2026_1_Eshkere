@@ -107,22 +107,35 @@ const MOTION_SELECTORS = {
     '.balance-stat',
     '.stats-card',
     '.campaign-builder__card',
+    '.campaign-builder__creative',
+    '.campaign-builder__metric',
+    '.campaign-builder__review-section',
+    '.campaign-builder__slot-item',
+    '.campaign-builder__summary-block',
+    '.campaign-builder__summary-item',
+    '.campaign-builder__upload-slot',
     '.agc__card',
     '.adc__card',
     '.ad-group-card',
     '.ad-card',
     '.profile-card',
     '.moderator-card',
+    '.sm__usage',
+    '.sm__plan',
   ].join(','),
   charts: [
     '.overview-chart__bar',
     '.overview-status__fill',
+  ].join(','),
+  bars: [
+    '[data-budget-balance-fill]',
   ].join(','),
   emptyStates: [
     '.campaigns-empty',
     '.overview-empty',
     '.balance-table__empty',
     '.partner-empty',
+    '.mq__empty',
   ].join(','),
   listItems: [
     '.campaign-row',
@@ -130,6 +143,11 @@ const MOTION_SELECTORS = {
     '.partner-site-row',
     '.partner-row',
     '.navbar__notification-card',
+    '.campaign-builder__risk-item',
+    '.campaign-builder__saved-audience',
+    '.campaign-builder__timeline-item',
+    '.mq-item',
+    '.sm__feature',
   ].join(','),
   dropdowns: [
     '.campaign-row__menu',
@@ -149,6 +167,7 @@ const MOTION_SELECTORS = {
     '.avatar-crop-modal',
     '.navbar__logout-modal',
     '.navbar__notifications-modal',
+    '.sm',
   ].join(','),
   numberValues: [
     '.overview-stat__value',
@@ -162,6 +181,15 @@ const MOTION_SELECTORS = {
     '.balance-log__summary-value',
     '.partner-stat__value',
     '.stats-card__value',
+    '.campaign-builder__metric-value',
+    '.campaign-builder__summary-item strong',
+    '[data-budget-clicks]',
+    '[data-budget-cpm]',
+    '[data-budget-cpc]',
+    '[data-budget-reach]',
+    '[data-audience-clicks]',
+    '[data-audience-ctr]',
+    '[data-audience-reach]',
     '[data-balance-stat]',
     '[data-balance-summary]',
   ].join(','),
@@ -182,6 +210,24 @@ interface ParsedNumberText {
 }
 
 const animatedNumbers = new WeakMap<HTMLElement, string>();
+
+export function markMotionUpdated(
+  element: HTMLElement | null | undefined,
+  className = 'motion-updated',
+  duration = 360,
+): void {
+  if (!element || reducedMotion()) {
+    return;
+  }
+
+  element.classList.remove(className);
+  void element.offsetWidth;
+  element.classList.add(className);
+
+  window.setTimeout(() => {
+    element.classList.remove(className);
+  }, duration);
+}
 
 function queryMotionElements(root: ParentNode, selector: string): HTMLElement[] {
   const rootElement =
@@ -359,6 +405,7 @@ export function setupMotionEnhancements(root: ParentNode = document): void {
   addMotionClass(root, MOTION_SELECTORS.pressable, 'motion-pressable');
   addMotionClass(root, MOTION_SELECTORS.cards, 'motion-card', 40);
   addMotionClass(root, MOTION_SELECTORS.charts, 'motion-chart');
+  addMotionClass(root, MOTION_SELECTORS.bars, 'motion-bar');
   addMotionClass(root, MOTION_SELECTORS.emptyStates, 'motion-empty-state');
   addMotionClass(root, MOTION_SELECTORS.listItems, 'motion-list-item', 40);
   addMotionClass(root, MOTION_SELECTORS.dropdowns, 'motion-dropdown');

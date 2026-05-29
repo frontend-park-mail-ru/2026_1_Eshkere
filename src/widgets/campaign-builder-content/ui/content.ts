@@ -1,3 +1,5 @@
+import { markMotionUpdated } from 'shared/lib/animations';
+
 interface CreativeSlotView {
   accept: string;
   buttonLabel: string;
@@ -36,7 +38,11 @@ function setText(
 ): void {
   const node = parent.querySelector<HTMLElement>(selector);
   if (node) {
+    const changed = node.textContent !== value;
     node.textContent = value;
+    if (changed) {
+      markMotionUpdated(node);
+    }
   }
 }
 
@@ -46,7 +52,36 @@ function setTextAll(
   parent: ParentNode = document,
 ): void {
   parent.querySelectorAll<HTMLElement>(selector).forEach((node) => {
+    const changed = node.textContent !== value;
     node.textContent = value;
+    if (changed) {
+      markMotionUpdated(
+        node,
+        selector.startsWith('[data-preview-]')
+          ? 'motion-preview-text'
+          : 'motion-updated',
+        420,
+      );
+    }
+  });
+}
+
+function syncPreviewFormat(format: string): void {
+  document.querySelectorAll<HTMLElement>('.campaign-preview__frame').forEach((frame) => {
+    const nextClass = `campaign-preview__frame--${format}`;
+    const changed = frame.dataset.previewFormat !== format;
+
+    frame.classList.remove(
+      'campaign-preview__frame--feed-card',
+      'campaign-preview__frame--stories',
+      'campaign-preview__frame--video-15',
+    );
+    frame.classList.add(nextClass);
+    frame.dataset.previewFormat = format;
+
+    if (changed) {
+      markMotionUpdated(frame, 'motion-preview-morph', 520);
+    }
   });
 }
 
@@ -70,6 +105,7 @@ export function syncCampaignBuilderContentView({
   setTextAll('[data-preview-cta]', previewCta);
   setTextAll('[data-preview-format]', formatLabel);
   setTextAll('[data-preview-goal]', goalLabel);
+  syncPreviewFormat(selectedValues.format);
   setText('[data-summary-name]', name);
   setTextAll('[data-summary-format]', formatLabel);
   setTextAll('[data-summary-goal]', goalLabel);
@@ -98,7 +134,11 @@ export function syncCampaignBuilderContentView({
         return;
       }
 
+      const wasHidden = slot.hidden;
       slot.hidden = false;
+      if (wasHidden) {
+        markMotionUpdated(slot, 'motion-slot-enter', 420);
+      }
       setText('[data-builder-slot-title]', config.title, slot);
       setText('[data-builder-slot-text]', config.text, slot);
       setText('[data-builder-slot-meta]', config.meta, slot);

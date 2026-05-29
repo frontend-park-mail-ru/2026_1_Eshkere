@@ -2,6 +2,7 @@ import {
   getNotificationSettings,
   updateNotificationSettings,
 } from 'features/ads/api/notification-settings';
+import { markMotionUpdated, setupMotionEnhancements } from 'shared/lib/animations';
 
 export function initNavbarNotifications(signal: AbortSignal, closeProfileMenu: () => void): {
   closeNotifications: () => void;
@@ -11,8 +12,11 @@ export function initNavbarNotifications(signal: AbortSignal, closeProfileMenu: (
     'navbar-notifications-toggle',
   );
   const notificationsMenu = document.getElementById('navbar-notifications-menu');
-  const notificationsBadge = notificationsMenu?.querySelector(
+  const notificationsBadge = notificationsMenu?.querySelector<HTMLElement>(
     '.navbar__notifications-badge',
+  );
+  let lastVisibleNotifications = Number(
+    notificationsBadge?.textContent?.trim() || '0',
   );
   const notificationItems = Array.from(
     notificationsMenu?.querySelectorAll<HTMLElement>('[data-notification-item]') ?? [],
@@ -50,6 +54,7 @@ export function initNavbarNotifications(signal: AbortSignal, closeProfileMenu: (
     closeProfileMenu();
     notificationsMenu.hidden = false;
     notificationsToggleButton.setAttribute('aria-expanded', 'true');
+    setupMotionEnhancements(notificationsMenu);
   };
 
   const closeNotificationsModal = () => {
@@ -68,6 +73,7 @@ export function initNavbarNotifications(signal: AbortSignal, closeProfileMenu: (
     closeNotifications();
     closeProfileMenu();
     notificationsModal.hidden = false;
+    setupMotionEnhancements(notificationsModal);
   };
 
   const syncNotificationsState = () => {
@@ -79,9 +85,17 @@ export function initNavbarNotifications(signal: AbortSignal, closeProfileMenu: (
       (item) => !item.classList.contains('is-hidden'),
     );
     notificationsBadge.textContent = String(visibleItems.length);
+    if (visibleItems.length !== lastVisibleNotifications) {
+      markMotionUpdated(notificationsBadge, 'motion-navbar-badge', 520);
+      markMotionUpdated(notificationsToggleButton, 'motion-navbar-bell', 520);
+      lastVisibleNotifications = visibleItems.length;
+    }
     notificationsMenu.classList.toggle('is-empty', visibleItems.length === 0);
     notificationsModal?.classList.toggle('is-empty', visibleItems.length === 0);
     notificationsEmptyState?.toggleAttribute('hidden', visibleItems.length !== 0);
+    if (visibleItems.length === 0) {
+      markMotionUpdated(notificationsEmptyState, 'motion-empty-state', 420);
+    }
   };
 
   notificationsToggleButton?.addEventListener(

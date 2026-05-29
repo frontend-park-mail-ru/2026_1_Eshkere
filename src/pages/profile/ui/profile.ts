@@ -1,6 +1,7 @@
 ﻿import './profile.scss';
 import { onboardingState } from 'features/onboarding';
 import { navigateTo } from 'shared/lib/navigation';
+import { setupMotionEnhancements } from 'shared/lib/animations';
 import 'shared/ui/modal/modal';
 import { renderTemplate } from 'shared/lib/render';
 import { getNamedFormValue, setSubmitEnabled } from 'features/profile/lib/form';
@@ -149,6 +150,7 @@ export function Profile(): VoidFunction | void {
       persistUserState(nextState);
       syncProfileStateToView(nextState);
       refreshModalSubmitStates(nextState);
+      setupMotionEnhancements(root);
     },
     populateForms,
     refreshSubmitStates: refreshModalSubmitStates,
@@ -158,6 +160,7 @@ export function Profile(): VoidFunction | void {
 
   populateForms(state);
   refreshModalSubmitStates(state);
+  setupMotionEnhancements(root);
 
   root.querySelector<HTMLButtonElement>('[data-open-subscription-modal]')
     ?.addEventListener('click', () => openSubscriptionModal(), { signal: controller.signal });

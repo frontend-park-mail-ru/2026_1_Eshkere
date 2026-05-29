@@ -1,6 +1,20 @@
 @use '../../../../../shared/styles/tokens' as t;
 @use '../../../../../shared/styles/mixins';
 
+@keyframes navbar-badge-pop {
+  0% { transform: scale(1); }
+  42% { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+
+@keyframes navbar-bell-ring {
+  0%, 100% { transform: rotate(0deg); }
+  18% { transform: rotate(-9deg); }
+  36% { transform: rotate(8deg); }
+  54% { transform: rotate(-5deg); }
+  72% { transform: rotate(3deg); }
+}
+
 .navbar {
   &__notifications-menu,
   &__profile-menu {
@@ -71,6 +85,15 @@
     color: #5f59f5;
     font-size: 12px;
     font-weight: 800;
+  }
+
+  .motion-navbar-badge {
+    animation: navbar-badge-pop 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .motion-navbar-bell {
+    animation: navbar-bell-ring 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
+    transform-origin: center;
   }
 
   &__notifications-list {
@@ -202,5 +225,15 @@
     font-size: 13px;
     font-weight: 600;
     text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar {
+    .motion-navbar-badge,
+    .motion-navbar-bell {
+      animation: none !important;
+      transform: none !important;
+    }
   }
 }

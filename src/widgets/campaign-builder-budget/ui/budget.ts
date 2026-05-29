@@ -1,4 +1,5 @@
 import riskListItemsTemplate from 'features/campaign-builder/ui/risk-list-items.hbs';
+import { markMotionUpdated, setupMotionEnhancements } from 'shared/lib/animations';
 
 interface BudgetForecastView {
   clicks: string;
@@ -24,6 +25,7 @@ interface SyncCampaignBuilderBudgetParams {
   budget: BudgetForecastView;
   coverageDays: number;
   coverageRatio: number;
+  cpmPrice: number;
   dailyBudget: number;
   insights: BudgetInsightsView;
   period: string;
@@ -38,13 +40,21 @@ interface SyncCampaignBuilderBudgetParams {
 function setText(selector: string, value: string): void {
   const node = document.querySelector<HTMLElement>(selector);
   if (node) {
+    const changed = node.textContent !== value;
     node.textContent = value;
+    if (changed) {
+      markMotionUpdated(node);
+    }
   }
 }
 
 function setTextAll(selector: string, value: string): void {
   document.querySelectorAll<HTMLElement>(selector).forEach((node) => {
+    const changed = node.textContent !== value;
     node.textContent = value;
+    if (changed) {
+      markMotionUpdated(node);
+    }
   });
 }
 
@@ -55,6 +65,7 @@ export function syncCampaignBuilderBudgetView({
   budget,
   coverageDays,
   coverageRatio,
+  cpmPrice,
   dailyBudget,
   insights,
   period,
@@ -102,6 +113,12 @@ export function syncCampaignBuilderBudgetView({
   setText('[data-budget-balance-note]', balanceNote);
 
   document
+    .querySelectorAll<HTMLInputElement>('[data-builder-budget="cpmPrice"]')
+    .forEach((field) => {
+      field.value = String(cpmPrice);
+    });
+
+  document
     .querySelectorAll<HTMLInputElement>('[data-builder-budget="dailyBudget"]')
     .forEach((field) => {
       field.value = String(dailyBudget);
@@ -140,13 +157,19 @@ export function syncCampaignBuilderBudgetView({
   document
     .querySelectorAll<HTMLElement>('[data-budget-balance-fill]')
     .forEach((node) => {
-      node.style.width = `${Math.round(coverageRatio * 100)}%`;
+      const nextWidth = `${Math.round(coverageRatio * 100)}%`;
+      const changed = node.style.width !== nextWidth;
+      node.style.width = nextWidth;
+      if (changed) {
+        markMotionUpdated(node);
+      }
     });
 
   document
     .querySelectorAll<HTMLElement>('[data-budget-warning-list]')
     .forEach((list) => {
       list.innerHTML = riskListItemsTemplate({ items: insights.warnings });
+      setupMotionEnhancements(list);
     });
 
   document

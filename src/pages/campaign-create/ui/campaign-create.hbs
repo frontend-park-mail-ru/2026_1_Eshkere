@@ -497,6 +497,16 @@
                 </label>
               </div>
 
+              <label class="campaign-builder__field">
+                <span class="campaign-builder__label">Ставка CPM</span>
+                <div class="campaign-builder__input-with-suffix">
+                  <input class="campaign-builder__input" type="number" min="1" max="50000" step="1" value="{{budget.cpmPrice}}" data-builder-budget="cpmPrice" />
+                  <span class="campaign-builder__input-suffix">₽ / 1 000 показов</span>
+                </div>
+                <span class="campaign-builder__hint">Максимальная цена за 1 000 показов вашего объявления. Влияет на охват и прогноз.</span>
+                <span class="campaign-builder__error" data-builder-error="cpmPrice"></span>
+              </label>
+
               <div class="campaign-builder__row campaign-builder__row--double">
                 <label class="campaign-builder__field">
                   <span class="campaign-builder__label">Период показа</span>

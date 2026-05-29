@@ -1,4 +1,5 @@
 import riskListItemsTemplate from 'features/campaign-builder/ui/risk-list-items.hbs';
+import { markMotionUpdated, setupMotionEnhancements } from 'shared/lib/animations';
 
 interface AudienceSummaryView {
   ageRange: string;
@@ -50,7 +51,11 @@ interface SyncCampaignBuilderAudienceParams {
 function setText(selector: string, value: string): void {
   const node = document.querySelector<HTMLElement>(selector);
   if (node) {
+    const changed = node.textContent !== value;
     node.textContent = value;
+    if (changed) {
+      markMotionUpdated(node);
+    }
   }
 }
 
@@ -64,7 +69,11 @@ function setAudienceMetricLabel(
     ?.querySelector<HTMLElement>('.campaign-builder__metric-label');
 
   if (labelNode) {
+    const changed = labelNode.textContent !== label;
     labelNode.textContent = label;
+    if (changed) {
+      markMotionUpdated(labelNode);
+    }
   }
 }
 
@@ -235,5 +244,6 @@ export function syncCampaignBuilderAudienceView({
     .querySelectorAll<HTMLElement>('[data-audience-risk-list]')
     .forEach((list) => {
       list.innerHTML = riskListItemsTemplate({ items: insights.risks });
+      setupMotionEnhancements(list);
     });
 }

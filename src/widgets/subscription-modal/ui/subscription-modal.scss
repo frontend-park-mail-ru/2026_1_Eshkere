@@ -1,4 +1,14 @@
 @keyframes sm-spin { to { transform: rotate(360deg); } }
+@keyframes sm-backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sm-dialog-in {
+  from { opacity: 0; transform: translateY(16px) scale(.975); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes sm-usage-grow { from { transform: scaleX(.08); } to { transform: scaleX(1); } }
+@keyframes sm-plan-active {
+  0%, 100% { box-shadow: 0 0 0 3px var(--primary-surface); }
+  45% { box-shadow: 0 0 0 7px rgba(108, 92, 231, .12); }
+}
 
 .sm {
   position: fixed;
@@ -11,6 +21,7 @@
   background: rgba(16, 19, 39, 0.65);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
+  animation: sm-backdrop-in .16s ease both;
 
   &__backdrop {
     position: absolute;
@@ -28,6 +39,7 @@
     box-shadow: 0 24px 64px rgba(0, 0, 0, 0.28);
     display: flex;
     flex-direction: column;
+    animation: sm-dialog-in .28s cubic-bezier(.22,1,.36,1) both;
   }
 
   &__header {
@@ -128,6 +140,8 @@
     border-radius: 999px;
     background: linear-gradient(90deg, var(--primary) 0%, #a29bfe 100%);
     min-width: 4px;
+    transform-origin: left center;
+    animation: sm-usage-grow .58s cubic-bezier(.22,1,.36,1) both;
   }
 
   // ── Expired banner ───────────────────────────────────────────────────────
@@ -170,6 +184,7 @@
     &--pro#{&}--current {
       border-color: var(--primary-border);
       box-shadow: 0 0 0 3px var(--primary-surface);
+      animation: sm-plan-active 1.8s ease-in-out .24s 2;
     }
   }
 
@@ -327,6 +342,16 @@
     padding: 0;
     text-decoration: underline;
     &:hover { opacity: 0.8; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sm,
+  .sm__dialog,
+  .sm__usage-fill,
+  .sm__plan--pro.sm__plan--current {
+    animation: none !important;
+    transform: none !important;
   }
 }
 

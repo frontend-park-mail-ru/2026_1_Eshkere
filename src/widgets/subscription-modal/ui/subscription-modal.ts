@@ -2,6 +2,7 @@ import './subscription-modal.scss';
 import { navigateTo } from 'shared/lib/navigation';
 import { showToast } from 'shared/lib/toast';
 import { ApiRequestError } from 'shared/lib/request';
+import { markMotionUpdated, setupMotionEnhancements } from 'shared/lib/animations';
 import { getSubscription, activateProFromBalance, type SubscriptionResponse } from 'features/subscription';
 
 function formatExpiry(iso: string | null): string | null {
@@ -134,6 +135,7 @@ export function openSubscriptionModal(): void {
 
   const modal = buildModal(loadingContent());
   document.body.appendChild(modal);
+  setupMotionEnhancements(modal);
 
   const close = (): void => modal.remove();
 
@@ -148,6 +150,8 @@ export function openSubscriptionModal(): void {
     if (!body) return;
 
     body.innerHTML = usageBar(subs.used_campaigns, subs.max_campaigns) + planCards(subs);
+    setupMotionEnhancements(body);
+    markMotionUpdated(body);
 
     // Activate Pro button
     const activateBtn   = body.querySelector<HTMLButtonElement>('[data-sm-activate]');
@@ -168,17 +172,23 @@ export function openSubscriptionModal(): void {
           const updated = await activateProFromBalance();
           showToast('Pro активирован', `Тариф Pro активен. Лимит кампаний — ${updated.max_campaigns}.`, 'success');
           body.innerHTML = usageBar(updated.used_campaigns, updated.max_campaigns) + planCards(updated);
+          setupMotionEnhancements(body);
+          markMotionUpdated(body);
         } catch (err) {
           activateBtn.disabled = false;
           activateBtn.classList.remove('is-loading');
           if (activateLabel) activateLabel.textContent = activateLabel.dataset.label ?? 'Оформить Pro';
 
           if (err instanceof ApiRequestError && err.status === 402) {
-            if (insufficientEl) insufficientEl.hidden = false;
+            if (insufficientEl) {
+              insufficientEl.hidden = false;
+              markMotionUpdated(insufficientEl, 'motion-invalid', 520);
+            }
           } else {
             if (errorEl) {
               errorEl.textContent = 'Не удалось оформить подписку. Попробуйте ещё раз.';
               errorEl.hidden = false;
+              markMotionUpdated(errorEl, 'motion-invalid', 520);
             }
           }
         }
@@ -193,6 +203,9 @@ export function openSubscriptionModal(): void {
     if (activateLabel) activateLabel.dataset.label = activateLabel.textContent?.trim() ?? '';
   }).catch(() => {
     const body = modal.querySelector<HTMLElement>('[data-sm-body]');
-    if (body) body.innerHTML = '<p class="sm__error">Не удалось загрузить данные подписки.</p>';
+    if (body) {
+      body.innerHTML = '<p class="sm__error">Не удалось загрузить данные подписки.</p>';
+      markMotionUpdated(body, 'motion-invalid', 520);
+    }
   });
 }

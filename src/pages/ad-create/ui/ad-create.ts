@@ -456,8 +456,7 @@ export function AdCreate(): VoidFunction {
       let msg = 'Не удалось сгенерировать изображение. Попробуйте ещё раз.';
       if (err instanceof ApiRequestError) {
         if (err.status === 402) {
-          msg = 'Генерация изображений доступна только на тарифе Pro.';
-          navigateTo('/subscription');
+          msg = 'Генерация изображений доступна только на тарифе Pro. Перейдите в профиль, чтобы оформить подписку.';
         } else if (err.status === 401) {
           msg = 'Для генерации необходимо войти в аккаунт.';
         } else if (err.status >= 500) {

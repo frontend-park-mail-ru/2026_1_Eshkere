@@ -1,9 +1,18 @@
+import { markMotionUpdated } from 'shared/lib/animations';
+
 function setText(selector: string, value: string): void {
   const node = document.querySelector<HTMLElement>(selector);
   if (node) {
+    const changed = node.textContent !== value;
     node.textContent = value;
+    if (changed) {
+      markMotionUpdated(node);
+    }
   }
 }
+
+let lastStep: string | null = null;
+let lastStepIndex: number | null = null;
 
 interface SyncCampaignBuilderStepParams {
   canSubmit: boolean;
@@ -51,7 +60,17 @@ export function syncCampaignBuilderStepView({
     });
 
   document.querySelectorAll<HTMLElement>('[data-step-panel]').forEach((panel) => {
-    panel.hidden = panel.dataset.stepPanel !== step;
+    const isActive = panel.dataset.stepPanel === step;
+    const wasHidden = panel.hidden;
+    panel.hidden = !isActive;
+
+    if (isActive && (wasHidden || lastStep !== step)) {
+      const direction = lastStepIndex !== null && currentIndex < lastStepIndex
+        ? 'back'
+        : 'forward';
+      panel.dataset.motionDirection = direction;
+      markMotionUpdated(panel, 'motion-step-enter', 420);
+    }
   });
 
   document
@@ -71,6 +90,14 @@ export function syncCampaignBuilderStepView({
     '[data-builder-progress-fill]',
   );
   if (progressFill) {
-    progressFill.style.width = `${progressValue}%`;
+    const nextWidth = `${progressValue}%`;
+    const changed = progressFill.style.width !== nextWidth;
+    progressFill.style.width = nextWidth;
+    if (changed) {
+      markMotionUpdated(progressFill);
+    }
   }
+
+  lastStep = step;
+  lastStepIndex = currentIndex;
 }

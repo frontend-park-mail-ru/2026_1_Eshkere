@@ -216,6 +216,29 @@
     }
   }
 
+  @media (max-width: 600px) {
+    left: 8px;
+    right: 8px;
+    gap: 8px;
+    min-height: 58px;
+    padding: 8px 12px;
+
+    &__nav { display: none; }
+
+    &__left { gap: 8px; }
+
+    &__logo-text { display: none; }
+
+    &__actions { gap: 6px; }
+
+    &__button {
+      min-width: 0;
+      height: 36px;
+      padding-inline: 12px;
+      font-size: 13px;
+    }
+  }
+
   @media (max-width: 1180px) and (min-width: 601px) {
     left: 14px;
     right: 14px;

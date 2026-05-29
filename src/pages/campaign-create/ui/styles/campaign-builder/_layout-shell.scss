@@ -1,6 +1,37 @@
 ﻿@use '../../../../../shared/styles/tokens' as t;
 @use '../../../../../shared/styles/mixins';
 
+@keyframes cb-step-panel-forward {
+  from {
+    opacity: 0;
+    transform: translateX(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .campaign-builder__panel.motion-step-enter {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+@keyframes cb-step-panel-back {
+  from {
+    opacity: 0;
+    transform: translateX(-14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 .campaign-builder {
   &__layout {
     display: grid;
@@ -30,6 +61,21 @@
     display: none !important;
   }
 
+  &__panel.motion-step-enter {
+    animation: cb-step-panel-forward 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  &__panel.motion-step-enter[data-motion-direction='back'] {
+    animation-name: cb-step-panel-back;
+  }
+
+  [data-builder-progress-fill] {
+    transition:
+      width 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+      filter 0.24s ease;
+  }
+
   &__grid {
     display: grid;
     gap: 20px;
@@ -50,6 +96,24 @@
       grid-template-areas:
         'status preview'
         'summary checks';
+    }
+
+    @media (max-width: 800px) {
+      &--content,
+      &--audience,
+      &--budget,
+      &--publication {
+        grid-template-columns: 1fr;
+        grid-template-areas: none;
+      }
+
+      &--publication {
+        grid-template-areas:
+          'preview'
+          'status'
+          'summary'
+          'checks';
+      }
     }
   }
 

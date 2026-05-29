@@ -22,6 +22,7 @@ import type {
   FinalReviewCheckKey,
   ToastPayload,
 } from 'features/campaign-builder/model/types';
+import { markMotionUpdated } from 'shared/lib/animations';
 import { syncCampaignBuilderAudienceView } from 'widgets/campaign-builder-audience';
 import { syncCampaignBuilderBudgetView } from 'widgets/campaign-builder-budget';
 import { syncCampaignBuilderContentView } from 'widgets/campaign-builder-content';
@@ -222,6 +223,7 @@ function syncBudget(state: BuilderState): void {
     budget,
     coverageDays,
     coverageRatio,
+    cpmPrice: state.cpmPrice ?? 100,
     dailyBudget: state.dailyBudget,
     insights,
     period: state.period,
@@ -305,6 +307,15 @@ export function moveStep(
           'Перед переходом заполните обязательные поля.',
       });
       syncBuilder(state);
+      document.querySelectorAll<HTMLElement>('[data-builder-error]').forEach((node) => {
+        if (!node.hidden && node.textContent?.trim()) {
+          markMotionUpdated(
+            node.closest<HTMLElement>('.campaign-builder__field'),
+            'motion-invalid',
+            520,
+          );
+        }
+      });
       return;
     }
   }

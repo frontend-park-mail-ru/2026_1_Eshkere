@@ -10,6 +10,7 @@ import type {
 import { openImageCropModal, type ImageCropRatio } from 'widgets/image-crop-modal';
 import { generateAdImage, type AiImageStyle } from 'features/ads/api/ai-image';
 import { ApiRequestError } from 'shared/lib/request';
+import { markMotionUpdated, setupMotionEnhancements } from 'shared/lib/animations';
 
 interface InitCampaignBuilderContentControlsParams {
   clampText: (value: string, limit: number) => string;
@@ -271,6 +272,11 @@ export function initCampaignBuilderContentControls({
 
             persistState(state);
             syncBuilder(state);
+            markMotionUpdated(
+              input.closest<HTMLElement>('[data-builder-creative-slot]'),
+              'motion-upload-done',
+              900,
+            );
             showToast({
               title: 'Креатив обновлён',
               description: `Файл "${fileToUse.name}" сохранён в черновике кампании.`,
@@ -454,6 +460,7 @@ export function initCampaignBuilderContentControls({
         <div class="campaign-builder__ai-variant campaign-builder__ai-variant--skeleton"></div>
         <div class="campaign-builder__ai-variant campaign-builder__ai-variant--skeleton"></div>
         <div class="campaign-builder__ai-variant campaign-builder__ai-variant--skeleton"></div>`;
+      setupMotionEnhancements(aiVariants);
 
       try {
         const image = await generateAdImage({
@@ -475,6 +482,7 @@ export function initCampaignBuilderContentControls({
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </span>
           </div>`;
+        setupMotionEnhancements(aiVariants);
 
         genImageBtn.classList.remove('is-loading');
         genImageBtn.disabled = cbRegenLeft === 0;
@@ -509,7 +517,7 @@ export function initCampaignBuilderContentControls({
 
         let msg = 'Не удалось сгенерировать изображения. Попробуйте ещё раз.';
         if (err instanceof ApiRequestError && err.status === 402) {
-          msg = 'Генерация изображений доступна только на тарифе Pro.';
+          msg = 'Генерация изображений доступна только на тарифе Pro. Перейдите в профиль, чтобы оформить подписку.';
         } else if (err instanceof ApiRequestError && err.status >= 500) {
           msg = 'Сервис генерации временно недоступен. Попробуйте позже.';
         }

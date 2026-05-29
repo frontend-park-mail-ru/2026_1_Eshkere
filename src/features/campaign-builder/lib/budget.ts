@@ -29,19 +29,14 @@ export function formatBudgetPeriod(days: number): string {
   return `${Math.max(1, Math.round(days))} дней`;
 }
 
-// CPM (₽ за 1000 показов) по стратегии
-const CPM_BY_STRATEGY: Record<string, number> = {
-  aggressive: 185,
-  smart:      155,
-  even:       125,
-};
-
 // CTR по цели кампании
 const CTR_BY_GOAL: Record<string, number> = {
   awareness: 0.0008,
   website:   0.003,
   leads:     0.005,
 };
+
+const DEFAULT_CPM_RUB = 100;
 
 export function getBudgetForecast(state: BuilderState): {
   reach: string;
@@ -52,15 +47,14 @@ export function getBudgetForecast(state: BuilderState): {
   goalBadge: string;
 } {
   const total = Math.max(state.totalBudget, state.dailyBudget);
-  const baseCpm = CPM_BY_STRATEGY[state.strategy] ?? 155;
+  // Используем CPM, который задал пользователь
+  const baseCpm = Math.max(1, state.cpmPrice ?? DEFAULT_CPM_RUB);
   const baseCtr = CTR_BY_GOAL[state.goal] ?? 0.003;
 
   const reach    = Math.max(1, Math.round((total / baseCpm) * 1000));
   const clicks   = Math.max(1, Math.round(reach * baseCtr));
   const cpcValue = Math.round(baseCpm / (baseCtr * 1000));
 
-  const cpmMin    = Math.round(baseCpm * 0.83);
-  const cpmMax    = Math.round(baseCpm * 1.17);
   const clicksMin = Math.round(clicks * 0.82);
   const clicksMax = Math.round(clicks * 1.18);
   const cpcMin    = Math.max(10, Math.round(cpcValue * 0.85));
@@ -71,9 +65,9 @@ export function getBudgetForecast(state: BuilderState): {
   return {
     reach:  fmt(reach),
     clicks: `${fmt(clicksMin)} − ${fmt(clicksMax)}`,
-    cpm:    `${cpmMin} − ${cpmMax} ₽`,
+    cpm:    `${baseCpm} ₽`,
     cpc:    `${cpcMin} − ${cpcMax} ₽`,
-    note:   `Деньги списываются за каждый показ (CPM ${cpmMin}–${cpmMax} ₽). Прогноз: ${fmt(clicksMin)}–${fmt(clicksMax)} переходов за период кампании.`,
+    note:   `Деньги списываются за каждый показ (CPM ${baseCpm} ₽). Прогноз: ${fmt(clicksMin)}–${fmt(clicksMax)} переходов за период кампании.`,
     goalBadge:
       state.goal === 'website'
         ? 'CTR / CPC'

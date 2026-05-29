@@ -193,10 +193,10 @@ export function getPrimaryCreativeFile(state: BuilderState): File | undefined {
   );
 }
 
-// CPM в копейках: 10 000 = 10 руб. за 1000 показов (1 коп. за показ)
-const DEFAULT_CPM_PRICE = 10000;
 const MIN_DAILY_BUDGET = 1000;
 const MAX_DAILY_BUDGET = 10_000_000;
+const MIN_CPM_PRICE_RUB = 1;
+const MAX_CPM_PRICE_RUB = 50_000;
 
 export function toCampaignPayload(state: BuilderState): CreateAdCampaignRequest {
   const normalizedDailyBudget = Math.min(
@@ -204,11 +204,14 @@ export function toCampaignPayload(state: BuilderState): CreateAdCampaignRequest 
     Math.max(MIN_DAILY_BUDGET, Math.round(state.dailyBudget)),
   );
 
+  // cpm_price в копейках: умножаем ₽ × 100
+  const cpmRub = Math.min(MAX_CPM_PRICE_RUB, Math.max(MIN_CPM_PRICE_RUB, Math.round(state.cpmPrice ?? 100)));
+
   return {
     name: state.name.trim(),
     main_action: GOAL_MAIN_ACTION[state.goal],
     daily_budget: normalizedDailyBudget,
-    cpm_price: DEFAULT_CPM_PRICE,
+    cpm_price: cpmRub * 100,
   };
 }
 
@@ -219,7 +222,7 @@ export function toGroupPayload(state: BuilderState): CreateAdGroupRequest {
     name: getResolvedGroupName(state),
     age_from: ageFrom,
     age_to: ageTo,
-    gender: 'any' as GenderType,
+    gender: state.gender as GenderType,
     region: getSafeRegionId(state),
     topic: getSafeTopicId(state),
   };
