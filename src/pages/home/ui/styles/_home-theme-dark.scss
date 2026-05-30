@@ -301,6 +301,42 @@ html[data-theme='dark'] {
         inset 0 0 0 1px rgba(255, 255, 255, 0.03),
         0 14px 26px -22px rgba(0, 0, 0, 0.28);
     }
+
+    // ── Metric chips ────────────────────────────────────────────────────────
+    &__metric {
+      background: rgba(22, 31, 57, 0.88);
+      border-color: rgba(99, 116, 171, 0.24);
+    }
+
+    &__metric-label { color: #6e7ca0; }
+    &__metric-value { color: #eef2ff; }
+    &__metric-delta--up   { color: #34d399; }
+    &__metric-delta--down { color: #a78bfa; }
+
+    // ── AI visual panel ─────────────────────────────────────────────────────
+    &__ai-visual {
+      background: rgba(22, 31, 57, 0.88);
+      border-color: rgba(99, 116, 171, 0.24);
+    }
+
+    &__ai-line {
+      background: linear-gradient(90deg, rgba(139, 112, 255, 0.35), rgba(139, 112, 255, 0.1));
+    }
+
+    &__ai-cursor { background: #a78bfa; }
+
+    // ── SVG chart grid lines ─────────────────────────────────────────────────
+    &__chart line { stroke: rgba(99, 116, 171, 0.2); }
+    &__chart text { fill: #6e7ca0; }
+
+    // ── AI accent card ─────────────────────────────────────────────────────
+    &--accent {
+      background:
+        linear-gradient(145deg, rgba(108, 92, 231, 0.18) 0%, rgba(19, 28, 52, 0.94) 55%, rgba(14, 21, 40, 0.94) 100%);
+
+      .bento-card__title { color: #eef2ff; }
+      .bento-card__text  { color: #9da8c9; }
+    }
   }
 
   .testimonial,

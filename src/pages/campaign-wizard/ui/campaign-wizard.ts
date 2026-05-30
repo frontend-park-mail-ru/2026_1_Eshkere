@@ -8,6 +8,7 @@ import { generateAdImage, type AiImageStyle } from 'features/ads/api/ai-image';
 import { ApiRequestError } from 'shared/lib/request';
 import { renderTemplate } from 'shared/lib/render';
 import { navigateTo } from 'shared/lib/navigation';
+import { openImageCropModal, type ImageCropRatio } from 'widgets/image-crop-modal';
 import {
   createInitialWizardState,
   getWizardReviewData,
@@ -340,11 +341,24 @@ export function CampaignWizard(): VoidFunction {
   const previewImg     = root.querySelector<HTMLImageElement>('[data-cw-upload-img]');
   const previewName    = root.querySelector<HTMLElement>('[data-cw-upload-name]');
   const removeBtn      = root.querySelector<HTMLButtonElement>('[data-cw-upload-remove]');
+  const livePreviewImagePlaceholder = root.querySelector<HTMLElement>('[data-cw-preview-image]')?.innerHTML ?? '';
+  const reviewPreviewImagePlaceholder = root.querySelector<HTMLElement>('[data-cw-review-image]')?.innerHTML ?? '';
+
+  let uploadPreviewUrl: string | null = null;
+  let livePreviewUrl: string | null = null;
+  let livePreviewFile: File | null = null;
+  let reviewPreviewUrl: string | null = null;
+  let reviewPreviewFile: File | null = null;
+
+  function getCropRatio(): ImageCropRatio {
+    return state.ad_format === 'stories' ? 'stories' : 'feed';
+  }
 
   function showFile(file: File): void {
     state.ad_image = file;
-    const url = URL.createObjectURL(file);
-    if (previewImg)  previewImg.src = url;
+    if (uploadPreviewUrl) URL.revokeObjectURL(uploadPreviewUrl);
+    uploadPreviewUrl = URL.createObjectURL(file);
+    if (previewImg)  previewImg.src = uploadPreviewUrl;
     if (previewName) previewName.textContent = file.name;
     if (placeholder) placeholder.hidden = true;
     if (preview)     preview.hidden = false;
@@ -353,14 +367,33 @@ export function CampaignWizard(): VoidFunction {
 
   function clearFile(): void {
     state.ad_image = null;
+    if (uploadPreviewUrl) {
+      URL.revokeObjectURL(uploadPreviewUrl);
+      uploadPreviewUrl = null;
+    }
     if (fileInput)   fileInput.value = '';
+    if (previewImg)  previewImg.removeAttribute('src');
     if (placeholder) placeholder.hidden = false;
     if (preview)     preview.hidden = true;
+    updateAdPreview();
+  }
+
+  async function cropAndShowFile(file: File): Promise<void> {
+    if (!file.type.startsWith('image/')) {
+      showToast('Неверный формат', 'Загрузите JPG, PNG или WebP.', 'error');
+      if (fileInput) fileInput.value = '';
+      return;
+    }
+
+    const result = await openImageCropModal(file, getCropRatio());
+    if (result) showFile(result.file);
+
+    if (fileInput) fileInput.value = '';
   }
 
   fileInput?.addEventListener('change', () => {
     const f = fileInput.files?.[0];
-    if (f) showFile(f);
+    if (f) void cropAndShowFile(f);
   }, { signal });
 
   removeBtn?.addEventListener('click', (e) => {
@@ -380,8 +413,14 @@ export function CampaignWizard(): VoidFunction {
     e.preventDefault();
     uploadZone.classList.remove('is-dragover');
     const f = e.dataTransfer?.files[0];
-    if (f?.type.startsWith('image/')) showFile(f);
+    if (f) void cropAndShowFile(f);
   }, { signal });
+
+  signal.addEventListener('abort', () => {
+    if (uploadPreviewUrl) URL.revokeObjectURL(uploadPreviewUrl);
+    if (livePreviewUrl) URL.revokeObjectURL(livePreviewUrl);
+    if (reviewPreviewUrl) URL.revokeObjectURL(reviewPreviewUrl);
+  });
 
   function extractDomain(url: string): string {
     try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return url || 'example.com'; }
@@ -410,16 +449,28 @@ export function CampaignWizard(): VoidFunction {
     if (domainEl) domainEl.textContent = extractDomain(url);
     if (ctaEl)    ctaEl.textContent    = state.ad_cta;
 
-    if (imgEl && state.ad_image) {
-      const existing = imgEl.querySelector('img');
-      const src = URL.createObjectURL(state.ad_image);
-      if (existing) {
-        existing.src = src;
+    if (imgEl) {
+      if (state.ad_image) {
+        if (livePreviewFile !== state.ad_image) {
+          if (livePreviewUrl) URL.revokeObjectURL(livePreviewUrl);
+          livePreviewUrl = URL.createObjectURL(state.ad_image);
+          livePreviewFile = state.ad_image;
+        }
+
+        const existing = imgEl.querySelector('img');
+        if (existing && livePreviewUrl) {
+          existing.src = livePreviewUrl;
+        } else if (livePreviewUrl) {
+          imgEl.innerHTML = '';
+          const img = document.createElement('img');
+          img.src = livePreviewUrl; img.alt = '';
+          imgEl.appendChild(img);
+        }
       } else {
-        imgEl.innerHTML = '';
-        const img = document.createElement('img');
-        img.src = src; img.alt = '';
-        imgEl.appendChild(img);
+        if (livePreviewUrl) URL.revokeObjectURL(livePreviewUrl);
+        livePreviewUrl = null;
+        livePreviewFile = null;
+        imgEl.innerHTML = livePreviewImagePlaceholder;
       }
     }
 
@@ -434,14 +485,30 @@ export function CampaignWizard(): VoidFunction {
     if (c4)  c4.textContent  = state.ad_cta;
     if (dm4) dm4.textContent = extractDomain(url);
 
-    if (state.ad_image) {
-      const imgEl4 = r4('[data-cw-review-image]');
-      if (imgEl4 && !imgEl4.querySelector('img')) {
-        imgEl4.innerHTML = '';
-        const img = document.createElement('img');
-        img.src = URL.createObjectURL(state.ad_image);
-        img.alt = '';
-        imgEl4.appendChild(img);
+    const imgEl4 = r4('[data-cw-review-image]');
+    if (imgEl4) {
+      if (state.ad_image) {
+        if (reviewPreviewFile !== state.ad_image) {
+          if (reviewPreviewUrl) URL.revokeObjectURL(reviewPreviewUrl);
+          reviewPreviewUrl = URL.createObjectURL(state.ad_image);
+          reviewPreviewFile = state.ad_image;
+        }
+
+        const existing = imgEl4.querySelector('img');
+        if (existing && reviewPreviewUrl) {
+          existing.src = reviewPreviewUrl;
+        } else if (reviewPreviewUrl) {
+          imgEl4.innerHTML = '';
+          const img = document.createElement('img');
+          img.src = reviewPreviewUrl;
+          img.alt = '';
+          imgEl4.appendChild(img);
+        }
+      } else {
+        if (reviewPreviewUrl) URL.revokeObjectURL(reviewPreviewUrl);
+        reviewPreviewUrl = null;
+        reviewPreviewFile = null;
+        imgEl4.innerHTML = reviewPreviewImagePlaceholder;
       }
     }
   }
