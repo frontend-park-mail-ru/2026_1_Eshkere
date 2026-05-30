@@ -374,9 +374,15 @@
                     </svg>
                   </button>
                 </div>
-                <textarea class="campaign-builder__ai-context-input" data-cw-ai-context rows="2" placeholder="Опишите товар или услугу — ИИ напишет описание..." maxlength="300"></textarea>
+                <textarea class="campaign-builder__ai-context-input" data-cw-ai-context rows="2" placeholder="Опишите товар или услугу — ИИ напишет заголовок и описание..." maxlength="300"></textarea>
+                <div class="campaign-builder__ai-tones">
+                  <button class="campaign-builder__ai-tone-chip campaign-builder__ai-tone-chip--active" type="button" data-cw-tone="friendly">Дружелюбный</button>
+                  <button class="campaign-builder__ai-tone-chip" type="button" data-cw-tone="professional">Формальный</button>
+                  <button class="campaign-builder__ai-tone-chip" type="button" data-cw-tone="bold">Дерзкий</button>
+                  <button class="campaign-builder__ai-tone-chip" type="button" data-cw-tone="minimal">Минимал</button>
+                </div>
                 <div class="campaign-builder__ai-panel-footer">
-                  <span class="campaign-builder__ai-panel-hint">Описание заменится сгенерированным</span>
+                  <span class="campaign-builder__ai-panel-hint">Заголовок и описание заменятся</span>
                   <button class="campaign-builder__ai-gen-text-btn" type="button" data-cw-ai-gen-text>
                     <svg class="campaign-builder__ai-spinner" width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                       <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="40 60"/>

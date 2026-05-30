@@ -5,6 +5,7 @@ import { createAdCampaign } from 'features/ads/api/create-ad-campaign';
 import { createAdGroup } from 'features/ads/api/ad-groups';
 import { createAdInGroup } from 'features/ads/api/ads';
 import { generateAdImage, type AiImageStyle } from 'features/ads/api/ai-image';
+import { generateAdText, type AdTextTone } from 'features/ads/api/ai-text';
 import { ApiRequestError } from 'shared/lib/request';
 import { renderTemplate } from 'shared/lib/render';
 import { navigateTo } from 'shared/lib/navigation';
@@ -559,12 +560,15 @@ export function CampaignWizard(): VoidFunction {
   const aiGenTextBtn     = root.querySelector<HTMLButtonElement>('[data-cw-ai-gen-text]');
   const aiGenTextLabel   = root.querySelector<HTMLElement>('[data-cw-ai-gen-text-label]');
 
-  const DESC_TEMPLATES = [
-    (s: string) => `${s} — именно то, что вы искали. Уникальное предложение для наших клиентов. Не упустите возможность!`,
-    (s: string) => `Откройте для себя ${s}. Высокое качество, доступные цены и надёжный сервис. Закажите прямо сейчас.`,
-    (s: string) => `${s}: выгодное предложение ждёт вас. Быстрая доставка, профессиональная поддержка и гарантия качества.`,
-    (s: string) => `Только у нас — ${s} по специальной цене. Ограниченное предложение для новых клиентов.`,
-  ];
+  let cwTextTone: AdTextTone = 'friendly';
+
+  root.querySelectorAll<HTMLButtonElement>('[data-cw-tone]').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      root.querySelectorAll('[data-cw-tone]').forEach((c) => c.classList.remove('campaign-builder__ai-tone-chip--active'));
+      chip.classList.add('campaign-builder__ai-tone-chip--active');
+      cwTextTone = chip.dataset.cwTone as AdTextTone;
+    }, { signal });
+  });
 
   aiTextToggle?.addEventListener('click', () => {
     if (!aiPanel) return;
@@ -576,24 +580,57 @@ export function CampaignWizard(): VoidFunction {
 
   aiGenTextBtn?.addEventListener('click', () => {
     void (async () => {
-      if (!descTextarea || !aiGenTextBtn) return;
-      const context = (aiContextInput?.value ?? '').trim() || (titleInput?.value ?? '').trim() || 'продукт';
+      if (!aiGenTextBtn) return;
+      const productDescription = (aiContextInput?.value ?? '').trim() || (titleInput?.value ?? '').trim();
+      if (!productDescription) {
+        showToast('Добавьте описание', 'Введите описание товара или услуги в поле контекста.', 'warning');
+        aiContextInput?.focus();
+        return;
+      }
+
       aiGenTextBtn.disabled = true;
       aiGenTextBtn.classList.add('is-loading');
       if (aiGenTextLabel) aiGenTextLabel.textContent = 'Генерирую...';
 
-      await new Promise((r) => setTimeout(r, 1200));
+      try {
+        const result = await generateAdText({
+          product_description: productDescription,
+          tone: cwTextTone,
+          headline_max_len: 60,
+          body_max_len: 150,
+        });
 
-      const tpl = DESC_TEMPLATES[Math.floor(Math.random() * DESC_TEMPLATES.length)];
-      const generated = tpl(context).substring(0, 150);
-      descTextarea.value = generated;
-      descTextarea.dispatchEvent(new Event('input'));
+        const hadContent = !!(titleInput?.value.trim() || descTextarea?.value.trim());
 
-      aiGenTextBtn.classList.remove('is-loading');
-      aiGenTextBtn.disabled = false;
-      if (aiGenTextLabel) aiGenTextLabel.textContent = 'Сгенерировать';
-      if (aiPanel) aiPanel.hidden = true;
-      aiTextToggle?.classList.remove('is-active');
+        if (titleInput && result.headline) {
+          titleInput.value = result.headline.substring(0, 60);
+          titleInput.dispatchEvent(new Event('input'));
+        }
+        if (descTextarea && result.body) {
+          descTextarea.value = result.body.substring(0, 150);
+          descTextarea.dispatchEvent(new Event('input'));
+        }
+
+        if (hadContent) {
+          showToast('Текст обновлён', 'Заголовок и описание заменены сгенерированным текстом.', 'success');
+        }
+
+        if (aiPanel) aiPanel.hidden = true;
+        aiTextToggle?.classList.remove('is-active');
+      } catch (err) {
+        let msg = 'Не удалось сгенерировать текст. Попробуйте ещё раз.';
+        if (err instanceof ApiRequestError) {
+          if (err.status === 400) msg = 'Добавьте описание продукта для генерации.';
+          else if (err.status === 401) msg = 'Для генерации необходимо войти в аккаунт.';
+          else if (err.status === 402) msg = 'Генерация текстов доступна только на тарифе Pro.';
+          else if (err.status >= 500) msg = 'Сервис генерации временно недоступен. Попробуйте позже.';
+        }
+        showToast('Ошибка генерации', msg, 'error');
+      } finally {
+        aiGenTextBtn.classList.remove('is-loading');
+        aiGenTextBtn.disabled = false;
+        if (aiGenTextLabel) aiGenTextLabel.textContent = 'Сгенерировать';
+      }
     })();
   }, { signal });
 

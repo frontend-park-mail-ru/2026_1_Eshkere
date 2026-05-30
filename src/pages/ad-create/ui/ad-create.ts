@@ -6,6 +6,7 @@ import { navigateTo } from 'shared/lib/navigation';
 import { openImageCropModal } from 'widgets/image-crop-modal';
 import { showToast } from 'shared/lib/toast';
 import { ApiRequestError } from 'shared/lib/request';
+import { generateAdText, type AdTextTone } from 'features/ads/api/ai-text';
 import adCreateTemplate from './ad-create.hbs';
 
 function getParams(): { campaignId: number | null; groupId: number | null } {
@@ -303,6 +304,16 @@ export function AdCreate(): VoidFunction {
 
   // ─── ИИ: генерация описания ───────────────────────────────────────────────
 
+  let currentTextTone: AdTextTone = 'friendly';
+
+  root.querySelectorAll<HTMLButtonElement>('[data-adc-tone]').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      root.querySelectorAll('[data-adc-tone]').forEach((c) => c.classList.remove('adc__ai-tone-chip--active'));
+      chip.classList.add('adc__ai-tone-chip--active');
+      currentTextTone = chip.dataset.adcTone as AdTextTone;
+    }, { signal });
+  });
+
   aiTextToggle?.addEventListener('click', () => {
     if (!aiPanel) return;
     const opening = aiPanel.hidden !== false;
@@ -311,36 +322,63 @@ export function AdCreate(): VoidFunction {
     if (opening) aiContextInput?.focus();
   }, { signal });
 
-  const DESC_TEMPLATES = [
-    (s: string) => `${s} — именно то, что вы искали. Уникальное предложение для наших клиентов. Не упустите возможность!`,
-    (s: string) => `Откройте для себя ${s}. Высокое качество, доступные цены и надёжный сервис. Закажите прямо сейчас.`,
-    (s: string) => `${s}: выгодное предложение ждёт вас. Быстрая доставка, профессиональная поддержка и гарантия качества.`,
-    (s: string) => `Только у нас — ${s} по специальной цене. Ограниченное предложение для новых клиентов.`,
-  ];
+  function textGenErrorMessage(err: unknown): string {
+    if (err instanceof ApiRequestError) {
+      if (err.status === 400) return 'Добавьте описание продукта для генерации.';
+      if (err.status === 401) return 'Для генерации необходимо войти в аккаунт.';
+      if (err.status === 402) return 'Генерация текстов доступна только на тарифе Pro. Перейдите в профиль, чтобы оформить подписку.';
+      if (err.status >= 500) return 'Сервис генерации временно недоступен. Попробуйте позже.';
+    }
+    return 'Не удалось сгенерировать текст. Попробуйте ещё раз.';
+  }
 
   async function handleGenText(): Promise<void> {
-    if (!descInput || !aiGenTextBtn) return;
-    const context = (aiContextInput?.value ?? '').trim() || (titleInput?.value ?? '').trim() || 'продукт';
+    if (!aiGenTextBtn) return;
+    const productDescription = (aiContextInput?.value ?? '').trim() || (titleInput?.value ?? '').trim();
+    if (!productDescription) {
+      showToast('Добавьте описание', 'Введите описание товара или услуги в поле контекста.', 'warning');
+      aiContextInput?.focus();
+      return;
+    }
 
     aiGenTextBtn.disabled = true;
     aiGenTextBtn.classList.add('is-loading');
     if (aiGenTextLabel) aiGenTextLabel.textContent = 'Генерирую...';
 
-    await delay(1400);
+    try {
+      const result = await generateAdText({
+        product_description: productDescription,
+        tone: currentTextTone,
+        headline_max_len: 60,
+        body_max_len: 150,
+      });
 
-    const tpl = DESC_TEMPLATES[Math.floor(Math.random() * DESC_TEMPLATES.length)];
-    const text = tpl(context).substring(0, 150);
+      const hadContent = !!(titleInput?.value.trim() || descInput?.value.trim());
 
-    descInput.value = text;
-    descInput.dispatchEvent(new Event('input'));
-    updateGenImageBtn();
+      if (titleInput && result.headline) {
+        titleInput.value = result.headline.substring(0, 60);
+        titleInput.dispatchEvent(new Event('input'));
+      }
+      if (descInput && result.body) {
+        descInput.value = result.body.substring(0, 150);
+        descInput.dispatchEvent(new Event('input'));
+      }
+      updateGenImageBtn();
 
-    aiGenTextBtn.classList.remove('is-loading');
-    aiGenTextBtn.disabled = false;
-    if (aiGenTextLabel) aiGenTextLabel.textContent = 'Сгенерировать';
+      if (hadContent) {
+        showToast('Текст обновлён', 'Заголовок и описание заменены сгенерированным текстом.', 'success');
+      }
 
-    if (aiPanel) aiPanel.hidden = true;
-    aiTextToggle?.classList.remove('is-active');
+      if (aiPanel) aiPanel.hidden = true;
+      aiTextToggle?.classList.remove('is-active');
+    } catch (err) {
+      const msg = textGenErrorMessage(err);
+      showToast('Ошибка генерации', msg, 'error');
+    } finally {
+      aiGenTextBtn.classList.remove('is-loading');
+      aiGenTextBtn.disabled = false;
+      if (aiGenTextLabel) aiGenTextLabel.textContent = 'Сгенерировать';
+    }
   }
 
   aiGenTextBtn?.addEventListener('click', () => void handleGenText(), { signal });
