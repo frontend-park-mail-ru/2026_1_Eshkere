@@ -375,16 +375,17 @@ export function initCampaignBuilderContentControls({
       voiceBtn.setAttribute('aria-label', 'Голосовой ввод');
     };
 
+    // Открываем AI-панель если закрыта
+    if (aiPanel && aiPanel.hidden !== false) {
+      aiPanel.hidden = false;
+      aiTextToggle?.classList.add('is-active');
+    }
+
     recognition.onresult = (e: SpeechRecognitionEvent) => {
       const transcript = Array.from(e.results).map((r) => r[0].transcript).join('');
-      if (descTextarea) {
-        descTextarea.value = transcript.substring(0, 180);
-        descTextarea.dispatchEvent(new Event('input'));
-        state.description = descTextarea.value;
-        persistState(state);
-        syncBuilder(state);
+      if (aiContextInput) {
+        aiContextInput.value = transcript.substring(0, 300);
       }
-      updateGenImageBtn();
     };
 
     recognition.onerror = stopRecording;

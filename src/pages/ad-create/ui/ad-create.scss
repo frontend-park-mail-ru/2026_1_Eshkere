@@ -652,6 +652,13 @@
   &[hidden] { display: none; }
 }
 
+.adc__ai-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
 .adc__ai-panel-title {
   margin: 0;
   font-size: 12px;
@@ -660,6 +667,7 @@
   display: flex;
   align-items: center;
   gap: 5px;
+  flex: 1;
 }
 
 .adc__ai-context-input {

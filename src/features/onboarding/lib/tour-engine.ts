@@ -6,6 +6,7 @@ const SPOTLIGHT_PADDING = 10;
 const TOOLTIP_OFFSET = 16;
 const TOOLTIP_ARROW_SIZE = 8;
 const MOBILE_BREAKPOINT = 600;
+const VIEWPORT_MARGIN = 12;
 
 interface TourElements {
   overlay: HTMLElement;
@@ -147,11 +148,25 @@ function unlockPageScroll(): void {
 
 function positionSpotlight(target: Element): void {
   const rect = target.getBoundingClientRect();
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
 
-  const top = rect.top - SPOTLIGHT_PADDING;
-  const left = rect.left - SPOTLIGHT_PADDING;
-  const width = rect.width + SPOTLIGHT_PADDING * 2;
-  const height = rect.height + SPOTLIGHT_PADDING * 2;
+  const rawTop = rect.top - SPOTLIGHT_PADDING;
+  const rawLeft = rect.left - SPOTLIGHT_PADDING;
+  const rawWidth = rect.width + SPOTLIGHT_PADDING * 2;
+  const rawHeight = rect.height + SPOTLIGHT_PADDING * 2;
+  const maxWidth = Math.max(0, viewportWidth - VIEWPORT_MARGIN * 2);
+  const maxHeight = Math.max(0, viewportHeight - VIEWPORT_MARGIN * 2);
+  const width = Math.min(rawWidth, maxWidth);
+  const height = Math.min(rawHeight, maxHeight);
+  const top = Math.max(
+    VIEWPORT_MARGIN,
+    Math.min(rawTop, viewportHeight - height - VIEWPORT_MARGIN),
+  );
+  const left = Math.max(
+    VIEWPORT_MARGIN,
+    Math.min(rawLeft, viewportWidth - width - VIEWPORT_MARGIN),
+  );
 
   elements!.spotlight.style.cssText = `
     top: ${top}px;
@@ -223,8 +238,8 @@ function positionTooltip(target: Element | null, placement: TourStep['placement'
       break;
   }
 
-  left = Math.max(16, Math.min(left, vw - tw - 16));
-  top = Math.max(16, Math.min(top, vh - th - 16));
+  left = Math.max(VIEWPORT_MARGIN, Math.min(left, vw - tw - VIEWPORT_MARGIN));
+  top = Math.max(VIEWPORT_MARGIN, Math.min(top, vh - th - VIEWPORT_MARGIN));
 
   tooltip.style.cssText = `top: ${top}px; left: ${left}px; transform: none;`;
 }
@@ -245,11 +260,18 @@ function renderStep(index: number): void {
   const step = steps[index];
   const target = step.target ? document.querySelector(step.target) : null;
 
+  // Скрываем до позиционирования — избегаем «прыжка» на один кадр
+  elements.tooltip.classList.remove('tour-tooltip--visible');
+
   elements.title.textContent = step.title;
   elements.text.textContent = step.text;
   elements.counter.textContent = `${index + 1} / ${steps.length}`;
   elements.prevBtn.hidden = index === 0;
   elements.nextBtn.textContent = index === steps.length - 1 ? 'Готово' : 'Далее';
+
+  const showTooltip = () => {
+    elements?.tooltip.classList.add('tour-tooltip--visible');
+  };
 
   if (target) {
     elements.overlay.style.background = 'transparent';
@@ -262,6 +284,8 @@ function renderStep(index: number): void {
       if (!elements) return;
       positionSpotlight(target);
       positionTooltip(target, step.placement);
+      // Показываем только после позиционирования
+      showTooltip();
     };
 
     if (alreadyInView) {
@@ -280,9 +304,7 @@ function renderStep(index: number): void {
         doPosition();
       };
 
-      // scrollend fires when smooth scroll completes (Chrome 109+, Firefox 109+)
       window.addEventListener('scrollend', settle, { once: true });
-      // Fallback for older browsers or when element is already close to view
       setTimeout(settle, 420);
     }
   } else {
@@ -290,9 +312,8 @@ function renderStep(index: number): void {
     elements.spotlight.hidden = true;
     elements.overlay.style.background = 'rgba(0, 0, 0, 0.6)';
     positionTooltip(null, 'center');
+    showTooltip();
   }
-
-  elements.tooltip.classList.add('tour-tooltip--visible');
 }
 
 function cleanup(): void {

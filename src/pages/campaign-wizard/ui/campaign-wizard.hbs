@@ -312,6 +312,29 @@
                 </div>
               </div>
             </div>
+
+            <div class="campaign-builder__ai-image-section" data-cw-ai-image-section>
+              <div class="campaign-builder__ai-or"><span>или</span></div>
+              <div class="campaign-builder__ai-style-row">
+                <span class="campaign-builder__ai-style-label">Стиль:</span>
+                <div class="campaign-builder__ai-style-chips">
+                  <button class="campaign-builder__ai-style-chip campaign-builder__ai-style-chip--active" type="button" data-cw-style="clean">Чистый</button>
+                  <button class="campaign-builder__ai-style-chip" type="button" data-cw-style="bold">Яркий</button>
+                  <button class="campaign-builder__ai-style-chip" type="button" data-cw-style="minimal">Минимал</button>
+                </div>
+              </div>
+              <button class="campaign-builder__ai-gen-image-btn" type="button" data-cw-gen-image disabled>
+                <svg class="campaign-builder__ai-sparkle-icon" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+                </svg>
+                <svg class="campaign-builder__ai-spinner" width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="40 60"/>
+                </svg>
+                <span data-cw-gen-image-label>Сгенерировать из описания</span>
+              </button>
+              <div class="campaign-builder__ai-variants" data-cw-ai-variants hidden></div>
+              <p class="campaign-builder__ai-gen-error" data-cw-gen-error hidden></p>
+            </div>
           </div>
         </div>
         <div class="campaign-builder__card">
@@ -325,12 +348,47 @@
                 placeholder="Краткий и цепляющий заголовок" data-cw-field="ad_title" />
               <span class="campaign-builder__error" data-cw-error="ad_title"></span>
             </label>
-            <label class="campaign-builder__field">
-              <span class="campaign-builder__label">Описание <span class="cw-counter" data-cw-counter="ad_desc">0/150</span></span>
+            <div class="campaign-builder__field">
+              <div class="campaign-builder__field-header">
+                <span class="campaign-builder__label">Описание <span class="cw-counter" data-cw-counter="ad_desc">0/150</span></span>
+                <div class="campaign-builder__ai-actions">
+                  <button class="campaign-builder__ai-icon-btn" type="button" data-cw-ai-text-toggle aria-label="Написать с помощью ИИ" title="Написать с помощью ИИ">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="campaign-builder__ai-panel" data-cw-ai-panel hidden>
+                <div class="campaign-builder__ai-panel-header">
+                  <p class="campaign-builder__ai-panel-title">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+                    </svg>
+                    Контекст для ИИ
+                  </p>
+                  <button class="campaign-builder__ai-icon-btn" type="button" data-cw-voice-btn aria-label="Голосовой ввод" title="Продиктовать контекст">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                      <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                  </button>
+                </div>
+                <textarea class="campaign-builder__ai-context-input" data-cw-ai-context rows="2" placeholder="Опишите товар или услугу — ИИ напишет описание..." maxlength="300"></textarea>
+                <div class="campaign-builder__ai-panel-footer">
+                  <span class="campaign-builder__ai-panel-hint">Описание заменится сгенерированным</span>
+                  <button class="campaign-builder__ai-gen-text-btn" type="button" data-cw-ai-gen-text>
+                    <svg class="campaign-builder__ai-spinner" width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="40 60"/>
+                    </svg>
+                    <span data-cw-ai-gen-text-label>Сгенерировать</span>
+                  </button>
+                </div>
+              </div>
               <textarea class="campaign-builder__textarea" maxlength="150" rows="3"
                 placeholder="Расскажите о предложении коротко и по делу" data-cw-field="ad_desc"></textarea>
               <span class="campaign-builder__error" data-cw-error="ad_desc"></span>
-            </label>
+            </div>
             <label class="campaign-builder__field">
               <span class="campaign-builder__label">Целевая ссылка</span>
               <input class="campaign-builder__input" type="url"

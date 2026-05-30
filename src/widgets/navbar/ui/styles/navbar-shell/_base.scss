@@ -156,24 +156,44 @@
 
     &::before,
     &::after {
+      content: '';
       position: absolute;
-      font-size: 11px;
-      line-height: 1;
-      transition: opacity 0.2s ease;
+      top: 50%;
+      width: 10px;
+      height: 10px;
+      transform: translateY(-50%);
+      transition:
+        opacity 0.2s ease,
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
       pointer-events: none;
     }
 
     &::before {
       content: '☀';
-      left: 5px;
-      color: #655fff;
+      content: '';
+      left: 8px;
+      border-radius: 50%;
+      background: #655fff;
+      box-shadow:
+        0 -4px 0 -3px #655fff,
+        0 4px 0 -3px #655fff,
+        4px 0 0 -3px #655fff,
+        -4px 0 0 -3px #655fff,
+        3px 3px 0 -3px #655fff,
+        -3px 3px 0 -3px #655fff,
+        3px -3px 0 -3px #655fff,
+        -3px -3px 0 -3px #655fff;
       opacity: 0.95;
     }
 
     &::after {
       content: '☾';
-      right: 5px;
-      color: #655fff;
+      content: '';
+      right: 8px;
+      border-radius: 50%;
+      background: #655fff;
+      box-shadow: inset -3px 0 0 rgba(255, 255, 255, 0.72);
       opacity: 0.52;
     }
   }
@@ -181,12 +201,17 @@
   &__theme-btn-thumb {
     position: absolute;
     left: 4px;
+    top: 50%;
     width: 20px;
     height: 20px;
     border-radius: 50%;
     background: linear-gradient(135deg, #655fff, #514bff);
     box-shadow: 0 2px 6px rgba(101, 95, 255, 0.4);
-    transition: transform 0.25s ease;
+    transform: translateY(-50%);
+    transition:
+      transform 0.25s ease,
+      background 0.25s ease,
+      box-shadow 0.25s ease;
   }
 
   &__theme-btn:hover &__theme-btn-track {

@@ -54,15 +54,26 @@
 
     <div class="hero__content">
       <h1 class="hero__title" data-reveal style="--reveal-delay: 80ms;">
-        ЭшкеРеклама
-        <span>Реклама, которая работает</span>
+        Запустите рекламу
+        <span>без агентств и лишних затрат</span>
       </h1>
 
       <p class="hero__description" data-reveal style="--reveal-delay: 200ms;">
-        Запускайте кампании за 5 минут, находите клиентов в VK, Яндексе, Telegram и Одноклассниках. Без агентств и сложных настроек.
+        VK, Яндекс, Telegram, Одноклассники и Rutube — в одном кабинете. ИИ помогает с текстами и картинками. Первая кампания — за 5 минут.
       </p>
 
-      <div class="hero__actions" data-reveal style="--reveal-delay: 320ms;">
+      <div class="hero__platforms" data-reveal style="--reveal-delay: 290ms;" aria-label="Поддерживаемые площадки">
+        <span class="hero__platform-label">Площадки:</span>
+        <ul class="hero__platform-list">
+          <li class="hero__platform">VK</li>
+          <li class="hero__platform">Яндекс</li>
+          <li class="hero__platform">Telegram</li>
+          <li class="hero__platform">OK</li>
+          <li class="hero__platform">Rutube</li>
+        </ul>
+      </div>
+
+      <div class="hero__actions" data-reveal style="--reveal-delay: 380ms;">
         <a href="{{ctaHref}}" class="hero__button hero__button--primary">
           {{ctaText}}
           <span class="hero__button-arrow" aria-hidden="true">&rarr;</span>
@@ -72,6 +83,20 @@
         </a>
       </div>
 
+      <ul class="hero__stats" aria-label="Ключевые показатели" data-reveal style="--reveal-delay: 480ms;">
+        <li class="hero__stat">
+          <span class="hero__stat-value">1 200+</span>
+          <span class="hero__stat-label">рекламодателей уже запустились</span>
+        </li>
+        <li class="hero__stat">
+          <span class="hero__stat-value">5</span>
+          <span class="hero__stat-label">рекламных площадок в одном кабинете</span>
+        </li>
+        <li class="hero__stat">
+          <span class="hero__stat-value">5 мин</span>
+          <span class="hero__stat-label">до старта первой кампании</span>
+        </li>
+      </ul>
     </div>
   </section>
 
@@ -109,39 +134,105 @@
   <section class="bento" data-scroll-section="bento">
     <header class="section-head" data-reveal>
       <span class="section-head__eyebrow">Возможности</span>
-      <h2 class="section-head__title">Всё, что нужно для рекламы</h2>
+      <h2 class="section-head__title">Всё для рекламы — в одном месте</h2>
     </header>
 
     <div class="bento__grid">
-      <article class="bento-card bento-card--wide" data-reveal data-tilt style="--reveal-delay: 0ms;">
+
+      {{!-- Карточка 1: Площадки (wide, 4 cols) --}}
+      <article class="bento-card bento-card--wide bento-card--platforms-wide" data-reveal data-tilt style="--reveal-delay: 0ms;">
         <div class="bento-card__content">
-          <h3 class="bento-card__title">Умный поиск клиентов</h3>
-          <p class="bento-card__text">Алгоритм анализирует миллионы пользователей и находит тех, кто действительно купит. Не тратит бюджет впустую.</p>
+          <h3 class="bento-card__title">5 площадок — один кабинет</h3>
+          <p class="bento-card__text">VK, Яндекс, Telegram, Одноклассники и Rutube. Настройте таргетинг один раз и запустите сразу везде — без агентств и лишних инструментов.</p>
+        </div>
+        <div class="bento-card__platforms">
+          <span title="VK"><img src="/icons/VK_logo_Blue_40x40.svg" alt="VK" /></span>
+          <span title="Яндекс"><img src="/icons/yandex-id.svg" alt="Яндекс" /></span>
+          <span class="bento-card__platform-text" title="Telegram">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" fill="#29B6F6"/>
+              <path d="M6.5 12.5L10 15.5L17.5 8.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M5 12L9 14L16 7" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M9.5 16.5L7 13.5L14.5 7.5L16.5 9.5L9.5 16.5Z" fill="white" opacity="0.15"/>
+              <path d="M9.5 16L7.5 13.5L15 7L17 9L9.5 16Z" fill="white" opacity="0.2"/>
+            </svg>
+          </span>
+          <span class="bento-card__platform-text" title="Одноклассники">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="22" r="22" fill="#EF8C00" cx="12" cy="12" r="12"/>
+              <circle cx="12" cy="9" r="3" fill="white"/>
+              <path d="M8 14c0 0 1 2 4 2s4-2 4-2" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M12 16v3M10 19h4" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span class="bento-card__platform-text" title="Rutube">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="12" r="12" fill="#FF4E4E"/>
+              <path d="M9 8l7 4-7 4V8z" fill="white"/>
+            </svg>
+          </span>
+        </div>
+      </article>
+
+      {{!-- Карточка 2: AI (accent, 2 cols) --}}
+      <article class="bento-card bento-card--accent bento-card--ai" data-reveal data-tilt style="--reveal-delay: 160ms;">
+        <div class="bento-card__glow" aria-hidden="true"></div>
+        <div class="bento-card__content">
+          <span class="bento-card__badge">AI</span>
+          <h3 class="bento-card__title">ИИ пишет тексты и создаёт баннеры</h3>
+          <p class="bento-card__text">Опишите продукт голосом или текстом — ИИ напишет описание и сгенерирует изображение под ваш формат.</p>
+        </div>
+        <div class="bento-card__ai-visual" aria-hidden="true">
+          <div class="bento-card__ai-line bento-card__ai-line--1"></div>
+          <div class="bento-card__ai-line bento-card__ai-line--2"></div>
+          <div class="bento-card__ai-line bento-card__ai-line--3"></div>
+          <div class="bento-card__ai-cursor"></div>
+        </div>
+      </article>
+
+      {{!-- Карточка 3: Аналитика (stats, 2 cols) --}}
+      <article class="bento-card bento-card--stats" data-reveal data-tilt style="--reveal-delay: 240ms;">
+        <div class="bento-card__content">
+          <h3 class="bento-card__title">Аналитика по каждому рублю</h3>
+          <p class="bento-card__text">CTR, CPM, показы и расход — в реальном времени по каждой кампании.</p>
+        </div>
+        <div class="bento-card__chart">
+          <svg viewBox="0 0 200 80" fill="none" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="bento-chart-grad" x1="0" y1="0" x2="200" y2="0">
+                <stop offset="0%" stop-color="#7b6fff"/>
+                <stop offset="100%" stop-color="#c084fc"/>
+              </linearGradient>
+              <linearGradient id="bento-chart-fill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#7b6fff" stop-opacity="0.18"/>
+                <stop offset="100%" stop-color="#7b6fff" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0 60 C20 55 35 70 50 50 C65 30 80 45 100 30 C120 15 140 35 160 20 C175 10 188 18 200 12 L200 80 L0 80 Z" fill="url(#bento-chart-fill)"/>
+            <path class="bento-card__chart-line" d="M0 60 C20 55 35 70 50 50 C65 30 80 45 100 30 C120 15 140 35 160 20 C175 10 188 18 200 12"/>
+            <circle cx="200" cy="12" r="4" fill="#7b6fff"/>
+            <circle cx="200" cy="12" r="7" fill="#7b6fff" opacity="0.2"/>
+          </svg>
+        </div>
+      </article>
+
+      {{!-- Карточка 4: Скорость (wide, 4 cols) --}}
+      <article class="bento-card bento-card--wide bento-card--speed" data-reveal data-tilt style="--reveal-delay: 320ms;">
+        <div class="bento-card__content">
+          <h3 class="bento-card__title">Первая кампания за 5 минут</h3>
+          <p class="bento-card__text">Без агентства и сложных настроек. Пошаговый визард проведёт от цели до запуска. Нужна только идея — остальное подскажет платформа.</p>
+          <ol class="bento-card__steps">
+            <li><span>01</span>Выберите цель и площадки</li>
+            <li><span>02</span>Настройте аудиторию</li>
+            <li><span>03</span>Загрузите или сгенерируйте креатив</li>
+            <li><span>04</span>Запустите и отслеживайте результат</li>
+          </ol>
         </div>
         <div class="bento-card__media">
           <img src="/img/card-2.webp" alt="" loading="lazy" decoding="async" />
         </div>
       </article>
 
-      <article class="bento-card bento-card--phone" data-reveal data-tilt style="--reveal-delay: 400ms;">
-        <div class="bento-card__content">
-          <h3 class="bento-card__title">Привлекайте и получайте результат</h3>
-          <p class="bento-card__text">Готовые шаблоны креативов, A/B-тесты, автоматическая оптимизация.</p>
-        </div>
-        <div class="bento-card__media bento-card__media--phone">
-          <img src="/img/card-1.webp" alt="" loading="lazy" decoding="async" />
-        </div>
-      </article>
-
-      <article class="bento-card bento-card--gift" data-reveal data-tilt style="--reveal-delay: 500ms;">
-        <div class="bento-card__content">
-          <h3 class="bento-card__title">Бонусы и программы лояльности</h3>
-          <p class="bento-card__text">Кэшбэк до 10% на пополнение, бонусы за рефералов, тарифы для агентств.</p>
-        </div>
-        <div class="bento-card__media">
-          <img src="/img/card-3.webp" alt="" loading="lazy" decoding="async" />
-        </div>
-      </article>
     </div>
   </section>
 
@@ -165,11 +256,11 @@
 
       <details class="faq-item" data-reveal style="--reveal-delay: 160ms;">
         <summary class="faq-item__summary">
-          <span class="faq-item__question">Как работают бонусы на первый запуск?</span>
+          <span class="faq-item__question">Сколько стоит запуск рекламы?</span>
           <span class="faq-item__toggle" aria-hidden="true"></span>
         </summary>
         <div class="faq-item__answer">
-          <p>После регистрации и создания первого рекламного кабинета мы начисляем стартовый бонус. Его можно использовать как часть бюджета на тестовую кампанию, чтобы быстрее проверить гипотезу без лишних затрат.</p>
+          <p>Кабинет на тарифе Basic бесплатен — платите только за показы. Стоимость рассчитывается по модели CPM (цена за 1 000 показов), которую вы задаёте сами. Тариф Pro за 3 900 ₽/мес открывает до 20 кампаний, AI-генерацию текстов и изображений, а также приоритетную модерацию.</p>
         </div>
       </details>
 

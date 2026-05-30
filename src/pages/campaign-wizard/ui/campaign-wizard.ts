@@ -4,12 +4,13 @@ import { showToast } from 'shared/lib/toast';
 import { createAdCampaign } from 'features/ads/api/create-ad-campaign';
 import { createAdGroup } from 'features/ads/api/ad-groups';
 import { createAdInGroup } from 'features/ads/api/ads';
+import { generateAdImage, type AiImageStyle } from 'features/ads/api/ai-image';
+import { ApiRequestError } from 'shared/lib/request';
 import { renderTemplate } from 'shared/lib/render';
 import { navigateTo } from 'shared/lib/navigation';
 import {
   createInitialWizardState,
   getWizardReviewData,
-  normalizeUrl,
   readWizardStateFromFields,
   STEP_NAMES,
   STEP_SUBTITLES,
@@ -481,7 +482,211 @@ export function CampaignWizard(): VoidFunction {
     setCta(ctaInput.value);
   }, { signal });
 
-  // Инициализация
+  // ── AI: генерация текста ──────────────────────────────────────────────────
+
+  const descTextarea     = root.querySelector<HTMLTextAreaElement>('[data-cw-field="ad_desc"]');
+  const titleInput       = root.querySelector<HTMLInputElement>('[data-cw-field="ad_title"]');
+  const aiTextToggle     = root.querySelector<HTMLButtonElement>('[data-cw-ai-text-toggle]');
+  const aiPanel          = root.querySelector<HTMLElement>('[data-cw-ai-panel]');
+  const aiContextInput   = root.querySelector<HTMLTextAreaElement>('[data-cw-ai-context]');
+  const aiGenTextBtn     = root.querySelector<HTMLButtonElement>('[data-cw-ai-gen-text]');
+  const aiGenTextLabel   = root.querySelector<HTMLElement>('[data-cw-ai-gen-text-label]');
+
+  const DESC_TEMPLATES = [
+    (s: string) => `${s} — именно то, что вы искали. Уникальное предложение для наших клиентов. Не упустите возможность!`,
+    (s: string) => `Откройте для себя ${s}. Высокое качество, доступные цены и надёжный сервис. Закажите прямо сейчас.`,
+    (s: string) => `${s}: выгодное предложение ждёт вас. Быстрая доставка, профессиональная поддержка и гарантия качества.`,
+    (s: string) => `Только у нас — ${s} по специальной цене. Ограниченное предложение для новых клиентов.`,
+  ];
+
+  aiTextToggle?.addEventListener('click', () => {
+    if (!aiPanel) return;
+    const opening = aiPanel.hidden !== false;
+    aiPanel.hidden = !opening;
+    aiTextToggle.classList.toggle('is-active', opening);
+    if (opening) aiContextInput?.focus();
+  }, { signal });
+
+  aiGenTextBtn?.addEventListener('click', () => {
+    void (async () => {
+      if (!descTextarea || !aiGenTextBtn) return;
+      const context = (aiContextInput?.value ?? '').trim() || (titleInput?.value ?? '').trim() || 'продукт';
+      aiGenTextBtn.disabled = true;
+      aiGenTextBtn.classList.add('is-loading');
+      if (aiGenTextLabel) aiGenTextLabel.textContent = 'Генерирую...';
+
+      await new Promise((r) => setTimeout(r, 1200));
+
+      const tpl = DESC_TEMPLATES[Math.floor(Math.random() * DESC_TEMPLATES.length)];
+      const generated = tpl(context).substring(0, 150);
+      descTextarea.value = generated;
+      descTextarea.dispatchEvent(new Event('input'));
+
+      aiGenTextBtn.classList.remove('is-loading');
+      aiGenTextBtn.disabled = false;
+      if (aiGenTextLabel) aiGenTextLabel.textContent = 'Сгенерировать';
+      if (aiPanel) aiPanel.hidden = true;
+      aiTextToggle?.classList.remove('is-active');
+    })();
+  }, { signal });
+
+  // ── AI: голосовой ввод ────────────────────────────────────────────────────
+
+  const voiceBtn = root.querySelector<HTMLButtonElement>('[data-cw-voice-btn]');
+
+  type SpeechRecognitionCtor = new () => {
+    lang: string; interimResults: boolean; maxAlternatives: number;
+    onresult: ((e: SpeechRecognitionEvent) => void) | null;
+    onerror: (() => void) | null;
+    onend: (() => void) | null;
+    start(): void;
+  };
+
+  voiceBtn?.addEventListener('click', () => {
+    const win = window as unknown as Record<string, unknown>;
+    const SR = (win['SpeechRecognition'] ?? win['webkitSpeechRecognition']) as SpeechRecognitionCtor | undefined;
+
+    if (!SR) {
+      showToast('Не поддерживается', 'Голосовой ввод доступен только в Chrome и Edge.', 'warning');
+      return;
+    }
+
+    const recognition = new SR();
+    recognition.lang = 'ru-RU';
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
+
+    // Открываем AI-панель если закрыта
+    if (aiPanel && aiPanel.hidden !== false) {
+      aiPanel.hidden = false;
+      aiTextToggle?.classList.add('is-active');
+    }
+
+    voiceBtn.classList.add('is-recording');
+    voiceBtn.setAttribute('aria-label', 'Остановить запись');
+
+    const stopRec = (): void => {
+      voiceBtn.classList.remove('is-recording');
+      voiceBtn.setAttribute('aria-label', 'Голосовой ввод');
+    };
+
+    recognition.onresult = (e: SpeechRecognitionEvent) => {
+      const transcript = Array.from(e.results).map((r) => r[0].transcript).join('');
+      if (aiContextInput) {
+        aiContextInput.value = transcript.substring(0, 300);
+      }
+    };
+
+    recognition.onerror = stopRec;
+    recognition.onend   = stopRec;
+    recognition.start();
+  }, { signal });
+
+  // ── AI: генерация изображений ─────────────────────────────────────────────
+
+  const genImageBtn    = root.querySelector<HTMLButtonElement>('[data-cw-gen-image]');
+  const genImageLabel  = root.querySelector<HTMLElement>('[data-cw-gen-image-label]');
+  const aiVariants     = root.querySelector<HTMLElement>('[data-cw-ai-variants]');
+  const genErrorEl     = root.querySelector<HTMLElement>('[data-cw-gen-error]');
+
+  let cwStyle: AiImageStyle = 'clean';
+  const cwGenerationKey = crypto.randomUUID();
+  const CW_MAX_REGEN = 3;
+  let cwRegenLeft = CW_MAX_REGEN;
+
+  function updateGenImageBtn(): void {
+    const hasDesc = (descTextarea?.value.trim() ?? '').length > 0;
+    if (genImageBtn) genImageBtn.disabled = !hasDesc;
+  }
+
+  updateGenImageBtn();
+  descTextarea?.addEventListener('input', updateGenImageBtn, { signal });
+
+  root.querySelectorAll<HTMLButtonElement>('[data-cw-style]').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      root.querySelectorAll('[data-cw-style]').forEach((c) => c.classList.remove('campaign-builder__ai-style-chip--active'));
+      chip.classList.add('campaign-builder__ai-style-chip--active');
+      cwStyle = chip.dataset.cwStyle as AiImageStyle;
+    }, { signal });
+  });
+
+  genImageBtn?.addEventListener('click', () => {
+    void (async () => {
+      if (!genImageBtn) return;
+      const prompt = (descTextarea?.value.trim() || titleInput?.value.trim() || '').substring(0, 400);
+      if (!prompt) return;
+
+      if (genErrorEl) genErrorEl.hidden = true;
+      if (aiVariants) { aiVariants.hidden = true; aiVariants.innerHTML = ''; }
+
+      genImageBtn.disabled = true;
+      genImageBtn.classList.add('is-loading');
+      if (genImageLabel) genImageLabel.textContent = 'Генерирую...';
+
+      try {
+        const aiFormat = state.ad_format === 'stories' ? 'stories' : 'feed';
+        const image = await generateAdImage({
+          prompt,
+          style:          cwStyle,
+          format:         aiFormat,
+          generation_key: cwGenerationKey,
+        });
+
+        cwRegenLeft = Math.max(0, cwRegenLeft - 1);
+
+        // Получаем файл из URL и сохраняем в state
+        try {
+          const res = await fetch(image.image_url);
+          const blob = await res.blob();
+          const file = new File([blob], `ai_image_${Date.now()}.jpg`, { type: blob.type || 'image/jpeg' });
+          showFile(file);
+        } catch {
+          // CORS — показываем превью через URL без сохранения файла
+          const previewImgEl = root.querySelector<HTMLElement>('[data-cw-preview-image]');
+          if (previewImgEl) {
+            previewImgEl.innerHTML = `<img src="${image.image_url}" alt="" />`;
+          }
+        }
+
+        genImageBtn.classList.remove('is-loading');
+        genImageBtn.disabled = cwRegenLeft === 0;
+        if (genImageLabel) {
+          genImageLabel.textContent = cwRegenLeft > 0
+            ? `Перегенерировать (осталось ${cwRegenLeft})`
+            : 'Лимит регенераций исчерпан';
+        }
+
+        if (aiVariants) {
+          aiVariants.hidden = false;
+          aiVariants.innerHTML = `
+            <div class="campaign-builder__ai-variant campaign-builder__ai-variant--selected"
+              style="aspect-ratio:${state.ad_format === 'stories' ? '9/16' : '1.91'}; max-height:160px;">
+              <img src="${image.image_url}" alt="Сгенерированное изображение" loading="lazy" />
+              <span class="campaign-builder__ai-variant-check">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </div>`;
+        }
+      } catch (err) {
+        genImageBtn.classList.remove('is-loading');
+        genImageBtn.disabled = false;
+        if (genImageLabel) genImageLabel.textContent = 'Сгенерировать из описания';
+
+        let msg = 'Не удалось сгенерировать изображение. Попробуйте ещё раз.';
+        if (err instanceof ApiRequestError && err.status === 402) {
+          msg = 'Генерация изображений доступна только на тарифе Pro. Перейдите в профиль, чтобы оформить подписку.';
+        } else if (err instanceof ApiRequestError && err.status >= 500) {
+          msg = 'Сервис генерации временно недоступен. Попробуйте позже.';
+        }
+
+        if (genErrorEl) { genErrorEl.textContent = msg; genErrorEl.hidden = false; }
+        showToast('Ошибка генерации', msg, 'error');
+      }
+    })();
+  }, { signal });
+
+  // ── Инициализация ─────────────────────────────────────────────────────────
+
   syncAgeRangeOptions();
   updateAdPreview();
   goToStep(1);

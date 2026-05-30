@@ -371,6 +371,12 @@ export function AdCreate(): VoidFunction {
     recognition.interimResults = true;
     recognition.maxAlternatives = 1;
 
+    // Открываем AI-панель если закрыта
+    if (aiPanel && aiPanel.hidden !== false) {
+      aiPanel.hidden = false;
+      aiTextToggle?.classList.add('is-active');
+    }
+
     voiceBtn.classList.add('is-recording');
     voiceBtn.setAttribute('aria-label', 'Остановить запись');
 
@@ -383,10 +389,8 @@ export function AdCreate(): VoidFunction {
       const transcript = Array.from(e.results)
         .map((r) => r[0].transcript)
         .join('');
-      if (descInput) {
-        descInput.value = transcript.substring(0, 150);
-        descInput.dispatchEvent(new Event('input'));
-        updateGenImageBtn();
+      if (aiContextInput) {
+        aiContextInput.value = transcript.substring(0, 300);
       }
     };
 
