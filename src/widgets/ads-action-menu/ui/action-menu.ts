@@ -44,6 +44,12 @@ export function initCampaignActionMenus(signal: AbortSignal): void {
       });
 
     document
+      .querySelectorAll<HTMLElement>('.campaign-row.is-menu-open')
+      .forEach((row) => {
+        row.classList.remove('is-menu-open');
+      });
+
+    document
       .querySelectorAll<HTMLElement>('.campaign-row__actions.is-open')
       .forEach((actions) => {
         actions.classList.remove('is-open');
@@ -114,6 +120,8 @@ export function initCampaignActionMenus(signal: AbortSignal): void {
         menu.hidden = !willOpen;
         button.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
         if (willOpen) {
+          const row = button.closest<HTMLElement>('.campaign-row');
+          row?.classList.add('is-menu-open');
           button.closest<HTMLElement>('.campaign-row__actions')?.classList.add('is-open');
         }
       },

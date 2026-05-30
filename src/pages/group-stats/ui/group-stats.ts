@@ -31,10 +31,6 @@ function fmtMoney(n: number): string {
 function fmtPct(n: number, d = 2): string {
   return n.toFixed(d) + '%';
 }
-function seeded(seed: number, min: number, max: number): number {
-  const x = Math.sin(seed + 1) * 10000;
-  return min + (x - Math.floor(x)) * (max - min);
-}
 
 // ── Line chart (green) ────────────────────────────────────────────────────────
 
@@ -188,48 +184,6 @@ function setDonutArc(arc: Element | null, pct: number) {
   (arc as SVGCircleElement).style.strokeDashoffset = String(offset);
 }
 
-// ── Heatmap ───────────────────────────────────────────────────────────────────
-
-const DAYS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
-const HOURS = Array.from({ length: 24 }, (_, i) => i);
-
-function buildHeatmap(container: HTMLElement, groupId: number) {
-  container.innerHTML = '';
-
-  // header row: empty cell + 24 hour labels
-  const emptyHeader = document.createElement('div');
-  emptyHeader.className = 'gs-heatmap__header-cell';
-  container.appendChild(emptyHeader);
-
-  HOURS.forEach((h) => {
-    const hCell = document.createElement('div');
-    hCell.className = 'gs-heatmap__header-cell';
-    hCell.textContent = String(h);
-    container.appendChild(hCell);
-  });
-
-  // data rows
-  DAYS.forEach((day, di) => {
-    const dayLabel = document.createElement('div');
-    dayLabel.className = 'gs-heatmap__day-label';
-    dayLabel.textContent = day;
-    container.appendChild(dayLabel);
-
-    HOURS.forEach((_, hi) => {
-      const raw = seeded(groupId * 7 + di * 31 + hi * 13, 0, 1);
-      // peak hours 9-21 and weekdays
-      const hourBoost = hi >= 9 && hi <= 21 ? 0.5 : 0;
-      const dayBoost  = di < 5 ? 0.2 : -0.1;
-      const val = Math.max(0, Math.min(1, raw * 0.6 + hourBoost + dayBoost));
-
-      const cell = document.createElement('div');
-      cell.className = 'gs-heatmap__cell';
-      cell.style.background = `rgba(88,85,255,${(val * 0.88).toFixed(2)})`;
-      container.appendChild(cell);
-    });
-  });
-}
-
 // ── Status labels ─────────────────────────────────────────────────────────────
 
 const AD_STATUS_LABELS: Record<string, { label: string; cls: string }> = {
@@ -352,19 +306,11 @@ export function GroupStats(): VoidFunction {
       const dailyBudget = campaign?.price ?? 800;
       const metaItems = [
         { text: campaignName },
-        { text: `Ставка: 1,20 ₽/клик` },
         { text: `Бюджет: ${fmtMoney(dailyBudget)}/день` },
         { text: `${genderShort} ${group.age_from}–${group.age_to} · ${regionName}` },
-        { icon: 'vk',  text: 'ВКонтакте' },
-        { icon: 'tg',  text: 'Telegram'  },
       ];
       metaEl.innerHTML = metaItems
-        .map((item) => {
-          const iconHtml = item.icon
-            ? `<span class="gs-hero__meta-icon gs-hero__meta-icon--${item.icon}">${item.icon === 'vk' ? 'ВК' : 'TG'}</span>`
-            : '';
-          return `<span class="gs-hero__meta-item">${iconHtml}${item.text}</span>`;
-        })
+        .map((item) => `<span class="gs-hero__meta-item">${item.text}</span>`)
         .join('');
     }
 
@@ -471,10 +417,6 @@ export function GroupStats(): VoidFunction {
     if (paceEl) paceEl.textContent = fmtMoney(Math.round(spendVal / days));
     const paceSubEl = root.querySelector<HTMLElement>('[data-gs-stat="pace-sub"]');
     if (paceSubEl) paceSubEl.textContent = `В среднем в день · план ${fmtMoney(dailyBudget)}`;
-
-    // heatmap
-    const heatmapEl = root.querySelector<HTMLElement>('[data-gs-heatmap]');
-    if (heatmapEl) buildHeatmap(heatmapEl, groupId!);
 
     // ads table
     const countEl = root.querySelector<HTMLElement>('[data-gs-ads-count]');

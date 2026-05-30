@@ -63,13 +63,13 @@
         <li class="subs-page__feature subs-page__feature--check">Email-уведомления</li>
         <li class="subs-page__feature subs-page__feature--dash">AI-генерация текстов</li>
         <li class="subs-page__feature subs-page__feature--dash">Прогноз охвата и расхода</li>
-        <li class="subs-page__feature subs-page__feature--dash">Telegram-уведомления</li>
         <li class="subs-page__feature subs-page__feature--dash">Приоритетная модерация</li>
-        <li class="subs-page__feature subs-page__feature--dash">Экспорт отчётов</li>
       </ul>
-      <button class="subs-page__plan-action subs-page__plan-action--passive" type="button" disabled>
-        {{#if isProActive}}Ваш план после истечения Pro{{else}}Текущий план{{/if}}
-      </button>
+      <div class="subs-page__plan-footer">
+        <button class="subs-page__plan-action subs-page__plan-action--passive" type="button" disabled>
+          {{#if isProActive}}Ваш план после истечения Pro{{else}}Текущий план{{/if}}
+        </button>
+      </div>
     </div>
 
     {{!-- Pro --}}
@@ -90,25 +90,25 @@
         <li class="subs-page__feature subs-page__feature--check">Ручное создание кампаний</li>
         <li class="subs-page__feature subs-page__feature--check subs-page__feature--pro">AI-генерация текстов <span class="subs-page__soon">скоро</span></li>
         <li class="subs-page__feature subs-page__feature--check subs-page__feature--pro">Прогноз охвата и расхода</li>
-        <li class="subs-page__feature subs-page__feature--check">Telegram-уведомления <span class="subs-page__soon">скоро</span></li>
         <li class="subs-page__feature subs-page__feature--check">Приоритетная модерация</li>
-        <li class="subs-page__feature subs-page__feature--check">Экспорт отчётов <span class="subs-page__soon">скоро</span></li>
         <li class="subs-page__feature subs-page__feature--check">Email-уведомления</li>
         <li class="subs-page__feature subs-page__feature--check subs-page__feature--pro">Рекомендации по бюджету и CPM</li>
       </ul>
-      {{#if isProActive}}
-        <button class="subs-page__plan-action subs-page__plan-action--passive" type="button" disabled>
-          Подключён
-        </button>
-      {{else}}
-        <button class="subs-page__plan-action subs-page__plan-action--upgrade" type="button" data-subs-pay>
-          <svg class="subs-page__spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="40 60"/>
-          </svg>
-          <span data-subs-pay-label>{{#if isExpiredPro}}Продлить Pro — 3 900 ₽{{else}}Оформить Pro — 3 900 ₽{{/if}}</span>
-        </button>
-        <p class="subs-page__plan-note">Списывается с баланса кабинета</p>
-      {{/if}}
+      <div class="subs-page__plan-footer">
+        {{#if isProActive}}
+          <button class="subs-page__plan-action subs-page__plan-action--passive" type="button" disabled>
+            Подключён
+          </button>
+        {{else}}
+          <button class="subs-page__plan-action subs-page__plan-action--upgrade" type="button" data-subs-pay>
+            <svg class="subs-page__spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="40 60"/>
+            </svg>
+            <span data-subs-pay-label>{{#if isExpiredPro}}Продлить Pro — 3 900 ₽{{else}}Оформить Pro — 3 900 ₽{{/if}}</span>
+          </button>
+          <p class="subs-page__plan-note">Списывается с баланса кабинета</p>
+        {{/if}}
+      </div>
     </div>
 
   </div>

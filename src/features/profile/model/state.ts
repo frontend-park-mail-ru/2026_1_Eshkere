@@ -26,7 +26,7 @@ const TARIFFS: Record<TariffKey, TariffMeta> = {
   },
   pro: {
     label: 'Pro',
-    description: 'До 20 кампаний, AI-генерация, приоритетная модерация и Telegram',
+    description: 'До 20 кампаний, AI-генерация и приоритетная модерация',
     limit: 20,
     price: '3 900 ₽ / мес',
   },

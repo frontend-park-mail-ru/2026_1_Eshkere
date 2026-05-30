@@ -36,10 +36,25 @@
   text-align: start;
 }
 
+.add-sites-page .campaigns-table__body .campaign-row {
+  position: relative;
+  z-index: 0;
+
+  &.is-menu-open {
+    z-index: 50;
+  }
+}
+
 .add-sites-page .campaign-row__actions {
   justify-self: start;
   justify-content: flex-start;
   align-items: center;
+  position: relative;
+  overflow: visible;
+
+  &.is-open {
+    z-index: 1;
+  }
 }
 
 .add-sites-page__summary {

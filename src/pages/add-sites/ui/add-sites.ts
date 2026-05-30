@@ -10,6 +10,7 @@ import {
 } from 'features/sites';
 import { renderTemplate } from 'shared/lib/render';
 import { navigateTo } from 'shared/lib/navigation';
+import { bindTableRowSearch } from 'shared/lib/table-row-search';
 import { REQUEST_ERROR_EVENT_NAME } from 'widgets/request-error-modal';
 import {
   initCampaignDeleteModal,
@@ -135,24 +136,19 @@ export function AddSites(): void | VoidFunction {
     );
   });
 
-  const search = document.getElementById('sites-search');
-  const tbody = document.querySelector<HTMLElement>(
-    '.add-sites-page .campaigns-table__body',
-  );
-
-  function applySitesSearch(): void {
-    if (!(search instanceof HTMLInputElement) || !tbody) {
-      return;
-    }
-
-    const q = search.value.trim().toLowerCase();
-    tbody.querySelectorAll<HTMLElement>('.campaign-row').forEach((row) => {
-      const text = row.textContent?.toLowerCase() ?? '';
-      row.hidden = Boolean(q) && !text.includes(q);
-    });
-  }
-
-  search?.addEventListener('input', applySitesSearch, { signal });
+  bindTableRowSearch({
+    inputId: 'sites-search',
+    rowSelector: '.add-sites-page .campaigns-table__body .campaign-row',
+    signal,
+    hideNonMatching: true,
+    buildSearchText: (row) =>
+      [
+        row.dataset.siteName || '',
+        row.dataset.siteDomain || '',
+        row.dataset.siteStatusLabel || '',
+        row.textContent || '',
+      ].join(' '),
+  });
 
   const pageRoot = document.querySelector('[data-add-sites-page]');
   pageRoot?.addEventListener(

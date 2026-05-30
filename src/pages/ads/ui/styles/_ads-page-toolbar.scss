@@ -38,6 +38,16 @@
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
+
+    &--search-only {
+      flex: 1;
+      justify-content: flex-end;
+
+      .campaigns-page__search {
+        min-width: 240px;
+        width: min(100%, 360px);
+      }
+    }
   }
 
   &__filter {
@@ -260,6 +270,10 @@
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       width: 100%;
+
+      &--search-only {
+        grid-template-columns: 1fr;
+      }
     }
 
     &__create-button,
@@ -267,6 +281,10 @@
     &__date-filter,
     &__search {
       min-width: 0;
+      width: 100%;
+    }
+
+    &__filters--search-only .campaigns-page__search {
       width: 100%;
     }
   }

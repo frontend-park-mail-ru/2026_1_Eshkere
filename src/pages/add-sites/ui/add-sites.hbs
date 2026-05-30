@@ -25,7 +25,7 @@
       </button>
     </div>
 
-    <div class="campaigns-page__filters">
+    <div class="campaigns-page__filters campaigns-page__filters--search-only">
       <input
         class="campaigns-page__search"
         type="search"
@@ -53,6 +53,9 @@
             class="campaign-row"
             data-site-id="{{id}}"
             data-site-status="{{statusCode}}"
+            data-site-name="{{site_name}}"
+            data-site-domain="{{domain}}"
+            data-site-status-label="{{status}}"
           >
             <div class="campaign-row__name">
               <a class="campaign-row__detail-link" href="/partner/sites/site?siteId={{id}}">{{site_name}}</a>

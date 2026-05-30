@@ -44,6 +44,8 @@ function planCards(subs: SubscriptionResponse): string {
       </button>
       <p class="sm__plan-note">Списывается с баланса кабинета</p>`;
 
+  const proFooter = `<div class="sm__plan-footer">${proBtn}</div>`;
+
   return `
     ${expiredBanner}
     <div class="sm__plans">
@@ -60,11 +62,12 @@ function planCards(subs: SubscriptionResponse): string {
           <li class="sm__feature sm__feature--check">Email-уведомления</li>
           <li class="sm__feature sm__feature--dash">AI-генерация</li>
           <li class="sm__feature sm__feature--dash">Приоритетная модерация</li>
-          <li class="sm__feature sm__feature--dash">Telegram-уведомления</li>
         </ul>
-        <button class="sm__plan-btn sm__plan-btn--passive" disabled>
-          ${subs.is_pro_active ? 'После истечения Pro' : 'Текущий план'}
-        </button>
+        <div class="sm__plan-footer">
+          <button class="sm__plan-btn sm__plan-btn--passive" disabled>
+            ${subs.is_pro_active ? 'После истечения Pro' : 'Текущий план'}
+          </button>
+        </div>
       </div>
 
       <div class="sm__plan sm__plan--pro ${subs.is_pro_active ? 'sm__plan--current' : ''}">
@@ -83,11 +86,9 @@ function planCards(subs: SubscriptionResponse): string {
           <li class="sm__feature sm__feature--check">До 20 кампаний</li>
           <li class="sm__feature sm__feature--check sm__feature--pro">AI-генерация</li>
           <li class="sm__feature sm__feature--check">Приоритетная модерация</li>
-          <li class="sm__feature sm__feature--check">Telegram-уведомления</li>
           <li class="sm__feature sm__feature--check sm__feature--pro">Прогноз охвата и расхода</li>
-          <li class="sm__feature sm__feature--check">Экспорт отчётов</li>
         </ul>
-        ${proBtn}
+        ${proFooter}
       </div>
 
     </div>

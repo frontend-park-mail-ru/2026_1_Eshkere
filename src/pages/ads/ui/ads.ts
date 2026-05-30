@@ -12,6 +12,7 @@ import type { CampaignDeleteModalDetail } from 'widgets/ads-delete-modal';
 import { initCampaignActionMenus } from 'widgets/ads-action-menu';
 import { initAdsDatePicker } from 'widgets/ads-date-picker';
 import { initCampaignDeleteModal } from 'widgets/ads-delete-modal';
+import { bindTableRowSearch } from 'shared/lib/table-row-search';
 import { CAMPAIGNS_PAGINATION_REFRESH_EVENT, initCampaignPagination } from 'widgets/ads-pagination';
 import adsPageTemplate from './ads.hbs';
 import { mapAdsToCampaigns } from './ads-mappers';
@@ -202,58 +203,19 @@ function bindStatusFilter(signal: AbortSignal): void {
 }
 
 function bindSearch(signal: AbortSignal): void {
-  const searchInput = document.getElementById(
-    'campaigns-search',
-  ) as HTMLInputElement | null;
-  let searchFrameId = 0;
-
-  const applySearch = (query: string): void => {
-    const rows = Array.from(document.querySelectorAll<HTMLElement>('.campaign-row'));
-    const normalizedQuery = query.trim().toLowerCase();
-
-    rows.forEach((row) => {
-      row.dataset.searchText ||= [
+  bindTableRowSearch({
+    inputId: 'campaigns-search',
+    signal,
+    buildSearchText: (row) =>
+      [
         row.dataset.campaignTitle || '',
         row.dataset.campaignGoal || '',
         row.textContent || '',
-      ]
-        .join(' ')
-        .replace(/\s+/g, ' ')
-        .trim()
-        .toLowerCase();
-
-      row.dataset.searchHidden =
-        normalizedQuery && !row.dataset.searchText.includes(normalizedQuery)
-          ? 'true'
-          : 'false';
-    });
-
-    document.dispatchEvent(new CustomEvent(CAMPAIGNS_PAGINATION_REFRESH_EVENT));
-  };
-
-  searchInput?.addEventListener(
-    'input',
-    () => {
-      if (searchFrameId) {
-        cancelAnimationFrame(searchFrameId);
-      }
-      searchFrameId = requestAnimationFrame(() => {
-        applySearch(searchInput.value);
-        searchFrameId = 0;
-      });
+      ].join(' '),
+    onApply: () => {
+      document.dispatchEvent(new CustomEvent(CAMPAIGNS_PAGINATION_REFRESH_EVENT));
     },
-    { signal },
-  );
-
-  signal.addEventListener(
-    'abort',
-    () => {
-      if (searchFrameId) {
-        cancelAnimationFrame(searchFrameId);
-      }
-    },
-    { once: true },
-  );
+  });
 }
 
 function bindEmptyCreateButton(button: HTMLElement): void {
