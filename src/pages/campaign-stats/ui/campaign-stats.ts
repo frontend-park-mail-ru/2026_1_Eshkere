@@ -245,6 +245,9 @@ export function CampaignStats(): VoidFunction {
       getCampaignStats(campaignId!, fromDate, toDate).catch(() => null),
     ]);
 
+    // Пользователь ушёл со страницы пока грузились данные
+    if (signal.aborted) return;
+
     const campaign = adsResult.ads.find((a) => a.id === campaignId);
     if (!campaign) return;
 
@@ -318,6 +321,7 @@ export function CampaignStats(): VoidFunction {
         group_id: firstGroup.id,
         ads: [],
       }));
+      if (signal.aborted) return;
       const bestAd = adsInGroup.ads[0];
       if (bestAd) {
         const imgEl = root.querySelector<HTMLElement>('[data-cs-creative-img]');

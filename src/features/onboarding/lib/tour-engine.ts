@@ -111,6 +111,18 @@ function lockPageScroll(): void {
   if (scrollLockCleanup) return;
 
   const scrollY = window.scrollY;
+
+  if (isMobile()) {
+    // На мобилке не фиксируем body — это ломает iOS Safari
+    const prevOverflow = document.documentElement.style.overflow;
+    document.documentElement.style.overflow = 'hidden';
+    scrollLockCleanup = () => {
+      document.documentElement.style.overflow = prevOverflow;
+      scrollLockCleanup = null;
+    };
+    return;
+  }
+
   const previousBodyStyles = {
     position: document.body.style.position,
     top: document.body.style.top,
@@ -120,6 +132,8 @@ function lockPageScroll(): void {
     overflow: document.body.style.overflow,
   };
   const previousHtmlOverflow = document.documentElement.style.overflow;
+  // Компенсируем ширину скроллбара чтобы избежать прыжка контента
+  const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
 
   document.documentElement.style.overflow = 'hidden';
   document.body.style.position = 'fixed';
@@ -128,6 +142,9 @@ function lockPageScroll(): void {
   document.body.style.right = '0';
   document.body.style.width = '100%';
   document.body.style.overflow = 'hidden';
+  if (scrollbarWidth > 0) {
+    document.body.style.paddingRight = `${scrollbarWidth}px`;
+  }
 
   scrollLockCleanup = () => {
     document.documentElement.style.overflow = previousHtmlOverflow;
@@ -137,6 +154,7 @@ function lockPageScroll(): void {
     document.body.style.right = previousBodyStyles.right;
     document.body.style.width = previousBodyStyles.width;
     document.body.style.overflow = previousBodyStyles.overflow;
+    document.body.style.paddingRight = '';
     scrollLockCleanup = null;
     window.scrollTo(0, scrollY);
   };
@@ -148,6 +166,14 @@ function unlockPageScroll(): void {
 
 function positionSpotlight(target: Element): void {
   const rect = target.getBoundingClientRect();
+
+  // Элемент невидим (например, ссылка сайдбара скрыта на мобилке)
+  if (rect.width === 0 && rect.height === 0) {
+    if (elements) elements.spotlight.hidden = true;
+    return;
+  }
+  if (elements) elements.spotlight.hidden = false;
+
   const viewportWidth = window.innerWidth;
   const viewportHeight = window.innerHeight;
 
@@ -185,10 +211,13 @@ function positionTooltip(target: Element | null, placement: TourStep['placement'
     return;
   }
 
-  // Mobile: dock to bottom of viewport as a sheet
+  // Mobile: dock above the fixed tabbar as a bottom sheet
   if (isMobile()) {
     tooltip.dataset.placement = 'bottom-sheet';
-    tooltip.style.cssText = 'bottom: 12px; left: 12px; right: 12px; top: auto; transform: none;';
+    // 64px tabbar min-height + 10px tabbar bottom + 12px gap
+    tooltip.style.cssText =
+      'bottom: calc(64px + max(10px, env(safe-area-inset-bottom)) + 12px);' +
+      'left: 12px; right: 12px; top: auto; transform: none;';
     return;
   }
 

@@ -342,6 +342,7 @@ export function AdStats(): VoidFunction {
       getAdsInGroup(campaignId!, groupId!).catch(() => ({ group_id: groupId!, ads: [] })),
       getAdStats(campaignId!, groupId!, adId!, fromDate, toDate).catch(() => null),
     ]);
+    if (signal.aborted) return;
     const ad = adsResult.ads.find((a) => a.id === adId);
     if (!ad) return;
 

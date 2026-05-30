@@ -331,6 +331,8 @@ export function GroupStats(): VoidFunction {
       getGroupStats(campaignId!, groupId!, fromDate, toDate).catch(() => null),
     ]);
 
+    if (signal.aborted) return;
+
     const group = groupsResult.groups.find((g) => g.id === groupId);
     if (!group) return;
 
