@@ -1418,6 +1418,16 @@ html[data-theme='dark'] {
     grid-template-columns: 1fr;
   }
 
+  // Цели (2 колонки → 1)
+  .cw-objectives {
+    grid-template-columns: 1fr;
+  }
+
+  // Triple row (возраст+пол) → 1 колонка
+  .campaign-builder__row--triple {
+    grid-template-columns: 1fr;
+  }
+
   // Футер шага
   .cw-step-footer {
     flex-direction: column-reverse;

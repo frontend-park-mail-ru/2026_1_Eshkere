@@ -11,6 +11,7 @@ export enum LocalStorageKey {
   CampaignEditSeed = 'campaign_edit_seed',
   CampaignEditState = 'campaign_edit_state',
   CampaignStatisticsSeed = 'campaign_statistics_seed',
+  AdBlockNoticeShown = 'adblock_notice_shown',
   SupportThreads = 'support_threads',
 }
 

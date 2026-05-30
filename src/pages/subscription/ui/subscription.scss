@@ -372,6 +372,13 @@
       grid-template-columns: 1fr;
     }
   }
+
+  @include mixins.media-max(t.$bp-sm) {
+    &__hero { flex-direction: column; align-items: flex-start; gap: 10px; }
+    &__title { font-size: 20px; }
+    &__insufficient { flex-direction: column; align-items: flex-start; }
+    &__topup-btn { width: 100%; }
+  }
 }
 
 html[data-theme='dark'] .subs-page {

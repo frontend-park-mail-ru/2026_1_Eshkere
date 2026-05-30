@@ -14,9 +14,9 @@ export async function generateAdText(params: {
   body_max_len: number;
   product_name?: string;
 }): Promise<AdTextResult> {
-  const res = await request<{ data: AdTextResult }>('/ai/ad-text', {
+  const res = await request<AdTextResult>('/ai/ad-text', {
     method: 'POST',
     body: params,
   });
-  return res.data.data;
+  return res.data;
 }

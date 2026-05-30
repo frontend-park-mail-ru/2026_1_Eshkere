@@ -91,15 +91,21 @@
 
   @include mixins.media-max(t.$bp-sm) {
     &__hero {
-      padding: 22px 18px;
+      padding: 18px 16px;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    &__hero-action {
+      width: 100%;
     }
 
     &__title {
-      font-size: 34px;
+      font-size: 28px;
     }
 
     &__subtitle {
-      font-size: 16px;
+      font-size: 15px;
     }
 
     &__stats,

@@ -4,6 +4,7 @@ import { authState } from 'features/auth';
 import { initOfflineModal } from 'widgets/offline-modal';
 import { initRequestErrorModal } from 'widgets/request-error-modal';
 import { initMobileWarningModal } from 'widgets/mobile-warning-modal';
+import { initAdBlockNoticeModal } from 'widgets/adblock-notice-modal';
 import { initSwUpdateToast } from 'widgets/sw-update-toast';
 import { initCustomTooltips } from 'shared/ui/tooltip';
 import {
@@ -34,6 +35,7 @@ export async function initApp(): Promise<void> {
   authState.syncDevModeratorAccessFromLocation();
   await authState.hasActiveSession();
   await renderRoute();
+  initAdBlockNoticeModal();
 }
 
 async function registerServiceWorker(): Promise<void> {
