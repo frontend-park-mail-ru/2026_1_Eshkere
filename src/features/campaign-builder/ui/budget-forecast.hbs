@@ -3,18 +3,29 @@
   <p class='campaign-builder__card-subtitle'>Что даёт текущий бюджет и темп запуска.</p>
 </div>
 
+<div class='campaign-builder__billing-banner'>
+  <svg class='campaign-builder__billing-banner-icon' width='16' height='16' viewBox='0 0 24 24' fill='currentColor' aria-hidden='true'>
+    <path d='M13 2L3 14h9l-1 8 10-12h-9l1-8z'/>
+  </svg>
+  <div class='campaign-builder__billing-banner-copy'>
+    <strong class='campaign-builder__billing-banner-title'>Оплата за показы (CPM)</strong>
+    <p class='campaign-builder__billing-banner-text'>Деньги списываются с баланса за каждый показ объявления аудитории</p>
+  </div>
+</div>
+
 <div class='campaign-builder__metrics'>
   <div class='campaign-builder__metric'>
     <span class='campaign-builder__metric-label'>Охват</span>
     <strong class='campaign-builder__metric-value' data-budget-reach></strong>
   </div>
   <div class='campaign-builder__metric'>
-    <span class='campaign-builder__metric-label'>Переходы</span>
-    <strong class='campaign-builder__metric-value' data-budget-clicks></strong>
+    <span class='campaign-builder__metric-label'>CPM</span>
+    <strong class='campaign-builder__metric-value' data-budget-cpm></strong>
   </div>
   <div class='campaign-builder__metric'>
-    <span class='campaign-builder__metric-label'>Средний CPC</span>
-    <strong class='campaign-builder__metric-value' data-budget-cpc></strong>
+    <span class='campaign-builder__metric-label'>Переходы</span>
+    <strong class='campaign-builder__metric-value' data-budget-clicks></strong>
+    <span class='campaign-builder__metric-sub'>≈ <span data-budget-cpc></span> / переход</span>
   </div>
 </div>
 

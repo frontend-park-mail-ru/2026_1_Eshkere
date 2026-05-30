@@ -96,7 +96,7 @@
               <div class="campaign-builder__row campaign-builder__row--double">
                 <label class="campaign-builder__field">
                   <span class="campaign-builder__label">Дневной бюджет</span>
-                  <input class="campaign-builder__input" type="number" min="1000" step="100" value="{{budget.dailyBudget}}" data-builder-budget="dailyBudget" />
+                  <input class="campaign-builder__input" type="number" min="1000" max="10000000" step="100" value="{{budget.dailyBudget}}" data-builder-budget="dailyBudget" />
                   <span class="campaign-builder__hint">Минимум 1 000 ₽. Бюджет пока хранится в мастере и не влияет на API кампании.</span>
                   <span class="campaign-builder__error" data-builder-error="dailyBudget"></span>
                 </label>
@@ -132,15 +132,48 @@
                 <span class="campaign-builder__error" data-builder-error="headline"></span>
               </label>
 
-              <label class="campaign-builder__field">
-                <span class="campaign-builder__label">Текст объявления</span>
+              <div class="campaign-builder__field">
+                <div class="campaign-builder__field-header">
+                  <span class="campaign-builder__label">Текст объявления</span>
+                  <div class="campaign-builder__ai-actions">
+                    <button class="campaign-builder__ai-icon-btn" type="button" data-cb-ai-text-toggle aria-label="Написать с помощью ИИ" title="Написать с помощью ИИ">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+                      </svg>
+                    </button>
+                    <button class="campaign-builder__ai-icon-btn" type="button" data-cb-voice-btn aria-label="Голосовой ввод" title="Голосовой ввод">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="campaign-builder__ai-panel" data-cb-ai-panel hidden>
+                  <p class="campaign-builder__ai-panel-title">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+                    </svg>
+                    Контекст для ИИ
+                  </p>
+                  <textarea class="campaign-builder__ai-context-input" data-cb-ai-context rows="2" placeholder="Опишите продукт или услугу — ИИ напишет текст за вас..." maxlength="300"></textarea>
+                  <div class="campaign-builder__ai-panel-footer">
+                    <span class="campaign-builder__ai-panel-hint">Текст заменится сгенерированным</span>
+                    <button class="campaign-builder__ai-gen-text-btn" type="button" data-cb-ai-gen-text>
+                      <svg class="campaign-builder__ai-spinner" width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="40 60"/>
+                      </svg>
+                      <span data-cb-ai-gen-text-label>Сгенерировать</span>
+                    </button>
+                  </div>
+                </div>
                 <textarea class="campaign-builder__input campaign-builder__input--textarea{{#if content.descriptionIsExample}} campaign-builder__input--example{{/if}}" maxlength="180" data-builder-input="description">{{content.description}}</textarea>
                 <span class="campaign-builder__hint">
                   Используйте одно главное обещание и один явный следующий шаг.
                   <strong data-builder-description-count>{{content.descriptionLength}}</strong>/180
                 </span>
                 <span class="campaign-builder__error" data-builder-error="description"></span>
-              </label>
+              </div>
 
               <div class="campaign-builder__row campaign-builder__row--double">
                 <label class="campaign-builder__field">
@@ -287,6 +320,33 @@
                 </div>
               </article>
             </div>
+
+            {{!-- AI-генерация изображений (только для Лента и Stories) --}}
+            <div class="campaign-builder__ai-image-section" data-cb-ai-image-section>
+              <div class="campaign-builder__ai-or"><span>или</span></div>
+
+              <div class="campaign-builder__ai-style-row">
+                <span class="campaign-builder__ai-style-label">Стиль:</span>
+                <div class="campaign-builder__ai-style-chips">
+                  <button class="campaign-builder__ai-style-chip campaign-builder__ai-style-chip--active" type="button" data-cb-style="clean">Чистый</button>
+                  <button class="campaign-builder__ai-style-chip" type="button" data-cb-style="bold">Яркий</button>
+                  <button class="campaign-builder__ai-style-chip" type="button" data-cb-style="minimal">Минимал</button>
+                </div>
+              </div>
+
+              <button class="campaign-builder__ai-gen-image-btn" type="button" data-cb-gen-image disabled>
+                <svg class="campaign-builder__ai-sparkle-icon" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+                </svg>
+                <svg class="campaign-builder__ai-spinner" width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="40 60"/>
+                </svg>
+                <span data-cb-gen-image-label>Сгенерировать из описания</span>
+              </button>
+
+              <div class="campaign-builder__ai-variants" data-cb-ai-variants hidden></div>
+              <p class="campaign-builder__ai-gen-error" data-cb-gen-error hidden></p>
+            </div>
           </div>
         </div>
 
@@ -427,7 +487,7 @@
               <div class="campaign-builder__row campaign-builder__row--double">
                 <label class="campaign-builder__field">
                   <span class="campaign-builder__label">Дневной бюджет</span>
-                  <input class="campaign-builder__input" type="number" min="1000" step="100" value="{{budget.dailyBudget}}" data-builder-budget="dailyBudget" />
+                  <input class="campaign-builder__input" type="number" min="1000" max="10000000" step="100" value="{{budget.dailyBudget}}" data-builder-budget="dailyBudget" />
                   <span class="campaign-builder__error" data-builder-error="dailyBudget"></span>
                 </label>
                 <label class="campaign-builder__field">
@@ -436,6 +496,16 @@
                   <span class="campaign-builder__error" data-builder-error="totalBudget"></span>
                 </label>
               </div>
+
+              <label class="campaign-builder__field">
+                <span class="campaign-builder__label">Ставка CPM</span>
+                <div class="campaign-builder__input-with-suffix">
+                  <input class="campaign-builder__input" type="number" min="1" max="50000" step="1" value="{{budget.cpmPrice}}" data-builder-budget="cpmPrice" />
+                  <span class="campaign-builder__input-suffix">₽ / 1 000 показов</span>
+                </div>
+                <span class="campaign-builder__hint">Максимальная цена за 1 000 показов вашего объявления. Влияет на охват и прогноз.</span>
+                <span class="campaign-builder__error" data-builder-error="cpmPrice"></span>
+              </label>
 
               <div class="campaign-builder__row campaign-builder__row--double">
                 <label class="campaign-builder__field">
@@ -469,7 +539,7 @@
               </div>
             </div>
 
-            <div class="campaign-builder__note" data-budget-note>При текущих настройках система прогнозирует от {{budget.clicks}} переходов за весь период кампании.</div>
+            <div class="campaign-builder__note" data-budget-note>Деньги списываются за каждый показ (CPM {{budget.cpm}}). Прогноз: {{budget.clicks}} переходов за период.</div>
           </div>
 
           <div class="campaign-builder__card">
@@ -484,12 +554,13 @@
                 <strong class="campaign-builder__metric-value" data-budget-reach>{{budget.reach}}</strong>
               </div>
               <div class="campaign-builder__metric">
-                <span class="campaign-builder__metric-label">Переходы</span>
-                <strong class="campaign-builder__metric-value" data-budget-clicks>{{budget.clicks}}</strong>
+                <span class="campaign-builder__metric-label">CPM</span>
+                <strong class="campaign-builder__metric-value" data-budget-cpm>{{budget.cpm}}</strong>
               </div>
               <div class="campaign-builder__metric">
-                <span class="campaign-builder__metric-label">Средний CPC</span>
-                <strong class="campaign-builder__metric-value" data-budget-cpc>{{budget.cpc}}</strong>
+                <span class="campaign-builder__metric-label">Переходы</span>
+                <strong class="campaign-builder__metric-value" data-budget-clicks>{{budget.clicks}}</strong>
+                <span class="campaign-builder__metric-sub">≈ <span data-budget-cpc>{{budget.cpc}}</span> / переход</span>
               </div>
             </div>
           </div>

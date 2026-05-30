@@ -8,6 +8,9 @@ interface InitCampaignBuilderBudgetControlsParams {
   syncBuilder: (state: BuilderState) => void;
 }
 
+const MIN_DAILY_BUDGET = 1000;
+const MAX_DAILY_BUDGET = 10_000_000;
+
 export function initCampaignBuilderBudgetControls({
   formatBudgetPeriod,
   persistState,
@@ -67,7 +70,18 @@ export function initCampaignBuilderBudgetControls({
 
         if (key === 'dailyBudget' || key === 'totalBudget') {
           const parsed = Number(field.value);
-          state[key] = (Number.isFinite(parsed) ? parsed : 0) as never;
+          const normalized = Number.isFinite(parsed) ? Math.round(parsed) : 0;
+          if (key === 'dailyBudget') {
+            state.dailyBudget = Math.min(
+              MAX_DAILY_BUDGET,
+              Math.max(MIN_DAILY_BUDGET, normalized),
+            );
+          } else {
+            state.totalBudget = Math.max(1000, normalized);
+          }
+        } else if (key === 'cpmPrice') {
+          const parsed = Number(field.value);
+          state.cpmPrice = Number.isFinite(parsed) ? Math.max(1, Math.round(parsed)) : 100;
         } else if (key === 'periodDays') {
           const parsed = Number(field.value);
           const clamped = Math.max(

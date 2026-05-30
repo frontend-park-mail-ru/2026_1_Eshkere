@@ -1,6 +1,7 @@
 ﻿import './profile.scss';
 import { onboardingState } from 'features/onboarding';
 import { navigateTo } from 'shared/lib/navigation';
+import { setupMotionEnhancements } from 'shared/lib/animations';
 import 'shared/ui/modal/modal';
 import { renderTemplate } from 'shared/lib/render';
 import { getNamedFormValue, setSubmitEnabled } from 'features/profile/lib/form';
@@ -19,6 +20,7 @@ import { populateProfileForms, refreshProfileFormStates } from 'widgets/profile-
 import { initProfileModals } from 'widgets/profile-modals';
 import { syncProfileView } from 'widgets/profile-view';
 import { openAvatarCropModal } from 'widgets/avatar-crop-modal';
+import { openSubscriptionModal } from 'widgets/subscription-modal';
 import profileTemplate from './profile.hbs';
 
 export type {
@@ -92,6 +94,8 @@ function readProfileStateFromDom(): ProfileState {
     lastTopUp: document.querySelector('[data-profile-last-top-up]')?.textContent || '—',
     passwordStatus: document.querySelector('[data-profile-password-status]')?.textContent || 'Добавить',
     canChangePassword: profileRoot?.dataset.canChangePassword !== 'false',
+    isProActive: profileRoot?.dataset.isProActive === 'true',
+    tariffExpiresAt: profileRoot?.dataset.tariffExpiresAt || null,
   };
 }
 
@@ -146,6 +150,7 @@ export function Profile(): VoidFunction | void {
       persistUserState(nextState);
       syncProfileStateToView(nextState);
       refreshModalSubmitStates(nextState);
+      setupMotionEnhancements(root);
     },
     populateForms,
     refreshSubmitStates: refreshModalSubmitStates,
@@ -155,6 +160,10 @@ export function Profile(): VoidFunction | void {
 
   populateForms(state);
   refreshModalSubmitStates(state);
+  setupMotionEnhancements(root);
+
+  root.querySelector<HTMLButtonElement>('[data-open-subscription-modal]')
+    ?.addEventListener('click', () => openSubscriptionModal(), { signal: controller.signal });
 
   const restartTourBtn = root.querySelector<HTMLButtonElement>('[data-restart-tour]');
   restartTourBtn?.addEventListener(

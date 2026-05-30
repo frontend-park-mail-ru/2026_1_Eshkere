@@ -8,7 +8,6 @@ export interface UpdateProfileParams {
   phone?: string;
   company?: string;
   city?: string;
-  tariff?: string;
 }
 
 export interface AdvertiserProfileResponse {
@@ -84,7 +83,6 @@ export async function updateProfile(params: UpdateProfileParams): Promise<Advert
         balance: current?.balance,
         company: params.company,
         city: params.city,
-        tariff: params.tariff,
       };
     }
 

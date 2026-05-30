@@ -13,6 +13,8 @@ const DELETE_ERROR_TITLE = 'Не удалось удалить кампанию'
 const DELETE_ERROR_MESSAGE = 'Сейчас мы временно не можем удалить кампанию. Попробуйте повторить действие немного позже.';
 const SAVE_ERROR_TITLE = 'Не удалось сохранить кампанию';
 const SAVE_ERROR_MESSAGE = 'Сейчас мы временно не можем сохранить изменения в кампании. Попробуйте обновить страницу и повторить действие немного позже.';
+const MIN_DAILY_BUDGET = 1000;
+const MAX_DAILY_BUDGET = 10_000_000;
 
 export function bindEditableFields(
   state: CampaignEditState,
@@ -34,7 +36,9 @@ export function bindEditableFields(
       }
       if (key === 'dailyBudget') {
         const nextValue = Number(field.value);
-        state.dailyBudget = Number.isFinite(nextValue) ? Math.max(1000, nextValue) : state.dailyBudget;
+        if (Number.isFinite(nextValue)) {
+          state.dailyBudget = Math.min(MAX_DAILY_BUDGET, Math.max(MIN_DAILY_BUDGET, nextValue));
+        }
       }
       if (key === 'period') {
         state.period = field.value.trim();
@@ -115,7 +119,7 @@ export function bindSaveAction(
     try {
       await updateAdCampaign(campaignId, {
         name: state.name.trim(),
-        daily_budget: Math.max(1000, Math.round(state.dailyBudget)),
+        daily_budget: Math.min(MAX_DAILY_BUDGET, Math.max(MIN_DAILY_BUDGET, Math.round(state.dailyBudget))),
       });
 
       state.updatedLabel = 'Только что';

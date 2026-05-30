@@ -38,6 +38,8 @@ import {
 } from 'features/campaign-builder/lib/api-mapping';
 import { getAudienceStateSummary } from './campaign-create-audience';
 
+const MAX_DAILY_BUDGET = 10_000_000;
+
 export function clampText(value: string, limit: number): string {
   return value.slice(0, limit);
 }
@@ -83,12 +85,21 @@ export function getFieldErrors(state: BuilderState): FieldErrors {
 
   if (!Number.isFinite(state.dailyBudget) || state.dailyBudget < 1000) {
     errors.dailyBudget = 'Минимальный дневной бюджет: 1 000 ₽.';
+  } else if (state.dailyBudget > MAX_DAILY_BUDGET) {
+    errors.dailyBudget = `Максимальный дневной бюджет: ${new Intl.NumberFormat('ru-RU').format(MAX_DAILY_BUDGET)} ₽.`;
   }
 
   if (!Number.isFinite(state.totalBudget) || state.totalBudget < 1000) {
     errors.totalBudget = 'Минимальный общий лимит: 1 000 ₽.';
   } else if (state.totalBudget < state.dailyBudget) {
     errors.totalBudget = 'Общий лимит не может быть меньше дневного бюджета.';
+  }
+
+  const cpm = state.cpmPrice ?? 0;
+  if (!Number.isFinite(cpm) || cpm < 1) {
+    errors.cpmPrice = 'Минимальная ставка CPM: 1 ₽.';
+  } else if (cpm > 50000) {
+    errors.cpmPrice = 'Максимальная ставка CPM: 50 000 ₽.';
   }
 
   if (!state.period.trim()) {
@@ -334,24 +345,41 @@ function formatRubles(value: number): string {
   return `${new Intl.NumberFormat('ru-RU').format(value)} ₽`;
 }
 
+const CTR_BY_GOAL_LOCAL: Record<string, number> = {
+  awareness: 0.0008,
+  website:   0.003,
+  leads:     0.005,
+};
+
 export function getBudgetForecast(state: BuilderState): {
   reach: string;
   clicks: string;
+  cpm: string;
   cpc: string;
   note: string;
   goalBadge: string;
 } {
-  const total = Math.max(state.totalBudget, state.dailyBudget);
-  const reach = Math.round(total * 2.45);
-  const clicksMin = Math.max(Math.round(total / 24), 1800);
-  const clicksMax = clicksMin + Math.round(clicksMin * 0.36);
-  const cpc = Math.max(Math.round(total / clicksMax), 12);
+  const total    = Math.max(state.totalBudget, state.dailyBudget);
+  const baseCpm  = Math.max(1, state.cpmPrice ?? 100);
+  const baseCtr  = CTR_BY_GOAL_LOCAL[state.goal] ?? 0.003;
+
+  const reach    = Math.max(1, Math.round((total / baseCpm) * 1000));
+  const clicks   = Math.max(1, Math.round(reach * baseCtr));
+  const cpcValue = Math.round(baseCpm / (baseCtr * 1000));
+
+  const clicksMin = Math.round(clicks * 0.82);
+  const clicksMax = Math.round(clicks * 1.18);
+  const cpcMin    = Math.max(10, Math.round(cpcValue * 0.85));
+  const cpcMax    = Math.round(cpcValue * 1.15);
+
+  const fmt = (n: number) => new Intl.NumberFormat('ru-RU').format(n);
 
   return {
-    reach: new Intl.NumberFormat('ru-RU').format(reach),
-    clicks: `${new Intl.NumberFormat('ru-RU').format(clicksMin)} - ${new Intl.NumberFormat('ru-RU').format(clicksMax)}`,
-    cpc: `${cpc} - ${cpc + 4} ₽`,
-    note: `При текущих настройках система прогнозирует от ${new Intl.NumberFormat('ru-RU').format(clicksMin)} до ${new Intl.NumberFormat('ru-RU').format(clicksMax)} переходов за весь период кампании.`,
+    reach:  fmt(reach),
+    clicks: `${fmt(clicksMin)} − ${fmt(clicksMax)}`,
+    cpm:    `${baseCpm} ₽`,
+    cpc:    `${cpcMin} − ${cpcMax} ₽`,
+    note:   `Деньги списываются за каждый показ (CPM ${baseCpm} ₽). Прогноз: ${fmt(clicksMin)}–${fmt(clicksMax)} переходов за период кампании.`,
     goalBadge:
       state.goal === 'website'
         ? 'CTR / CPC'
@@ -697,6 +725,7 @@ export function getTemplateContext(state: BuilderState) {
     budget: {
       dailyBudget: state.dailyBudget,
       totalBudget: state.totalBudget,
+      cpmPrice: state.cpmPrice ?? 100,
       dailyBudgetLabel: formatRubles(state.dailyBudget),
       totalBudgetLabel: formatRubles(state.totalBudget),
       period: state.period,
@@ -704,6 +733,7 @@ export function getTemplateContext(state: BuilderState) {
       strategyLabel: STRATEGY_LABELS[state.strategy],
       reach: budget.reach,
       clicks: budget.clicks,
+      cpm: budget.cpm,
       cpc: budget.cpc,
       goalBadge: budget.goalBadge,
     },

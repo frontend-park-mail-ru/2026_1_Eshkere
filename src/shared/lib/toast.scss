@@ -10,6 +10,8 @@
 }
 
 .app-toast {
+  position: relative;
+  overflow: hidden;
   width: min(420px, calc(100vw - 32px));
   min-width: 300px;
   padding: 16px 18px;
@@ -22,8 +24,25 @@
   align-items: flex-start;
   gap: 12px;
   pointer-events: auto;
+  opacity: 0;
+  transform: translateX(18px) scale(0.98);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
 
-  &--out { opacity: 0; }
+  &--visible {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+
+  &--out {
+    opacity: 0;
+    transform: translateX(12px) scale(0.98);
+  }
+
+  &--pulse {
+    animation: app-toast-pulse 0.32s ease;
+  }
 }
 
 .app-toast__dot {
@@ -69,4 +88,66 @@
   transition: color 0.15s;
 
   &:hover { color: rgba(255, 255, 255, 0.9); }
+}
+
+.app-toast__progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  transform-origin: left;
+  background: linear-gradient(90deg, #7c66ff, #bd3bff);
+  animation: app-toast-progress var(--toast-duration, 4000ms) linear forwards;
+}
+
+@keyframes app-toast-progress {
+  from {
+    transform: scaleX(1);
+  }
+
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes app-toast-pulse {
+  0%,
+  100% {
+    transform: translateX(0) scale(1);
+  }
+
+  45% {
+    transform: translateX(0) scale(1.025);
+  }
+}
+
+@media (max-width: 599px) {
+  .app-toasts {
+    right: 16px;
+    bottom: 16px;
+    left: 16px;
+  }
+
+  .app-toast {
+    width: 100%;
+    min-width: 0;
+    border-radius: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-toast,
+  .app-toast--visible,
+  .app-toast--out,
+  .app-toast--pulse {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    animation: none;
+  }
+
+  .app-toast__progress {
+    animation: none;
+  }
 }

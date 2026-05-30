@@ -11,7 +11,16 @@ export function maybeStartAdvertiserTour(): void {
   if (onboardingState.isCompleted()) return;
 
   const pendingStep = onboardingState.getPendingStep();
-  const fromStep = pendingStep ?? 0;
+  const fromStep =
+    pendingStep !== null &&
+    pendingStep >= 0 &&
+    pendingStep < advertiserTourSteps.length
+      ? pendingStep
+      : 0;
+
+  if (pendingStep !== null && pendingStep !== fromStep) {
+    onboardingState.clearPendingStep();
+  }
 
   const step = advertiserTourSteps[fromStep];
 

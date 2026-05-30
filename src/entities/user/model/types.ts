@@ -20,6 +20,8 @@ export interface AuthUser {
   city?: string;
   inn?: string;
   tariffKey?: TariffKey;
+  isProActive?: boolean;
+  tariffExpiresAt?: string | null;
   accountStatus?: AccountStatus;
   contactHandle?: string;
   cardMasked?: string;

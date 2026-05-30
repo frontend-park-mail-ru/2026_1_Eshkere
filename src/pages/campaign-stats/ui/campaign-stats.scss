@@ -115,12 +115,17 @@
 .cs-line__dot    { fill: #fff; stroke: #5855ff; stroke-width: 2; }
 .cs-line__dot--last { fill: #5855ff; }
 
-.cs-line__tip-bg { fill: var(--text-title); rx: 6; }
+.cs-line__tip-bg { fill: #fff; rx: 6; }
 .cs-line__tip-text {
-  fill: #fff;
+  fill: #1f2a44;
   font-size: 11px;
   font-weight: 700;
   font-family: inherit;
+}
+
+html:not([data-theme='dark']) {
+  .cs-line__tip-bg { fill: #fff !important; }
+  .cs-line__tip-text { fill: #1f2a44 !important; }
 }
 
 // ── Chart card — override stats-card overflow ─────────────────────────────────
@@ -250,49 +255,6 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
-}
-
-// ── Platforms ─────────────────────────────────────────────────────────────────
-
-.cs-platforms {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.cs-platform-row {
-  display: grid;
-  grid-template-columns: 110px 1fr 80px;
-  align-items: center;
-  gap: 12px;
-}
-
-.cs-platform-name {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-body);
-}
-
-.cs-platform-bar-wrap {
-  height: 8px;
-  border-radius: 999px;
-  background: var(--surface-card-strong);
-  overflow: hidden;
-}
-
-.cs-platform-bar {
-  height: 100%;
-  border-radius: 999px;
-  transition: width 0.4s ease;
-}
-
-.cs-platform-val {
-  font-size: 12px;
-  color: var(--text-soft);
-  text-align: right;
 }
 
 // ── Insights ──────────────────────────────────────────────────────────────────

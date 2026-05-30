@@ -8,6 +8,7 @@ import {
 } from 'features/ads/model/targeting';
 
 export const DEFAULT_CPM_PRICE = 10000;
+export const MAX_DAILY_BUDGET = 10_000_000;
 export const TOTAL_STEPS = 4;
 
 export type WizardStep = 1 | 2 | 3 | 4;
@@ -168,6 +169,9 @@ export function validateWizardStep(
     } else if (state.daily_budget < 100) {
       errors.daily_budget = 'Минимальный бюджет - 100 ₽';
       issues.push('Минимальный бюджет - 100 ₽');
+    } else if (state.daily_budget > MAX_DAILY_BUDGET) {
+      errors.daily_budget = `Максимальный бюджет - ${MAX_DAILY_BUDGET.toLocaleString('ru-RU')} ₽`;
+      issues.push(`Максимальный бюджет - ${MAX_DAILY_BUDGET.toLocaleString('ru-RU')} ₽`);
     }
   }
 
@@ -233,10 +237,15 @@ export function getWizardReviewData(state: CampaignWizardState): WizardReviewDat
 export function toCampaignPayload(
   state: CampaignWizardState,
 ): CreateAdCampaignRequest {
+  const normalizedDailyBudget = Math.min(
+    MAX_DAILY_BUDGET,
+    Math.max(100, Math.round(state.daily_budget ?? 0)),
+  );
+
   return {
     name: state.name,
     main_action: state.main_action,
-    daily_budget: state.daily_budget ?? 0,
+    daily_budget: normalizedDailyBudget,
     cpm_price: DEFAULT_CPM_PRICE,
   };
 }

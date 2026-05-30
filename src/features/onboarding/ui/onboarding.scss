@@ -3,7 +3,7 @@
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
   z-index: 9000;
-  pointer-events: none;
+  pointer-events: auto;
   animation: tour-fade-in 0.2s ease;
 }
 
@@ -15,6 +15,12 @@
   outline: 3px solid rgba(255, 255, 255, 0.7);
   outline-offset: 1px;
   box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
+  transition:
+    top 0.22s ease,
+    left 0.22s ease,
+    width 0.22s ease,
+    height 0.22s ease,
+    border-radius 0.22s ease;
 }
 
 .tour-tooltip {
@@ -192,4 +198,15 @@
 @keyframes tour-fade-in {
   from { opacity: 0; }
   to   { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tour-overlay {
+    animation: none;
+  }
+
+  .tour-spotlight,
+  .tour-tooltip {
+    transition: none;
+  }
 }

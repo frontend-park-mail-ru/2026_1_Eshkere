@@ -1,0 +1,130 @@
+<section class="subs-page" data-subscription-page>
+
+  {{!-- Шапка с текущим планом --}}
+  <div class="subs-page__hero">
+    <div class="subs-page__hero-copy">
+      <h1 class="subs-page__title">Тарифный план</h1>
+      <p class="subs-page__subtitle">Управляйте подпиской и возможностями кабинета.</p>
+    </div>
+    <div class="subs-page__current-badge subs-page__current-badge--{{currentTone}}">
+      {{#if isProActive}}
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 2l2.4 7.2H22l-6.2 4.5 2.4 7.2L12 17.4l-6.2 4.5 2.4-7.2L2 9.2h7.6L12 2z"/>
+        </svg>
+        Pro активен
+      {{else}}
+        Basic
+      {{/if}}
+    </div>
+  </div>
+
+  {{!-- Баннер: Pro истёк --}}
+  {{#if isExpiredPro}}
+  <div class="subs-page__expired-banner">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 5v5m0 4h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
+    </svg>
+    <div>
+      <strong>Подписка Pro истекла</strong>
+      <p>Ваш аккаунт переведён на тариф Basic. Продлите Pro, чтобы восстановить доступ к расширенным функциям.</p>
+    </div>
+  </div>
+  {{/if}}
+
+  {{!-- Использование кампаний --}}
+  <div class="subs-page__usage-card">
+    <div class="subs-page__usage-head">
+      <span class="subs-page__usage-label">Активные кампании</span>
+      <strong class="subs-page__usage-value">{{usedCampaigns}} из {{maxCampaigns}}</strong>
+    </div>
+    <div class="subs-page__usage-bar">
+      <div class="subs-page__usage-fill" style="width: {{usagePercent}}%"></div>
+    </div>
+    {{#if tariffExpiresAt}}
+    <p class="subs-page__usage-note">Pro активен до {{tariffExpiresAt}}</p>
+    {{/if}}
+  </div>
+
+  {{!-- Сравнение тарифов --}}
+  <div class="subs-page__plans">
+
+    {{!-- Basic --}}
+    <div class="subs-page__plan {{#unless isProActive}}subs-page__plan--current{{/unless}}">
+      <div class="subs-page__plan-head">
+        <span class="subs-page__plan-name">Basic</span>
+        {{#unless isProActive}}<span class="subs-page__plan-badge">Текущий</span>{{/unless}}
+      </div>
+      <p class="subs-page__plan-price">0 ₽ <span>/ мес</span></p>
+      <p class="subs-page__plan-desc">Подходит для малого рекламодателя — без ограничений по сроку.</p>
+      <ul class="subs-page__features">
+        <li class="subs-page__feature subs-page__feature--check">До 5 активных кампаний</li>
+        <li class="subs-page__feature subs-page__feature--check">Ручное создание кампаний</li>
+        <li class="subs-page__feature subs-page__feature--check">Стандартная модерация</li>
+        <li class="subs-page__feature subs-page__feature--check">Email-уведомления</li>
+        <li class="subs-page__feature subs-page__feature--dash">AI-генерация текстов</li>
+        <li class="subs-page__feature subs-page__feature--dash">Прогноз охвата и расхода</li>
+        <li class="subs-page__feature subs-page__feature--dash">Telegram-уведомления</li>
+        <li class="subs-page__feature subs-page__feature--dash">Приоритетная модерация</li>
+        <li class="subs-page__feature subs-page__feature--dash">Экспорт отчётов</li>
+      </ul>
+      <button class="subs-page__plan-action subs-page__plan-action--passive" type="button" disabled>
+        {{#if isProActive}}Ваш план после истечения Pro{{else}}Текущий план{{/if}}
+      </button>
+    </div>
+
+    {{!-- Pro --}}
+    <div class="subs-page__plan subs-page__plan--pro {{#if isProActive}}subs-page__plan--current{{/if}}">
+      <div class="subs-page__plan-head">
+        <span class="subs-page__plan-name">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2l2.4 7.2H22l-6.2 4.5 2.4 7.2L12 17.4l-6.2 4.5 2.4-7.2L2 9.2h7.6L12 2z"/>
+          </svg>
+          Pro
+        </span>
+        {{#if isProActive}}<span class="subs-page__plan-badge subs-page__plan-badge--pro">Активен</span>{{/if}}
+      </div>
+      <p class="subs-page__plan-price">3 900 ₽ <span>/ мес</span></p>
+      <p class="subs-page__plan-desc">Быстрый старт, расширенные инструменты и до 20 кампаний.</p>
+      <ul class="subs-page__features">
+        <li class="subs-page__feature subs-page__feature--check">До 20 активных кампаний</li>
+        <li class="subs-page__feature subs-page__feature--check">Ручное создание кампаний</li>
+        <li class="subs-page__feature subs-page__feature--check subs-page__feature--pro">AI-генерация текстов <span class="subs-page__soon">скоро</span></li>
+        <li class="subs-page__feature subs-page__feature--check subs-page__feature--pro">Прогноз охвата и расхода</li>
+        <li class="subs-page__feature subs-page__feature--check">Telegram-уведомления <span class="subs-page__soon">скоро</span></li>
+        <li class="subs-page__feature subs-page__feature--check">Приоритетная модерация</li>
+        <li class="subs-page__feature subs-page__feature--check">Экспорт отчётов <span class="subs-page__soon">скоро</span></li>
+        <li class="subs-page__feature subs-page__feature--check">Email-уведомления</li>
+        <li class="subs-page__feature subs-page__feature--check subs-page__feature--pro">Рекомендации по бюджету и CPM</li>
+      </ul>
+      {{#if isProActive}}
+        <button class="subs-page__plan-action subs-page__plan-action--passive" type="button" disabled>
+          Подключён
+        </button>
+      {{else}}
+        <button class="subs-page__plan-action subs-page__plan-action--upgrade" type="button" data-subs-pay>
+          <svg class="subs-page__spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="40 60"/>
+          </svg>
+          <span data-subs-pay-label>{{#if isExpiredPro}}Продлить Pro — 3 900 ₽{{else}}Оформить Pro — 3 900 ₽{{/if}}</span>
+        </button>
+        <p class="subs-page__plan-note">Списывается с баланса кабинета</p>
+      {{/if}}
+    </div>
+
+  </div>
+
+  {{!-- Ошибка оплаты --}}
+  <p class="subs-page__footer-note" data-subs-error hidden></p>
+
+  {{!-- Недостаточно средств (402) --}}
+  <div class="subs-page__insufficient" data-subs-insufficient hidden>
+    <div class="subs-page__insufficient-copy">
+      <strong>Недостаточно средств на балансе</strong>
+      <p>Для подключения Pro нужно минимум 3 900 ₽. Пополните баланс и попробуйте снова.</p>
+    </div>
+    <button class="subs-page__topup-btn" type="button" data-subs-go-topup>
+      Пополнить баланс
+    </button>
+  </div>
+
+</section>

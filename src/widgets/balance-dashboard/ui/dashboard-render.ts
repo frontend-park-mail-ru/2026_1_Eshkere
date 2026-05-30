@@ -1,4 +1,5 @@
 import { formatPrice } from 'shared/lib/format';
+import { setupMotionEnhancements } from 'shared/lib/animations';
 import type { BalanceDashboardState, DeliveryAlertLevel } from 'features/balance/model/types';
 import {
   getAutopayHeroLabel,
@@ -102,6 +103,7 @@ function renderOperations(state: BalanceDashboardState): void {
       ? visibleOperations.map((operation) => createOperationNode(operation))
       : [createEmptyOperationNode()]),
   );
+  setupMotionEnhancements(operationsBody);
 }
 
 function renderRecommendations(state: BalanceDashboardState): void {
@@ -115,6 +117,7 @@ function renderRecommendations(state: BalanceDashboardState): void {
   recommendationsNode.replaceChildren(
     ...getRecommendations(state).map((item) => createRecommendationNode(item)),
   );
+  setupMotionEnhancements(recommendationsNode);
 }
 
 const ALERT_DISMISS_KEY = 'balance_alert_dismiss';

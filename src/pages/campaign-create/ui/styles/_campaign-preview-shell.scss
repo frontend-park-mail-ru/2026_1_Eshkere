@@ -1,6 +1,37 @@
 ﻿@use '../../../../shared/styles/tokens' as t;
 @use '../../../../shared/styles/mixins';
 
+@keyframes campaign-preview-morph {
+  0% {
+    transform: scale(0.985);
+    filter: saturate(0.95);
+  }
+
+  48% {
+    transform: scale(1.018);
+    filter: saturate(1.08);
+  }
+
+  100% {
+    transform: scale(1);
+    filter: none;
+  }
+}
+
+@keyframes campaign-preview-text-in {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+    filter: blur(2px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
 .campaign-preview {
   display: flex;
   justify-content: center;
@@ -15,6 +46,19 @@
       radial-gradient(circle at top left, rgba(120, 152, 255, 0.24), transparent 36%),
       linear-gradient(160deg, #12182d 0%, #1d2340 55%, #232959 100%);
     box-shadow: 0 24px 42px rgba(25, 31, 73, 0.22);
+    transition:
+      width 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+      border-radius 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+      background 0.32s ease;
+  }
+
+  &__frame--stories {
+    width: min(100%, 236px);
+    border-radius: 34px;
+  }
+
+  &__frame--video-15 {
+    width: min(100%, 324px);
   }
 
   &__visual {
@@ -26,6 +70,21 @@
     background:
       radial-gradient(circle at top left, rgba(255, 255, 255, 0.78), transparent 28%),
       linear-gradient(135deg, rgba(71, 129, 255, 0.94) 0%, rgba(113, 90, 255, 0.94) 52%, rgba(255, 126, 176, 0.9) 100%);
+    transition:
+      aspect-ratio 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+      border-radius 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+      background 0.32s ease;
+  }
+
+  &__frame--stories &__visual {
+    aspect-ratio: 9 / 16;
+  }
+
+  &__frame--video-15 &__visual {
+    aspect-ratio: 16 / 9;
+    background:
+      radial-gradient(circle at 82% 20%, rgba(255, 255, 255, 0.66), transparent 22%),
+      linear-gradient(135deg, rgba(20, 28, 62, 0.98) 0%, rgba(87, 85, 255, 0.94) 58%, rgba(0, 184, 148, 0.86) 100%);
   }
 
   &__visual-copy {
@@ -93,5 +152,29 @@
     background: linear-gradient(135deg, #2d6df6 0%, #5755ff 100%);
     box-shadow: 0 14px 24px rgba(90, 84, 255, 0.24);
   }
+
+  .motion-preview-morph {
+    animation: campaign-preview-morph 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
+    transform-origin: center top;
+  }
+
+  .motion-preview-text {
+    animation: campaign-preview-text-in 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .campaign-preview {
+    &__frame,
+    &__visual {
+      transition: none !important;
+    }
+
+    .motion-preview-morph,
+    .motion-preview-text {
+      animation: none !important;
+      transform: none !important;
+      filter: none !important;
+    }
+  }
+}

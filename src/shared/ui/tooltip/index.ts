@@ -1,0 +1,1 @@
+export { initCustomTooltips } from './tooltip';

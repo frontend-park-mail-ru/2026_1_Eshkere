@@ -103,6 +103,40 @@
   </div>
 
   <nav class="mobile-tabbar" aria-label="Мобильная навигация кабинета">
+    {{#unless isPartnerCabinet}}
+    <a
+      href="/advertiser/overview"
+      class="mobile-tabbar__item {{#if isOverview}}mobile-tabbar__item--active{{/if}}"
+      {{#if isOverview}}aria-current="page"{{/if}}
+    >
+      <img class="mobile-tabbar__icon" src="/icons/darhboard.svg" alt="" aria-hidden="true" />
+      <span>Обзор</span>
+    </a>
+    <a
+      href="/advertiser/campaigns"
+      class="mobile-tabbar__item {{#if isCampaigns}}mobile-tabbar__item--active{{/if}}"
+      {{#if isCampaigns}}aria-current="page"{{/if}}
+    >
+      <img class="mobile-tabbar__icon" src="/icons/statistics.svg" alt="" aria-hidden="true" />
+      <span>Кампании</span>
+    </a>
+    <a
+      href="/advertiser/balance"
+      class="mobile-tabbar__item {{#if isBalance}}mobile-tabbar__item--active{{/if}}"
+      {{#if isBalance}}aria-current="page"{{/if}}
+    >
+      <img class="mobile-tabbar__icon" src="/icons/wallet.svg" alt="" aria-hidden="true" />
+      <span>Баланс</span>
+    </a>
+    <a
+      href="/advertiser/support"
+      class="mobile-tabbar__item {{#if isSupport}}mobile-tabbar__item--active{{/if}}"
+      {{#if isSupport}}aria-current="page"{{/if}}
+    >
+      <img class="mobile-tabbar__icon" src="/icons/Question.svg" alt="" aria-hidden="true" />
+      <span>Поддержка</span>
+    </a>
+    {{/unless}}
     {{#if isPartnerCabinet}}
     <a
       href="/partner/overview"

@@ -180,6 +180,11 @@ const profilePage = createLazyPage(
   (pageModule) => pageModule.renderProfilePage,
   (pageModule) => pageModule.Profile,
 );
+const subscriptionPage = createLazyPage(
+  () => import(/* webpackChunkName: "page-subscription" */ 'pages/subscription'),
+  (pageModule) => pageModule.renderSubscriptionPage,
+  (pageModule) => pageModule.SubscriptionPage,
+);
 const supportPage = createLazyPage(
   () => import(/* webpackChunkName: "page-support" */ 'pages/support'),
   (pageModule) => pageModule.renderSupportPage,
@@ -285,6 +290,8 @@ const renderPaymentFailPage = paymentFailPage.render;
 const PaymentFail = paymentFailPage.init;
 const renderProfilePage = profilePage.render;
 const Profile = profilePage.init;
+const renderSubscriptionPage = subscriptionPage.render;
+const SubscriptionPage = subscriptionPage.init;
 const renderSupportPage = supportPage.render;
 const Support = supportPage.init;
 const renderAddSitesPage = addSitesPage.render;
@@ -525,6 +532,18 @@ const routes: Record<string, RouteDefinition> = {
     render: renderCampaignStatsPage,
     layout: 'advertiser-dashboard',
     init: CampaignStats,
+    protected: true,
+  },
+  '/subscription': {
+    render: renderSubscriptionPage,
+    layout: 'advertiser-dashboard',
+    init: SubscriptionPage,
+    protected: true,
+  },
+  '/advertiser/subscription': {
+    render: renderSubscriptionPage,
+    layout: 'advertiser-dashboard',
+    init: SubscriptionPage,
     protected: true,
   },
   '/balance': {

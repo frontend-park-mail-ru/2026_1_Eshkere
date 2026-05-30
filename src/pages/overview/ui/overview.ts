@@ -4,6 +4,7 @@ import { getAds, getAdGroups, getAdsInGroup } from 'features/ads';
 import type { AdCampaignStatus } from 'features/ads';
 import type { AdItem } from 'features/ads/api/get-ads';
 import { getBalanceState } from 'features/balance';
+import { getSubscription } from 'features/subscription';
 import { renderTemplate } from 'shared/lib/render';
 import { navigateTo } from 'shared/lib/navigation';
 import overviewTemplate from './overview.hbs';
@@ -294,6 +295,7 @@ export async function renderOverviewPage(): Promise<string> {
   const [adsResult, balanceState] = await Promise.all([
     getAds(),
     Promise.resolve(getBalanceState()),
+    getSubscription().catch(() => null), // fire-and-forget: обновляет кеш подписки
   ]);
 
   const campaigns = await Promise.all((adsResult.ads ?? []).map(enrichCampaign));

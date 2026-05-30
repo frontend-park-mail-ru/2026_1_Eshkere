@@ -1,5 +1,7 @@
 import './payment-result.scss';
 import { renderTemplate } from 'shared/lib/render';
+import { getSubscription } from 'features/subscription';
+import { request } from 'shared/lib/request';
 import paymentResultTemplate from './payment-result.hbs';
 
 interface PaymentResultViewModel {
@@ -81,4 +83,12 @@ export async function renderPaymentFailPage(): Promise<string> {
 
 export function PaymentResult(): void {
   document.querySelector<HTMLElement>('.payment-result__primary')?.focus();
+
+  // Webhook активирует Pro асинхронно — обновляем данные в фоне после успешной оплаты
+  if (window.location.pathname.includes('/success')) {
+    void Promise.all([
+      getSubscription().catch(() => null),
+      request('/advertisers/me').catch(() => null),
+    ]);
+  }
 }

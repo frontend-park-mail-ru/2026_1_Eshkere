@@ -52,6 +52,7 @@ export interface BuilderState {
   totalBudget: number;
   period: string;
   strategy: StrategyKey;
+  cpmPrice: number;
 }
 
 export type { ToastPayload } from 'shared/lib/toast';
@@ -143,7 +144,8 @@ export type FieldKey =
   | 'dailyBudget'
   | 'totalBudget'
   | 'period'
-  | 'strategy';
+  | 'strategy'
+  | 'cpmPrice';
 
 export type FieldErrors = Partial<Record<FieldKey, string>>;
 

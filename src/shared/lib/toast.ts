@@ -39,17 +39,22 @@ export function showToast(
     (el) => el.querySelector('.app-toast__title')?.textContent === title,
   );
   if (existing) {
+    existing.classList.remove('app-toast--pulse');
+    void existing.offsetWidth;
+    existing.classList.add('app-toast--pulse');
     return;
   }
 
   const toast = document.createElement('div');
   toast.className = 'app-toast';
+  toast.style.setProperty('--toast-duration', `${duration}ms`);
   toast.innerHTML = `
     <span class="app-toast__dot"></span>
     <div class="app-toast__copy">
       <span class="app-toast__title"></span>
       <p class="app-toast__text"></p>
     </div>
+    <span class="app-toast__progress" aria-hidden="true"></span>
     <button class="app-toast__close" type="button" aria-label="Закрыть">&#215;</button>
   `;
 
@@ -58,13 +63,25 @@ export function showToast(
   toast.querySelector<HTMLElement>('.app-toast__text')!.textContent  = text;
 
   const close = toast.querySelector<HTMLButtonElement>('.app-toast__close')!;
+  let closed = false;
   const remove = (): void => {
-    toast.remove();
+    if (closed) {
+      return;
+    }
+
+    closed = true;
+    toast.classList.add('app-toast--out');
+    window.setTimeout(() => {
+      toast.remove();
+    }, 180);
   };
-  const timer = setTimeout(remove, duration);
+  const timer = duration > 0 ? window.setTimeout(remove, duration) : 0;
   close.addEventListener('click', () => { clearTimeout(timer); remove(); }, { once: true });
 
   container.appendChild(toast);
+  requestAnimationFrame(() => {
+    toast.classList.add('app-toast--visible');
+  });
 }
 
 let currentProfileToast: HTMLElement | null = null;

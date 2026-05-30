@@ -107,12 +107,35 @@ const MOTION_SELECTORS = {
     '.balance-stat',
     '.stats-card',
     '.campaign-builder__card',
+    '.campaign-builder__creative',
+    '.campaign-builder__metric',
+    '.campaign-builder__review-section',
+    '.campaign-builder__slot-item',
+    '.campaign-builder__summary-block',
+    '.campaign-builder__summary-item',
+    '.campaign-builder__upload-slot',
     '.agc__card',
     '.adc__card',
     '.ad-group-card',
     '.ad-card',
     '.profile-card',
     '.moderator-card',
+    '.sm__usage',
+    '.sm__plan',
+  ].join(','),
+  charts: [
+    '.overview-chart__bar',
+    '.overview-status__fill',
+  ].join(','),
+  bars: [
+    '[data-budget-balance-fill]',
+  ].join(','),
+  emptyStates: [
+    '.campaigns-empty',
+    '.overview-empty',
+    '.balance-table__empty',
+    '.partner-empty',
+    '.mq__empty',
   ].join(','),
   listItems: [
     '.campaign-row',
@@ -120,6 +143,11 @@ const MOTION_SELECTORS = {
     '.partner-site-row',
     '.partner-row',
     '.navbar__notification-card',
+    '.campaign-builder__risk-item',
+    '.campaign-builder__saved-audience',
+    '.campaign-builder__timeline-item',
+    '.mq-item',
+    '.sm__feature',
   ].join(','),
   dropdowns: [
     '.campaign-row__menu',
@@ -139,8 +167,220 @@ const MOTION_SELECTORS = {
     '.avatar-crop-modal',
     '.navbar__logout-modal',
     '.navbar__notifications-modal',
+    '.sm',
+  ].join(','),
+  numberValues: [
+    '.overview-stat__value',
+    '.overview-chart__value',
+    '.overview-status__row strong',
+    '.overview-balance strong',
+    '.overview-campaign__status',
+    '.balance-stat__value',
+    '.balance-summary__value',
+    '.balance-modal__summary-value',
+    '.balance-log__summary-value',
+    '.partner-stat__value',
+    '.stats-card__value',
+    '.campaign-builder__metric-value',
+    '.campaign-builder__summary-item strong',
+    '[data-budget-clicks]',
+    '[data-budget-cpm]',
+    '[data-budget-cpc]',
+    '[data-budget-reach]',
+    '[data-audience-clicks]',
+    '[data-audience-ctr]',
+    '[data-audience-reach]',
+    '[data-balance-stat]',
+    '[data-balance-summary]',
+  ].join(','),
+  statuses: [
+    '.status-badge',
+    '.overview-status',
+    '.balance-pill',
+    '.balance-alert',
+    '.global-balance-alert',
   ].join(','),
 };
+
+interface ParsedNumberText {
+  decimals: number;
+  end: number;
+  prefix: string;
+  suffix: string;
+}
+
+const animatedNumbers = new WeakMap<HTMLElement, string>();
+
+export function markMotionUpdated(
+  element: HTMLElement | null | undefined,
+  className = 'motion-updated',
+  duration = 360,
+): void {
+  if (!element || reducedMotion()) {
+    return;
+  }
+
+  element.classList.remove(className);
+  void element.offsetWidth;
+  element.classList.add(className);
+
+  window.setTimeout(() => {
+    element.classList.remove(className);
+  }, duration);
+}
+
+function queryMotionElements(root: ParentNode, selector: string): HTMLElement[] {
+  const rootElement =
+    root instanceof HTMLElement && root.matches(selector) ? [root] : [];
+
+  return [
+    ...rootElement,
+    ...Array.from(root.querySelectorAll<HTMLElement>(selector)),
+  ];
+}
+
+function parseNumberText(text: string): ParsedNumberText | null {
+  const match = text.match(/-?\d[\d\s.,]*/);
+
+  if (!match || typeof match.index !== 'number') {
+    return null;
+  }
+
+  const rawNumber = match[0].trim();
+  const normalized = rawNumber.replace(/\s/g, '').replace(',', '.');
+  const numericValue = Number(normalized);
+
+  if (!Number.isFinite(numericValue)) {
+    return null;
+  }
+
+  const decimalPart = normalized.split('.')[1];
+
+  return {
+    decimals: decimalPart?.length ?? 0,
+    end: numericValue,
+    prefix: text.slice(0, match.index),
+    suffix: text.slice(match.index + match[0].length),
+  };
+}
+
+function formatAnimatedNumber(value: number, decimals: number): string {
+  return new Intl.NumberFormat('ru-RU', {
+    maximumFractionDigits: decimals,
+    minimumFractionDigits: decimals,
+  }).format(value);
+}
+
+function animateNumber(element: HTMLElement): void {
+  const originalText = element.textContent?.trim() ?? '';
+  const parsed = parseNumberText(originalText);
+
+  if (!parsed || animatedNumbers.get(element) === originalText) {
+    return;
+  }
+
+  animatedNumbers.set(element, originalText);
+  element.classList.add('motion-count-up');
+
+  if (parsed.end === 0) {
+    return;
+  }
+
+  const duration = 720;
+  const startedAt = performance.now();
+  const easeOut = (t: number): number => 1 - Math.pow(1 - t, 3);
+
+  const step = (now: number): void => {
+    if (!element.isConnected) {
+      return;
+    }
+
+    const progress = Math.min((now - startedAt) / duration, 1);
+    const value = parsed.end * easeOut(progress);
+    element.textContent = `${parsed.prefix}${formatAnimatedNumber(
+      value,
+      parsed.decimals,
+    )}${parsed.suffix}`;
+
+    if (progress < 1) {
+      requestAnimationFrame(step);
+      return;
+    }
+
+    element.textContent = originalText;
+  };
+
+  element.textContent = `${parsed.prefix}${formatAnimatedNumber(
+    0,
+    parsed.decimals,
+  )}${parsed.suffix}`;
+  requestAnimationFrame(step);
+}
+
+function setupCountUp(root: ParentNode): void {
+  const elements = queryMotionElements(root, MOTION_SELECTORS.numberValues);
+
+  if (elements.length === 0) {
+    return;
+  }
+
+  const visible = (element: HTMLElement): boolean => {
+    const rect = element.getBoundingClientRect();
+    return rect.top < window.innerHeight && rect.bottom > 0;
+  };
+
+  const animate = (element: HTMLElement): void => {
+    if (visible(element)) {
+      animateNumber(element);
+    }
+  };
+
+  if (!('IntersectionObserver' in window)) {
+    elements.forEach(animate);
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) {
+          return;
+        }
+
+        animateNumber(entry.target as HTMLElement);
+        observer.unobserve(entry.target);
+      });
+    },
+    { threshold: 0.25 },
+  );
+
+  elements.forEach((element) => {
+    if (visible(element)) {
+      animateNumber(element);
+      return;
+    }
+
+    observer.observe(element);
+  });
+}
+
+function setupStatusMotion(root: ParentNode): void {
+  const statuses = queryMotionElements(root, MOTION_SELECTORS.statuses);
+
+  statuses.forEach((element) => {
+    element.classList.add('motion-status');
+
+    const className = element.className;
+    const tone =
+      className.match(/(?:status-badge|overview-status|balance-pill|balance-alert|global-balance-alert)--([\w-]+)/)?.[1] ??
+      element.dataset['globalBalanceAlert'] ??
+      '';
+
+    if (tone) {
+      element.classList.add(`motion-status--${tone}`);
+    }
+  });
+}
 
 function addMotionClass(
   root: ParentNode,
@@ -148,7 +388,7 @@ function addMotionClass(
   className: string,
   limit = Number.POSITIVE_INFINITY,
 ): void {
-  const elements = Array.from(root.querySelectorAll<HTMLElement>(selector));
+  const elements = queryMotionElements(root, selector);
 
   elements.slice(0, limit).forEach((element, index) => {
     element.classList.add(className);
@@ -164,7 +404,12 @@ export function setupMotionEnhancements(root: ParentNode = document): void {
 
   addMotionClass(root, MOTION_SELECTORS.pressable, 'motion-pressable');
   addMotionClass(root, MOTION_SELECTORS.cards, 'motion-card', 40);
+  addMotionClass(root, MOTION_SELECTORS.charts, 'motion-chart');
+  addMotionClass(root, MOTION_SELECTORS.bars, 'motion-bar');
+  addMotionClass(root, MOTION_SELECTORS.emptyStates, 'motion-empty-state');
   addMotionClass(root, MOTION_SELECTORS.listItems, 'motion-list-item', 40);
   addMotionClass(root, MOTION_SELECTORS.dropdowns, 'motion-dropdown');
   addMotionClass(root, MOTION_SELECTORS.modals, 'motion-modal');
+  setupStatusMotion(root);
+  setupCountUp(root);
 }

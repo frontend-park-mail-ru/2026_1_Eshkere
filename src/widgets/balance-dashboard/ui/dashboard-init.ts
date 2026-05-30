@@ -2,6 +2,7 @@ import { parseAmountInput, validateMinAmount } from 'shared/validators';
 import { openTopupModal, type ToastController } from 'features/balance/lib/modal';
 import { createPayment } from 'features/balance/api/create-payment';
 import type { BalanceDashboardState } from 'features/balance/model/types';
+import { markMotionUpdated } from 'shared/lib/animations';
 import { closeModal, openModal } from 'shared/ui/modal/modal';
 import { dismissAlert, syncBalanceDashboardWidget } from './dashboard-render';
 
@@ -33,9 +34,11 @@ export function initBalanceDashboardWidget({
           const amount = Number(node.dataset.balanceAmount || '0');
           if (amount > 0) {
             state.selectedAmount = amount;
+            markMotionUpdated(node);
             commitState();
 
             if (topupModal instanceof HTMLElement) {
+              markMotionUpdated(topupModal, 'motion-modal', 220);
               openTopupModal(topupModal);
             }
           }
@@ -83,6 +86,7 @@ export function initBalanceDashboardWidget({
           const amount = Number(node.dataset.balanceModalAmount || '0');
           if (amount > 0) {
             state.selectedAmount = amount;
+            markMotionUpdated(node);
             commitState();
           }
         },
@@ -186,7 +190,9 @@ export function initBalanceDashboardWidget({
       if (amountError) {
         if (errorNode) {
           errorNode.textContent = amountError;
+          markMotionUpdated(errorNode, 'motion-invalid', 520);
         }
+        markMotionUpdated(topupForm, 'motion-invalid', 520);
         return;
       }
 
@@ -205,6 +211,7 @@ export function initBalanceDashboardWidget({
           if (errorNode) {
             errorNode.textContent =
               'Не удалось создать платёж. Попробуйте позже.';
+            markMotionUpdated(errorNode, 'motion-invalid', 520);
           }
           if (submitButton) {
             submitButton.disabled = false;

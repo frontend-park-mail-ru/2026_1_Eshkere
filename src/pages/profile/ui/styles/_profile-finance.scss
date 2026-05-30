@@ -129,6 +129,18 @@
       color: #2ea360;
       background: rgba(214, 244, 221, 0.9);
     }
+
+    &--pro {
+      gap: 5px;
+      color: #6c5ce7;
+      background: rgba(108, 92, 231, 0.1);
+    }
+  }
+
+  &__text--note {
+    margin-top: 2px;
+    font-size: 11px;
+    color: #9ba5be;
   }
 
   &__action {
@@ -143,6 +155,13 @@
     border: 1px solid rgba(215, 221, 238, 0.92);
     outline: none;
     box-shadow: 0 8px 18px rgba(36, 42, 69, 0.04);
+    flex-shrink: 0;
+    transition: border-color 0.15s, color 0.15s;
+
+    &:hover {
+      border-color: rgba(108, 92, 231, 0.35);
+      color: #6c5ce7;
+    }
   }
 }
 

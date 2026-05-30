@@ -1,3 +1,5 @@
+import { markMotionUpdated } from 'shared/lib/animations';
+
 interface BuilderHealthView {
   badge: string;
   isPositive: boolean;
@@ -10,7 +12,11 @@ interface SyncCampaignBuilderValidationParams {
 function setText(selector: string, value: string): void {
   const node = document.querySelector<HTMLElement>(selector);
   if (node) {
+    const changed = node.textContent !== value;
     node.textContent = value;
+    if (changed) {
+      markMotionUpdated(node);
+    }
   }
 }
 
@@ -40,6 +46,7 @@ export function syncCampaignBuilderValidationView({
       const key = node.dataset.builderError;
       const field = node.closest<HTMLElement>('.campaign-builder__field');
       const message = key ? errors[key] || '' : '';
+      const previousMessage = node.textContent?.trim() ?? '';
 
       node.textContent = message;
       node.hidden = !message;
@@ -47,6 +54,10 @@ export function syncCampaignBuilderValidationView({
         'campaign-builder__field--error',
         Boolean(message),
       );
+
+      if (message && previousMessage !== message) {
+        markMotionUpdated(field, 'motion-invalid', 520);
+      }
     });
 }
 

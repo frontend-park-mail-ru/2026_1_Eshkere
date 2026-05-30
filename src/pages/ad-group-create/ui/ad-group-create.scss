@@ -764,6 +764,8 @@
   line-height: 1.2;
 
   &--good { color: var(--success-strong); }
+  &--medium { color: var(--primary-active); }
+  &--low { color: var(--text-soft); }
 }
 
 .agc__reach-bar {

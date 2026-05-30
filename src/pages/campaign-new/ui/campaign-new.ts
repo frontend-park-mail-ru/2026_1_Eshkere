@@ -25,6 +25,8 @@ export function CampaignNew(): VoidFunction {
   const goalValue  = root.querySelector<HTMLInputElement>('[data-cnew-goal-value]');
 
   const DEFAULT_CPM_PRICE = 10000;
+  const MIN_DAILY_BUDGET = 100;
+  const MAX_DAILY_BUDGET = 10_000_000;
 
   // Выбор цели
   root.querySelectorAll<HTMLButtonElement>('[data-cnew-goals] [data-goal]').forEach((btn) => {
@@ -59,8 +61,11 @@ export function CampaignNew(): VoidFunction {
     if (daily_budget === undefined) {
       if (budgetError) budgetError.textContent = 'Введите дневной бюджет';
       hasError = true;
-    } else if (daily_budget < 100) {
-      if (budgetError) budgetError.textContent = 'Минимальный бюджет — 100 ₽';
+    } else if (daily_budget < MIN_DAILY_BUDGET) {
+      if (budgetError) budgetError.textContent = `Минимальный бюджет — ${MIN_DAILY_BUDGET.toLocaleString('ru-RU')} ₽`;
+      hasError = true;
+    } else if (daily_budget > MAX_DAILY_BUDGET) {
+      if (budgetError) budgetError.textContent = `Максимальный бюджет — ${MAX_DAILY_BUDGET.toLocaleString('ru-RU')} ₽`;
       hasError = true;
     }
     if (hasError) return;
@@ -73,7 +78,10 @@ export function CampaignNew(): VoidFunction {
       const { id } = await createAdCampaign({
         name,
         main_action,
-        daily_budget,
+        daily_budget: Math.min(
+          MAX_DAILY_BUDGET,
+          Math.max(MIN_DAILY_BUDGET, daily_budget),
+        ),
         cpm_price: DEFAULT_CPM_PRICE,
       });
       navigateTo(`/advertiser/campaign?id=${id}`);

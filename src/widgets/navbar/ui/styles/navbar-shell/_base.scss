@@ -147,11 +147,12 @@
     width: 54px;
     height: 30px;
     border-radius: 999px;
-    background: rgba(104, 100, 255, 0.1);
-    border: 1.5px solid rgba(104, 100, 255, 0.22);
+    background: rgba(104, 100, 255, 0.14);
+    border: 1.5px solid rgba(104, 100, 255, 0.28);
     transition:
       background 0.25s ease,
-      border-color 0.25s ease;
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
 
     &::before,
     &::after {
@@ -166,14 +167,14 @@
       content: '☀';
       left: 5px;
       color: #655fff;
-      opacity: 1;
+      opacity: 0.95;
     }
 
     &::after {
       content: '☾';
       right: 5px;
       color: #655fff;
-      opacity: 0.45;
+      opacity: 0.52;
     }
   }
 
@@ -186,6 +187,12 @@
     background: linear-gradient(135deg, #655fff, #514bff);
     box-shadow: 0 2px 6px rgba(101, 95, 255, 0.4);
     transition: transform 0.25s ease;
+  }
+
+  &__theme-btn:hover &__theme-btn-track {
+    background: rgba(104, 100, 255, 0.2);
+    border-color: rgba(104, 100, 255, 0.4);
+    box-shadow: 0 0 0 2px rgba(104, 100, 255, 0.08);
   }
 
   &__button {
@@ -206,6 +213,29 @@
       color: var(--white);
       background: linear-gradient(135deg, #655fff, #514bff);
       box-shadow: t.$shadow-primary;
+    }
+  }
+
+  @media (max-width: 600px) {
+    left: 8px;
+    right: 8px;
+    gap: 8px;
+    min-height: 58px;
+    padding: 8px 12px;
+
+    &__nav { display: none; }
+
+    &__left { gap: 8px; }
+
+    &__logo-text { display: none; }
+
+    &__actions { gap: 6px; }
+
+    &__button {
+      min-width: 0;
+      height: 36px;
+      padding-inline: 12px;
+      font-size: 13px;
     }
   }
 

@@ -157,57 +157,6 @@ function buildLineChart(
   }
 }
 
-// ── Platform bars ─────────────────────────────────────────────────────────────
-
-const PLATFORM_COLORS = ['#0077ff', '#27a7e7', '#f47224'];
-const PLATFORM_ICONS  = [
-  '<img src="/icons/VK_logo_Blue_40x40.svg" width="18" height="18" alt="VK" />',
-  '<img src="/icons/platforms/telegram.svg" width="18" height="18" alt="Telegram" />',
-  '<img src="/icons/platforms/odnoklassniki.svg" width="18" height="18" alt="OK" />',
-];
-const PLATFORM_ICON_CLS = ['as-platform-icon--vk', 'as-platform-icon--tg', 'as-platform-icon--ok'];
-const PLATFORM_NAMES  = ['ВКонтакте', 'Telegram', 'OK.ru'];
-const PLATFORM_SHARES = [0.68, 0.22, 0.10];
-
-function buildPlatforms(container: HTMLElement, totalImpr: number) {
-  container.innerHTML = '';
-  PLATFORM_NAMES.forEach((name, i) => {
-    const val = Math.round(totalImpr * PLATFORM_SHARES[i]);
-    const row = document.createElement('div');
-    row.className = 'cs-platform-row';
-    row.innerHTML = `
-      <div class="cs-platform-name">
-        <span class="as-platform-icon ${PLATFORM_ICON_CLS[i]}">${PLATFORM_ICONS[i]}</span>
-        ${name}
-      </div>
-      <div class="cs-platform-bar-wrap">
-        <div class="cs-platform-bar" style="width:${PLATFORM_SHARES[i] * 100}%;background:${PLATFORM_COLORS[i]}"></div>
-      </div>
-      <div class="cs-platform-val">${fmtNum(val)}</div>
-    `;
-    container.appendChild(row);
-  });
-}
-
-function buildPlatformsFromData(container: HTMLElement, placements: Array<{ id: number; name: string; impressions: number }>) {
-  const total = placements.reduce((s, p) => s + p.impressions, 0);
-  const colors = ['#0077ff', '#27a7e7', '#f47224', '#a855f7', '#22c55e'];
-  container.innerHTML = '';
-  placements.forEach((p, i) => {
-    const pct = total > 0 ? p.impressions / total : 0;
-    const row = document.createElement('div');
-    row.className = 'cs-platform-row';
-    row.innerHTML = `
-      <div class="cs-platform-name">${p.name}</div>
-      <div class="cs-platform-bar-wrap">
-        <div class="cs-platform-bar" style="width:${(pct * 100).toFixed(1)}%;background:${colors[i % colors.length]}"></div>
-      </div>
-      <div class="cs-platform-val">${fmtNum(p.impressions)}</div>
-    `;
-    container.appendChild(row);
-  });
-}
-
 // ── Status labels ──────────────────────────────────────────────────────────────
 
 const GROUP_STATUS_LABELS: Record<string, { label: string; cls: string }> = {
@@ -465,17 +414,6 @@ export function CampaignStats(): VoidFunction {
             navigateTo(`/ads/stats/group?campaignId=${campaignId}&groupId=${tr.dataset.gotoGroup}`);
           }, { signal });
         });
-      }
-    }
-
-    // platforms — use real placements if available
-    const platformsEl = root.querySelector<HTMLElement>('[data-cs-platforms]');
-    if (platformsEl) {
-      const placements = stats?.placements ?? [];
-      if (placements.length > 0) {
-        buildPlatformsFromData(platformsEl, placements);
-      } else {
-        buildPlatforms(platformsEl, totals?.impressions ?? 0);
       }
     }
 

@@ -73,6 +73,30 @@
               <span class="adc__upload-filename" data-adc-upload-filename></span>
             </div>
           </div>
+
+          <div class="adc__ai-or"><span>или</span></div>
+
+          <div class="adc__ai-style-row">
+            <span class="adc__ai-style-label">Стиль:</span>
+            <div class="adc__ai-style-chips" role="group" aria-label="Стиль изображения">
+              <button class="adc__ai-style-chip adc__ai-style-chip--active" type="button" data-adc-style="clean">Чистый</button>
+              <button class="adc__ai-style-chip" type="button" data-adc-style="bold">Яркий</button>
+              <button class="adc__ai-style-chip" type="button" data-adc-style="minimal">Минимал</button>
+            </div>
+          </div>
+
+          <button class="adc__ai-gen-image-btn" type="button" data-adc-gen-image disabled>
+            <svg class="adc__ai-sparkle-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+            </svg>
+            <svg class="adc__spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="40 60"/>
+            </svg>
+            <span data-adc-gen-image-label>Сгенерировать из описания</span>
+          </button>
+
+          <div class="adc__ai-variants" data-adc-ai-variants hidden></div>
+          <p class="adc__ai-gen-error" data-adc-gen-error hidden></p>
         </div>
 
         {{!-- Текст --}}
@@ -95,10 +119,56 @@
             <span class="adc__error" data-adc-error="title"></span>
           </div>
           <div class="adc__field">
-            <label class="adc__label" for="adc-desc">
-              Описание
-              <span class="adc__counter" data-adc-counter="short_desc">0/150</span>
-            </label>
+            <div class="adc__field-header">
+              <label class="adc__label" for="adc-desc">
+                Описание
+                <span class="adc__counter" data-adc-counter="short_desc">0/150</span>
+              </label>
+              <div class="adc__ai-actions">
+                <button class="adc__ai-icon-btn" type="button"
+                  data-adc-ai-text-toggle
+                  aria-label="Написать с помощью ИИ"
+                  title="Написать с помощью ИИ">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+                  </svg>
+                </button>
+                <button class="adc__ai-icon-btn" type="button"
+                  data-adc-voice-btn
+                  aria-label="Голосовой ввод"
+                  title="Голосовой ввод">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M12 19v4M8 23h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="adc__ai-panel" data-adc-ai-panel hidden>
+              <p class="adc__ai-panel-title">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+                </svg>
+                Контекст для ИИ
+              </p>
+              <textarea
+                class="adc__ai-context-input"
+                data-adc-ai-context
+                rows="2"
+                placeholder="Опишите товар или услугу — ИИ напишет описание за вас..."
+                maxlength="300"
+              ></textarea>
+              <div class="adc__ai-panel-footer">
+                <span class="adc__ai-panel-hint">Описание заменится сгенерированным текстом</span>
+                <button class="adc__ai-gen-text-btn" type="button" data-adc-ai-gen-text>
+                  <svg class="adc__spinner" width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="40 60"/>
+                  </svg>
+                  <span data-adc-ai-gen-text-label>Сгенерировать</span>
+                </button>
+              </div>
+            </div>
             <textarea
               class="adc__textarea"
               id="adc-desc"
